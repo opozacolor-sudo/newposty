@@ -1,0 +1,95 @@
+{
+  "Metadata": {
+    "title": "Newposty",
+    "description": "Redactează cu Claude, conectează conturi sociale și publică dintr-un singur studio."
+  },
+  "Landing": {
+    "signIn": "Autentificare",
+    "startWriting": "Începe să scrii",
+    "kicker": "Studio social",
+    "titleOnce": "Scrie o dată.",
+    "titleEverywhere": " Publică peste tot.",
+    "subtitle": "Vorbește cu Claude ca să redactezi texte și idei, conectează Instagram, TikTok, YouTube și altele prin Zernio, apoi publică sau programează dintr-un singur loc.",
+    "createStudio": "Creează-ți studioul",
+    "haveAccount": "Am deja un cont",
+    "talkTitle": "Discută ideea",
+    "talkBody": "Un asistent care scrie texte, propune idei și poate chiar trimite postarea.",
+    "connectTitle": "O singură conectare",
+    "connectBody": "Zernio găzduiește OAuth pentru Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest și Google Business.",
+    "laterTitle": "Acum sau mai târziu",
+    "laterBody": "Publică imediat sau pune-o în calendar. Același composer, aceleași conturi."
+  },
+  "Auth": {
+    "email": "Email",
+    "password": "Parolă",
+    "loginTitle": "Bine ai revenit",
+    "loginSubtitle": "Intră în studio.",
+    "signIn": "Autentificare",
+    "signingIn": "Se autentifică…",
+    "newHere": "Ești nou aici?",
+    "createAccount": "Creează un cont",
+    "signupTitle": "Deschide un studio",
+    "signupSubtitle": "Email și parolă. Fără pași extra.",
+    "create": "Creează cont",
+    "creating": "Se creează…",
+    "alreadyHave": "Ai deja unul?",
+    "confirmEmail": "Verifică emailul ca să confirmi contul, apoi autentifică-te."
+  },
+  "Nav": {
+    "chat": "Chat",
+    "dashboard": "Panou",
+    "accounts": "Conturi",
+    "signOut": "Ieșire"
+  },
+  "Dashboard": {
+    "title": "Panou",
+    "snapshot": "O privire peste conexiuni și programări.",
+    "connectedAccounts": "Conturi conectate",
+    "scheduled": "Programate",
+    "publishedSending": "Publicate / în curs",
+    "connected": "Conectate",
+    "manage": "Gestionează",
+    "noAccounts": "Niciun cont încă. Conectează Instagram, TikTok și restul din Conturi.",
+    "upcoming": "Urmează",
+    "nothingScheduled": "Nimic programat. Scrie în chat și apasă Programează.",
+    "recent": "Recente",
+    "mediaOnly": "(doar media)"
+  },
+  "Accounts": {
+    "title": "Conturi",
+    "intro": "Conectează-te prin OAuth-ul găzduit de Zernio. Paginile Facebook, organizațiile LinkedIn, board-urile Pinterest și locațiile Google folosesc selectorul Zernio după login.",
+    "connectedNamed": "{platform} conectat. Poți publica din chat.",
+    "connectedGeneric": "Cont conectat. Poți publica din chat.",
+    "connect": "Conectează",
+    "connectAnother": "Conectează altul",
+    "notConnected": "Neconectat",
+    "connectedFallback": "Conectat",
+    "hints": {
+      "instagram": "Feed, Reels, carusele",
+      "facebook": "Pagini prin selectorul găzduit",
+      "threads": "Postări text și media",
+      "tiktok": "Video și mod foto",
+      "youtube": "Upload-uri și Shorts",
+      "linkedin": "Personal sau companie",
+      "pinterest": "Pin-uri pe un board",
+      "googlebusiness": "Actualizări locale"
+    }
+  },
+  "Chat": {
+    "title": "Chat studio",
+    "subtitle": "Redactează texte, cere idei sau spune-mi să public.",
+    "empty": "Încearcă „Dă-mi trei texte de Instagram pentru o cafenea într-o luni ploioasă” sau conectează un cont și spune „publică asta pe Instagram acum”.",
+    "thinking": "Gândesc…",
+    "connectToPublish": "Conectează conturi ca să publici din chat.",
+    "placeholder": "Cere un text sau scrie unul și publică-l.",
+    "attach": "Atașează",
+    "publishNow": "Publică acum",
+    "schedule": "Programează",
+    "send": "Trimite",
+    "replyFailed": "Asistentul nu a putut răspunde.",
+    "uploadFailed": "Încărcarea a eșuat",
+    "publishFailed": "Publicarea a eșuat",
+    "posted": "Publicat. Urmărește panoul pentru linkurile live.",
+    "scheduledFor": "Programat pentru {when}."
+  }
+}

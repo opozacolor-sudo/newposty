@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { FormEvent, useState } from "react";
+import { LocaleSwitch } from "@/components/locale-switch";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
 export default function SignupPage() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,19 +37,22 @@ export default function SignupPage() {
       router.refresh();
       return;
     }
-    setInfo("Check your email to confirm the account, then sign in.");
+    setInfo(t("confirmEmail"));
   }
 
   return (
     <main className="mx-auto flex min-h-full max-w-md flex-col justify-center px-6 py-16">
-      <Link href="/" className="font-serif text-2xl italic">
-        newposty
-      </Link>
-      <h1 className="mt-8 font-serif text-4xl">Open a studio</h1>
-      <p className="mt-2 text-sm text-muted">Email and password. No extra steps.</p>
+      <div className="flex items-center justify-between">
+        <Link href="/" className="font-serif text-2xl italic">
+          newposty
+        </Link>
+        <LocaleSwitch />
+      </div>
+      <h1 className="mt-8 font-serif text-4xl">{t("signupTitle")}</h1>
+      <p className="mt-2 text-sm text-muted">{t("signupSubtitle")}</p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <label className="block text-sm">
-          Email
+          {t("email")}
           <input
             type="email"
             required
@@ -57,7 +62,7 @@ export default function SignupPage() {
           />
         </label>
         <label className="block text-sm">
-          Password
+          {t("password")}
           <input
             type="password"
             required
@@ -74,13 +79,13 @@ export default function SignupPage() {
           disabled={pending}
           className="w-full rounded-full bg-accent py-3 text-sm text-white disabled:opacity-60"
         >
-          {pending ? "Creating…" : "Create account"}
+          {pending ? t("creating") : t("create")}
         </button>
       </form>
       <p className="mt-6 text-sm text-muted">
-        Already have one?{" "}
+        {t("alreadyHave")}{" "}
         <Link href="/login" className="text-ink underline">
-          Sign in
+          {t("signIn")}
         </Link>
       </p>
     </main>

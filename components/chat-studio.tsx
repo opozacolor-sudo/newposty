@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { platformLabel } from "@/lib/platforms";
 
@@ -13,6 +14,7 @@ type Account = {
 type MediaItem = { url: string; type: "image" | "video"; name?: string };
 
 export default function ChatStudio() {
+  const t = useTranslations("Chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -68,7 +70,7 @@ export default function ChatStudio() {
     const payload = await response.json();
     setPending(false);
     if (!response.ok) {
-      setError(payload.error ?? "The assistant could not reply.");
+      setError(payload.error ?? t("replyFailed"));
       return;
     }
     setConversationId(payload.conversationId);
@@ -87,7 +89,7 @@ export default function ChatStudio() {
       const response = await fetch("/api/media", { method: "POST", body: form });
       const payload = await response.json();
       if (!response.ok) {
-        setError(payload.error ?? "Upload failed");
+        setError(payload.error ?? t("uploadFailed"));
         continue;
       }
       setMedia((current) => [...current, payload as MediaItem]);
@@ -112,16 +114,14 @@ export default function ChatStudio() {
     const payload = await response.json();
     setPublishing(false);
     if (!response.ok) {
-      setError(payload.error ?? "Publish failed");
+      setError(payload.error ?? t("publishFailed"));
       return;
     }
     setMessages((current) => [
       ...current,
       {
         role: "assistant",
-        content: publishNow
-          ? "Posted. Check the dashboard for live links as they land."
-          : `Scheduled for ${scheduledFor}.`,
+        content: publishNow ? t("posted") : t("scheduledFor", { when: scheduledFor }),
       },
     ]);
     setInput("");
@@ -131,17 +131,14 @@ export default function ChatStudio() {
   return (
     <div className="flex h-[calc(100vh-4.5rem)] flex-col lg:h-screen">
       <header className="border-b border-line px-6 py-4">
-        <h1 className="font-serif text-2xl">Studio chat</h1>
-        <p className="text-sm text-muted">
-          Draft captions, ask for ideas, or tell me to publish.
-        </p>
+        <h1 className="font-serif text-2xl">{t("title")}</h1>
+        <p className="text-sm text-muted">{t("subtitle")}</p>
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
         {messages.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-line bg-card p-6 text-sm text-muted">
-            Try “Give me three Instagram captions for a rainy Monday coffee shop”
-            or connect an account and say “publish this to Instagram now”.
+            {t("empty")}
           </div>
         ) : null}
         {messages.map((message, index) => (
@@ -156,9 +153,7 @@ export default function ChatStudio() {
             {message.content}
           </article>
         ))}
-        {pending ? (
-          <p className="text-sm text-muted">Thinking…</p>
-        ) : null}
+        {pending ? <p className="text-sm text-muted">{t("thinking")}</p> : null}
         <div ref={bottomRef} />
       </div>
 
@@ -191,9 +186,7 @@ export default function ChatStudio() {
             })}
           </div>
         ) : (
-          <p className="mb-3 text-xs text-muted">
-            Connect accounts to publish from chat.
-          </p>
+          <p className="mb-3 text-xs text-muted">{t("connectToPublish")}</p>
         )}
 
         {media.length > 0 ? (
@@ -210,13 +203,13 @@ export default function ChatStudio() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           rows={3}
-          placeholder="Ask for a caption, or write one and publish it."
+          placeholder={t("placeholder")}
           className="w-full resize-none rounded-2xl border border-line bg-card px-4 py-3 outline-none focus:border-ink"
         />
         {error ? <p className="mt-2 text-sm text-accent">{error}</p> : null}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <label className="cursor-pointer rounded-full border border-line bg-card px-3 py-2 text-xs">
-            Attach
+            {t("attach")}
             <input
               type="file"
               accept="image/*,video/*"
@@ -240,7 +233,7 @@ export default function ChatStudio() {
             onClick={() => void publish(true)}
             className="rounded-full bg-accent px-4 py-2 text-xs text-white disabled:opacity-50"
           >
-            Publish now
+            {t("publishNow")}
           </button>
           <button
             type="button"
@@ -248,14 +241,14 @@ export default function ChatStudio() {
             onClick={() => void publish(false)}
             className="rounded-full border border-line bg-card px-4 py-2 text-xs disabled:opacity-50"
           >
-            Schedule
+            {t("schedule")}
           </button>
           <button
             type="submit"
             disabled={pending || !input.trim()}
             className="ml-auto rounded-full bg-ink px-4 py-2 text-xs text-paper disabled:opacity-50"
           >
-            Send
+            {t("send")}
           </button>
         </div>
       </form>

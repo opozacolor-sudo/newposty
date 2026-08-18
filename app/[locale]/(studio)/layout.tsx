@@ -1,25 +1,31 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
+import { LocaleSwitch } from "@/components/locale-switch";
+import { Link, redirect } from "@/i18n/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-const LINKS = [
-  { href: "/chat", label: "Chat" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/accounts", label: "Accounts" },
-] as const;
 
 export default async function StudioLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("Nav");
   const supabase = await createServerSupabase();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) {
+    const locale = await getLocale();
+    redirect({ href: "/login", locale });
+    throw new Error("Unauthorized");
+  }
+
+  const links = [
+    { href: "/chat" as const, label: t("chat") },
+    { href: "/dashboard" as const, label: t("dashboard") },
+    { href: "/accounts" as const, label: t("accounts") },
+  ];
 
   return (
     <div className="min-h-full lg:grid lg:grid-cols-[240px_1fr]">
@@ -28,7 +34,7 @@ export default async function StudioLayout({
           newposty
         </Link>
         <nav className="mt-8 flex gap-2 lg:flex-col">
-          {LINKS.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -38,12 +44,15 @@ export default async function StudioLayout({
             </Link>
           ))}
         </nav>
-        <form action="/api/logout" method="post" className="mt-8 hidden lg:block">
-          <p className="truncate text-xs text-muted">{user.email}</p>
-          <button type="submit" className="mt-2 text-sm text-ink underline">
-            Sign out
-          </button>
-        </form>
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <LocaleSwitch />
+          <form action="/api/logout" method="post" className="hidden lg:block">
+            <p className="truncate text-xs text-muted">{user.email}</p>
+            <button type="submit" className="mt-2 text-sm text-ink underline">
+              {t("signOut")}
+            </button>
+          </form>
+        </div>
       </aside>
       <div className="min-h-full">{children}</div>
     </div>

@@ -1,0 +1,95 @@
+{
+  "Metadata": {
+    "title": "Newposty",
+    "description": "Draft with Claude, connect social accounts, and publish from one studio."
+  },
+  "Landing": {
+    "signIn": "Sign in",
+    "startWriting": "Start writing",
+    "kicker": "Social studio",
+    "titleOnce": "Write it once.",
+    "titleEverywhere": " Post it everywhere.",
+    "subtitle": "Chat with Claude to draft captions and ideas, connect Instagram, TikTok, YouTube and more through Zernio, then publish or schedule from one place.",
+    "createStudio": "Create your studio",
+    "haveAccount": "I already have an account",
+    "talkTitle": "Talk it out",
+    "talkBody": "An assistant that drafts captions, riffs on ideas, and can actually send the post.",
+    "connectTitle": "One connect flow",
+    "connectBody": "Zernio hosts OAuth for Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, and Google Business.",
+    "laterTitle": "Now or later",
+    "laterBody": "Publish immediately or park it on the calendar. Same composer, same accounts."
+  },
+  "Auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your studio.",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "newHere": "New here?",
+    "createAccount": "Create an account",
+    "signupTitle": "Open a studio",
+    "signupSubtitle": "Email and password. No extra steps.",
+    "create": "Create account",
+    "creating": "Creating…",
+    "alreadyHave": "Already have one?",
+    "confirmEmail": "Check your email to confirm the account, then sign in."
+  },
+  "Nav": {
+    "chat": "Chat",
+    "dashboard": "Dashboard",
+    "accounts": "Accounts",
+    "signOut": "Sign out"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "snapshot": "A snapshot of connections and the queue.",
+    "connectedAccounts": "Connected accounts",
+    "scheduled": "Scheduled",
+    "publishedSending": "Published / sending",
+    "connected": "Connected",
+    "manage": "Manage",
+    "noAccounts": "No accounts yet. Connect Instagram, TikTok, and the rest from Accounts.",
+    "upcoming": "Upcoming",
+    "nothingScheduled": "Nothing scheduled. Draft in chat and hit Schedule.",
+    "recent": "Recent",
+    "mediaOnly": "(media only)"
+  },
+  "Accounts": {
+    "title": "Accounts",
+    "intro": "Connect through Zernio’s hosted OAuth. Facebook Pages, LinkedIn orgs, Pinterest boards, and Google locations use Zernio’s picker after login.",
+    "connectedNamed": "{platform} connected. You can publish from chat.",
+    "connectedGeneric": "Account connected. You can publish from chat.",
+    "connect": "Connect",
+    "connectAnother": "Connect another",
+    "notConnected": "Not connected",
+    "connectedFallback": "Connected",
+    "hints": {
+      "instagram": "Feed, Reels, carousels",
+      "facebook": "Pages via hosted picker",
+      "threads": "Text and media posts",
+      "tiktok": "Videos and photo mode",
+      "youtube": "Uploads and Shorts",
+      "linkedin": "Personal or company",
+      "pinterest": "Pins to a board",
+      "googlebusiness": "Local updates"
+    }
+  },
+  "Chat": {
+    "title": "Studio chat",
+    "subtitle": "Draft captions, ask for ideas, or tell me to publish.",
+    "empty": "Try “Give me three Instagram captions for a rainy Monday coffee shop” or connect an account and say “publish this to Instagram now”.",
+    "thinking": "Thinking…",
+    "connectToPublish": "Connect accounts to publish from chat.",
+    "placeholder": "Ask for a caption, or write one and publish it.",
+    "attach": "Attach",
+    "publishNow": "Publish now",
+    "schedule": "Schedule",
+    "send": "Send",
+    "replyFailed": "The assistant could not reply.",
+    "uploadFailed": "Upload failed",
+    "publishFailed": "Publish failed",
+    "posted": "Posted. Check the dashboard for live links as they land.",
+    "scheduledFor": "Scheduled for {when}."
+  }
+}

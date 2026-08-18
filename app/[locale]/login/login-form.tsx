@@ -1,11 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { LocaleSwitch } from "@/components/locale-switch";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/chat";
@@ -28,20 +31,23 @@ export default function LoginPage() {
       setError(signInError.message);
       return;
     }
-    router.push(next);
+    router.push(next.startsWith("/") ? next : "/chat");
     router.refresh();
   }
 
   return (
     <main className="mx-auto flex min-h-full max-w-md flex-col justify-center px-6 py-16">
-      <Link href="/" className="font-serif text-2xl italic">
-        newposty
-      </Link>
-      <h1 className="mt-8 font-serif text-4xl">Welcome back</h1>
-      <p className="mt-2 text-sm text-muted">Sign in to your studio.</p>
+      <div className="flex items-center justify-between">
+        <Link href="/" className="font-serif text-2xl italic">
+          newposty
+        </Link>
+        <LocaleSwitch />
+      </div>
+      <h1 className="mt-8 font-serif text-4xl">{t("loginTitle")}</h1>
+      <p className="mt-2 text-sm text-muted">{t("loginSubtitle")}</p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <label className="block text-sm">
-          Email
+          {t("email")}
           <input
             type="email"
             required
@@ -51,7 +57,7 @@ export default function LoginPage() {
           />
         </label>
         <label className="block text-sm">
-          Password
+          {t("password")}
           <input
             type="password"
             required
@@ -66,13 +72,13 @@ export default function LoginPage() {
           disabled={pending}
           className="w-full rounded-full bg-ink py-3 text-sm text-paper disabled:opacity-60"
         >
-          {pending ? "Signing in…" : "Sign in"}
+          {pending ? t("signingIn") : t("signIn")}
         </button>
       </form>
       <p className="mt-6 text-sm text-muted">
-        New here?{" "}
+        {t("newHere")}{" "}
         <Link href="/signup" className="text-ink underline">
-          Create an account
+          {t("createAccount")}
         </Link>
       </p>
     </main>

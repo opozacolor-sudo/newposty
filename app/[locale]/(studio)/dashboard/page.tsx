@@ -1,13 +1,16 @@
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { requireUser } from "@/lib/data";
+import { Link } from "@/i18n/navigation";
 import { platformLabel } from "@/lib/platforms";
 
-function formatWhen(value: string | null) {
+function formatWhen(value: string | null, locale: string) {
   if (!value) return "—";
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString(locale);
 }
 
 export default async function DashboardPage() {
+  const t = await getTranslations("Dashboard");
+  const locale = await getLocale();
   const { supabase, user } = await requireUser();
 
   const [{ data: accounts }, { data: posts }, { data: profile }] = await Promise.all([
@@ -34,17 +37,17 @@ export default async function DashboardPage() {
 
   return (
     <main className="px-6 py-8">
-      <h1 className="font-serif text-4xl">Dashboard</h1>
+      <h1 className="font-serif text-4xl">{t("title")}</h1>
       <p className="mt-2 text-sm text-muted">
         {profile?.brand_name ? `${profile.brand_name} · ` : ""}
-        A snapshot of connections and the queue.
+        {t("snapshot")}
       </p>
 
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
         {[
-          { label: "Connected accounts", value: accounts?.length ?? 0 },
-          { label: "Scheduled", value: upcoming.length },
-          { label: "Published / sending", value: published.length },
+          { label: t("connectedAccounts"), value: accounts?.length ?? 0 },
+          { label: t("scheduled"), value: upcoming.length },
+          { label: t("publishedSending"), value: published.length },
         ].map((stat) => (
           <article key={stat.label} className="rounded-3xl border border-line bg-card p-5">
             <p className="text-xs uppercase tracking-widest text-muted">{stat.label}</p>
@@ -55,22 +58,22 @@ export default async function DashboardPage() {
 
       <section className="mt-10">
         <div className="flex items-end justify-between">
-          <h2 className="font-serif text-2xl">Connected</h2>
+          <h2 className="font-serif text-2xl">{t("connected")}</h2>
           <Link href="/accounts" className="text-sm underline">
-            Manage
+            {t("manage")}
           </Link>
         </div>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {(accounts ?? []).length === 0 ? (
             <li className="rounded-3xl border border-dashed border-line p-5 text-sm text-muted">
-              No accounts yet. Connect Instagram, TikTok, and the rest from Accounts.
+              {t("noAccounts")}
             </li>
           ) : (
             (accounts ?? []).map((account) => (
               <li key={account.id} className="rounded-3xl border border-line bg-card p-4">
                 <p className="text-sm font-medium">{platformLabel(account.platform as string)}</p>
                 <p className="text-sm text-muted">
-                  {account.username ?? account.display_name ?? "Connected"}
+                  {account.username ?? account.display_name ?? t("connected")}
                 </p>
               </li>
             ))
@@ -79,18 +82,18 @@ export default async function DashboardPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="font-serif text-2xl">Upcoming</h2>
+        <h2 className="font-serif text-2xl">{t("upcoming")}</h2>
         <ul className="mt-4 space-y-3">
           {upcoming.length === 0 ? (
             <li className="rounded-3xl border border-dashed border-line p-5 text-sm text-muted">
-              Nothing scheduled. Draft in chat and hit Schedule.
+              {t("nothingScheduled")}
             </li>
           ) : (
             upcoming.map((post) => (
               <li key={post.id} className="rounded-3xl border border-line bg-card p-4">
                 <p className="text-sm">{post.content}</p>
                 <p className="mt-2 text-xs text-muted">
-                  {formatWhen(post.scheduled_for as string | null)} · {post.status}
+                  {formatWhen(post.scheduled_for as string | null, locale)} · {post.status}
                 </p>
               </li>
             ))
@@ -99,11 +102,11 @@ export default async function DashboardPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="font-serif text-2xl">Recent</h2>
+        <h2 className="font-serif text-2xl">{t("recent")}</h2>
         <ul className="mt-4 space-y-3">
           {(posts ?? []).slice(0, 8).map((post) => (
             <li key={post.id} className="rounded-3xl border border-line bg-card p-4">
-              <p className="text-sm">{post.content || "(media only)"}</p>
+              <p className="text-sm">{post.content || t("mediaOnly")}</p>
               <p className="mt-2 text-xs uppercase tracking-widest text-muted">
                 {post.status}
               </p>

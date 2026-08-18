@@ -1,4 +1,5 @@
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { ensureZernioProfile, requireUser, syncSocialAccounts } from "@/lib/data";
 
 export default async function ConnectedPage({
@@ -14,5 +15,6 @@ export default async function ConnectedPage({
   }
   const target = new URLSearchParams({ connected: "1" });
   if (params.platform) target.set("platform", params.platform);
-  redirect(`/accounts?${target.toString()}`);
+  const locale = await getLocale();
+  redirect({ href: `/accounts?${target.toString()}`, locale });
 }

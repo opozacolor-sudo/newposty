@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createServerSupabase } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/env";
+import { createServerSupabase } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);

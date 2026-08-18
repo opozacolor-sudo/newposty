@@ -1,6 +1,7 @@
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { createZernioProfile, listAccounts } from "@/lib/zernio";
-import { redirect } from "next/navigation";
 
 export type Profile = {
   id: string;
@@ -17,7 +18,12 @@ export async function requireUser() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) {
+    const locale = await getLocale();
+    redirect({ href: "/login", locale });
+    throw new Error("Unauthorized");
+  }
+
   return { supabase, user };
 }
 
