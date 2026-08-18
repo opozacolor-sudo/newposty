@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 
 export default async function HomePage() {
   const t = await getTranslations("Landing");
+  const nav = await getTranslations("Header");
 
   return (
     <section className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 items-center gap-8 overflow-x-hidden px-4 py-8 sm:px-6 lg:min-h-0 lg:grid-cols-2 lg:gap-10 lg:overflow-hidden lg:py-0">
@@ -18,12 +19,12 @@ export default async function HomePage() {
           {t("subtitle")}
         </p>
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
-          <Link href="/signup" className={`${btnSolid} px-5 py-3`}>
-            {t("startFree")}
+          <Link href="/login" className={`${btnOutline} px-5 py-3`}>
+            {nav("signIn")}
           </Link>
-          <button type="button" className={`${btnOutline} px-5 py-3`}>
-            {t("seeHow")}
-          </button>
+          <Link href="/signup" className={`${btnSolid} px-5 py-3`}>
+            {nav("signUp")}
+          </Link>
         </div>
       </div>
       <HeroVisual />

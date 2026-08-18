@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./brand-logo";
-import { btnGhost, btnOutline, btnSolid } from "./styles";
+import { btnGhost, btnOutline } from "./styles";
 
 export function MarketingHeader() {
   const t = useTranslations("Header");
@@ -42,34 +42,16 @@ export function MarketingHeader() {
           <BrandLogo className="h-7 w-auto sm:h-8" width={156} height={32} />
         </Link>
 
-        <div className="flex items-center justify-end gap-2 sm:gap-3">
-          <button type="button" className={`${btnOutline} hidden md:inline-flex`}>
+        <div className="flex items-center justify-end">
+          <button type="button" className={btnOutline}>
             {t("demo")}
           </button>
-          <Link href="/login" className={`${btnGhost} hidden md:inline-flex px-2`}>
-            {t("signIn")}
-          </Link>
-          <Link href="/signup" className={btnSolid}>
-            {t("signUp")}
-          </Link>
         </div>
       </div>
 
       {open ? (
         <div className="border-t border-neutral-100 bg-white px-4 py-4 md:hidden">
-          <nav className="flex flex-col gap-3">
-            {leftLinks}
-            <button type="button" className={`${btnOutline} w-full`}>
-              {t("demo")}
-            </button>
-            <Link
-              href="/login"
-              className={`${btnOutline} w-full`}
-              onClick={() => setOpen(false)}
-            >
-              {t("signIn")}
-            </Link>
-          </nav>
+          <nav className="flex flex-col gap-3">{leftLinks}</nav>
         </div>
       ) : null}
     </header>

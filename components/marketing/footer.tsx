@@ -21,9 +21,6 @@ export async function MarketingFooter() {
           <Link href="/terms" className={btnGhost}>
             {t("terms")}
           </Link>
-          <Link href="/contact" className={btnGhost}>
-            {t("contact")}
-          </Link>
           <LocaleSwitch />
         </nav>
       </div>
