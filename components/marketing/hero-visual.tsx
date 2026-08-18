@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { AtSign, Check, Music2, Share2, Video } from "lucide-react";
+import { AtSign, Check, Music2, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type ComponentType } from "react";
 import {
@@ -23,32 +23,28 @@ type Node = {
 };
 
 const desktopNodes: Node[] = [
-  { id: "yt", Icon: YoutubeIcon, x: 50, y: 10, duration: 3.6, delay: 0.1 },
-  { id: "ig", Icon: InstagramIcon, x: 16, y: 24, duration: 4.3, delay: 0.35 },
-  { id: "fb", Icon: FacebookIcon, x: 84, y: 22, duration: 3.2, delay: 0.55 },
-  { id: "li", Icon: LinkedinIcon, x: 78, y: 52, duration: 4.8, delay: 0.15 },
-  { id: "tt", Icon: Music2, x: 12, y: 58, duration: 3.9, delay: 0.7 },
-  { id: "th", Icon: AtSign, x: 38, y: 78, duration: 4.5, delay: 0.25 },
-  { id: "sh", Icon: Share2, x: 70, y: 80, duration: 3.4, delay: 0.9 },
-  { id: "vid", Icon: Video, x: 92, y: 38, duration: 4.1, delay: 0.4 },
+  { id: "ig", Icon: InstagramIcon, x: 50, y: 14, duration: 5.2, delay: 0 },
+  { id: "fb", Icon: FacebookIcon, x: 78, y: 30, duration: 4.6, delay: 0.45 },
+  { id: "yt", Icon: YoutubeIcon, x: 84, y: 62, duration: 5.8, delay: 0.9 },
+  { id: "li", Icon: LinkedinIcon, x: 62, y: 86, duration: 4.4, delay: 0.2 },
+  { id: "tt", Icon: Music2, x: 38, y: 86, duration: 5.5, delay: 0.7 },
+  { id: "th", Icon: AtSign, x: 16, y: 62, duration: 4.8, delay: 1.1 },
+  { id: "sh", Icon: Share2, x: 22, y: 30, duration: 5.0, delay: 0.35 },
 ];
 
 const desktopEdges: Array<[number, number]> = [
   [0, 1],
-  [0, 2],
-  [1, 4],
+  [0, 6],
   [2, 3],
-  [2, 7],
-  [3, 6],
   [4, 5],
-  [5, 6],
 ];
 
-const mobileNodes = desktopNodes.slice(0, 4).map((node, index) => ({
-  ...node,
-  x: [18, 78, 22, 80][index],
-  y: [22, 28, 72, 70][index],
-}));
+const mobileNodes: Node[] = [
+  { ...desktopNodes[0], x: 22, y: 22 },
+  { ...desktopNodes[1], x: 78, y: 28 },
+  { ...desktopNodes[4], x: 24, y: 74 },
+  { ...desktopNodes[2], x: 76, y: 70 },
+];
 
 function FloatIcon({
   node,
@@ -62,7 +58,7 @@ function FloatIcon({
     <motion.div
       className="absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border border-neutral-100 bg-white shadow-sm will-change-transform"
       style={{ left: `${node.x}%`, top: `${node.y}%` }}
-      animate={reduce ? undefined : { y: [0, -12, 0] }}
+      animate={reduce ? undefined : { y: [0, -9, 0] }}
       transition={{
         duration: node.duration,
         repeat: Infinity,
@@ -75,18 +71,10 @@ function FloatIcon({
   );
 }
 
-function ToastCard({
-  text,
-  className,
-}: {
-  text: string;
-  className?: string;
-}) {
+function ToastCard({ text }: { text: string }) {
   return (
-    <div
-      className={`flex items-center gap-2 rounded-2xl border border-neutral-100 bg-white px-3 py-2 shadow-lg ${className ?? ""}`}
-    >
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FF4713]/10">
+    <div className="flex items-center gap-2 rounded-2xl border border-neutral-100 bg-white px-3 py-2 shadow-lg">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#FF4713]/10">
         <Check className="h-3.5 w-3.5" color={BRAND} strokeWidth={2.5} />
       </span>
       <p className="text-xs font-medium text-neutral-500">{text}</p>
@@ -94,40 +82,68 @@ function ToastCard({
   );
 }
 
-export function HeroVisual() {
-  const t = useTranslations("Landing");
-  const reduce = useReducedMotion();
-  const [toastIndex, setToastIndex] = useState(0);
-  const toasts = [t("toastPosted"), t("toastScheduled")];
+function ToastCycle({
+  messages,
+  reduce,
+  className,
+}: {
+  messages: string[];
+  reduce: boolean | null;
+  className?: string;
+}) {
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      setToastIndex((current) => (current + 1) % toasts.length);
-    }, 5200);
+      setIndex((current) => (current + 1) % messages.length);
+    }, 4500);
     return () => window.clearInterval(id);
-  }, [toasts.length]);
+  }, [messages.length]);
 
   return (
-    <div className="relative mx-auto w-full max-w-lg overflow-hidden">
-      <div className="relative hidden aspect-square w-full lg:block">
+    <div className={className}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={messages[index]}
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduce ? undefined : { opacity: 0, y: -8 }}
+          transition={{ duration: 0.4 }}
+        >
+          <ToastCard text={messages[index]} />
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export function HeroVisual() {
+  const t = useTranslations("Landing");
+  const reduce = useReducedMotion();
+  const toasts = [t("toastPosted"), t("toastScheduled"), t("toastTiktok")];
+
+  return (
+    <div className="relative mx-auto w-full max-w-md overflow-hidden">
+      <div className="relative hidden h-[min(420px,52vh)] w-full lg:block">
         <svg
-          className="absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-0 h-full w-full"
           viewBox="0 0 100 100"
           fill="none"
           aria-hidden
         >
-          {desktopEdges.map(([from, to], index) => {
+          {desktopEdges.map(([from, to]) => {
             const a = desktopNodes[from];
             const b = desktopNodes[to];
             return (
               <line
-                key={index}
+                key={`${a.id}-${b.id}`}
                 x1={a.x}
                 y1={a.y}
                 x2={b.x}
                 y2={b.y}
-                stroke="#E8E8E8"
-                strokeWidth="0.35"
+                stroke="#111111"
+                strokeOpacity="0.16"
+                strokeWidth="0.4"
               />
             );
           })}
@@ -135,39 +151,22 @@ export function HeroVisual() {
         {desktopNodes.map((node) => (
           <FloatIcon key={node.id} node={node} reduce={reduce} />
         ))}
-        <motion.div
-          className="absolute left-[8%] top-[38%] z-10 will-change-transform"
-          animate={reduce ? undefined : { y: [0, -8, 0] }}
-          transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ToastCard text={t("toastPosted")} />
-        </motion.div>
-        <div className="absolute right-[2%] top-[64%] z-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={toastIndex}
-              initial={reduce ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduce ? undefined : { opacity: 0, y: -8 }}
-              transition={{ duration: 0.45 }}
-            >
-              <ToastCard text={toasts[toastIndex]} />
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        <ToastCycle
+          messages={toasts}
+          reduce={reduce}
+          className="absolute left-1/2 top-[46%] z-10 w-max max-w-[85%] -translate-x-1/2 -translate-y-1/2"
+        />
       </div>
 
       <div className="relative mx-auto aspect-[5/4] w-full max-w-sm lg:hidden">
         {mobileNodes.map((node) => (
           <FloatIcon key={node.id} node={node} reduce={reduce} />
         ))}
-        <motion.div
-          className="absolute left-1/2 top-[46%] z-10 w-max max-w-[90%] -translate-x-1/2 will-change-transform"
-          animate={reduce ? undefined : { y: [0, -8, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-        >
-          <ToastCard text={t("toastScheduled")} />
-        </motion.div>
+        <ToastCycle
+          messages={toasts}
+          reduce={reduce}
+          className="absolute left-1/2 top-1/2 z-10 w-max max-w-[90%] -translate-x-1/2 -translate-y-1/2"
+        />
       </div>
     </div>
   );

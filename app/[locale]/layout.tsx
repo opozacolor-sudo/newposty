@@ -32,7 +32,7 @@ export async function generateMetadata({
     title: t("title"),
     description: t("description"),
     icons: {
-      icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+      icon: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }],
     },
   };
 }

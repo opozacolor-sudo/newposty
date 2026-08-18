@@ -4,30 +4,11 @@ import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { useGoToHowTo } from "./how-to-nav";
 import { btnGhost, btnOutline, btnSolid } from "./styles";
-
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <img
-      src="/logo.svg"
-      alt="posty.now"
-      className={className}
-      width={176}
-      height={32}
-    />
-  );
-}
 
 export function MarketingHeader() {
   const t = useTranslations("Header");
-  const goToHowTo = useGoToHowTo();
   const [open, setOpen] = useState(false);
-
-  function goToDemo() {
-    setOpen(false);
-    goToHowTo();
-  }
 
   const leftLinks = (
     <>
@@ -41,8 +22,8 @@ export function MarketingHeader() {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:h-20 sm:px-6">
+    <header className="shrink-0 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
+      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6">
         <div className="flex items-center justify-start gap-6">
           <button
             type="button"
@@ -57,11 +38,17 @@ export function MarketingHeader() {
         </div>
 
         <Link href="/" className="justify-self-center" onClick={() => setOpen(false)}>
-          <BrandMark className="h-7 w-auto sm:h-8" />
+          <img
+            src="/logo.svg?v=2"
+            alt="posty.now"
+            className="h-12 w-auto"
+            width={80}
+            height={48}
+          />
         </Link>
 
         <div className="flex items-center justify-end gap-2 sm:gap-3">
-          <button type="button" onClick={goToDemo} className={`${btnOutline} hidden md:inline-flex`}>
+          <button type="button" className={`${btnOutline} hidden md:inline-flex`}>
             {t("demo")}
           </button>
           <Link href="/login" className={`${btnGhost} hidden md:inline-flex px-2`}>
@@ -77,7 +64,7 @@ export function MarketingHeader() {
         <div className="border-t border-neutral-100 bg-white px-4 py-4 md:hidden">
           <nav className="flex flex-col gap-3">
             {leftLinks}
-            <button type="button" onClick={goToDemo} className={`${btnOutline} w-full`}>
+            <button type="button" className={`${btnOutline} w-full`}>
               {t("demo")}
             </button>
             <Link

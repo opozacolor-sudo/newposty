@@ -59,6 +59,12 @@ body {
   background: #ffd8cc;
 }
 
+html.home-no-scroll,
+html.home-no-scroll body {
+  height: 100%;
+  overflow: hidden;
+}
+
 input,
 textarea,
 button {

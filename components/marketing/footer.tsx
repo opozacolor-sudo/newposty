@@ -7,10 +7,16 @@ export async function MarketingFooter() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="border-t border-neutral-100 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between">
+    <footer className="shrink-0 border-t border-neutral-100 bg-white">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="posty.now" className="h-6 w-auto" width={132} height={24} />
+          <img
+            src="/logo.svg?v=2"
+            alt="posty.now"
+            className="h-8 w-auto"
+            width={53}
+            height={32}
+          />
           <span className="text-sm text-neutral-500">{t("copyright")}</span>
         </div>
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
