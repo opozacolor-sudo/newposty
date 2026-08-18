@@ -6,7 +6,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
   return (
     <div className="marketing flex min-h-dvh flex-col overflow-x-hidden bg-white text-neutral-900">
       <MarketingHeader />
-      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+      <main className="flex flex-1 flex-col lg:min-h-0">{children}</main>
       <MarketingFooter />
     </div>
   );
