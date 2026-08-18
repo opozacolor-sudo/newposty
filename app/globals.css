@@ -43,6 +43,22 @@ body {
   font-family: var(--font-serif), ui-serif, Georgia, serif;
 }
 
+.marketing {
+  --paper: #ffffff;
+  --ink: #111111;
+  --muted: #737373;
+  --line: #e5e5e5;
+  --card: #ffffff;
+  --accent: #ff4713;
+  --accent-dark: #e03d0f;
+  background: #ffffff;
+  color: #111111;
+}
+
+.marketing ::selection {
+  background: #ffd8cc;
+}
+
 input,
 textarea,
 button {

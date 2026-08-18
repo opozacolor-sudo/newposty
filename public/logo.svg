@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" fill="none" role="img" aria-label="posty.now">
+  <path
+    d="M8.4 8.8h8.2L20 16.4l3.4-7.6h8.2c2.6 0 4.7 2.1 4.7 4.6v17.2c0 2.5-2.1 4.6-4.7 4.6H8.4c-2.6 0-4.7-2.1-4.7-4.6V13.4c0-2.5 2.1-4.6 4.7-4.6Z"
+    stroke="#FF4713"
+    stroke-width="2.6"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+  <text
+    x="46"
+    y="27"
+    fill="#FF4713"
+    font-size="20"
+    font-weight="700"
+    font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    letter-spacing="-0.04em"
+  >posty.now</text>
+</svg>

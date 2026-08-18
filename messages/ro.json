@@ -1,23 +1,65 @@
 {
   "Metadata": {
-    "title": "Newposty",
-    "description": "Redactează cu Claude, conectează conturi sociale și publică dintr-un singur studio."
+    "title": "posty.now",
+    "description": "Postări, promovări, analize și programări — totul într-un minut, cu asistentul AI posty.now."
+  },
+  "Header": {
+    "about": "Despre noi",
+    "contact": "Contact",
+    "demo": "Demo",
+    "signIn": "Autentificare",
+    "signUp": "Înregistrare",
+    "openMenu": "Deschide meniul",
+    "closeMenu": "Închide meniul"
   },
   "Landing": {
-    "signIn": "Autentificare",
-    "startWriting": "Începe să scrii",
-    "kicker": "Studio social",
-    "titleOnce": "Scrie o dată.",
-    "titleEverywhere": " Publică peste tot.",
-    "subtitle": "Vorbește cu Claude ca să redactezi texte și idei, conectează Instagram, TikTok, YouTube și altele prin Zernio, apoi publică sau programează dintr-un singur loc.",
-    "createStudio": "Creează-ți studioul",
-    "haveAccount": "Am deja un cont",
-    "talkTitle": "Discută ideea",
-    "talkBody": "Un asistent care scrie texte, propune idei și poate chiar trimite postarea.",
-    "connectTitle": "O singură conectare",
-    "connectBody": "Zernio găzduiește OAuth pentru Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest și Google Business.",
-    "laterTitle": "Acum sau mai târziu",
-    "laterBody": "Publică imediat sau pune-o în calendar. Același composer, aceleași conturi."
+    "title": "Postează inteligent. Din prima secundă.",
+    "subtitle": "Postări, promovări, analize și programări — totul într-un minut, cu asistentul AI posty.now.",
+    "startFree": "Începe gratuit",
+    "seeHow": "Vezi cum funcționează",
+    "toastPosted": "Postat pe Instagram",
+    "toastScheduled": "Programat pentru mâine 18:00",
+    "howTitle": "Cum se folosește",
+    "howSubtitle": "Patru pași. Cam un minut.",
+    "step1Title": "Conectează-ți conturile",
+    "step1Body": "Instagram, TikTok, Facebook, LinkedIn și altele — într-un singur loc.",
+    "step2Title": "Scrie-i lui Posty ce vrei să postezi",
+    "step2Body": "Text, poză sau video. Spune-i pe limba ta.",
+    "step3Title": "AI-ul face restul",
+    "step3Body": "Generează caption, hashtag-uri și alege momentul optim.",
+    "step4Title": "Programează sau publică",
+    "step4Body": "Instant, pe toate platformele conectate."
+  },
+  "Footer": {
+    "copyright": "© posty.now 2026",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  },
+  "About": {
+    "title": "Despre noi",
+    "p1": "posty.now este un asistent AI pentru social media. Tu vorbești, el redactează, programează și publică — fără să sari între aplicații.",
+    "p2": "Un singur studio pentru texte, promovări, analize și timing. Construit să se simtă liniștit și rapid, nu aglomerat."
+  },
+  "Contact": {
+    "title": "Contact",
+    "subtitle": "O întrebare, un parteneriat sau un salut — trimite-l aici. Răspundem pe email.",
+    "name": "Nume",
+    "email": "Email",
+    "message": "Mesaj",
+    "submit": "Trimite",
+    "sending": "Se trimite…",
+    "success": "Mesaj primit. Revenim în curând.",
+    "error": "Ceva nu a mers. Te rugăm să încerci din nou.",
+    "invalid": "Completează toate câmpurile cu un email valid."
+  },
+  "Privacy": {
+    "title": "Privacy",
+    "body": "Păstrăm datele de cont pe care ni le dai, conținutul pe care îl creezi în studio și mesajele trimise de pe acest site ca să putem opera posty.now. Nu vindem datele tale. Scrie-ne dacă vrei o copie a ce stocăm sau să ceri ștergerea."
+  },
+  "Terms": {
+    "title": "Terms",
+    "body": "Folosind posty.now, ești de acord să folosești produsul legal, să îți păstrezi autentificarea privată și să rămâi responsabil pentru conținutul publicat pe conturile sociale conectate. Serviciul este oferit ca atare, pe măsură ce creștem. Putem actualiza acești termeni; versiunea curentă va fi întotdeauna pe această pagină."
   },
   "Auth": {
     "email": "Email",

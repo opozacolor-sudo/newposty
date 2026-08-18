@@ -1,23 +1,65 @@
 {
   "Metadata": {
-    "title": "Newposty",
-    "description": "Draft with Claude, connect social accounts, and publish from one studio."
+    "title": "posty.now",
+    "description": "Posts, promotions, analytics and scheduling — all in a minute, with the posty.now AI assistant."
+  },
+  "Header": {
+    "about": "About us",
+    "contact": "Contact",
+    "demo": "Demo",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "Landing": {
-    "signIn": "Sign in",
-    "startWriting": "Start writing",
-    "kicker": "Social studio",
-    "titleOnce": "Write it once.",
-    "titleEverywhere": " Post it everywhere.",
-    "subtitle": "Chat with Claude to draft captions and ideas, connect Instagram, TikTok, YouTube and more through Zernio, then publish or schedule from one place.",
-    "createStudio": "Create your studio",
-    "haveAccount": "I already have an account",
-    "talkTitle": "Talk it out",
-    "talkBody": "An assistant that drafts captions, riffs on ideas, and can actually send the post.",
-    "connectTitle": "One connect flow",
-    "connectBody": "Zernio hosts OAuth for Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, and Google Business.",
-    "laterTitle": "Now or later",
-    "laterBody": "Publish immediately or park it on the calendar. Same composer, same accounts."
+    "title": "Post smarter. From the first second.",
+    "subtitle": "Posts, promotions, analytics and scheduling — all in a minute, with the posty.now AI assistant.",
+    "startFree": "Start for free",
+    "seeHow": "See how it works",
+    "toastPosted": "Posted on Instagram",
+    "toastScheduled": "Scheduled for tomorrow 18:00",
+    "howTitle": "How to use",
+    "howSubtitle": "Four steps. About a minute.",
+    "step1Title": "Connect your accounts",
+    "step1Body": "Instagram, TikTok, Facebook, LinkedIn, and more — in one place.",
+    "step2Title": "Tell Posty what to post",
+    "step2Body": "Text, photo, or video. Just say what you need.",
+    "step3Title": "AI does the rest",
+    "step3Body": "Captions, hashtags, and the best time to publish.",
+    "step4Title": "Schedule or go live",
+    "step4Body": "Publish instantly across every connected platform."
+  },
+  "Footer": {
+    "copyright": "© posty.now 2026",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  },
+  "About": {
+    "title": "About us",
+    "p1": "posty.now is an AI assistant for social media. You talk, it drafts, schedules, and publishes — without bouncing between apps.",
+    "p2": "One studio for captions, promotions, analytics, and timing. Built to feel quiet and fast, not crowded."
+  },
+  "Contact": {
+    "title": "Contact",
+    "subtitle": "A question, a partnership, or a hello — send it here. We’ll reply by email.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Send",
+    "sending": "Sending…",
+    "success": "Message received. We’ll get back to you soon.",
+    "error": "Something went wrong. Please try again.",
+    "invalid": "Please fill in every field with a valid email."
+  },
+  "Privacy": {
+    "title": "Privacy",
+    "body": "We collect the account details you provide, the content you create in the studio, and messages you send through this site so we can operate posty.now. We do not sell your data. Contact us if you want a copy of what we store, or to ask that it be deleted."
+  },
+  "Terms": {
+    "title": "Terms",
+    "body": "By using posty.now you agree to use the product lawfully, keep your login private, and remain responsible for the content you publish to connected social accounts. The service is provided as-is while we grow. We may update these terms; the current version will always live on this page."
   },
   "Auth": {
     "email": "Email",

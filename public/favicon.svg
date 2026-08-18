@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="posty.now">
+  <rect width="64" height="64" rx="16" fill="#FF4713"/>
+  <path
+    d="M20.5 18.5h7.2L32 26.2l4.3-7.7h7.2c2.9 0 5.3 2.3 5.3 5.2v20.6c0 2.9-2.4 5.2-5.3 5.2H20.5c-2.9 0-5.3-2.3-5.3-5.2V23.7c0-2.9 2.4-5.2 5.3-5.2Z"
+    stroke="#fff"
+    stroke-width="4.25"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+</svg>
