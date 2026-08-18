@@ -11,8 +11,8 @@ export default async function HomePage() {
   return (
     <section className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 items-center gap-4 px-3 py-3 sm:gap-8 sm:px-6 sm:py-8 lg:min-h-0 lg:grid-cols-2 lg:gap-10 lg:overflow-hidden lg:py-0">
       <HomeViewportLock />
-      <div className="max-w-xl text-center lg:text-left">
-        <h1 className="text-[1.375rem] font-semibold leading-snug tracking-tight text-neutral-950 sm:text-5xl sm:leading-[1.08] lg:text-[3.25rem] xl:text-6xl">
+      <div className="w-full max-w-xl text-center lg:text-left">
+        <h1 className="text-[1.375rem] font-semibold leading-snug tracking-tight break-words text-neutral-950 sm:text-5xl sm:leading-[1.08] lg:text-[3.25rem] xl:text-6xl">
           {t("title")}
         </h1>
         <p className="mt-2.5 text-[13px] leading-5 text-neutral-500 sm:mt-5 sm:text-base sm:leading-7 lg:text-lg">
