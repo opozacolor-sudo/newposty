@@ -43,9 +43,13 @@ export function MarketingHeader() {
         </Link>
 
         <div className="flex items-center justify-end">
-          <button type="button" className={`${btnOutline} !px-2.5 !py-1.5 !text-xs sm:!px-4 sm:!py-2.5 sm:!text-sm`}>
+          <Link
+            href="/demo"
+            className={`${btnOutline} !px-2.5 !py-1.5 !text-xs sm:!px-4 sm:!py-2.5 sm:!text-sm`}
+            onClick={() => setOpen(false)}
+          >
             {t("demo")}
-          </button>
+          </Link>
         </div>
       </div>
 

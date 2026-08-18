@@ -37,6 +37,41 @@
     "terms": "Terms",
     "contact": "Contact"
   },
+  "Demo": {
+    "metaTitle": "How posty.now works",
+    "metaDescription": "See each major step in posty.now — connect accounts, write with AI, schedule, publish, and review performance.",
+    "title": "How posty.now works",
+    "subtitle": "See each step in action.",
+    "videoSoon": "Video coming soon",
+    "ctaTitle": "Ready to start?",
+    "ctaButton": "Sign up",
+    "steps": {
+      "connect": {
+        "title": "Connect your accounts",
+        "body": "Link Instagram, TikTok, Facebook, LinkedIn and the rest through a single authorization flow."
+      },
+      "chat": {
+        "title": "Tell Posty what you want to post",
+        "body": "Describe it in chat — text, photo, or video — in your own words."
+      },
+      "caption": {
+        "title": "AI writes captions and hashtags",
+        "body": "Posty reads the content and writes the right text for each platform."
+      },
+      "timing": {
+        "title": "Pick the best time",
+        "body": "The AI recommends the best posting window based on your audience."
+      },
+      "publish": {
+        "title": "Schedule or publish instantly",
+        "body": "Across every connected platform, in one click."
+      },
+      "analytics": {
+        "title": "Analytics and reports",
+        "body": "See how your posts perform, right from the dashboard."
+      }
+    }
+  },
   "About": {
     "title": "About us",
     "p1": "posty.now is an AI assistant for social media. You talk, it drafts, schedules, and publishes — without bouncing between apps.",

@@ -37,6 +37,41 @@
     "terms": "Terms",
     "contact": "Contact"
   },
+  "Demo": {
+    "metaTitle": "Cum funcționează posty.now",
+    "metaDescription": "Vezi fiecare pas din posty.now — conectează conturi, scrie cu AI, programează, publică și urmărește performanța.",
+    "title": "Cum funcționează posty.now",
+    "subtitle": "Vezi fiecare pas în acțiune.",
+    "videoSoon": "Video în curând",
+    "ctaTitle": "Pregătit să începi?",
+    "ctaButton": "Înregistrare",
+    "steps": {
+      "connect": {
+        "title": "Conectează-ți conturile",
+        "body": "Leagă Instagram, TikTok, Facebook, LinkedIn și restul printr-un singur flux de autorizare."
+      },
+      "chat": {
+        "title": "Scrie-i lui Posty ce vrei să postezi",
+        "body": "Descrii în chat ce vrei (text, poză, video), pe limba ta."
+      },
+      "caption": {
+        "title": "AI-ul generează caption și hashtag-uri",
+        "body": "Posty analizează conținutul și scrie textul potrivit pentru fiecare platformă."
+      },
+      "timing": {
+        "title": "Alege momentul optim",
+        "body": "AI-ul recomandă cel mai bun interval de postare pe baza audienței."
+      },
+      "publish": {
+        "title": "Programează sau publică instant",
+        "body": "Pe toate platformele conectate, dintr-un singur click."
+      },
+      "analytics": {
+        "title": "Analize și rapoarte",
+        "body": "Vezi performanța postărilor direct din dashboard."
+      }
+    }
+  },
   "About": {
     "title": "Despre noi",
     "p1": "posty.now este un asistent AI pentru social media. Tu vorbești, el redactează, programează și publică — fără să sari între aplicații.",
