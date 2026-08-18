@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { BrandLogo } from "./brand-logo";
 import { btnGhost, btnOutline, btnSolid } from "./styles";
 
 export function MarketingHeader() {
@@ -38,13 +39,7 @@ export function MarketingHeader() {
         </div>
 
         <Link href="/" className="justify-self-center" onClick={() => setOpen(false)}>
-          <img
-            src="/logo.svg?v=2"
-            alt="posty.now"
-            className="h-12 w-auto"
-            width={80}
-            height={48}
-          />
+          <BrandLogo className="h-7 w-auto sm:h-8" width={156} height={32} />
         </Link>
 
         <div className="flex items-center justify-end gap-2 sm:gap-3">
