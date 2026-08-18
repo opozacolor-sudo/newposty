@@ -21,13 +21,13 @@ export default async function HomePage() {
         <div className="mt-5 flex flex-row items-center gap-2 sm:mt-8 sm:gap-3 lg:justify-start">
           <Link
             href="/login"
-            className={`${btnOutline} h-10 min-w-0 flex-1 px-3 py-2 text-xs sm:h-auto sm:flex-none sm:px-5 sm:py-3 sm:text-sm`}
+            className={`${btnOutline} h-10 min-w-0 flex-1 !px-3 !py-2 !text-xs sm:h-auto sm:flex-none sm:!px-5 sm:!py-3 sm:!text-sm`}
           >
             {nav("signIn")}
           </Link>
           <Link
             href="/signup"
-            className={`${btnSolid} h-10 min-w-0 flex-1 px-3 py-2 text-xs sm:h-auto sm:flex-none sm:px-5 sm:py-3 sm:text-sm`}
+            className={`${btnSolid} h-10 min-w-0 flex-1 !px-3 !py-2 !text-xs sm:h-auto sm:flex-none sm:!px-5 sm:!py-3 sm:!text-sm`}
           >
             {nav("signUp")}
           </Link>
