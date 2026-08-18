@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { HeroVisual } from "@/components/marketing/hero-visual";
 import { HomeViewportLock } from "@/components/marketing/home-viewport-lock";
-import { btnOutline, btnSolid } from "@/components/marketing/styles";
+import { btnSolid } from "@/components/marketing/styles";
 import { Link } from "@/i18n/navigation";
 
 export default async function HomePage() {
@@ -21,15 +21,9 @@ export default async function HomePage() {
         <div className="mt-4 flex w-full flex-row items-stretch gap-1.5 sm:mt-8 sm:gap-3 lg:w-auto lg:justify-start">
           <Link
             href="/login"
-            className={`${btnOutline} h-9 min-w-0 flex-1 basis-0 !px-2 !py-1.5 !text-[11px] sm:h-auto sm:flex-none sm:basis-auto sm:!px-5 sm:!py-3 sm:!text-sm`}
-          >
-            {nav("signIn")}
-          </Link>
-          <Link
-            href="/signup"
             className={`${btnSolid} h-9 min-w-0 flex-1 basis-0 !px-2 !py-1.5 !text-[11px] sm:h-auto sm:flex-none sm:basis-auto sm:!px-5 sm:!py-3 sm:!text-sm`}
           >
-            {nav("signUp")}
+            {nav("signIn")}
           </Link>
         </div>
       </div>

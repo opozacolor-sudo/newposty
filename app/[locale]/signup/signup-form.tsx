@@ -1,40 +1,48 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { Link, useRouter } from "@/i18n/navigation";
+import { getPublicSiteUrl } from "@/lib/env";
 import { SIGNUPS_OPEN } from "@/lib/flags";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+export default function SignupForm() {
   const t = useTranslations("Auth");
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/chat";
-  const confirmed = searchParams.get("confirmed") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    if (!SIGNUPS_OPEN) {
+      router.replace("/login");
+      return;
+    }
     setPending(true);
     setError(null);
+    setInfo(null);
     try {
       const supabase = createBrowserSupabase();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: { emailRedirectTo: `${getPublicSiteUrl()}/auth/callback` },
       });
-      if (signInError) {
-        setError(signInError.message);
+      if (signUpError) {
+        setError(signUpError.message);
         return;
       }
-      router.push(next.startsWith("/") ? next : "/chat");
-      router.refresh();
+      if (data.session) {
+        router.push("/chat");
+        router.refresh();
+        return;
+      }
+      setInfo(t("confirmEmail"));
     } catch (err) {
       setError(err instanceof Error ? err.message : t("unexpected"));
     } finally {
@@ -50,11 +58,8 @@ export default function LoginPage() {
         </Link>
         <LocaleSwitch />
       </div>
-      <h1 className="mt-8 font-serif text-4xl">{t("loginTitle")}</h1>
-      <p className="mt-2 text-sm text-muted">{t("loginSubtitle")}</p>
-      {confirmed ? (
-        <p className="mt-4 text-sm text-good">{t("emailConfirmed")}</p>
-      ) : null}
+      <h1 className="mt-8 font-serif text-4xl">{t("signupTitle")}</h1>
+      <p className="mt-2 text-sm text-muted">{t("signupSubtitle")}</p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <label className="block text-sm">
           {t("email")}
@@ -71,28 +76,28 @@ export default function LoginPage() {
           <input
             type="password"
             required
+            minLength={8}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="mt-1 w-full rounded-2xl border border-line bg-card px-4 py-3 outline-none focus:border-ink"
           />
         </label>
         {error ? <p className="text-sm text-accent">{error}</p> : null}
+        {info ? <p className="text-sm text-good">{info}</p> : null}
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-full bg-ink py-3 text-sm text-paper disabled:opacity-60"
+          className="w-full rounded-full bg-accent py-3 text-sm text-white disabled:opacity-60"
         >
-          {pending ? t("signingIn") : t("signIn")}
+          {pending ? t("creating") : t("create")}
         </button>
       </form>
-      {SIGNUPS_OPEN ? (
-        <p className="mt-6 text-sm text-muted">
-          {t("newHere")}{" "}
-          <Link href="/signup" className="text-ink underline">
-            {t("createAccount")}
-          </Link>
-        </p>
-      ) : null}
+      <p className="mt-6 text-sm text-muted">
+        {t("alreadyHave")}{" "}
+        <Link href="/login" className="text-ink underline">
+          {t("signIn")}
+        </Link>
+      </p>
     </main>
   );
 }
