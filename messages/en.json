@@ -111,7 +111,8 @@
     "create": "Create account",
     "creating": "Creating…",
     "alreadyHave": "Already have one?",
-    "confirmEmail": "Check your email to confirm the account, then sign in."
+    "confirmEmail": "Check your email to confirm the account, then sign in.",
+    "unexpected": "Something went wrong. Please try again."
   },
   "Nav": {
     "chat": "Chat",

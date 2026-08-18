@@ -7,10 +7,15 @@ function required(name: string) {
 }
 
 export function getSupabasePublicEnv() {
-  return {
-    url: required("NEXT_PUBLIC_SUPABASE_URL"),
-    anonKey: required("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
-  };
+  // NEXT_PUBLIC_* must be read with a static key so Next.js inlines them in the browser bundle.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  if (!url || !anonKey) {
+    throw new Error(
+      "Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    );
+  }
+  return { url, anonKey };
 }
 
 export function getAnthropicApiKey() {

@@ -20,24 +20,29 @@ export default function SignupPage() {
     setPending(true);
     setError(null);
     setInfo(null);
-    const supabase = createBrowserSupabase();
-    const origin = window.location.origin;
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: `${origin}/auth/callback` },
-    });
-    setPending(false);
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
+    try {
+      const supabase = createBrowserSupabase();
+      const origin = window.location.origin;
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${origin}/auth/callback` },
+      });
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+      if (data.session) {
+        router.push("/chat");
+        router.refresh();
+        return;
+      }
+      setInfo(t("confirmEmail"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("unexpected"));
+    } finally {
+      setPending(false);
     }
-    if (data.session) {
-      router.push("/chat");
-      router.refresh();
-      return;
-    }
-    setInfo(t("confirmEmail"));
   }
 
   return (

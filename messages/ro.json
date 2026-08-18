@@ -111,7 +111,8 @@
     "create": "Creează cont",
     "creating": "Se creează…",
     "alreadyHave": "Ai deja unul?",
-    "confirmEmail": "Verifică emailul ca să confirmi contul, apoi autentifică-te."
+    "confirmEmail": "Verifică emailul ca să confirmi contul, apoi autentifică-te.",
+    "unexpected": "Ceva nu a mers. Te rugăm să încerci din nou."
   },
   "Nav": {
     "chat": "Chat",

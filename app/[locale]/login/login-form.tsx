@@ -21,18 +21,23 @@ export default function LoginPage() {
     event.preventDefault();
     setPending(true);
     setError(null);
-    const supabase = createBrowserSupabase();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setPending(false);
-    if (signInError) {
-      setError(signInError.message);
-      return;
+    try {
+      const supabase = createBrowserSupabase();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+      router.push(next.startsWith("/") ? next : "/chat");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("unexpected"));
+    } finally {
+      setPending(false);
     }
-    router.push(next.startsWith("/") ? next : "/chat");
-    router.refresh();
   }
 
   return (
