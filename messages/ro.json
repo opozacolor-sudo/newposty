@@ -112,6 +112,7 @@
     "creating": "Se creează…",
     "alreadyHave": "Ai deja unul?",
     "confirmEmail": "Verifică emailul ca să confirmi contul, apoi autentifică-te.",
+    "emailConfirmed": "Email confirmat. Autentifică-te ca să continui.",
     "unexpected": "Ceva nu a mers. Te rugăm să încerci din nou."
   },
   "Nav": {

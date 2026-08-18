@@ -12,6 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/chat";
+  const confirmed = searchParams.get("confirmed") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +51,9 @@ export default function LoginPage() {
       </div>
       <h1 className="mt-8 font-serif text-4xl">{t("loginTitle")}</h1>
       <p className="mt-2 text-sm text-muted">{t("loginSubtitle")}</p>
+      {confirmed ? (
+        <p className="mt-4 text-sm text-good">{t("emailConfirmed")}</p>
+      ) : null}
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <label className="block text-sm">
           {t("email")}

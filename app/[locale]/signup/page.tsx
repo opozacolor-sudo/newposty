@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { FormEvent, useState } from "react";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { Link, useRouter } from "@/i18n/navigation";
+import { getPublicSiteUrl } from "@/lib/env";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
 export default function SignupPage() {
@@ -22,11 +23,10 @@ export default function SignupPage() {
     setInfo(null);
     try {
       const supabase = createBrowserSupabase();
-      const origin = window.location.origin;
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${origin}/auth/callback` },
+        options: { emailRedirectTo: `${getPublicSiteUrl()}/auth/callback` },
       });
       if (signUpError) {
         setError(signUpError.message);

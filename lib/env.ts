@@ -27,13 +27,26 @@ export function getZernioApiKey() {
 }
 
 export function getSiteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (explicit) return explicit.replace(/\/$/, "");
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ?? "";
+  const onVercel = Boolean(process.env.VERCEL);
+  if (explicit && !(onVercel && explicit.includes("localhost"))) {
+    return explicit;
+  }
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
   }
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  return "http://localhost:3000";
+  return explicit || "http://localhost:3000";
+}
+
+export function getPublicSiteUrl() {
+  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ?? "";
+  if (typeof window !== "undefined") {
+    const origin = window.location.origin;
+    if (!origin.includes("localhost")) return origin;
+  }
+  if (fromEnv && !fromEnv.includes("localhost")) return fromEnv;
+  return fromEnv || "https://newposty.vercel.app";
 }

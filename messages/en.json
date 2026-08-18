@@ -112,6 +112,7 @@
     "creating": "Creating…",
     "alreadyHave": "Already have one?",
     "confirmEmail": "Check your email to confirm the account, then sign in.",
+    "emailConfirmed": "Email confirmed. Sign in to continue.",
     "unexpected": "Something went wrong. Please try again."
   },
   "Nav": {
