@@ -78,7 +78,7 @@ export function StudioSidebar({ email }: { email: string }) {
                 <FileText size={16} />
                 {t("posts")}
               </Link>
-              <Link href="/dashboard/ads" className={itemClass(pathname === "/dashboard/ads")}>
+              <Link href="/dashboard/ads" className={itemClass(pathname.startsWith("/dashboard/ads"))}>
                 <Megaphone size={16} />
                 {t("ads")}
               </Link>

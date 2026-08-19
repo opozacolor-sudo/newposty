@@ -12,6 +12,10 @@ export type AnalyticsCard = {
   posts30d: number | null;
   engagement30d: number | null;
   followers: number | null;
+  campaigns30d?: number | null;
+  spend30d?: number | null;
+  impressions30d?: number | null;
+  currency?: string | null;
   limited: boolean;
 };
 
@@ -34,6 +38,29 @@ export type AnalyticsComment = {
   message: string;
   postPreview: string;
   createdAt: string | null;
+};
+
+export type AdsTopCampaign = {
+  id: string;
+  name: string;
+  status: string | null;
+  spend: number;
+  impressions: number;
+  clicks: number;
+};
+
+export type AdsAccountAnalytics = {
+  empty: boolean;
+  currency: string;
+  kpis: {
+    spend: AnalyticsKpi;
+    impressions: AnalyticsKpi;
+    clicks: AnalyticsKpi;
+    ctr: AnalyticsKpi;
+    conversions: AnalyticsKpi;
+  };
+  chart: Array<{ date: string; value: number }>;
+  topCampaigns: AdsTopCampaign[];
 };
 
 export type AccountAnalytics = {

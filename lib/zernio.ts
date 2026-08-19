@@ -368,3 +368,38 @@ export async function getInboxPostComments(postId: string, accountId: string, li
     withQuery(`/inbox/comments/${encodeURIComponent(postId)}`, { accountId, limit }),
   );
 }
+
+export type ZernioAdMetrics = {
+  spend?: number;
+  impressions?: number;
+  reach?: number;
+  clicks?: number;
+  ctr?: number;
+  cpc?: number;
+  cpm?: number;
+  conversions?: number;
+  roas?: number;
+};
+
+export async function listAdCampaigns(query: {
+  accountId?: string;
+  platform?: string;
+  fromDate?: string;
+  toDate?: string;
+  limit?: number;
+}) {
+  return zernioFetch<unknown>(withQuery("/ads/campaigns", query));
+}
+
+export async function getCampaignAnalytics(
+  campaignId: string,
+  query: {
+    platform?: string;
+    fromDate?: string;
+    toDate?: string;
+  },
+) {
+  return zernioFetch<unknown>(
+    withQuery(`/ads/campaigns/${encodeURIComponent(campaignId)}/analytics`, query),
+  );
+}
