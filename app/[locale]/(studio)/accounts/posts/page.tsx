@@ -27,7 +27,6 @@ export default async function AccountsPostsPage({
   return (
     <main className="h-full overflow-y-auto px-6 py-8">
       <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-      <p className="mt-2 max-w-xl text-sm text-muted">{t("intro")}</p>
 
       {params.connected ? (
         <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-good">
