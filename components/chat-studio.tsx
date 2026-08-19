@@ -168,7 +168,6 @@ export default function ChatStudio() {
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col bg-white lg:h-full">
       <header className="border-b border-[#E5E5E5] px-6 py-4">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <p className="text-sm text-[#6B7280]">{t("subtitle")}</p>
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
