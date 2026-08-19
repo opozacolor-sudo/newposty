@@ -1,37 +1,20 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { PlatformStatsCards } from "@/components/studio/platform-stats-cards";
 import { requireUser } from "@/lib/data";
 import { isPlatformId } from "@/lib/platforms";
 
-function formatWhen(value: string | null, locale: string) {
-  if (!value) return "—";
-  return new Date(value).toLocaleString(locale);
-}
-
 export default async function DashboardPostsPage() {
   const t = await getTranslations("Dashboard");
-  const locale = await getLocale();
   const { supabase, user } = await requireUser();
 
-  const [{ data: accounts }, { data: posts }] = await Promise.all([
-    supabase
-      .from("social_accounts")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("is_active", true),
-    supabase
-      .from("posts")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(20),
-  ]);
+  const { data: accounts } = await supabase
+    .from("social_accounts")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("is_active", true);
 
   const postingAccounts = (accounts ?? []).filter((account) =>
     isPlatformId(String(account.platform)),
-  );
-  const upcoming = (posts ?? []).filter(
-    (post) => post.status === "scheduled" && post.scheduled_for,
   );
 
   return (
@@ -47,40 +30,6 @@ export default async function DashboardPostsPage() {
             display_name: account.display_name,
           }))}
         />
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-lg font-semibold tracking-tight">{t("upcoming")}</h2>
-        <ul className="mt-4 space-y-3">
-          {upcoming.length === 0 ? (
-            <li className="rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
-              {t("nothingScheduled")}
-            </li>
-          ) : (
-            upcoming.map((post) => (
-              <li key={post.id} className="rounded-2xl border border-line bg-card p-4">
-                <p className="text-sm">{post.content}</p>
-                <p className="mt-2 text-xs text-muted">
-                  {formatWhen(post.scheduled_for as string | null, locale)} · {post.status}
-                </p>
-              </li>
-            ))
-          )}
-        </ul>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-lg font-semibold tracking-tight">{t("recent")}</h2>
-        <ul className="mt-4 space-y-3">
-          {(posts ?? []).slice(0, 8).map((post) => (
-            <li key={post.id} className="rounded-2xl border border-line bg-card p-4">
-              <p className="text-sm">{post.content || t("mediaOnly")}</p>
-              <p className="mt-2 text-xs uppercase tracking-widest text-muted">
-                {post.status}
-              </p>
-            </li>
-          ))}
-        </ul>
       </section>
     </main>
   );
