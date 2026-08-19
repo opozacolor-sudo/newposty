@@ -198,7 +198,62 @@
       "twitter": "Text and media posts",
       "bluesky": "Text and media posts",
       "reddit": "Posts in subreddits"
-    }
+    },
+    "adsTitle": "Ads accounts",
+    "adsConnectedNamed": "{platform} connected.",
+    "adsConnectedGeneric": "Ads account connected.",
+    "canCreate": "Can create:",
+    "boost": "Boost:",
+    "audiences": "Audiences:",
+    "newBadge": "New",
+    "audiencesReadonly": "Read-only",
+    "audiencesReadonlyTooltip": "You can read contact/company lists and engagement/website retargeting. New audiences cannot be created from Posty.",
+    "audiencesUnavailable": "Not available",
+    "audiencesUnavailableTooltipGoogle": "Search and Display only, without audience targeting.",
+    "audiencesUnavailableTooltipX": "Location and language targeting only. Custom email lists are an advanced option and need at least 100 recently active users.",
+    "adsNeedXFirst": "Connect X on Posting accounts first, then connect X Ads.",
+    "adsCanCreate": {
+      "metaads": "Full campaigns (Campaign → Ad Set → Ad)",
+      "googleads": "Search (Responsive Search Ads), Display (Responsive Display Ads)",
+      "linkedinads": "Image, video, carousel, document, event, text ad, conversation ads, and more",
+      "tiktokads": "Standalone video campaigns",
+      "pinterestads": "New Promoted Pins",
+      "xads": "Boost existing tweets or standalone campaigns (text up to 280 chars + link card)",
+      "openaiads": "Chat card ads (title, text, image, destination URL) in ChatGPT Free/Go — US, Canada, Australia, New Zealand"
+    },
+    "adsBoost": {
+      "metaads": "Yes (boost existing organic posts)",
+      "googleads": "Not available",
+      "linkedinads": "Yes",
+      "tiktokads": "Spark Ads",
+      "pinterestads": "Yes (promote existing organic Pins)",
+      "xads": "Yes",
+      "openaiads": "Not applicable"
+    },
+    "adsAudiences": {
+      "metaads": "Custom + Lookalike",
+      "tiktokads": "Custom + Lookalike",
+      "pinterestads": "Basic (demographics + country)",
+      "openaiads": "Location only (country/region)"
+    },
+    "adsStats": {
+      "metaads": "Complete (spend, impressions, reach, CTR, CPC, CPM, ROAS, conversions)",
+      "googleads": "Complete (aggregated reports + custom GAQL queries)",
+      "linkedinads": "Complete (spend, CPC, CPM + job title, seniority, industry, company size)",
+      "tiktokads": "Complete (spend, views, CTR, CPM in real time)",
+      "pinterestads": "Complete (spend, saves, closeups, clicks)",
+      "xads": "Complete (spend, CPE, CPM, link clicks)",
+      "openaiads": "Complete (impressions, clicks, spend, daily)"
+    },
+    "adsNote": {
+      "openaiads": "Static images only (no video), lifetime budget (min $1), US business eligibility required."
+    },
+    "openaiTitle": "Connect OpenAI Ads",
+    "openaiIntro": "OpenAI Ads uses an API key from ChatGPT Ads Manager instead of a login popup.",
+    "openaiApiKey": "API key",
+    "openaiHelp": "Open ChatGPT Ads Manager",
+    "openaiFailed": "Could not connect OpenAI Ads.",
+    "openaiConnecting": "Connecting…"
   },
   "Chat": {
     "title": "Posty Assistant",

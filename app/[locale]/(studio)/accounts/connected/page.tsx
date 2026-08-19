@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { ensureZernioProfile, requireUser, syncSocialAccounts } from "@/lib/data";
+import { isAdsPlatformId } from "@/lib/platforms";
 
 export default async function ConnectedPage({
   searchParams,
@@ -16,5 +17,8 @@ export default async function ConnectedPage({
   const target = new URLSearchParams({ connected: "1" });
   if (params.platform) target.set("platform", params.platform);
   const locale = await getLocale();
-  redirect({ href: `/accounts/posts?${target.toString()}`, locale });
+  const href = isAdsPlatformId(params.platform ?? "")
+    ? `/accounts/ads?${target.toString()}`
+    : `/accounts/posts?${target.toString()}`;
+  redirect({ href, locale });
 }

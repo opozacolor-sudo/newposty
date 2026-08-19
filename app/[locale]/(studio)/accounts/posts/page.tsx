@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { PlatformCard } from "@/components/studio/platform-card";
+import { AccountCard } from "@/components/studio/account-card";
 import { requireUser } from "@/lib/data";
 import { PLATFORMS, platformLabel } from "@/lib/platforms";
 
@@ -45,27 +45,31 @@ export default async function AccountsPostsPage({
         {PLATFORMS.map((platform) => {
           const connected = byPlatform.get(platform.id) ?? [];
           return (
-            <PlatformCard
+            <AccountCard
               key={platform.id}
               platform={platform}
-              canPost={t(`canPostValues.${platform.id}`)}
               accounts={(connected ?? []).map((account) => ({
                 id: account.id,
                 username: account.username,
                 display_name: account.display_name,
               }))}
+              rows={[
+                { label: t("canPost"), value: t(`canPostValues.${platform.id}`) },
+                platform.stats === "limited"
+                  ? {
+                      label: t("stats"),
+                      value: t("statsLimited"),
+                      badge: t("statsLimited"),
+                      tooltip: t("statsLimitedTooltip"),
+                      note:
+                        platform.id === "bluesky" ? t("statsLimitedNoteBluesky") : undefined,
+                    }
+                  : { label: t("stats"), value: t("statsComplete") },
+              ]}
               connectLabel={t("connect")}
               anotherLabel={t("connectAnother")}
               notConnectedLabel={t("notConnected")}
               connectedLabel={t("statusConnected")}
-              canPostLabel={t("canPost")}
-              statsLabel={t("stats")}
-              statsCompleteLabel={t("statsComplete")}
-              statsLimitedLabel={t("statsLimited")}
-              statsLimitedNote={
-                platform.id === "bluesky" ? t("statsLimitedNoteBluesky") : undefined
-              }
-              statsLimitedTooltip={t("statsLimitedTooltip")}
             />
           );
         })}

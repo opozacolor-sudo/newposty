@@ -89,6 +89,71 @@ export async function getConnectUrl(input: {
   return data.authUrl;
 }
 
+export type AdsConnectResult =
+  | { alreadyConnected: true; accountId?: string; platform?: string }
+  | { authUrl: string };
+
+function readConnectAuthUrl(body: unknown): string | null {
+  if (!body || typeof body !== "object") return null;
+  const record = body as Record<string, unknown>;
+  if (typeof record.authUrl === "string") return record.authUrl;
+  if (typeof record.url === "string") return record.url;
+  const nested = record.data;
+  if (nested && typeof nested === "object" && "authUrl" in nested) {
+    const authUrl = (nested as { authUrl?: unknown }).authUrl;
+    if (typeof authUrl === "string") return authUrl;
+  }
+  return null;
+}
+
+export async function connectAdsAccount(input: {
+  connectPath: string;
+  profileId: string;
+  redirectUrl: string;
+  accountId?: string;
+  force?: boolean;
+}): Promise<AdsConnectResult> {
+  const params = new URLSearchParams({
+    profileId: input.profileId,
+    redirect_url: input.redirectUrl,
+  });
+  if (input.accountId) params.set("accountId", input.accountId);
+  if (input.force) params.set("force", "true");
+
+  const data = await zernioFetch<Record<string, unknown>>(
+    `/connect/${input.connectPath}?${params.toString()}`,
+  );
+
+  if (data.alreadyConnected === true) {
+    return {
+      alreadyConnected: true,
+      accountId: typeof data.accountId === "string" ? data.accountId : undefined,
+      platform: typeof data.platform === "string" ? data.platform : undefined,
+    };
+  }
+
+  const authUrl = readConnectAuthUrl(data);
+  if (authUrl) return { authUrl };
+
+  throw new Error("Connect did not return an authorization URL.");
+}
+
+export async function connectOpenAIAdsCredentials(input: {
+  apiKey: string;
+  profileId: string;
+}) {
+  return zernioFetch<{ accountId?: string; adAccountName?: string }>(
+    "/connect/openai-ads/credentials",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        apiKey: input.apiKey,
+        profileId: input.profileId,
+      }),
+    },
+  );
+}
+
 export async function getZernioCurrentUserId() {
   const data = await zernioFetch<unknown>("/users");
   if (!data || typeof data !== "object") return null;

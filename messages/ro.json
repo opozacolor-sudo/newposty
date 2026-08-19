@@ -198,7 +198,62 @@
       "twitter": "Postări text și media",
       "bluesky": "Postări text și media",
       "reddit": "Postări în subreddit-uri"
-    }
+    },
+    "adsTitle": "Conturi promovări",
+    "adsConnectedNamed": "{platform} conectat.",
+    "adsConnectedGeneric": "Cont de promovare conectat.",
+    "canCreate": "Poate crea:",
+    "boost": "Boost:",
+    "audiences": "Audiențe:",
+    "newBadge": "Nou",
+    "audiencesReadonly": "Read-only",
+    "audiencesReadonlyTooltip": "Poți citi liste de contacte/companii și retargeting pe engagement/website. Nu poți crea audiențe noi din Posty.",
+    "audiencesUnavailable": "Nu disponibil",
+    "audiencesUnavailableTooltipGoogle": "Doar Search/Display, fără targetare pe audiențe.",
+    "audiencesUnavailableTooltipX": "Doar targetare locație/limbă. Listele de email custom sunt o funcție avansată (minim 100 utilizatori activi recent).",
+    "adsNeedXFirst": "Conectează mai întâi X la Conturi postări, apoi conectează X Ads.",
+    "adsCanCreate": {
+      "metaads": "Campanii complete (Campanie → Ad Set → Reclamă)",
+      "googleads": "Search (Responsive Search Ads), Display (Responsive Display Ads)",
+      "linkedinads": "Imagine, video, carusel, document, eveniment, text ad, conversation ads și altele",
+      "tiktokads": "Campanii standalone video",
+      "pinterestads": "Promoted Pins noi",
+      "xads": "Promovare tweet-uri existente sau campanii standalone (text max 280 car. + card cu link)",
+      "openaiads": "Chat card ads (titlu, text, imagine, URL destinație) în ChatGPT Free/Go — doar SUA, Canada, Australia, Noua Zeelandă"
+    },
+    "adsBoost": {
+      "metaads": "Da (poți promova postări organice existente)",
+      "googleads": "Nu disponibil",
+      "linkedinads": "Da",
+      "tiktokads": "Spark Ads",
+      "pinterestads": "Da (poți promova Pinuri organice existente)",
+      "xads": "Da",
+      "openaiads": "Nu se aplică"
+    },
+    "adsAudiences": {
+      "metaads": "Custom + Lookalike",
+      "tiktokads": "Custom + Lookalike",
+      "pinterestads": "Basic (demografic + țară)",
+      "openaiads": "Doar locație (țară/regiune)"
+    },
+    "adsStats": {
+      "metaads": "Complete (spend, impresii, reach, CTR, CPC, CPM, ROAS, conversii)",
+      "googleads": "Complete (rapoarte agregate + query GAQL custom)",
+      "linkedinads": "Complete (spend, CPC, CPM + job title, seniority, industrie, mărime companie)",
+      "tiktokads": "Complete (spend, views, CTR, CPM în timp real)",
+      "pinterestads": "Complete (spend, saves, closeups, clicks)",
+      "xads": "Complete (spend, CPE, CPM, link clicks)",
+      "openaiads": "Complete (impresii, clicks, spend, zilnic)"
+    },
+    "adsNote": {
+      "openaiads": "Doar imagini statice (fără video), buget doar lifetime (minim $1), necesită eligibilitate business SUA."
+    },
+    "openaiTitle": "Conectează OpenAI Ads",
+    "openaiIntro": "OpenAI Ads folosește o cheie API din ChatGPT Ads Manager, nu un login popup.",
+    "openaiApiKey": "Cheie API",
+    "openaiHelp": "Deschide ChatGPT Ads Manager",
+    "openaiFailed": "Nu s-a putut conecta OpenAI Ads.",
+    "openaiConnecting": "Se conectează…"
   },
   "Chat": {
     "title": "Posty Asistent",

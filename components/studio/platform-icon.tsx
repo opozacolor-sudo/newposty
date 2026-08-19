@@ -1,10 +1,8 @@
-import type { Platform } from "@/lib/platforms";
-
 export function PlatformIcon({
   platform,
   connected,
 }: {
-  platform: Platform;
+  platform: { label: string; iconBg: string; icon: { path: string } };
   connected: boolean;
 }) {
   return (
