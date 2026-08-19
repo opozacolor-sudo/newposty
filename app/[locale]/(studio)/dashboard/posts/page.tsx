@@ -62,7 +62,10 @@ export default async function DashboardPostsPage() {
 
       <section className="mt-10">
         <div className="flex items-end justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">{t("connected")}</h2>
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">{t("byPlatform")}</h2>
+            <p className="mt-1 text-sm text-muted">{t("byPlatformHint")}</p>
+          </div>
           <Link href="/accounts/posts" className="text-sm text-[#FF4713] underline">
             {t("manage")}
           </Link>

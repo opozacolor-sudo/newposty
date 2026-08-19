@@ -142,6 +142,8 @@
     "scheduled": "Scheduled",
     "publishedSending": "Published / sending",
     "connected": "Connected",
+    "byPlatform": "By platform",
+    "byPlatformHint": "Open a connected account for views, engagement, and top posts.",
     "manage": "Manage",
     "noAccounts": "No accounts yet. Connect Instagram, TikTok, and the rest from Accounts.",
     "upcoming": "Upcoming",
