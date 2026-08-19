@@ -70,22 +70,16 @@ export default async function DashboardPostsPage() {
             {t("manage")}
           </Link>
         </div>
-        {(postingAccounts ?? []).length === 0 ? (
-          <p className="mt-4 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
-            {t("noAccounts")}
-          </p>
-        ) : (
-          <div className="mt-4">
-            <PlatformStatsCards
-              accounts={postingAccounts.map((account) => ({
-                id: account.id,
-                platform: String(account.platform),
-                username: account.username,
-                display_name: account.display_name,
-              }))}
-            />
-          </div>
-        )}
+        <div className="mt-4">
+          <PlatformStatsCards
+            accounts={postingAccounts.map((account) => ({
+              id: account.id,
+              platform: String(account.platform),
+              username: account.username,
+              display_name: account.display_name,
+            }))}
+          />
+        </div>
       </section>
 
       <section className="mt-10">

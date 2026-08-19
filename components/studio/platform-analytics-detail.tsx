@@ -87,7 +87,7 @@ export function PlatformAnalyticsDetail({
   accountLabel,
 }: {
   platform: Platform;
-  accountId: string;
+  accountId: string | null;
   accountLabel: string;
 }) {
   const t = useTranslations("Dashboard");
@@ -100,9 +100,13 @@ export function PlatformAnalyticsDetail({
   const [customTo, setCustomTo] = useState(initial.to);
   const [data, setData] = useState<AccountAnalytics | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(accountId));
 
   const load = useCallback(async () => {
+    if (!accountId) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -149,6 +153,38 @@ export function PlatformAnalyticsDetail({
 
   const chartLabel =
     data?.chartMetric === "engagement" ? t("kpiEngagement") : t("kpiVisibility");
+
+  if (!accountId) {
+    return (
+      <main className="h-full overflow-y-auto px-6 py-8">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/posts"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#E5E5E5] text-[#1A1A1A] hover:bg-[#FAFAFA]"
+            aria-label={t("back")}
+          >
+            <ArrowLeft size={16} />
+          </Link>
+          <PlatformIcon platform={platform} connected={false} size="sm" />
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight text-[#1A1A1A]">
+              {platform.label}
+            </h1>
+            <p className="text-sm text-[#6B7280]">{t("notConnected")}</p>
+          </div>
+        </div>
+        <div className="mt-10 rounded-2xl border border-dashed border-[#E5E5E5] px-6 py-12 text-center">
+          <p className="text-sm text-[#6B7280]">{t("connectToSeeStats")}</p>
+          <Link
+            href="/accounts/posts"
+            className="mt-4 inline-flex rounded-full bg-[#FF4713] px-4 py-2 text-xs text-white"
+          >
+            {t("connectAccount")}
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="h-full overflow-y-auto px-6 py-8">

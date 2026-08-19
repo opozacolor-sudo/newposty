@@ -28,16 +28,16 @@ export default async function DashboardPlatformPage({
 
   const { data: accounts } = await query;
   const selected = accounts?.[0];
-  if (!selected) notFound();
-
-  const accountLabel = selected.username
-    ? `@${String(selected.username).replace(/^@/, "")}`
-    : (selected.display_name ?? visual.label);
+  const accountLabel = selected
+    ? selected.username
+      ? `@${String(selected.username).replace(/^@/, "")}`
+      : (selected.display_name ?? visual.label)
+    : visual.label;
 
   return (
     <PlatformAnalyticsDetail
       platform={visual}
-      accountId={selected.id}
+      accountId={selected?.id ?? null}
       accountLabel={accountLabel}
     />
   );
