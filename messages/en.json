@@ -12,6 +12,10 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
   },
+  "Locale": {
+    "en": "English",
+    "ro": "Romanian"
+  },
   "Landing": {
     "title": "Post smarter. From the first second.",
     "subtitle": "Posts, promotions, analytics and scheduling — all in a minute, with the posty.now AI assistant.",
@@ -166,7 +170,7 @@
     }
   },
   "Chat": {
-    "title": "Studio chat",
+    "title": "Posty Assistant",
     "subtitle": "Draft captions, ask for ideas, or tell me to publish.",
     "empty": "Try “Give me three Instagram captions for a rainy Monday coffee shop” or connect an account and say “publish this to Instagram now”.",
     "thinking": "Thinking…",

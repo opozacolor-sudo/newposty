@@ -119,7 +119,7 @@ export function StudioSidebar({ email }: { email: string }) {
       </nav>
 
       <div className="mt-4 shrink-0 space-y-3 border-t border-[#E5E5E5] pt-4">
-        <LocaleSwitch />
+        <LocaleSwitch variant="names" />
         <AccountMenu email={email} />
       </div>
     </>

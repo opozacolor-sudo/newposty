@@ -12,6 +12,10 @@
     "openMenu": "Deschide meniul",
     "closeMenu": "Închide meniul"
   },
+  "Locale": {
+    "en": "Engleză",
+    "ro": "Română"
+  },
   "Landing": {
     "title": "Postează inteligent. Din prima secundă.",
     "subtitle": "Postări, promovări, analize și programări — totul într-un minut, cu asistentul AI posty.now.",
@@ -166,7 +170,7 @@
     }
   },
   "Chat": {
-    "title": "Chat studio",
+    "title": "Posty Asistent",
     "subtitle": "Redactează texte, cere idei sau spune-mi să public.",
     "empty": "Încearcă „Dă-mi trei texte de Instagram pentru o cafenea într-o luni ploioasă” sau conectează un cont și spune „publică asta pe Instagram acum”.",
     "thinking": "Gândesc…",

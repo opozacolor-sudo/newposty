@@ -172,11 +172,6 @@ export default function ChatStudio() {
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
-        {messages.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[#E5E5E5] bg-[#FAFAFA] p-6 text-sm text-[#6B7280]">
-            {t("empty")}
-          </div>
-        ) : null}
         {messages.map((message, index) => (
           <article
             key={`${message.role}-${index}`}
