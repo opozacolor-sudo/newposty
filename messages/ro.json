@@ -157,6 +157,7 @@
     "connect": "Conectează",
     "connectAnother": "Conectează altul",
     "notConnected": "Neconectat",
+    "statusConnected": "Conectat",
     "connectedFallback": "Conectat",
     "hints": {
       "instagram": "Feed, Reels, carusele",
@@ -166,7 +167,10 @@
       "youtube": "Upload-uri și Shorts",
       "linkedin": "Personal sau companie",
       "pinterest": "Pin-uri pe un board",
-      "googlebusiness": "Actualizări locale"
+      "googlebusiness": "Actualizări locale",
+      "twitter": "Postări text și media",
+      "bluesky": "Postări text și media",
+      "reddit": "Postări în subreddit-uri"
     }
   },
   "Chat": {

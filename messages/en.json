@@ -157,6 +157,7 @@
     "connect": "Connect",
     "connectAnother": "Connect another",
     "notConnected": "Not connected",
+    "statusConnected": "Connected",
     "connectedFallback": "Connected",
     "hints": {
       "instagram": "Feed, Reels, carousels",
@@ -166,7 +167,10 @@
       "youtube": "Uploads and Shorts",
       "linkedin": "Personal or company",
       "pinterest": "Pins to a board",
-      "googlebusiness": "Local updates"
+      "googlebusiness": "Local updates",
+      "twitter": "Text and media posts",
+      "bluesky": "Text and media posts",
+      "reddit": "Posts in subreddits"
     }
   },
   "Chat": {
