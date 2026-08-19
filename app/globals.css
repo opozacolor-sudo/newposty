@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f3eee4;
-  --ink: #1c1916;
-  --muted: #6f675e;
-  --line: #ddd4c6;
-  --card: #fffdf8;
-  --accent: #c2410c;
-  --accent-dark: #9a3412;
+  --paper: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #6b7280;
+  --line: #e5e5e5;
+  --card: #fafafa;
+  --accent: #ff4713;
+  --accent-dark: #e03d0f;
   --good: #3f6b4a;
 }
 
@@ -36,7 +36,17 @@ body {
 }
 
 ::selection {
-  background: #f3d5c4;
+  background: #ffd8cc;
+}
+
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 71, 19, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 71, 19, 0);
+  }
 }
 
 .font-serif {

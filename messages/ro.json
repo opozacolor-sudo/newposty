@@ -116,13 +116,23 @@
     "unexpected": "Ceva nu a mers. Te rugăm să încerci din nou."
   },
   "Nav": {
-    "chat": "Chat",
-    "dashboard": "Panou",
+    "assistant": "Asistent",
+    "stats": "Statistică",
     "accounts": "Conturi",
-    "signOut": "Ieșire"
+    "posts": "Postări",
+    "ads": "Promovări",
+    "signOut": "Deconectare",
+    "deleteAccount": "Ștergere cont",
+    "comingSoon": "În curând",
+    "openMenu": "Deschide meniul",
+    "closeMenu": "Închide meniul"
+  },
+  "ComingSoon": {
+    "badge": "În curând",
+    "body": "Secțiunea e goală deocamdată. Conținutul îl definim imediat după."
   },
   "Dashboard": {
-    "title": "Panou",
+    "title": "Postări",
     "snapshot": "O privire peste conexiuni și programări.",
     "connectedAccounts": "Conturi conectate",
     "scheduled": "Programate",
@@ -131,12 +141,12 @@
     "manage": "Gestionează",
     "noAccounts": "Niciun cont încă. Conectează Instagram, TikTok și restul din Conturi.",
     "upcoming": "Urmează",
-    "nothingScheduled": "Nimic programat. Scrie în chat și apasă Programează.",
+    "nothingScheduled": "Nimic programat. Cere-i asistentului să programeze o postare.",
     "recent": "Recente",
     "mediaOnly": "(doar media)"
   },
   "Accounts": {
-    "title": "Conturi",
+    "title": "Conturi postări",
     "intro": "Conectează-te prin OAuth-ul găzduit de Zernio. Paginile Facebook, organizațiile LinkedIn, board-urile Pinterest și locațiile Google folosesc selectorul Zernio după login.",
     "connectedNamed": "{platform} conectat. Poți publica din chat.",
     "connectedGeneric": "Cont conectat. Poți publica din chat.",
@@ -161,10 +171,12 @@
     "empty": "Încearcă „Dă-mi trei texte de Instagram pentru o cafenea într-o luni ploioasă” sau conectează un cont și spune „publică asta pe Instagram acum”.",
     "thinking": "Gândesc…",
     "connectToPublish": "Conectează conturi ca să publici din chat.",
-    "placeholder": "Cere un text sau scrie unul și publică-l.",
+    "placeholder": "Cere un text sau scrie „publică asta acum pe Instagram”.",
     "attach": "Atașează",
-    "publishNow": "Publică acum",
-    "schedule": "Programează",
+    "dictate": "Dictează",
+    "stopDictation": "Oprește dictarea",
+    "speechUnavailable": "Dictarea vocală nu e disponibilă în acest browser.",
+    "removeAttachment": "Elimină atașamentul",
     "send": "Trimite",
     "replyFailed": "Asistentul nu a putut răspunde.",
     "uploadFailed": "Încărcarea a eșuat",

@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(authUrl);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Connect failed";
-    const target = new URL("/accounts", getSiteUrl());
+    const target = new URL("/accounts/posts", getSiteUrl());
     target.searchParams.set("error", message);
     return NextResponse.redirect(target);
   }

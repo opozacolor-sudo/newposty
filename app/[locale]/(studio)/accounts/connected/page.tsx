@@ -16,5 +16,5 @@ export default async function ConnectedPage({
   const target = new URLSearchParams({ connected: "1" });
   if (params.platform) target.set("platform", params.platform);
   const locale = await getLocale();
-  redirect({ href: `/accounts?${target.toString()}`, locale });
+  redirect({ href: `/accounts/posts?${target.toString()}`, locale });
 }

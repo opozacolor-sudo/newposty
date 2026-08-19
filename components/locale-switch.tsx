@@ -19,7 +19,7 @@ export function LocaleSwitch({ className = "" }: { className?: string }) {
           type="button"
           onClick={() => router.replace(pathname, { locale: item })}
           className={`rounded-full px-1 py-px sm:px-2.5 sm:py-1 ${
-            locale === item ? "bg-ink text-paper" : "text-muted hover:text-ink"
+            locale === item ? "bg-[#FF4713] text-white" : "text-muted hover:text-ink"
           }`}
         >
           {item.toUpperCase()}
