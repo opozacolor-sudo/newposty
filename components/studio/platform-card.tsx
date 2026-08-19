@@ -1,3 +1,4 @@
+import { BlueskyConnectButton } from "@/components/studio/bluesky-connect-button";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 import type { Platform } from "@/lib/platforms";
 
@@ -10,21 +11,37 @@ type ConnectedAccount = {
 export function PlatformCard({
   platform,
   hint,
+  canPost,
   accounts,
   connectLabel,
   anotherLabel,
   notConnectedLabel,
   connectedLabel,
+  canPostLabel,
+  statsLabel,
+  statsCompleteLabel,
+  statsLimitedLabel,
+  statsLimitedNote,
+  statsLimitedTooltip,
 }: {
   platform: Platform;
   hint: string;
+  canPost: string;
   accounts: ConnectedAccount[];
   connectLabel: string;
   anotherLabel: string;
   notConnectedLabel: string;
   connectedLabel: string;
+  canPostLabel: string;
+  statsLabel: string;
+  statsCompleteLabel: string;
+  statsLimitedLabel: string;
+  statsLimitedNote?: string;
+  statsLimitedTooltip: string;
 }) {
   const connected = accounts.length > 0;
+  const limited = platform.stats === "limited";
+  const actionLabel = connected ? anotherLabel : connectLabel;
 
   return (
     <li
@@ -45,12 +62,42 @@ export function PlatformCard({
             <p className="mt-0.5 text-sm text-[#6B7280]">{hint}</p>
           </div>
         </div>
-        <a
-          href={`/api/connect?platform=${platform.id}`}
-          className="shrink-0 rounded-full bg-[#FF4713] px-3 py-2 text-xs text-white shadow-sm transition duration-150 hover:scale-105 hover:bg-[#e03d0f] hover:shadow-md"
-        >
-          {connected ? anotherLabel : connectLabel}
-        </a>
+        {platform.id === "bluesky" ? (
+          <BlueskyConnectButton label={actionLabel} />
+        ) : (
+          <a
+            href={`/api/connect?platform=${platform.id}`}
+            className="shrink-0 rounded-full bg-[#FF4713] px-3 py-2 text-xs text-white shadow-sm transition duration-150 hover:scale-105 hover:bg-[#e03d0f] hover:shadow-md"
+          >
+            {actionLabel}
+          </a>
+        )}
+      </div>
+
+      <div className="mt-3 space-y-1 text-[11px] leading-4 text-[#6B7280]">
+        <p>
+          <span className="font-medium text-[#4B5563]">{canPostLabel}</span> {canPost}
+        </p>
+        <p className="flex flex-wrap items-center gap-1.5">
+          <span className="font-medium text-[#4B5563]">{statsLabel}</span>
+          {limited ? (
+            <>
+              <span className="group relative inline-flex">
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
+                  {statsLimitedLabel}
+                </span>
+                <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden w-56 -translate-x-1/2 rounded-lg bg-[#1A1A1A] px-2 py-1.5 text-[10px] leading-4 text-white shadow-md group-hover:block">
+                  {statsLimitedTooltip}
+                </span>
+              </span>
+              {statsLimitedNote ? (
+                <span className="text-[#6B7280]">({statsLimitedNote})</span>
+              ) : null}
+            </>
+          ) : (
+            <span>{statsCompleteLabel}</span>
+          )}
+        </p>
       </div>
 
       {connected ? (

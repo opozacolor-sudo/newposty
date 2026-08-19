@@ -11,6 +11,11 @@ export async function GET(request: Request) {
   if (!isPlatformId(platform)) {
     return NextResponse.json({ error: "Unknown platform" }, { status: 400 });
   }
+  if (platform === "bluesky") {
+    const target = new URL("/accounts/posts", getSiteUrl());
+    target.searchParams.set("error", "Bluesky uses an app password, not OAuth.");
+    return NextResponse.redirect(target);
+  }
 
   const supabase = await createServerSupabase();
   const {

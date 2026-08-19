@@ -89,6 +89,43 @@ export async function getConnectUrl(input: {
   return data.authUrl;
 }
 
+export async function getZernioCurrentUserId() {
+  const data = await zernioFetch<unknown>("/users");
+  if (!data || typeof data !== "object") return null;
+  const record = data as Record<string, unknown>;
+  if (typeof record.currentUserId === "string") return record.currentUserId;
+  const user = record.user;
+  if (user && typeof user === "object" && "_id" in user && typeof user._id === "string") {
+    return user._id;
+  }
+  const users = record.users;
+  if (Array.isArray(users) && users[0] && typeof users[0] === "object" && "_id" in users[0]) {
+    const first = users[0] as { _id?: string };
+    if (typeof first._id === "string") return first._id;
+  }
+  return null;
+}
+
+export async function connectBlueskyCredentials(input: {
+  identifier: string;
+  appPassword: string;
+  profileId: string;
+}) {
+  const userId = await getZernioCurrentUserId();
+  const state = userId ? `${userId}-${input.profileId}` : `profile_id=${input.profileId}`;
+  return zernioFetch<{
+    message?: string;
+    account?: ZernioAccount;
+  }>("/connect/bluesky/credentials", {
+    method: "POST",
+    body: JSON.stringify({
+      identifier: input.identifier,
+      appPassword: input.appPassword,
+      state,
+    }),
+  });
+}
+
 export async function listAccounts(profileId: string) {
   const params = new URLSearchParams({ profileId });
   const data = await zernioFetch<{ accounts: ZernioAccount[] }>(

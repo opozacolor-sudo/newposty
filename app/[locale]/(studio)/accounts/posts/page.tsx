@@ -50,6 +50,7 @@ export default async function AccountsPostsPage({
               key={platform.id}
               platform={platform}
               hint={t(`hints.${platform.id}`)}
+              canPost={t(`canPostValues.${platform.id}`)}
               accounts={(connected ?? []).map((account) => ({
                 id: account.id,
                 username: account.username,
@@ -59,6 +60,14 @@ export default async function AccountsPostsPage({
               anotherLabel={t("connectAnother")}
               notConnectedLabel={t("notConnected")}
               connectedLabel={t("statusConnected")}
+              canPostLabel={t("canPost")}
+              statsLabel={t("stats")}
+              statsCompleteLabel={t("statsComplete")}
+              statsLimitedLabel={t("statsLimited")}
+              statsLimitedNote={
+                platform.id === "bluesky" ? t("statsLimitedNoteBluesky") : undefined
+              }
+              statsLimitedTooltip={t("statsLimitedTooltip")}
             />
           );
         })}

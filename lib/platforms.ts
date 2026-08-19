@@ -26,6 +26,7 @@ export const PLATFORMS = [
     iconBg:
       "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
     icon: siInstagram,
+    stats: "complete",
   },
   {
     id: "facebook",
@@ -33,6 +34,7 @@ export const PLATFORMS = [
     brand: "#1877F2",
     iconBg: "#1877F2",
     icon: siFacebook,
+    stats: "complete",
   },
   {
     id: "threads",
@@ -40,6 +42,7 @@ export const PLATFORMS = [
     brand: "#000000",
     iconBg: "#000000",
     icon: siThreads,
+    stats: "complete",
   },
   {
     id: "tiktok",
@@ -47,6 +50,7 @@ export const PLATFORMS = [
     brand: "#010101",
     iconBg: "#010101",
     icon: siTiktok,
+    stats: "complete",
   },
   {
     id: "youtube",
@@ -54,6 +58,7 @@ export const PLATFORMS = [
     brand: "#FF0000",
     iconBg: "#FF0000",
     icon: siYoutube,
+    stats: "complete",
   },
   {
     id: "linkedin",
@@ -61,6 +66,7 @@ export const PLATFORMS = [
     brand: "#0A66C2",
     iconBg: "#0A66C2",
     icon: siLinkedinFallback,
+    stats: "complete",
   },
   {
     id: "pinterest",
@@ -68,6 +74,7 @@ export const PLATFORMS = [
     brand: "#E60023",
     iconBg: "#E60023",
     icon: siPinterest,
+    stats: "complete",
   },
   {
     id: "googlebusiness",
@@ -75,6 +82,7 @@ export const PLATFORMS = [
     brand: "#4285F4",
     iconBg: "#4285F4",
     icon: siGooglemaps,
+    stats: "complete",
   },
   {
     id: "twitter",
@@ -82,6 +90,7 @@ export const PLATFORMS = [
     brand: "#000000",
     iconBg: "#000000",
     icon: siX,
+    stats: "complete",
   },
   {
     id: "bluesky",
@@ -89,6 +98,7 @@ export const PLATFORMS = [
     brand: "#1185FE",
     iconBg: "#1185FE",
     icon: siBluesky,
+    stats: "limited",
   },
   {
     id: "reddit",
@@ -96,6 +106,7 @@ export const PLATFORMS = [
     brand: "#FF4500",
     iconBg: "#FF4500",
     icon: siReddit,
+    stats: "limited",
   },
 ] as const;
 
