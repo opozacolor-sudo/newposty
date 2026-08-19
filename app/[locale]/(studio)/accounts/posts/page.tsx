@@ -49,7 +49,6 @@ export default async function AccountsPostsPage({
             <PlatformCard
               key={platform.id}
               platform={platform}
-              hint={t(`hints.${platform.id}`)}
               canPost={t(`canPostValues.${platform.id}`)}
               accounts={(connected ?? []).map((account) => ({
                 id: account.id,

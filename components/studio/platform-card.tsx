@@ -10,7 +10,6 @@ type ConnectedAccount = {
 
 export function PlatformCard({
   platform,
-  hint,
   canPost,
   accounts,
   connectLabel,
@@ -25,7 +24,6 @@ export function PlatformCard({
   statsLimitedTooltip,
 }: {
   platform: Platform;
-  hint: string;
   canPost: string;
   accounts: ConnectedAccount[];
   connectLabel: string;
@@ -59,7 +57,6 @@ export function PlatformCard({
             <h2 className="text-lg font-semibold tracking-tight text-[#1A1A1A]">
               {platform.label}
             </h2>
-            <p className="mt-0.5 text-sm text-[#6B7280]">{hint}</p>
           </div>
         </div>
         {platform.id === "bluesky" ? (
