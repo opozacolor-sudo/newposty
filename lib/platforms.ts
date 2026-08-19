@@ -229,3 +229,18 @@ export function isConnectPlatformId(value: string): value is ConnectPlatformId {
 export function getAdsPlatform(id: string) {
   return ADS_PLATFORMS.find((platform) => platform.id === id);
 }
+
+export function platformHasLimitedStats(id: string) {
+  return PLATFORMS.find((platform) => platform.id === id)?.stats === "limited";
+}
+
+export const COMMENT_INBOX_PLATFORMS = new Set([
+  "facebook",
+  "instagram",
+  "twitter",
+  "bluesky",
+  "threads",
+  "youtube",
+  "linkedin",
+  "reddit",
+]);

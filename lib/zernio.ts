@@ -237,3 +237,134 @@ export async function getPost(postId: string) {
   );
   return data.post;
 }
+
+function withQuery(path: string, query: Record<string, string | number | undefined>) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined || value === "") continue;
+    params.set(key, String(value));
+  }
+  const encoded = params.toString();
+  return encoded ? `${path}?${encoded}` : path;
+}
+
+export type ZernioDailyMetrics = {
+  dailyData?: Array<{
+    date: string;
+    postCount?: number;
+    metrics?: {
+      impressions?: number;
+      reach?: number;
+      likes?: number;
+      comments?: number;
+      shares?: number;
+      saves?: number;
+      clicks?: number;
+      views?: number;
+    };
+  }>;
+  platformBreakdown?: Array<{
+    platform: string;
+    postCount?: number;
+    impressions?: number;
+    reach?: number;
+    likes?: number;
+    comments?: number;
+    shares?: number;
+    saves?: number;
+    clicks?: number;
+    views?: number;
+  }>;
+};
+
+export type ZernioFollowerStats = {
+  accounts?: Array<{
+    _id: string;
+    platform?: string;
+    username?: string;
+    currentFollowers?: number;
+    growth?: number;
+    growthPercentage?: number;
+  }>;
+  stats?: Record<string, Array<{ date: string; followers?: number }>>;
+};
+
+export type ZernioInboxCommentPost = {
+  id: string;
+  platform?: string;
+  accountId?: string;
+  accountUsername?: string;
+  content?: string;
+  picture?: string;
+  permalink?: string;
+  createdTime?: string;
+  commentCount?: number;
+};
+
+export type ZernioInboxComment = {
+  id?: string;
+  message?: string;
+  createdTime?: string;
+  from?: {
+    id?: string;
+    name?: string;
+    username?: string;
+    picture?: string;
+  };
+};
+
+export async function getPostAnalytics(query: {
+  profileId?: string;
+  accountId?: string;
+  platform?: string;
+  fromDate?: string;
+  toDate?: string;
+  limit?: number;
+  page?: number;
+  sortBy?: string;
+  order?: string;
+}) {
+  return zernioFetch<unknown>(withQuery("/analytics", query));
+}
+
+export async function getDailyMetrics(query: {
+  profileId?: string;
+  accountId?: string;
+  platform?: string;
+  fromDate?: string;
+  toDate?: string;
+  attribution?: "publish" | "received";
+}) {
+  return zernioFetch<ZernioDailyMetrics>(withQuery("/analytics/daily-metrics", query));
+}
+
+export async function getFollowerStats(query: {
+  profileId?: string;
+  accountIds?: string;
+  fromDate?: string;
+  toDate?: string;
+  granularity?: "daily" | "weekly" | "monthly";
+}) {
+  return zernioFetch<ZernioFollowerStats>(withQuery("/accounts/follower-stats", query));
+}
+
+export async function listInboxComments(query: {
+  profileId?: string;
+  accountId?: string;
+  platform?: string;
+  since?: string;
+  limit?: number;
+  minComments?: number;
+  sortBy?: string;
+  sortOrder?: string;
+}) {
+  return zernioFetch<{ data?: ZernioInboxCommentPost[] }>(
+    withQuery("/inbox/comments", query),
+  );
+}
+
+export async function getInboxPostComments(postId: string, accountId: string, limit = 10) {
+  return zernioFetch<{ comments?: ZernioInboxComment[] }>(
+    withQuery(`/inbox/comments/${encodeURIComponent(postId)}`, { accountId, limit }),
+  );
+}

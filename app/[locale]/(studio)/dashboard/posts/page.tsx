@@ -1,7 +1,8 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { requireUser } from "@/lib/data";
+import { PlatformStatsCards } from "@/components/studio/platform-stats-cards";
 import { Link } from "@/i18n/navigation";
-import { platformLabel } from "@/lib/platforms";
+import { requireUser } from "@/lib/data";
+import { isPlatformId } from "@/lib/platforms";
 
 function formatWhen(value: string | null, locale: string) {
   if (!value) return "—";
@@ -28,6 +29,9 @@ export default async function DashboardPostsPage() {
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
   ]);
 
+  const postingAccounts = (accounts ?? []).filter((account) =>
+    isPlatformId(String(account.platform)),
+  );
   const upcoming = (posts ?? []).filter(
     (post) => post.status === "scheduled" && post.scheduled_for,
   );
@@ -45,7 +49,7 @@ export default async function DashboardPostsPage() {
 
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
         {[
-          { label: t("connectedAccounts"), value: accounts?.length ?? 0 },
+          { label: t("connectedAccounts"), value: postingAccounts.length },
           { label: t("scheduled"), value: upcoming.length },
           { label: t("publishedSending"), value: published.length },
         ].map((stat) => (
@@ -63,22 +67,22 @@ export default async function DashboardPostsPage() {
             {t("manage")}
           </Link>
         </div>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {(accounts ?? []).length === 0 ? (
-            <li className="rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
-              {t("noAccounts")}
-            </li>
-          ) : (
-            (accounts ?? []).map((account) => (
-              <li key={account.id} className="rounded-2xl border border-line bg-card p-4">
-                <p className="text-sm font-medium">{platformLabel(account.platform as string)}</p>
-                <p className="text-sm text-muted">
-                  {account.username ?? account.display_name ?? t("connected")}
-                </p>
-              </li>
-            ))
-          )}
-        </ul>
+        {(postingAccounts ?? []).length === 0 ? (
+          <p className="mt-4 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
+            {t("noAccounts")}
+          </p>
+        ) : (
+          <div className="mt-4">
+            <PlatformStatsCards
+              accounts={postingAccounts.map((account) => ({
+                id: account.id,
+                platform: String(account.platform),
+                username: account.username,
+                display_name: account.display_name,
+              }))}
+            />
+          </div>
+        )}
       </section>
 
       <section className="mt-10">

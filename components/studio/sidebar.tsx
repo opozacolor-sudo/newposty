@@ -73,7 +73,7 @@ export function StudioSidebar({ email }: { email: string }) {
             <div className="mt-1 space-y-1 pl-4">
               <Link
                 href="/dashboard/posts"
-                className={itemClass(pathname === "/dashboard/posts")}
+                className={itemClass(pathname.startsWith("/dashboard/posts"))}
               >
                 <FileText size={16} />
                 {t("posts")}
