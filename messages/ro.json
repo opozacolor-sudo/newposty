@@ -319,6 +319,7 @@
     "send": "Trimite",
     "replyFailed": "Asistentul nu a putut răspunde.",
     "uploadFailed": "Încărcarea a eșuat",
+    "fileTooLarge": "Fișierul e mai mare de 100 MB.",
     "publishFailed": "Publicarea a eșuat",
     "posted": "Publicat. Urmărește panoul pentru linkurile live.",
     "scheduledFor": "Programat pentru {when}.",

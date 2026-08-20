@@ -319,6 +319,7 @@
     "send": "Send",
     "replyFailed": "The assistant could not reply.",
     "uploadFailed": "Upload failed",
+    "fileTooLarge": "That file is larger than 100 MB.",
     "publishFailed": "Publish failed",
     "posted": "Posted. Check the dashboard for live links as they land.",
     "scheduledFor": "Scheduled for {when}.",

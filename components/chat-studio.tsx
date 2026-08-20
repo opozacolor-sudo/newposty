@@ -203,15 +203,55 @@ export default function ChatStudio() {
         },
       ]);
       try {
-        const form = new FormData();
-        form.set("file", file);
-        const response = await fetch("/api/media", { method: "POST", body: form });
-        const payload = await response.json();
-        if (!response.ok) {
+        const prepareResponse = await fetch("/api/media", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "prepare",
+            filename: file.name,
+            contentType: file.type || "application/octet-stream",
+            size: file.size,
+          }),
+        });
+        const prepare = (await prepareResponse.json()) as {
+          error?: string;
+          code?: string;
+          signedUrl?: string;
+          path?: string;
+        };
+        if (!prepareResponse.ok || !prepare.signedUrl || !prepare.path) {
+          setError(
+            prepare.code === "file_too_large" ? t("fileTooLarge") : (prepare.error ?? t("uploadFailed")),
+          );
+          continue;
+        }
+
+        const put = await fetch(prepare.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/octet-stream" },
+          body: file,
+        });
+        if (!put.ok) {
+          setError(t("uploadFailed"));
+          continue;
+        }
+
+        const completeResponse = await fetch("/api/media", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "complete",
+            path: prepare.path,
+            name: file.name,
+            type: isVideo ? "video" : "image",
+          }),
+        });
+        const payload = (await completeResponse.json()) as ChatMedia & { error?: string };
+        if (!completeResponse.ok) {
           setError(payload.error ?? t("uploadFailed"));
           continue;
         }
-        setMedia((current) => [...current, payload as ChatMedia]);
+        setMedia((current) => [...current, payload]);
       } catch {
         setError(t("uploadFailed"));
       } finally {
