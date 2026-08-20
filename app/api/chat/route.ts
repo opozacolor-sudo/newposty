@@ -363,7 +363,8 @@ export async function POST(request: Request) {
               type: "tool_result",
               tool_use_id: tool.id,
               content: JSON.stringify({
-                executed: true,
+                executed: executed.results.every((item) => item.status === "success"),
+                publishing: executed.results.some((item) => item.status === "pending"),
                 skipped_confirmation: true,
                 results: executed.results,
                 excluded_by_validation: saved.excluded_by_validation,
@@ -428,7 +429,11 @@ export async function POST(request: Request) {
             toolResults.push({
               type: "tool_result",
               tool_use_id: tool.id,
-              content: JSON.stringify({ executed: true, results: executed.results }),
+              content: JSON.stringify({
+                executed: executed.results.every((item) => item.status === "success"),
+                publishing: executed.results.some((item) => item.status === "pending"),
+                results: executed.results,
+              }),
             });
           } else {
             confirmation = { type: "confirmation", action_id: saved.action_id, resolved: saved };

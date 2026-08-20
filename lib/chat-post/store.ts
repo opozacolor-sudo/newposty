@@ -179,8 +179,56 @@ export async function finishAction(input: {
               input.resolved.manage.scheduled_at_utc
             : input.resolved.manage.scheduled_at_utc,
       })
-      .eq("id", input.resolved.manage.postActionId)
+    .eq("id", input.resolved.manage.postActionId)
+    .eq("user_id", input.userId);
+  }
+}
+
+export async function saveRefreshedResults(input: {
+  supabase: SupabaseClient;
+  actionId: string;
+  userId: string;
+  conversationId: string;
+  results: PlatformExecResult[];
+}) {
+  await input.supabase
+    .from("chat_post_actions")
+    .update({ results: input.results })
+    .eq("id", input.actionId)
+    .eq("user_id", input.userId);
+
+  for (const result of input.results) {
+    if (result.status === "pending" || !result.zernio_post_id) continue;
+    await input.supabase
+      .from("post_actions")
+      .update({
+        status: result.status === "success" ? "published" : "failed",
+        error_code: result.error_code ?? null,
+        error_message: result.error_message_human ?? null,
+      })
+      .eq("zernio_post_id", result.zernio_post_id)
       .eq("user_id", input.userId);
+  }
+
+  const { data: messages } = await input.supabase
+    .from("messages")
+    .select("id, payload")
+    .eq("conversation_id", input.conversationId)
+    .eq("kind", "results");
+
+  for (const message of messages ?? []) {
+    const payload = message.payload as { type?: string; action_id?: string } | null;
+    if (payload?.action_id !== input.actionId) continue;
+    await input.supabase
+      .from("messages")
+      .update({
+        payload: {
+          ...payload,
+          results: input.results,
+          allFailed: input.results.length > 0 && input.results.every((item) => item.status === "error"),
+        },
+      })
+      .eq("id", message.id);
   }
 }
 

@@ -49,6 +49,7 @@ export function classifyPublishOutcome(input: {
   const status = platformStatus(input.post, input.platform);
   const postStatus = (input.post.status ?? "").toLowerCase();
 
+  if (isInFlightStatus(status) || isInFlightStatus(postStatus)) return "pending";
   if (FAILED.has(status) || postStatus === "failed") return "error";
   if (postStatus === "partial" && status && !OK.has(status)) return "error";
 
@@ -58,6 +59,6 @@ export function classifyPublishOutcome(input: {
   }
 
   if (status === "published" || postStatus === "published") return "success";
-  if (isInFlightStatus(status) || isInFlightStatus(postStatus) || !status) return "pending";
+  if (!status) return "pending";
   return "error";
 }

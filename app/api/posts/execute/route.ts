@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { applyCaptionOverrides, executeResolvedAction } from "@/lib/chat-post/execute";
+import { applyCaptionOverrides, executeResolvedAction, refreshPendingResults } from "@/lib/chat-post/execute";
 import {
   cancelPendingAction,
   claimPendingAction,
   finishAction,
   loadPendingAction,
+  saveRefreshedResults,
 } from "@/lib/chat-post/store";
 import type { ResolvedAction } from "@/lib/chat-post/types";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -42,10 +43,24 @@ export async function POST(request: Request) {
   }
 
   if (claimed.kind === "already") {
+    const row = await loadPendingAction({ supabase, userId: user.id, actionId: body.action_id });
+    const pending = claimed.results.some((item) => item.status === "pending");
+    const results = pending
+      ? await refreshPendingResults({ results: claimed.results, locale: claimed.resolved.locale })
+      : claimed.results;
+    if (pending && row) {
+      await saveRefreshedResults({
+        supabase,
+        actionId: body.action_id,
+        userId: user.id,
+        conversationId: row.conversation_id as string,
+        results,
+      });
+    }
     return NextResponse.json({
       action_id: body.action_id,
-      results: claimed.results,
-      allFailed: claimed.results.length > 0 && claimed.results.every((item) => item.status === "error"),
+      results,
+      allFailed: results.length > 0 && results.every((item) => item.status === "error"),
     });
   }
 
@@ -125,13 +140,28 @@ export async function GET(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const actionId = new URL(request.url).searchParams.get("action_id");
+  const url = new URL(request.url);
+  const actionId = url.searchParams.get("action_id");
+  const refresh = url.searchParams.get("refresh") === "1";
   if (!actionId) return NextResponse.json({ error: "action_id is required" }, { status: 400 });
   const row = await loadPendingAction({ supabase, userId: user.id, actionId });
   if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const resolved = { ...(row.resolved as object), action_id: row.id } as ResolvedAction;
+  let results = (row.results as Awaited<ReturnType<typeof executeResolvedAction>>) ?? [];
+  if (refresh && results.some((item) => item.status === "pending")) {
+    results = await refreshPendingResults({ results, locale: resolved.locale });
+    await saveRefreshedResults({
+      supabase,
+      actionId,
+      userId: user.id,
+      conversationId: row.conversation_id as string,
+      results,
+    });
+  }
   return NextResponse.json({
     status: row.status,
     resolved: row.resolved,
-    results: row.results,
+    results,
+    allFailed: results.length > 0 && results.every((item) => item.status === "error"),
   });
 }

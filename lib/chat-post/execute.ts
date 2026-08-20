@@ -97,7 +97,7 @@ function sleep(ms: number) {
 
 async function waitUntilSettled(post: ZernioPost, platform: string) {
   let current = post;
-  for (let attempt = 0; attempt < 12; attempt += 1) {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
     const status = platformStatus(current, platform);
     const postStatus = (current.status ?? "").toLowerCase();
     if (!isInFlightStatus(status) && !isInFlightStatus(postStatus) && (status || postStatus === "failed")) {
@@ -115,20 +115,21 @@ async function waitUntilSettled(post: ZernioPost, platform: string) {
 
 function resultFromPost(input: {
   post: ZernioPost;
-  target: ResolvedPlatform;
+  platform: string;
+  handle: string;
   mode: "publish_now" | "schedule";
   locale: string;
 }): PlatformExecResult {
   const outcome = classifyPublishOutcome({
     post: input.post,
-    platform: input.target.platform,
+    platform: input.platform,
     mode: input.mode,
   });
-  const entry = platformEntry(input.post, input.target.platform);
+  const entry = platformEntry(input.post, input.platform);
   if (outcome === "success") {
     return {
-      platform: input.target.platform,
-      handle: input.target.handle,
+      platform: input.platform,
+      handle: input.handle,
       status: "success",
       post_url: entry?.platformPostUrl ?? null,
       zernio_post_id: input.post._id,
@@ -137,21 +138,18 @@ function resultFromPost(input: {
   }
   if (outcome === "pending") {
     return {
-      platform: input.target.platform,
-      handle: input.target.handle,
+      platform: input.platform,
+      handle: input.handle,
       status: "pending",
       post_url: null,
       zernio_post_id: input.post._id,
-      error_message_human:
-        input.locale === "ro"
-          ? "Se publică încă. Verifică Statistică în câteva minute."
-          : "Still publishing. Check Stats in a few minutes.",
+      error_message_human: null,
     };
   }
-  const message = platformErrorText(input.post, input.target.platform);
+  const message = platformErrorText(input.post, input.platform);
   return {
-    platform: input.target.platform,
-    handle: input.target.handle,
+    platform: input.platform,
+    handle: input.handle,
     status: "error",
     zernio_post_id: input.post._id,
     error_code: entry?.errorCategory ?? null,
@@ -161,6 +159,34 @@ function resultFromPost(input: {
       locale: input.locale,
     }),
   };
+}
+
+export async function refreshPendingResults(input: {
+  results: PlatformExecResult[];
+  locale: string;
+}): Promise<PlatformExecResult[]> {
+  const next: PlatformExecResult[] = [];
+  for (const result of input.results) {
+    if (result.status !== "pending" || !result.zernio_post_id) {
+      next.push(result);
+      continue;
+    }
+    try {
+      const post = await getPost(result.zernio_post_id);
+      next.push(
+        resultFromPost({
+          post,
+          platform: result.platform,
+          handle: result.handle,
+          mode: "publish_now",
+          locale: input.locale,
+        }),
+      );
+    } catch {
+      next.push(result);
+    }
+  }
+  return next;
 }
 
 async function publishOne(input: {
@@ -213,7 +239,8 @@ async function publishOne(input: {
     }
     return resultFromPost({
       post,
-      target: input.target,
+      platform: input.target.platform,
+      handle: input.target.handle,
       mode: input.mode,
       locale: input.locale,
     });

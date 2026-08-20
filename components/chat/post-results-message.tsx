@@ -1,21 +1,56 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { platformLabel } from "@/lib/platforms";
-import type { ResultsPayload } from "@/lib/chat-post/types";
+import type { PlatformExecResult, ResultsPayload } from "@/lib/chat-post/types";
 
 export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
   const t = useTranslations("Chat");
-  const anySuccess = payload.results.some((result) => result.status === "success");
+  const [results, setResults] = useState<PlatformExecResult[]>(payload.results);
+
+  useEffect(() => {
+    setResults(payload.results);
+  }, [payload.results]);
+
+  useEffect(() => {
+    if (!payload.results.some((result) => result.status === "pending")) return;
+    let cancelled = false;
+    let interval = 0;
+    async function tick() {
+      const response = await fetch(`/api/posts/execute?action_id=${payload.action_id}&refresh=1`);
+      if (!response.ok || cancelled) return;
+      const body = (await response.json()) as { results?: PlatformExecResult[] };
+      if (cancelled || !body.results) return;
+      setResults(body.results);
+      if (!body.results.some((result) => result.status === "pending")) {
+        window.clearInterval(interval);
+      }
+    }
+    interval = window.setInterval(() => {
+      void tick();
+    }, 2500);
+    void tick();
+    const timeout = window.setTimeout(() => window.clearInterval(interval), 120000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      window.clearTimeout(timeout);
+    };
+  }, [payload.action_id, payload.results]);
+
+  const anySuccess = results.some((result) => result.status === "success");
+  const allFailed = results.length > 0 && results.every((result) => result.status === "error");
+
   return (
     <section className="mt-3 space-y-2">
-      {payload.allFailed ? (
+      {allFailed ? (
         <p className="text-sm font-medium text-[#FF4713]">{t("allFailed")}</p>
       ) : payload.skippedConfirmation && anySuccess ? (
         <p className="text-xs text-[#6B7280]">{t("postedWithoutAsking")}</p>
       ) : null}
       <ul className="space-y-2">
-        {payload.results.map((result) => (
+        {results.map((result) => (
           <li
             key={`${result.platform}-${result.handle}`}
             className="rounded-xl border border-[#E5E5E5] bg-white px-3 py-2 text-sm"
@@ -31,7 +66,7 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
               </p>
             ) : result.status === "pending" ? (
               <p>
-                ⏳ {platformLabel(result.platform)} {result.handle}: {result.error_message_human ?? t("stillPublishing")}
+                ⏳ {platformLabel(result.platform)} {result.handle}: {t("stillPublishing")}
               </p>
             ) : (
               <p>

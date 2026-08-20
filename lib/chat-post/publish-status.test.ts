@@ -20,14 +20,33 @@ test("create accepted is not success if TikTok later failed", () => {
   assert.match(platformErrorText(post, "tiktok"), /quota/i);
 });
 
-test("HTTP create without a platform status is pending, not success", () => {
+test("in-flight TikTok is pending, not an error, even if the aggregate is partial", () => {
   assert.equal(
     classifyPublishOutcome({
-      post: { _id: "1", status: "publishing", platforms: [{ platform: "tiktok", status: "pending" }] },
+      post: {
+        _id: "1",
+        status: "partial",
+        platforms: [{ platform: "tiktok", status: "processing" }],
+      },
       platform: "tiktok",
       mode: "publish_now",
     }),
     "pending",
+  );
+});
+
+test("published without a public URL is still success", () => {
+  assert.equal(
+    classifyPublishOutcome({
+      post: {
+        _id: "1",
+        status: "published",
+        platforms: [{ platform: "tiktok", status: "published" }],
+      },
+      platform: "tiktok",
+      mode: "publish_now",
+    }),
+    "success",
   );
 });
 

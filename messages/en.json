@@ -332,7 +332,7 @@
     "postCancelled": "Cancelled. Send a new instruction if you want to change it.",
     "allFailed": "Nothing was posted. Every platform failed.",
     "postedWithoutAsking": "Posted without asking again, as requested for this chat.",
-    "stillPublishing": "Still publishing. Check Stats in a few minutes.",
+    "stillPublishing": "Publishing now — this is not an error. The checkmark will appear when TikTok finishes.",
     "viewPost": "Open",
     "manageCancel": "Cancel scheduled post",
     "manageReschedule": "Reschedule",
