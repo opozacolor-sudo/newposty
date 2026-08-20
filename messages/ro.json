@@ -332,6 +332,7 @@
     "postCancelled": "Anulat. Trimite o comandă nouă dacă vrei să schimbi.",
     "allFailed": "Nu s-a postat nimic. Toate platformele au eșuat.",
     "postedWithoutAsking": "Postat fără să mai întreb, cum ai cerut pentru acest chat.",
+    "stillPublishing": "Se publică încă. Verifică Statistică în câteva minute.",
     "viewPost": "Deschide",
     "manageCancel": "Anulează postarea programată",
     "manageReschedule": "Reprogramează",

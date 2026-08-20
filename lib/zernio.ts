@@ -71,11 +71,21 @@ export type TikTokSettings = {
   express_consent_given: boolean;
 };
 export type TikTokCreatorInfo = {
-  privacyLevels?: string[];
+  canPostMore?: boolean;
+  creator?: {
+    canPostMore?: boolean;
+    nickname?: string;
+  };
+  privacyLevels?: Array<string | { value?: string; label?: string }>;
   postingLimits?: {
     commentDisabled?: boolean;
     duetDisabled?: boolean;
     stitchDisabled?: boolean;
+    interactionSettings?: {
+      comment?: boolean;
+      duet?: boolean;
+      stitch?: boolean;
+    };
   };
 };
 export type ZernioPost = {
@@ -87,6 +97,9 @@ export type ZernioPost = {
     platform: string;
     status?: string;
     platformPostUrl?: string;
+    error?: string | null;
+    errorMessage?: string | null;
+    errorCategory?: string | null;
     accountId?: string | { _id: string };
   }>;
 };

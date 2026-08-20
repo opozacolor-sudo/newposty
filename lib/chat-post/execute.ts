@@ -1,15 +1,25 @@
 import {
   createPost,
   deletePost,
+  getPost,
   getTikTokCreatorInfo,
   updatePost,
   ZernioError,
+  type TikTokCreatorInfo,
   type TikTokSettings,
   type ZernioMediaItem,
   type ZernioPlatformTarget,
+  type ZernioPost,
 } from "@/lib/zernio";
 import { humanZernioError } from "@/lib/zernio-error-messages";
 import { isFutureDate, parseScheduledAt } from "@/lib/chat-post/timezone";
+import {
+  classifyPublishOutcome,
+  isInFlightStatus,
+  platformEntry,
+  platformErrorText,
+  platformStatus,
+} from "@/lib/chat-post/publish-status";
 import type {
   PlatformExecResult,
   ResolvedAction,
@@ -38,7 +48,22 @@ function instagramPlatformData(contentType?: string): Record<string, unknown> | 
   return undefined;
 }
 
-async function tiktokSettingsFor(accountId: string): Promise<TikTokSettings> {
+function privacyLevelValues(info: TikTokCreatorInfo) {
+  return (info.privacyLevels ?? [])
+    .map((level) => (typeof level === "string" ? level : level.value))
+    .filter((value): value is string => Boolean(value));
+}
+
+function tiktokCanPostMore(info: TikTokCreatorInfo) {
+  if (typeof info.creator?.canPostMore === "boolean") return info.creator.canPostMore;
+  if (typeof info.canPostMore === "boolean") return info.canPostMore;
+  return true;
+}
+
+async function tiktokSettingsFor(accountId: string): Promise<{
+  canPostMore: boolean;
+  settings: TikTokSettings;
+}> {
   const defaults: TikTokSettings = {
     privacy_level: "PUBLIC_TO_EVERYONE",
     allow_comment: true,
@@ -49,19 +74,93 @@ async function tiktokSettingsFor(accountId: string): Promise<TikTokSettings> {
   };
   try {
     const info = await getTikTokCreatorInfo(accountId, "video");
-    const levels = Array.isArray(info.privacyLevels)
-      ? info.privacyLevels.filter((level): level is string => typeof level === "string")
-      : [];
+    const levels = privacyLevelValues(info);
+    const interactions = info.postingLimits?.interactionSettings;
     return {
-      ...defaults,
-      privacy_level: levels.find((level) => level === "PUBLIC_TO_EVERYONE") ?? levels[0] ?? defaults.privacy_level,
-      allow_comment: !info.postingLimits?.commentDisabled,
-      allow_duet: !info.postingLimits?.duetDisabled,
-      allow_stitch: !info.postingLimits?.stitchDisabled,
+      canPostMore: tiktokCanPostMore(info),
+      settings: {
+        ...defaults,
+        privacy_level: levels.find((level) => level === "PUBLIC_TO_EVERYONE") ?? levels[0] ?? defaults.privacy_level,
+        allow_comment: interactions?.comment ?? !info.postingLimits?.commentDisabled,
+        allow_duet: interactions?.duet ?? !info.postingLimits?.duetDisabled,
+        allow_stitch: interactions?.stitch ?? !info.postingLimits?.stitchDisabled,
+      },
     };
   } catch {
-    return defaults;
+    return { canPostMore: true, settings: defaults };
   }
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitUntilSettled(post: ZernioPost, platform: string) {
+  let current = post;
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    const status = platformStatus(current, platform);
+    const postStatus = (current.status ?? "").toLowerCase();
+    if (!isInFlightStatus(status) && !isInFlightStatus(postStatus) && (status || postStatus === "failed")) {
+      return current;
+    }
+    await sleep(1500);
+    try {
+      current = await getPost(current._id);
+    } catch {
+      return current;
+    }
+  }
+  return current;
+}
+
+function resultFromPost(input: {
+  post: ZernioPost;
+  target: ResolvedPlatform;
+  mode: "publish_now" | "schedule";
+  locale: string;
+}): PlatformExecResult {
+  const outcome = classifyPublishOutcome({
+    post: input.post,
+    platform: input.target.platform,
+    mode: input.mode,
+  });
+  const entry = platformEntry(input.post, input.target.platform);
+  if (outcome === "success") {
+    return {
+      platform: input.target.platform,
+      handle: input.target.handle,
+      status: "success",
+      post_url: entry?.platformPostUrl ?? null,
+      zernio_post_id: input.post._id,
+      error_message_human: null,
+    };
+  }
+  if (outcome === "pending") {
+    return {
+      platform: input.target.platform,
+      handle: input.target.handle,
+      status: "pending",
+      post_url: null,
+      zernio_post_id: input.post._id,
+      error_message_human:
+        input.locale === "ro"
+          ? "Se publică încă. Verifică Statistică în câteva minute."
+          : "Still publishing. Check Stats in a few minutes.",
+    };
+  }
+  const message = platformErrorText(input.post, input.target.platform);
+  return {
+    platform: input.target.platform,
+    handle: input.target.handle,
+    status: "error",
+    zernio_post_id: input.post._id,
+    error_code: entry?.errorCategory ?? null,
+    error_message_human: humanZernioError({
+      code: entry?.errorCategory,
+      message,
+      locale: input.locale,
+    }),
+  };
 }
 
 async function publishOne(input: {
@@ -74,13 +173,31 @@ async function publishOne(input: {
   locale: string;
 }): Promise<PlatformExecResult> {
   try {
+    let tiktokSettings: TikTokSettings | undefined;
+    if (input.target.platform === "tiktok") {
+      const tiktok = await tiktokSettingsFor(input.target.zernioAccountId);
+      if (!tiktok.canPostMore) {
+        return {
+          platform: input.target.platform,
+          handle: input.target.handle,
+          status: "error",
+          error_code: "quota_exhausted",
+          error_message_human: humanZernioError({
+            code: "quota_exhausted",
+            locale: input.locale,
+          }),
+        };
+      }
+      tiktokSettings = tiktok.settings;
+    }
+
     const platformTarget: ZernioPlatformTarget = {
       platform: input.target.platform,
       accountId: input.target.zernioAccountId,
       platformSpecificData:
         input.target.platform === "instagram" ? instagramPlatformData(input.target.contentType) : undefined,
     };
-    const post = await createPost({
+    let post = await createPost({
       content: input.content,
       title: input.target.platform === "youtube" ? input.content.slice(0, 100) : undefined,
       platforms: [platformTarget],
@@ -89,17 +206,17 @@ async function publishOne(input: {
       scheduledFor: input.mode === "schedule" ? (input.scheduledFor ?? undefined) : undefined,
       timezone: input.timezone,
       xRequestId: input.target.requestId,
-      tiktokSettings: input.target.platform === "tiktok" ? await tiktokSettingsFor(input.target.zernioAccountId) : undefined,
+      tiktokSettings,
     });
-    const platformResult = post.platforms?.[0];
-    return {
-      platform: input.target.platform,
-      handle: input.target.handle,
-      status: "success",
-      post_url: platformResult?.platformPostUrl ?? null,
-      zernio_post_id: post._id,
-      error_message_human: null,
-    };
+    if (input.mode === "publish_now") {
+      post = await waitUntilSettled(post, input.target.platform);
+    }
+    return resultFromPost({
+      post,
+      target: input.target,
+      mode: input.mode,
+      locale: input.locale,
+    });
   } catch (error) {
     const code = errorCode(error);
     return {

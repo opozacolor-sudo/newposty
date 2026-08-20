@@ -87,7 +87,7 @@ export type ResolvedAction = {
 export type PlatformExecResult = {
   platform: string;
   handle: string;
-  status: "success" | "error";
+  status: "success" | "error" | "pending";
   post_url?: string | null;
   zernio_post_id?: string | null;
   error_code?: string | null;

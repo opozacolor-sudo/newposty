@@ -144,7 +144,9 @@ export async function finishAction(input: {
             ? action.mode === "schedule"
               ? "scheduled"
               : "published"
-            : "failed";
+            : result?.status === "pending"
+              ? "publishing"
+              : "failed";
       await input.supabase.from("post_actions").insert({
         user_id: input.userId,
         conversation_id: input.conversationId,

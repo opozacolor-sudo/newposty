@@ -15,6 +15,14 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string }> = {
     en: "One of the post fields is not accepted by this platform.",
     ro: "Un câmp al postării nu e acceptat de această platformă.",
   },
+  quota_exhausted: {
+    en: "TikTok’s daily posting limit for this account is reached. Try again tomorrow, or post from the TikTok app.",
+    ro: "TikTok a atins limita zilnică de postări pentru acest cont. Încearcă mâine sau publică din aplicația TikTok.",
+  },
+  quotaexhausted: {
+    en: "TikTok’s daily posting limit for this account is reached. Try again tomorrow, or post from the TikTok app.",
+    ro: "TikTok a atins limita zilnică de postări pentru acest cont. Încearcă mâine sau publică din aplicația TikTok.",
+  },
   rate_limited: {
     en: "Too many posts too quickly. Wait a bit, then try again.",
     ro: "Prea multe postări prea repede. Așteaptă puțin, apoi încearcă din nou.",
@@ -47,6 +55,7 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string }> = {
 
 function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
   const lower = text.toLowerCase();
+  if (lower.includes("quota") || lower.includes("daily active user")) return "quota_exhausted";
   if (lower.includes("disconnect") || lower.includes("expired")) return "token_expired";
   if (lower.includes("duplicate") || lower.includes("24 hour")) return "duplicate";
   if (lower.includes("rate limit") || lower.includes("too many")) return "rate_limited";
@@ -66,6 +75,8 @@ export function humanZernioError(input: {
   const locale = input.locale === "ro" ? "ro" : "en";
   const code = input.code?.trim();
   if (code && ERROR_MESSAGES[code]) return ERROR_MESSAGES[code][locale];
+  const compact = code?.replace(/[_-]/g, "").toLowerCase();
+  if (compact && ERROR_MESSAGES[compact]) return ERROR_MESSAGES[compact][locale];
   const mapped = fromText(input.message ?? "");
   if (mapped) return ERROR_MESSAGES[mapped][locale];
   return locale === "ro"

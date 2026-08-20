@@ -528,7 +528,7 @@ async function runExecution(input: {
   for (const action of input.resolved.actions) {
     for (const target of action.platforms) {
       const result = results.find((item) => item.platform === target.platform && item.handle === target.handle);
-      if (!result || result.status !== "success") continue;
+      if (!result || result.status === "error") continue;
       await input.supabase.from("posts").insert({
         user_id: input.userId,
         content: target.caption,

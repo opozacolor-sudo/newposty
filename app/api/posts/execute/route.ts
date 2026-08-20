@@ -104,7 +104,7 @@ async function persistDashboardPosts(input: {
       const result = input.results.find(
         (item) => item.platform === target.platform && item.handle === target.handle,
       );
-      if (!result || result.status !== "success") continue;
+      if (!result || result.status === "error") continue;
       await input.supabase.from("posts").insert({
         user_id: input.userId,
         content: target.caption,

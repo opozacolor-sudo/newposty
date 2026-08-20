@@ -6,11 +6,12 @@ import type { ResultsPayload } from "@/lib/chat-post/types";
 
 export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
   const t = useTranslations("Chat");
+  const anySuccess = payload.results.some((result) => result.status === "success");
   return (
     <section className="mt-3 space-y-2">
       {payload.allFailed ? (
         <p className="text-sm font-medium text-[#FF4713]">{t("allFailed")}</p>
-      ) : payload.skippedConfirmation ? (
+      ) : payload.skippedConfirmation && anySuccess ? (
         <p className="text-xs text-[#6B7280]">{t("postedWithoutAsking")}</p>
       ) : null}
       <ul className="space-y-2">
@@ -27,6 +28,10 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
                     {t("viewPost")}
                   </a>
                 ) : null}
+              </p>
+            ) : result.status === "pending" ? (
+              <p>
+                ⏳ {platformLabel(result.platform)} {result.handle}: {result.error_message_human ?? t("stillPublishing")}
               </p>
             ) : (
               <p>
