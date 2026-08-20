@@ -11,14 +11,65 @@ import {
 } from "react";
 import { PostConfirmationCard } from "@/components/chat/post-confirmation-card";
 import { PostResultsMessage } from "@/components/chat/post-results-message";
-import type { ChatMedia, ConfirmationPayload, ResultsPayload } from "@/lib/chat-post/types";
+import type {
+  ChatMedia,
+  ConfirmationPayload,
+  ResultsPayload,
+  UserMediaPayload,
+} from "@/lib/chat-post/types";
 
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   kind?: string | null;
-  payload?: ConfirmationPayload | ResultsPayload | null;
+  payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | null;
 };
+
+type UploadDraft = {
+  localId: string;
+  name: string;
+  type: "image" | "video";
+  previewUrl: string;
+};
+
+function visibleText(content: string) {
+  return content.replace(/\n\n\[media_refs:[\s\S]*$/, "").trim();
+}
+
+function MessageMedia({
+  items,
+  onDark,
+}: {
+  items: ChatMedia[];
+  onDark?: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="mb-2 flex gap-2 overflow-x-auto">
+      {items.map((item) => (
+        <li
+          key={item.id}
+          className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border ${
+            onDark ? "border-white/20 bg-white/10" : "border-[#E5E5E5] bg-[#F5F5F5]"
+          }`}
+        >
+          {item.type === "image" ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={item.url} alt={item.name ?? ""} className="h-full w-full object-cover" />
+          ) : (
+            <span
+              className={`flex h-full items-center justify-center px-1 text-center text-[10px] ${
+                onDark ? "text-white/80" : "text-[#6B7280]"
+              }`}
+            >
+              {item.name ?? "video"}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 type SpeechRecognitionLike = {
   lang: string;
@@ -54,6 +105,7 @@ export default function ChatStudio() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [media, setMedia] = useState<ChatMedia[]>([]);
+  const [uploads, setUploads] = useState<UploadDraft[]>([]);
   const [listening, setListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -90,11 +142,19 @@ export default function ChatStudio() {
   async function send(event?: FormEvent) {
     event?.preventDefault();
     const text = input.trim();
-    if (!text || pending) return;
+    if (!text || pending || uploads.length > 0) return;
     setInput("");
     setError(null);
     setPending(true);
-    setMessages((current) => [...current, { role: "user", content: text, kind: "text" }]);
+    setMessages((current) => [
+      ...current,
+      {
+        role: "user",
+        content: text,
+        kind: "text",
+        payload: media.length > 0 ? { type: "user_media", media } : null,
+      },
+    ]);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -130,15 +190,34 @@ export default function ChatStudio() {
     if (!files) return;
     setError(null);
     for (const file of Array.from(files)) {
-      const form = new FormData();
-      form.set("file", file);
-      const response = await fetch("/api/media", { method: "POST", body: form });
-      const payload = await response.json();
-      if (!response.ok) {
-        setError(payload.error ?? t("uploadFailed"));
-        continue;
+      const localId = crypto.randomUUID();
+      const isVideo = file.type.startsWith("video/");
+      const previewUrl = URL.createObjectURL(file);
+      setUploads((current) => [
+        ...current,
+        {
+          localId,
+          name: file.name,
+          type: isVideo ? "video" : "image",
+          previewUrl,
+        },
+      ]);
+      try {
+        const form = new FormData();
+        form.set("file", file);
+        const response = await fetch("/api/media", { method: "POST", body: form });
+        const payload = await response.json();
+        if (!response.ok) {
+          setError(payload.error ?? t("uploadFailed"));
+          continue;
+        }
+        setMedia((current) => [...current, payload as ChatMedia]);
+      } catch {
+        setError(t("uploadFailed"));
+      } finally {
+        URL.revokeObjectURL(previewUrl);
+        setUploads((current) => current.filter((item) => item.localId !== localId));
       }
-      setMedia((current) => [...current, payload as ChatMedia]);
     }
   }
 
@@ -195,7 +274,10 @@ export default function ChatStudio() {
                 : "border border-[#E5E5E5] bg-[#FAFAFA] text-[#1A1A1A]"
             }`}
           >
-            <div className="whitespace-pre-wrap">{message.content}</div>
+            {message.role === "user" && message.payload?.type === "user_media" ? (
+              <MessageMedia items={message.payload.media} onDark />
+            ) : null}
+            <div className="whitespace-pre-wrap">{visibleText(message.content)}</div>
             {message.role === "assistant" &&
             message.kind === "confirmation" &&
             message.payload?.type === "confirmation" ? (
@@ -231,32 +313,57 @@ export default function ChatStudio() {
       </div>
 
       <form onSubmit={(event) => void send(event)} className="border-t border-[#E5E5E5] bg-white px-4 py-4 sm:px-6">
-        {media.length > 0 ? (
-          <ul className="mb-3 flex gap-2 overflow-x-auto">
-            {media.map((item) => (
-              <li
-                key={item.id}
-                className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[#E5E5E5] bg-[#F5F5F5]"
-              >
-                {item.type === "image" ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.url} alt={item.name ?? ""} className="h-full w-full object-cover" />
-                ) : (
-                  <span className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
-                    {item.name ?? "video"}
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setMedia((current) => current.filter((entry) => entry.id !== item.id))}
-                  className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white"
-                  aria-label={t("removeAttachment")}
+        {(uploads.length > 0 || media.length > 0) ? (
+          <div className="mb-3">
+            <p className="mb-2 text-xs font-medium text-[#FF4713]">
+              {uploads.length > 0
+                ? t("attaching")
+                : t("attachedReady")}
+            </p>
+            <ul className="flex gap-2 overflow-x-auto">
+              {uploads.map((item) => (
+                <li
+                  key={item.localId}
+                  className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-[#FF4713] bg-[#FFF4F0]"
                 >
-                  <X size={12} />
-                </button>
-              </li>
-            ))}
-          </ul>
+                  {item.type === "image" ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.previewUrl} alt={item.name} className="h-full w-full object-cover opacity-70" />
+                  ) : (
+                    <span className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
+                      {item.name}
+                    </span>
+                  )}
+                  <span className="absolute inset-x-0 bottom-0 bg-black/55 py-0.5 text-center text-[10px] text-white">
+                    {t("attaching")}
+                  </span>
+                </li>
+              ))}
+              {media.map((item) => (
+                <li
+                  key={item.id}
+                  className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[#FF4713] bg-[#F5F5F5]"
+                >
+                  {item.type === "image" ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.url} alt={item.name ?? ""} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
+                      {item.name ?? "video"}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setMedia((current) => current.filter((entry) => entry.id !== item.id))}
+                    className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white"
+                    aria-label={t("removeAttachment")}
+                  >
+                    <X size={12} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
 
         <div className="relative rounded-2xl border border-[#E5E5E5] bg-[#FAFAFA] focus-within:border-[#FF4713]">
@@ -273,11 +380,20 @@ export default function ChatStudio() {
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#6B7280] hover:bg-white hover:text-[#FF4713]"
+                className={`relative inline-flex h-9 w-9 items-center justify-center rounded-full ${
+                  media.length > 0 || uploads.length > 0
+                    ? "bg-[#FF4713] text-white"
+                    : "text-[#6B7280] hover:bg-white hover:text-[#FF4713]"
+                }`}
                 aria-label={t("attach")}
                 title={t("attach")}
               >
                 <Paperclip size={18} />
+                {media.length > 0 ? (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-semibold text-[#FF4713]">
+                    {media.length}
+                  </span>
+                ) : null}
               </button>
               <button
                 type="button"
@@ -296,7 +412,7 @@ export default function ChatStudio() {
             </div>
             <button
               type="submit"
-              disabled={pending || !input.trim()}
+              disabled={pending || uploads.length > 0 || !input.trim()}
               className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#FF4713] text-white hover:bg-[#e03d0f] disabled:opacity-40"
               aria-label={t("send")}
               title={t("send")}

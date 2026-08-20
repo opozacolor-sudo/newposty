@@ -176,10 +176,7 @@ export async function POST(request: Request) {
     ? `Open post intent (still valid): missing=${savedIntent.missing.join(", ")}. Continue this intent if the user just supplied the missing piece. Previous actions JSON: ${JSON.stringify(savedIntent.actions)}`
     : "";
 
-  const userContent =
-    incomingMedia.length > 0
-      ? `${text}\n\n[media_refs: ${incomingMedia.map((item) => `${item.id}:${item.type}`).join(", ")}]`
-      : text;
+  const userContent = text;
 
   await supabase.from("messages").insert({
     conversation_id: conversationId,
@@ -187,6 +184,10 @@ export async function POST(request: Request) {
     role: "user",
     content: userContent,
     kind: "text",
+    payload:
+      incomingMedia.length > 0
+        ? { type: "user_media", media: incomingMedia }
+        : null,
   });
 
   const { data: history } = await supabase

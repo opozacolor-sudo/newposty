@@ -11,6 +11,11 @@ export type ChatMedia = {
   name?: string | null;
 };
 
+export type UserMediaPayload = {
+  type: "user_media";
+  media: ChatMedia[];
+};
+
 export type ToolPostAction = {
   mode: PostMode;
   scheduled_at_iso?: string;
