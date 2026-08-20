@@ -46,15 +46,16 @@ test("published Instagram is success", () => {
   );
 });
 
-test("TikTok daily quota gets a plain-language error", () => {
+test("TikTok daily active-user cap is not blamed on posting too many clips", () => {
   const ro = humanZernioError({
     code: "quota_exhausted",
     message: "Daily active user quota reached.",
     locale: "ro",
   });
-  assert.match(ro, /limit/i);
+  assert.match(ro, /utilizatori activi/i);
+  assert.doesNotMatch(ro, /prea multe postări/i);
   assert.match(
     humanZernioError({ message: "TikTok: Daily active user quota reached.", locale: "en" }),
-    /daily/i,
+    /connected apps/i,
   );
 });

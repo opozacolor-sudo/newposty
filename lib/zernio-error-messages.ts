@@ -16,12 +16,20 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string }> = {
     ro: "Un câmp al postării nu e acceptat de această platformă.",
   },
   quota_exhausted: {
-    en: "TikTok’s daily posting limit for this account is reached. Try again tomorrow, or post from the TikTok app.",
-    ro: "TikTok a atins limita zilnică de postări pentru acest cont. Încearcă mâine sau publică din aplicația TikTok.",
+    en: "TikTok blocked publishing through connected apps for now (daily active-user cap). One video is enough to hit it. Try later, or post from the TikTok app.",
+    ro: "TikTok a blocat momentan publicarea prin aplicații conectate (cota zilnică de utilizatori activi). Un singur clip e de ajuns ca să apară. Încearcă mai târziu sau publică din aplicația TikTok.",
   },
   quotaexhausted: {
-    en: "TikTok’s daily posting limit for this account is reached. Try again tomorrow, or post from the TikTok app.",
-    ro: "TikTok a atins limita zilnică de postări pentru acest cont. Încearcă mâine sau publică din aplicația TikTok.",
+    en: "TikTok blocked publishing through connected apps for now (daily active-user cap). One video is enough to hit it. Try later, or post from the TikTok app.",
+    ro: "TikTok a blocat momentan publicarea prin aplicații conectate (cota zilnică de utilizatori activi). Un singur clip e de ajuns ca să apară. Încearcă mai târziu sau publică din aplicația TikTok.",
+  },
+  active_user_quota: {
+    en: "TikTok blocked publishing through connected apps for now (daily active-user cap). One video is enough to hit it. Try later, or post from the TikTok app.",
+    ro: "TikTok a blocat momentan publicarea prin aplicații conectate (cota zilnică de utilizatori activi). Un singur clip e de ajuns ca să apară. Încearcă mai târziu sau publică din aplicația TikTok.",
+  },
+  reached_active_user_cap: {
+    en: "TikTok blocked publishing through connected apps for now (daily active-user cap). One video is enough to hit it. Try later, or post from the TikTok app.",
+    ro: "TikTok a blocat momentan publicarea prin aplicații conectate (cota zilnică de utilizatori activi). Un singur clip e de ajuns ca să apară. Încearcă mai târziu sau publică din aplicația TikTok.",
   },
   rate_limited: {
     en: "Too many posts too quickly. Wait a bit, then try again.",
@@ -55,7 +63,10 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string }> = {
 
 function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
   const lower = text.toLowerCase();
-  if (lower.includes("quota") || lower.includes("daily active user")) return "quota_exhausted";
+  if (lower.includes("daily active user") || lower.includes("active user cap") || lower.includes("active-user")) {
+    return "active_user_quota";
+  }
+  if (lower.includes("quota")) return "quota_exhausted";
   if (lower.includes("disconnect") || lower.includes("expired")) return "token_expired";
   if (lower.includes("duplicate") || lower.includes("24 hour")) return "duplicate";
   if (lower.includes("rate limit") || lower.includes("too many")) return "rate_limited";
