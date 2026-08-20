@@ -129,7 +129,8 @@
     "deleteAccount": "Ștergere cont",
     "comingSoon": "În curând",
     "openMenu": "Deschide meniul",
-    "closeMenu": "Închide meniul"
+    "closeMenu": "Închide meniul",
+    "localTime": "Ora locală"
   },
   "ComingSoon": {
     "badge": "În curând",

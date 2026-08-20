@@ -16,6 +16,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { BrandLogo } from "@/components/marketing/brand-logo";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { AccountMenu } from "@/components/studio/account-menu";
+import { LocaleClock } from "@/components/studio/locale-clock";
 
 function itemClass(active: boolean) {
   return `flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition ${
@@ -119,6 +120,7 @@ export function StudioSidebar({ email }: { email: string }) {
       </nav>
 
       <div className="mt-4 shrink-0 space-y-3 border-t border-[#E5E5E5] pt-4">
+        <LocaleClock />
         <LocaleSwitch variant="names" />
         <AccountMenu email={email} />
       </div>

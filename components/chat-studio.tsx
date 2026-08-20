@@ -89,7 +89,7 @@ export default function ChatStudio() {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conversationId, message: text, media }),
+      body: JSON.stringify({ conversationId, message: text, media, locale }),
     });
     const payload = await response.json();
     setPending(false);

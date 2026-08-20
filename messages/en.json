@@ -129,7 +129,8 @@
     "deleteAccount": "Delete account",
     "comingSoon": "Coming soon",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "localTime": "Local time"
   },
   "ComingSoon": {
     "badge": "Coming soon",

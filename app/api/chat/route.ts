@@ -4,6 +4,7 @@ import { getAnthropicApiKey } from "@/lib/env";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { createPost } from "@/lib/zernio";
 import { platformLabel } from "@/lib/platforms";
+import { clockSnapshot, isAppLocale } from "@/lib/locale-time";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type MediaItem = { url: string; type: "image" | "video" };
@@ -106,6 +107,7 @@ export async function POST(request: Request) {
     conversationId?: string | null;
     message: string;
     media?: MediaItem[];
+    locale?: string;
   };
 
   const text = body.message?.trim();
@@ -160,6 +162,10 @@ export async function POST(request: Request) {
     .order("created_at", { ascending: true })
     .limit(40);
 
+  const locale = isAppLocale(body.locale) ? body.locale : "en";
+  const clock = clockSnapshot(locale);
+  const timeZone = clock.timeZone;
+
   const anthropic = new Anthropic({ apiKey });
   const system = [
     "You are Newposty's social studio assistant.",
@@ -167,7 +173,11 @@ export async function POST(request: Request) {
     "Keep replies concise and useful. Offer 1-3 caption options when drafting.",
     profile?.brand_name ? `Brand: ${profile.brand_name}` : "Brand name is not set yet.",
     profile?.brand_voice ? `Voice: ${profile.brand_voice}` : "",
-    `Timezone: ${profile?.timezone ?? "UTC"}`,
+    `The site clock the user sees is ${timeZone} (from the selected language).`,
+    `Right now that clock shows ${clock.dateLabel}, ${clock.timeLabel}.`,
+    `Today is ${clock.ymd}. Tomorrow is ${clock.tomorrowYmd}. Current local datetime: ${clock.localIso}.`,
+    "When the user says tomorrow, in N days, Monday, next week, or similar, resolve the date from this clock — not from memory.",
+    `Schedule with scheduled_for as local datetime in ${timeZone}, without a timezone suffix, e.g. ${clock.ymd}T10:00:00.`,
     accounts && accounts.length > 0
       ? `Connected accounts:\n${accounts
           .map(
@@ -263,7 +273,7 @@ export async function POST(request: Request) {
             mediaItems: body.media,
             publishNow: Boolean(input.publish_now) && !input.scheduled_for,
             scheduledFor: input.scheduled_for,
-            timezone: input.timezone || (profile?.timezone as string) || "UTC",
+            timezone: timeZone,
           });
           const { data: post } = await supabase
             .from("posts")
@@ -273,7 +283,7 @@ export async function POST(request: Request) {
               media: body.media ?? [],
               status: zernioPost.status ?? (input.scheduled_for ? "scheduled" : "publishing"),
               scheduled_for: input.scheduled_for ?? null,
-              timezone: input.timezone || profile?.timezone || "UTC",
+              timezone: timeZone,
               zernio_post_id: zernioPost._id,
               platform_results: zernioPost.platforms ?? [],
             })
