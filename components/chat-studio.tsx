@@ -9,9 +9,16 @@ import {
   useRef,
   useState,
 } from "react";
+import { PostConfirmationCard } from "@/components/chat/post-confirmation-card";
+import { PostResultsMessage } from "@/components/chat/post-results-message";
+import type { ChatMedia, ConfirmationPayload, ResultsPayload } from "@/lib/chat-post/types";
 
-type ChatMessage = { role: "user" | "assistant"; content: string };
-type MediaItem = { url: string; type: "image" | "video"; name?: string };
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+  kind?: string | null;
+  payload?: ConfirmationPayload | ResultsPayload | null;
+};
 
 type SpeechRecognitionLike = {
   lang: string;
@@ -46,7 +53,7 @@ export default function ChatStudio() {
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [media, setMedia] = useState<ChatMedia[]>([]);
   const [listening, setListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -63,6 +70,8 @@ export default function ChatStudio() {
           (chat.messages ?? []).map((message: ChatMessage) => ({
             role: message.role,
             content: message.content,
+            kind: message.kind,
+            payload: message.payload,
           })),
         );
       });
@@ -85,7 +94,7 @@ export default function ChatStudio() {
     setInput("");
     setError(null);
     setPending(true);
-    setMessages((current) => [...current, { role: "user", content: text }]);
+    setMessages((current) => [...current, { role: "user", content: text, kind: "text" }]);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -98,9 +107,15 @@ export default function ChatStudio() {
       return;
     }
     setConversationId(payload.conversationId);
+    setMedia([]);
     setMessages((current) => [
       ...current,
-      { role: "assistant", content: payload.reply as string },
+      {
+        role: "assistant",
+        content: payload.reply as string,
+        kind: payload.kind,
+        payload: payload.payload,
+      },
     ]);
   }
 
@@ -123,7 +138,7 @@ export default function ChatStudio() {
         setError(payload.error ?? t("uploadFailed"));
         continue;
       }
-      setMedia((current) => [...current, payload as MediaItem]);
+      setMedia((current) => [...current, payload as ChatMedia]);
     }
   }
 
@@ -174,13 +189,41 @@ export default function ChatStudio() {
         {messages.map((message, index) => (
           <article
             key={`${message.role}-${index}`}
-            className={`max-w-2xl whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 ${
+            className={`max-w-2xl rounded-2xl px-4 py-3 text-sm leading-6 ${
               message.role === "user"
-                ? "ml-auto bg-[#1A1A1A] text-white"
+                ? "ml-auto whitespace-pre-wrap bg-[#1A1A1A] text-white"
                 : "border border-[#E5E5E5] bg-[#FAFAFA] text-[#1A1A1A]"
             }`}
           >
-            {message.content}
+            <div className="whitespace-pre-wrap">{message.content}</div>
+            {message.role === "assistant" &&
+            message.kind === "confirmation" &&
+            message.payload?.type === "confirmation" ? (
+              <PostConfirmationCard
+                payload={message.payload}
+                onDone={(next) => {
+                  setMessages((current) =>
+                    current.map((item, itemIndex) =>
+                      itemIndex === index
+                        ? next.kind === "cancelled"
+                          ? { ...item, kind: "text", payload: null, content: t("postCancelled") }
+                          : {
+                              ...item,
+                              kind: "results",
+                              payload: next.payload as ResultsPayload,
+                              content: item.content,
+                            }
+                        : item,
+                    ),
+                  );
+                }}
+              />
+            ) : null}
+            {message.role === "assistant" &&
+            message.kind === "results" &&
+            message.payload?.type === "results" ? (
+              <PostResultsMessage payload={message.payload} />
+            ) : null}
           </article>
         ))}
         {pending ? <p className="text-sm text-[#6B7280]">{t("thinking")}</p> : null}
@@ -191,7 +234,10 @@ export default function ChatStudio() {
         {media.length > 0 ? (
           <ul className="mb-3 flex gap-2 overflow-x-auto">
             {media.map((item) => (
-              <li key={item.url} className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[#E5E5E5] bg-[#F5F5F5]">
+              <li
+                key={item.id}
+                className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[#E5E5E5] bg-[#F5F5F5]"
+              >
                 {item.type === "image" ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={item.url} alt={item.name ?? ""} className="h-full w-full object-cover" />
@@ -202,7 +248,7 @@ export default function ChatStudio() {
                 )}
                 <button
                   type="button"
-                  onClick={() => setMedia((current) => current.filter((entry) => entry.url !== item.url))}
+                  onClick={() => setMedia((current) => current.filter((entry) => entry.id !== item.id))}
                   className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white"
                   aria-label={t("removeAttachment")}
                 >

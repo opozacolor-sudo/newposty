@@ -318,6 +318,19 @@
     "uploadFailed": "Upload failed",
     "publishFailed": "Publish failed",
     "posted": "Posted. Check the dashboard for live links as they land.",
-    "scheduledFor": "Scheduled for {when}."
+    "scheduledFor": "Scheduled for {when}.",
+    "confirmPost": "Confirm",
+    "cancelPost": "Cancel / edit",
+    "postNow": "Now",
+    "excludedTitle": "Not included",
+    "captionTruncated": "Caption shortened to the platform limit.",
+    "dontAskAgain": "Don't ask again in this chat",
+    "postCancelled": "Cancelled. Send a new instruction if you want to change it.",
+    "allFailed": "Nothing was posted. Every platform failed.",
+    "postedWithoutAsking": "Posted without asking again, as requested for this chat.",
+    "viewPost": "Open",
+    "manageCancel": "Cancel scheduled post",
+    "manageReschedule": "Reschedule",
+    "manageEdit": "Edit caption"
   }
 }

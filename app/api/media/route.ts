@@ -38,9 +38,25 @@ export async function POST(request: Request) {
     upsert: false,
   });
 
-  return NextResponse.json({
-    url: publicUrl,
-    type: isVideo ? "video" : "image",
-    name: file.name,
-  });
+  const { data: mediaRow, error } = await supabase
+    .from("conversation_media")
+    .insert({
+      user_id: user.id,
+      url: publicUrl,
+      type: isVideo ? "video" : "image",
+      name: file.name,
+    })
+    .select("id, url, type, name")
+    .single();
+
+  if (error || !mediaRow) {
+    return NextResponse.json({
+      id: crypto.randomUUID(),
+      url: publicUrl,
+      type: isVideo ? "video" : "image",
+      name: file.name,
+    });
+  }
+
+  return NextResponse.json(mediaRow);
 }

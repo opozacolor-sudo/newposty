@@ -5,12 +5,17 @@ const ZERNIO_BASE = "https://zernio.com/api/v1";
 export class ZernioError extends Error {
   status: number;
   body: unknown;
+  code: string | null;
 
   constructor(message: string, status: number, body: unknown) {
     super(message);
     this.name = "ZernioError";
     this.status = status;
     this.body = body;
+    this.code =
+      body && typeof body === "object" && "code" in body && typeof (body as { code: unknown }).code === "string"
+        ? (body as { code: string }).code
+        : null;
   }
 }
 
@@ -216,10 +221,14 @@ export async function createPost(input: {
   publishNow?: boolean;
   scheduledFor?: string;
   timezone?: string;
+  title?: string;
+  xRequestId?: string;
 }) {
   const data = await zernioFetch<{ post: ZernioPost }>("/posts", {
     method: "POST",
+    headers: input.xRequestId ? { "x-request-id": input.xRequestId } : undefined,
     body: JSON.stringify({
+      title: input.title,
       content: input.content,
       platforms: input.platforms,
       mediaItems: input.mediaItems,
@@ -229,6 +238,30 @@ export async function createPost(input: {
     }),
   });
   return data.post;
+}
+
+export async function updatePost(
+  postId: string,
+  body: {
+    content?: string;
+    scheduledFor?: string;
+    timezone?: string;
+    isDraft?: boolean;
+    publishNow?: boolean;
+    mediaItems?: ZernioMediaItem[];
+  },
+) {
+  const data = await zernioFetch<{ post: ZernioPost }>(`/posts/${encodeURIComponent(postId)}`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+  return data.post;
+}
+
+export async function deletePost(postId: string) {
+  return zernioFetch<{ message?: string }>(`/posts/${encodeURIComponent(postId)}`, {
+    method: "DELETE",
+  });
 }
 
 export async function getPost(postId: string) {
