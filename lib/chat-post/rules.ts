@@ -47,6 +47,56 @@ export function inferMediaKind(media: ChatMedia[]) {
   return "none";
 }
 
+const VIDEO_EQUIVALENT_TYPES = new Set([
+  "video",
+  "reels",
+  "reel",
+  "stories",
+  "story",
+  "feed",
+  "carousel",
+]);
+
+export function normalizeRequestedContentType(requested?: string) {
+  const value = requested?.trim().toLowerCase();
+  if (!value) return undefined;
+  if (value === "reel") return "reels";
+  if (value === "story") return "stories";
+  return value;
+}
+
+/** Map a user/AI content type onto what this platform actually accepts. */
+export function adaptContentType(input: {
+  platform: string;
+  requested?: string;
+  mediaKind: ReturnType<typeof inferMediaKind>;
+}): { contentType?: string; incompatible: boolean } {
+  const capability = getPlatformCapability(input.platform);
+  if (!capability) return { incompatible: true };
+
+  const requested = normalizeRequestedContentType(input.requested);
+  if (!requested) return { contentType: undefined, incompatible: false };
+
+  const allowed = capability.contentTypes.map((item) => item.toLowerCase());
+  if (allowed.includes(requested)) {
+    return { contentType: requested, incompatible: false };
+  }
+
+  if (VIDEO_EQUIVALENT_TYPES.has(requested) && input.mediaKind === "video") {
+    if (allowed.includes("video")) {
+      return { contentType: "video", incompatible: false };
+    }
+    if (requested === "stories" && allowed.includes("stories")) {
+      return { contentType: "stories", incompatible: false };
+    }
+    if (allowed.includes("reels")) {
+      return { contentType: "reels", incompatible: false };
+    }
+  }
+
+  return { contentType: requested, incompatible: true };
+}
+
 export function validationReason(input: {
   platform: string;
   capability: PlatformCapability | null;
@@ -79,13 +129,15 @@ export function validationReason(input: {
     return ro ? "YouTube acceptă doar video." : "YouTube only accepts video.";
   }
 
-  if (contentType && capability.contentTypes.length > 0) {
-    const allowed = capability.contentTypes.map((item) => item.toLowerCase());
-    if (!allowed.includes(contentType.toLowerCase())) {
-      return ro
-        ? `Tipul „${contentType}” nu e suportat. Acceptat: ${capability.contentTypes.join(", ")}.`
-        : `Content type “${contentType}” is not supported. Allowed: ${capability.contentTypes.join(", ")}.`;
-    }
+  const adapted = adaptContentType({
+    platform: input.platform,
+    requested: contentType,
+    mediaKind: kind,
+  });
+  if (contentType && adapted.incompatible) {
+    return ro
+      ? `Tipul „${contentType}” nu e suportat. Acceptat: ${capability.contentTypes.join(", ")}.`
+      : `Content type “${contentType}” is not supported. Allowed: ${capability.contentTypes.join(", ")}.`;
   }
 
   if (capability.maxAttachments && media.length > capability.maxAttachments) {

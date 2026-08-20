@@ -2,6 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getPlatformCapability } from "@/lib/platform-capabilities";
 import { isPlatformId, platformLabel } from "@/lib/platforms";
 import {
+  adaptContentType,
+  inferMediaKind,
   resolvePlatformSelection,
   truncateCaption,
   validationReason,
@@ -216,6 +218,11 @@ export async function resolveCreateActions(input: {
             : `The ${platformLabel(platform)} caption was shortened to ${capability?.maxCaptionChars} characters.`,
         );
       }
+      const adapted = adaptContentType({
+        platform,
+        requested: action.content_type,
+        mediaKind: inferMediaKind(media),
+      });
       platforms.push({
         platform,
         accountId: account.id,
@@ -223,7 +230,7 @@ export async function resolveCreateActions(input: {
         handle: handleOf(account),
         caption: limited.caption,
         captionTruncated: limited.truncated,
-        contentType: action.content_type,
+        contentType: adapted.contentType,
         requestId: crypto.randomUUID(),
       });
     }

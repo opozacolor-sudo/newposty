@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { canonicalizePlatform, getPlatformCapability } from "../platform-capabilities";
 import {
+  adaptContentType,
   matchScheduledReference,
   resolvePlatformSelection,
   truncateCaption,
@@ -36,6 +37,29 @@ test("tiktok rejects images", () => {
   });
   assert.ok(reason);
   assert.match(reason ?? "", /video/i);
+});
+
+test("tiktok accepts a reel-tagged video instead of dropping the platform", () => {
+  const media = [{ id: "1", url: "https://example.com/a.mp4", type: "video" as const }];
+  const reason = validationReason({
+    platform: "tiktok",
+    capability: getPlatformCapability("tiktok"),
+    media,
+    contentType: "reels",
+    locale: "ro",
+  });
+  assert.equal(reason, null);
+  assert.deepEqual(
+    adaptContentType({ platform: "tiktok", requested: "reels", mediaKind: "video" }),
+    { contentType: "video", incompatible: false },
+  );
+});
+
+test("instagram maps a generic video type to reels", () => {
+  assert.deepEqual(
+    adaptContentType({ platform: "instagram", requested: "video", mediaKind: "video" }),
+    { contentType: "reels", incompatible: false },
+  );
 });
 
 test("instagram without media is excluded", () => {

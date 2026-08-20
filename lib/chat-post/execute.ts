@@ -1,4 +1,13 @@
-import { createPost, deletePost, updatePost, ZernioError, type ZernioMediaItem } from "@/lib/zernio";
+import {
+  createPost,
+  deletePost,
+  getTikTokCreatorInfo,
+  updatePost,
+  ZernioError,
+  type TikTokSettings,
+  type ZernioMediaItem,
+  type ZernioPlatformTarget,
+} from "@/lib/zernio";
 import { humanZernioError } from "@/lib/zernio-error-messages";
 import { isFutureDate, parseScheduledAt } from "@/lib/chat-post/timezone";
 import type {
@@ -19,6 +28,42 @@ function errorMessage(error: unknown) {
   return "Unknown error";
 }
 
+function instagramPlatformData(contentType?: string): Record<string, unknown> | undefined {
+  if (contentType === "stories" || contentType === "story") {
+    return { contentType: "story" };
+  }
+  if (contentType === "reels" || contentType === "reel") {
+    return { shareToFeed: true };
+  }
+  return undefined;
+}
+
+async function tiktokSettingsFor(accountId: string): Promise<TikTokSettings> {
+  const defaults: TikTokSettings = {
+    privacy_level: "PUBLIC_TO_EVERYONE",
+    allow_comment: true,
+    allow_duet: true,
+    allow_stitch: true,
+    content_preview_confirmed: true,
+    express_consent_given: true,
+  };
+  try {
+    const info = await getTikTokCreatorInfo(accountId, "video");
+    const levels = Array.isArray(info.privacyLevels)
+      ? info.privacyLevels.filter((level): level is string => typeof level === "string")
+      : [];
+    return {
+      ...defaults,
+      privacy_level: levels.find((level) => level === "PUBLIC_TO_EVERYONE") ?? levels[0] ?? defaults.privacy_level,
+      allow_comment: !info.postingLimits?.commentDisabled,
+      allow_duet: !info.postingLimits?.duetDisabled,
+      allow_stitch: !info.postingLimits?.stitchDisabled,
+    };
+  } catch {
+    return defaults;
+  }
+}
+
 async function publishOne(input: {
   target: ResolvedPlatform;
   content: string;
@@ -29,20 +74,22 @@ async function publishOne(input: {
   locale: string;
 }): Promise<PlatformExecResult> {
   try {
+    const platformTarget: ZernioPlatformTarget = {
+      platform: input.target.platform,
+      accountId: input.target.zernioAccountId,
+      platformSpecificData:
+        input.target.platform === "instagram" ? instagramPlatformData(input.target.contentType) : undefined,
+    };
     const post = await createPost({
       content: input.content,
       title: input.target.platform === "youtube" ? input.content.slice(0, 100) : undefined,
-      platforms: [
-        {
-          platform: input.target.platform,
-          accountId: input.target.zernioAccountId,
-        },
-      ],
+      platforms: [platformTarget],
       mediaItems: input.media.length > 0 ? input.media : undefined,
       publishNow: input.mode === "publish_now",
       scheduledFor: input.mode === "schedule" ? (input.scheduledFor ?? undefined) : undefined,
       timezone: input.timezone,
       xRequestId: input.target.requestId,
+      tiktokSettings: input.target.platform === "tiktok" ? await tiktokSettingsFor(input.target.zernioAccountId) : undefined,
     });
     const platformResult = post.platforms?.[0];
     return {

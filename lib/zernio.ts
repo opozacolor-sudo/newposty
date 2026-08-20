@@ -57,7 +57,27 @@ export type ZernioAccount = {
   profileId?: string;
 };
 export type ZernioMediaItem = { url: string; type: "image" | "video"; title?: string };
-export type ZernioPlatformTarget = { platform: string; accountId: string };
+export type ZernioPlatformTarget = {
+  platform: string;
+  accountId: string;
+  platformSpecificData?: Record<string, unknown>;
+};
+export type TikTokSettings = {
+  privacy_level: string;
+  allow_comment: boolean;
+  allow_duet: boolean;
+  allow_stitch: boolean;
+  content_preview_confirmed: boolean;
+  express_consent_given: boolean;
+};
+export type TikTokCreatorInfo = {
+  privacyLevels?: string[];
+  postingLimits?: {
+    commentDisabled?: boolean;
+    duetDisabled?: boolean;
+    stitchDisabled?: boolean;
+  };
+};
 export type ZernioPost = {
   _id: string;
   status?: string;
@@ -214,6 +234,12 @@ export async function presignMedia(filename: string, contentType: string) {
   );
 }
 
+export async function getTikTokCreatorInfo(accountId: string, mediaType: "video" | "photo" = "video") {
+  return zernioFetch<TikTokCreatorInfo>(
+    `/accounts/${encodeURIComponent(accountId)}/tiktok/creator-info?mediaType=${mediaType}`,
+  );
+}
+
 export async function createPost(input: {
   content: string;
   platforms: ZernioPlatformTarget[];
@@ -223,6 +249,7 @@ export async function createPost(input: {
   timezone?: string;
   title?: string;
   xRequestId?: string;
+  tiktokSettings?: TikTokSettings;
 }) {
   const data = await zernioFetch<{ post: ZernioPost }>("/posts", {
     method: "POST",
@@ -235,6 +262,7 @@ export async function createPost(input: {
       publishNow: input.publishNow ?? false,
       scheduledFor: input.scheduledFor,
       timezone: input.timezone ?? "UTC",
+      tiktokSettings: input.tiktokSettings,
     }),
   });
   return data.post;

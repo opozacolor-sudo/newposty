@@ -36,6 +36,18 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
           </li>
         ))}
       </ul>
+      {payload.excluded_by_validation && payload.excluded_by_validation.length > 0 ? (
+        <div className="rounded-xl border border-[#F5D0A9] bg-[#FFF7ED] px-3 py-2 text-xs text-[#9A3412]">
+          <p className="font-medium">{t("excludedTitle")}</p>
+          <ul className="mt-1 space-y-1">
+            {payload.excluded_by_validation.map((item) => (
+              <li key={`${item.platform}-${item.reason}`}>
+                {platformLabel(item.platform)}: {item.reason}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </section>
   );
 }

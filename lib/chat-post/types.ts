@@ -112,6 +112,7 @@ export type ResultsPayload = {
   results: PlatformExecResult[];
   allFailed: boolean;
   skippedConfirmation?: boolean;
+  excluded_by_validation?: ExcludedPlatform[];
 };
 
 export type SummaryPayload = {

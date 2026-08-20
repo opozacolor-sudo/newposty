@@ -55,6 +55,7 @@ export function PostConfirmationCard({
           action_id: payload.action_id,
           results: body.results,
           allFailed: body.allFailed,
+          excluded_by_validation: payload.resolved.excluded_by_validation,
         },
       });
     } catch {

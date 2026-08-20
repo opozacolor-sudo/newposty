@@ -85,7 +85,12 @@ export async function POST(request: Request) {
   });
 
   const allFailed = results.length > 0 && results.every((item) => item.status === "error");
-  return NextResponse.json({ action_id: body.action_id, results, allFailed });
+  return NextResponse.json({
+    action_id: body.action_id,
+    results,
+    allFailed,
+    excluded_by_validation: resolved.excluded_by_validation,
+  });
 }
 
 async function persistDashboardPosts(input: {

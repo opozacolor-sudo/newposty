@@ -342,7 +342,9 @@ export async function POST(request: Request) {
             resolved: resolved.resolved,
           });
 
-          if (skipConfirmation) {
+          const autoPublish =
+            skipConfirmation && saved.excluded_by_validation.length === 0;
+          if (autoPublish) {
             const executed = await runExecution({
               supabase,
               userId: user.id,
@@ -355,6 +357,7 @@ export async function POST(request: Request) {
               results: executed.results,
               allFailed: executed.allFailed,
               skippedConfirmation: true,
+              excluded_by_validation: saved.excluded_by_validation,
             };
             toolResults.push({
               type: "tool_result",
@@ -363,6 +366,7 @@ export async function POST(request: Request) {
                 executed: true,
                 skipped_confirmation: true,
                 results: executed.results,
+                excluded_by_validation: saved.excluded_by_validation,
               }),
             });
           } else {
