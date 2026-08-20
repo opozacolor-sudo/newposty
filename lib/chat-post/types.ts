@@ -24,6 +24,7 @@ export type ToolPostAction = {
   caption?: string;
   caption_source?: CaptionSource;
   content_type?: string;
+  content_types?: Record<string, string>;
   media_refs?: string[];
 };
 

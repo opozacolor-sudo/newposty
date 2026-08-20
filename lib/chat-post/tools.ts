@@ -31,7 +31,13 @@ export const chatPostTools: Anthropic.Tool[] = [
               content_type: {
                 type: "string",
                 description:
-                  "Only if the user asked for a specific Instagram format (story, reel, feed, carousel). Omit when posting the same video to multiple networks — each platform is adapted automatically.",
+                  "Global format only when a single platform was named with a format, e.g. Instagram-only reel. Prefer content_types when more than one network is requested.",
+              },
+              content_types: {
+                type: "object",
+                additionalProperties: { type: "string" },
+                description:
+                  'Per-platform format. Example for “Instagram reel and TikTok”: {"instagram":"reels"}. Do not put reels on TikTok or YouTube.',
               },
               media_refs: {
                 type: "array",
@@ -123,10 +129,11 @@ export function chatPostSystemPrompt(input: {
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
     "Never assume the platform if the user did not specify one. Ask a clarifying question in text. Do NOT call create_social_post with a guessed platform.",
     "Never assume media if the platform requires it and the user attached nothing. Ask for the file. Do not call the tool until the file is there.",
-    "When the user wants the same video on Instagram and TikTok (or YouTube), put every requested platform in the same action. Omit content_type unless they explicitly asked for an Instagram story vs reel vs feed.",
+    "Formats are per network. “Postează acest video pe Instagram reel și TikTok” means platforms: [\"instagram\",\"tiktok\"] and content_types: {\"instagram\":\"reels\"}. Reel was only for Instagram. Do not set a global content_type of reels, and never put reels on TikTok.",
+    "Keep those platforms in the same action when the caption and time are the same. Put a format in content_types only for the network the user named it on (story/reel/feed/carousel).",
     "Phrases like “toate rețelele”, “peste tot”, “all networks”, “everywhere” must become platforms: [\"__all_connected__\"]. Do not expand that list yourself from memory.",
     "For explicit exclusions (“everywhere except X”), send platforms: [\"__all_connected__\"] and excluded_platforms: [\"x\"].",
-    "Use a separate actions[] item when platforms in the same message have different captions, times, or content types.",
+    "Use a separate actions[] item only when platforms in the same message have different captions or times. Different formats go in content_types, not in separate actions.",
     "If the user only wants a caption or content idea, without intent to post now, do NOT call create_social_post. Reply in text.",
     "If the user gives an explicit caption, pass it EXACTLY as caption with caption_source=user_provided. Do not paraphrase. Long captions are shortened to each platform’s limit.",
     "If they ask to post without giving a caption, use caption_source=ai_generated and omit caption or leave it empty.",

@@ -97,6 +97,35 @@ export function adaptContentType(input: {
   return { contentType: requested, incompatible: true };
 }
 
+function perPlatformContentType(contentTypes: Record<string, string> | undefined, platform: string) {
+  if (!contentTypes) return undefined;
+  for (const [key, value] of Object.entries(contentTypes)) {
+    if (canonicalizePlatform(key) === platform) return value;
+  }
+  return undefined;
+}
+
+/**
+ * “Instagram reel and TikTok” must not stamp reels onto TikTok.
+ * A global content_type only applies to platforms that actually have that format.
+ */
+export function contentTypeForPlatform(input: {
+  platform: string;
+  contentType?: string;
+  contentTypes?: Record<string, string>;
+}) {
+  const per = perPlatformContentType(input.contentTypes, input.platform);
+  if (per) return per;
+
+  const global = normalizeRequestedContentType(input.contentType);
+  if (!global) return undefined;
+
+  const capability = getPlatformCapability(input.platform);
+  const allowed = capability?.contentTypes.map((item) => item.toLowerCase()) ?? [];
+  if (allowed.includes(global)) return global;
+  return undefined;
+}
+
 export function validationReason(input: {
   platform: string;
   capability: PlatformCapability | null;

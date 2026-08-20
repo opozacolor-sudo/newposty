@@ -3,6 +3,7 @@ import { getPlatformCapability } from "@/lib/platform-capabilities";
 import { isPlatformId, platformLabel } from "@/lib/platforms";
 import {
   adaptContentType,
+  contentTypeForPlatform,
   inferMediaKind,
   resolvePlatformSelection,
   truncateCaption,
@@ -198,11 +199,16 @@ export async function resolveCreateActions(input: {
         });
         continue;
       }
+      const requestedType = contentTypeForPlatform({
+        platform,
+        contentType: action.content_type,
+        contentTypes: action.content_types,
+      });
       const reason = validationReason({
         platform,
         capability,
         media,
-        contentType: action.content_type,
+        contentType: requestedType,
         locale: input.locale,
       });
       if (reason) {
@@ -220,7 +226,7 @@ export async function resolveCreateActions(input: {
       }
       const adapted = adaptContentType({
         platform,
-        requested: action.content_type,
+        requested: requestedType,
         mediaKind: inferMediaKind(media),
       });
       platforms.push({

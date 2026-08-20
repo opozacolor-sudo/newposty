@@ -3,6 +3,7 @@ import test from "node:test";
 import { canonicalizePlatform, getPlatformCapability } from "../platform-capabilities";
 import {
   adaptContentType,
+  contentTypeForPlatform,
   matchScheduledReference,
   resolvePlatformSelection,
   truncateCaption,
@@ -60,6 +61,16 @@ test("instagram maps a generic video type to reels", () => {
     adaptContentType({ platform: "instagram", requested: "video", mediaKind: "video" }),
     { contentType: "reels", incompatible: false },
   );
+});
+
+test("Instagram reel and TikTok applies reels only to Instagram", () => {
+  const input = {
+    contentType: "reels",
+    contentTypes: { instagram: "reels" } as Record<string, string>,
+  };
+  assert.equal(contentTypeForPlatform({ platform: "instagram", ...input }), "reels");
+  assert.equal(contentTypeForPlatform({ platform: "tiktok", contentTypes: input.contentTypes }), undefined);
+  assert.equal(contentTypeForPlatform({ platform: "tiktok", contentType: "reels" }), undefined);
 });
 
 test("instagram without media is excluded", () => {
