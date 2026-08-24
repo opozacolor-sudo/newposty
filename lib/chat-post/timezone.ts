@@ -28,6 +28,15 @@ export function localIsoInZone(date: Date, timeZone: string) {
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second ?? "00"}`;
 }
 
+export function ymdInZone(date: Date, timeZone: string) {
+  return localIsoInZone(date, timeZone).slice(0, 10);
+}
+
+export function addCalendarDays(ymd: string, days: number) {
+  const [year, month, day] = ymd.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
+}
+
 export function formatInZone(date: Date, timeZone: string, locale: string) {
   return new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-GB", {
     timeZone,

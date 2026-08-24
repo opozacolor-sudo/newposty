@@ -29,10 +29,20 @@ export function resultsReply(locale: string | undefined, results: Array<{ status
   const ok = results.length - failed;
   if (locale === "ro") {
     if (results.length === 0 || ok === 0) return "Nu s-a postat nimic. Vezi erorile mai jos.";
+    if (results.length > 8) {
+      return failed === 0
+        ? `Gata. ${ok} programate. Detaliile sunt mai jos.`
+        : `Gata. ${ok} programate, ${failed} eșuate. Detaliile sunt mai jos.`;
+    }
     if (failed === 0) return "Gata. Statusul fiecărei rețele e mai jos.";
     return "O parte din postări au plecat. Detaliile sunt mai jos.";
   }
   if (results.length === 0 || ok === 0) return "Nothing was posted. See the errors below.";
+  if (results.length > 8) {
+    return failed === 0
+      ? `Done. ${ok} scheduled. Details are below.`
+      : `Done. ${ok} scheduled, ${failed} failed. Details are below.`;
+  }
   if (failed === 0) return "Done. Each network’s status is below.";
   return "Some posts went out. Details are below.";
 }

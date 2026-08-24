@@ -1,4 +1,4 @@
-import { isFutureDate, localIsoInZone, zonedLocalToUtc } from "@/lib/chat-post/timezone";
+import { addCalendarDays, isFutureDate, ymdInZone, zonedLocalToUtc } from "@/lib/chat-post/timezone";
 
 /**
  * Ranked peak windows from public 2024–2026 industry reports
@@ -125,21 +125,19 @@ export function hasClockTime(value?: string | null) {
   return /T\d{2}:\d{2}/.test(raw) || /[zZ]|[+-]\d{2}:\d{2}$/.test(raw);
 }
 
+export function clockPartsFromIso(value?: string | null) {
+  if (!hasClockTime(value)) return null;
+  const match = (value ?? "").match(/T(\d{2}):(\d{2})/);
+  if (!match) return null;
+  return { hour: Number(match[1]), minute: Number(match[2]) };
+}
+
 function slotsFor(platform: string, contentType?: string | null): Slot[] {
   const type = (contentType ?? "").toLowerCase();
   if (platform === "instagram" && (type === "stories" || type === "story")) {
     return INSTAGRAM_STORIES;
   }
   return BY_PLATFORM[platform] ?? DEFAULT_SLOTS;
-}
-
-function ymdInZone(date: Date, timeZone: string) {
-  return localIsoInZone(date, timeZone).slice(0, 10);
-}
-
-function addCalendarDays(ymd: string, days: number) {
-  const [year, month, day] = ymd.split("-").map(Number);
-  return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
 }
 
 function weekdayFromYmd(ymd: string) {

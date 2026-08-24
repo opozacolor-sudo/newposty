@@ -389,7 +389,10 @@ export async function POST(request: Request) {
           });
 
           const autoPublish =
-            skipConfirmation && saved.excluded_by_validation.length === 0;
+            skipConfirmation &&
+            saved.excluded_by_validation.length === 0 &&
+            !saved.series &&
+            saved.actions.length <= 3;
           if (autoPublish) {
             const executed = await runExecution({
               supabase,
@@ -424,6 +427,8 @@ export async function POST(request: Request) {
               content: JSON.stringify({
                 pending_confirmation: true,
                 action_id: saved.action_id,
+                series: saved.series ?? null,
+                days: saved.series?.total_days ?? saved.actions.length,
                 excluded_by_validation: saved.excluded_by_validation,
                 warnings: saved.warnings,
               }),

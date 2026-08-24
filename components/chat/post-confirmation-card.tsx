@@ -82,6 +82,8 @@ export function PostConfirmationCard({
     <section className="mt-3 space-y-3 rounded-2xl border border-[#E5E5E5] bg-white p-4">
       {resolved.kind === "manage" && resolved.manage ? (
         <ManageBlock resolved={resolved} />
+      ) : resolved.series ? (
+        <SeriesBlock resolved={resolved} />
       ) : (
         resolved.actions.map((action, index) => (
           <div key={`${action.mode}-${index}`} className="space-y-3">
@@ -142,7 +144,7 @@ export function PostConfirmationCard({
         ))
       )}
 
-      {resolved.excluded_by_validation.length > 0 ? (
+      {resolved.excluded_by_validation.length > 0 && !resolved.series ? (
         <div className="rounded-xl border border-[#F5D0A9] bg-[#FFF7ED] px-3 py-2 text-xs text-[#9A3412]">
           <p className="font-medium">{t("excludedTitle")}</p>
           <ul className="mt-1 space-y-1">
@@ -181,7 +183,7 @@ export function PostConfirmationCard({
           onClick={() => void confirm()}
           className="rounded-full bg-[#FF4713] px-4 py-2 text-xs text-white disabled:opacity-40"
         >
-          {t("confirmPost")}
+          {busy && resolved.series ? t("schedulingSeries") : t("confirmPost")}
         </button>
         <button
           type="button"
@@ -193,6 +195,96 @@ export function PostConfirmationCard({
         </button>
       </div>
     </section>
+  );
+}
+
+function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
+  const t = useTranslations("Chat");
+  const networks = new Set<string>();
+  const rows = new Map<
+    number,
+    {
+      dayIndex: number;
+      label: string;
+      media: { url: string; type: string; name?: string | null } | null;
+      platforms: { platform: string; handle: string; time: string | null }[];
+      skipped: { platform: string; reason: string }[];
+    }
+  >();
+  for (const action of resolved.actions) {
+    const dayIndex = action.day_index ?? rows.size;
+    const current = rows.get(dayIndex) ?? {
+      dayIndex,
+      label: action.scheduled_label ?? "",
+      media: action.media[0] ?? null,
+      platforms: [],
+      skipped: action.skipped_platforms ?? [],
+    };
+    for (const platform of action.platforms) {
+      networks.add(platform.platform);
+      current.platforms.push({
+        platform: platform.platform,
+        handle: platform.handle,
+        time: action.scheduled_label,
+      });
+    }
+    if ((action.skipped_platforms ?? []).length > 0) current.skipped = action.skipped_platforms ?? [];
+    if (!current.media && action.media[0]) current.media = action.media[0];
+    rows.set(dayIndex, current);
+  }
+  const days = [...rows.values()].sort((left, right) => left.dayIndex - right.dayIndex);
+  const usesResearch = resolved.actions.some((action) => action.schedule_source === "best_time_research");
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm font-medium text-[#1A1A1A]">
+          {t("seriesTitle", { days: resolved.series?.total_days ?? days.length, networks: networks.size })}
+        </p>
+        <p className="text-xs text-[#6B7280]">{t("seriesHint")}</p>
+        {usesResearch ? <p className="mt-1 text-[11px] text-[#6B7280]">{t("bestTimeHint")}</p> : null}
+      </div>
+      <ul className="max-h-80 space-y-2 overflow-y-auto pr-1">
+        {days.map((day) => (
+          <li key={day.dayIndex} className="flex gap-3 rounded-xl border border-[#F3F4F6] p-2">
+            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-[#E5E5E5] bg-[#F5F5F5]">
+              {day.media?.type === "image" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={day.media.url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <p className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
+                  {day.media?.name ?? "video"}
+                </p>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-[#1A1A1A]">
+                {t("seriesDay", { day: day.dayIndex + 1 })} · {day.label}
+              </p>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {day.platforms.map((platform, index) => {
+                  const visual = getPlatform(platform.platform);
+                  return (
+                    <span
+                      key={`${platform.platform}-${platform.handle}-${index}`}
+                      className="inline-flex items-center gap-1 rounded-full bg-[#F5F5F5] px-2 py-0.5 text-[11px] text-[#1A1A1A]"
+                    >
+                      {visual ? <PlatformIcon platform={visual} connected size="sm" /> : null}
+                      {platformLabel(platform.platform)}
+                    </span>
+                  );
+                })}
+              </div>
+              {day.skipped.length > 0 ? (
+                <p className="mt-1 text-[11px] text-[#9A3412]">
+                  {day.skipped.map((item) => platformLabel(item.platform)).join(", ")} — {t("seriesSkipped")}
+                </p>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

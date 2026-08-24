@@ -15,7 +15,7 @@ import type {
   ResolvedAction,
 } from "@/lib/chat-post/types";
 
-const ACTION_TTL_MS = 30 * 60 * 1000;
+const ACTION_TTL_MS = 2 * 60 * 60 * 1000;
 const INTENT_TTL_MS = 20 * 60 * 1000;
 
 export async function savePendingAction(input: {
@@ -137,12 +137,15 @@ export async function finishAction(input: {
     .eq("id", input.actionId)
     .eq("user_id", input.userId);
 
+  const rows = [];
   for (let index = 0; index < input.resolved.actions.length; index += 1) {
     const action = input.resolved.actions[index];
     for (const target of action.platforms) {
-      const result = input.results.find(
-        (item) => item.platform === target.platform && item.handle === target.handle,
-      );
+      const result =
+        input.results.find((item) => item.requestId && item.requestId === target.requestId) ??
+        input.results.find(
+          (item) => item.platform === target.platform && item.handle === target.handle,
+        );
       const status =
         input.resolved.kind === "manage" && input.resolved.manage?.action === "cancel"
           ? "cancelled"
@@ -153,7 +156,7 @@ export async function finishAction(input: {
             : result?.status === "pending"
               ? "publishing"
               : "failed";
-      await input.supabase.from("post_actions").insert({
+      rows.push({
         user_id: input.userId,
         conversation_id: input.conversationId,
         action_id: input.actionId,
@@ -167,6 +170,9 @@ export async function finishAction(input: {
         error_message: result?.error_message_human ?? null,
       });
     }
+  }
+  if (rows.length > 0) {
+    await input.supabase.from("post_actions").insert(rows);
   }
 
   if (input.resolved.kind === "manage" && input.resolved.manage) {

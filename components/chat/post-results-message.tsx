@@ -98,6 +98,10 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
   const anySuccess = results.some((result) => result.status === "success");
   const allFailed = results.length > 0 && results.every((result) => result.status === "error");
 
+  const failed = results.filter((result) => result.status === "error");
+  const compact = results.length > 8;
+  const visible = compact ? failed : results;
+
   return (
     <section className="mt-3 space-y-2">
       {allFailed ? (
@@ -105,10 +109,18 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
       ) : payload.skippedConfirmation && anySuccess ? (
         <p className="text-xs text-[#6B7280]">{t("postedWithoutAsking")}</p>
       ) : null}
-      <ul className="space-y-2">
-        {results.map((result, index) => (
+      {compact && !allFailed ? (
+        <p className="text-xs text-[#6B7280]">
+          {t("resultsSummary", {
+            ok: results.filter((result) => result.status !== "error").length,
+            failed: failed.length,
+          })}
+        </p>
+      ) : null}
+      <ul className="max-h-96 space-y-2 overflow-y-auto">
+        {visible.map((result, index) => (
           <ResultRow
-            key={`${result.platform}-${result.contentType ?? ""}-${result.mode ?? ""}-${result.handle}-${index}`}
+            key={`${result.platform}-${result.contentType ?? ""}-${result.mode ?? ""}-${result.handle}-${result.requestId ?? index}`}
             result={result}
           />
         ))}

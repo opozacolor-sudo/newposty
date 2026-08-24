@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { getPlatformCapability } from "@/lib/platform-capabilities";
+import { ALL_CONNECTED, getPlatformCapability } from "@/lib/platform-capabilities";
 import { isPlatformId, platformLabel } from "@/lib/platforms";
 import {
   adaptContentType,
@@ -12,20 +12,30 @@ import {
 } from "@/lib/chat-post/rules";
 import {
   bestTimeResearchWarning,
+  clockPartsFromIso,
   hasClockTime,
   nextBestTime,
   parseDateOnly,
   wantsBestTime,
 } from "@/lib/chat-post/best-time";
 import {
+  inferSeriesStartYmd,
+  MAX_CHAT_ATTACHMENTS,
+  orderedMedia,
+  seriesDayYmd,
+  wantsDailySeries,
+} from "@/lib/chat-post/series";
+import {
   formatInZone,
   isFutureDate,
   localIsoInZone,
   parseScheduledAt,
+  zonedLocalToUtc,
 } from "@/lib/chat-post/timezone";
 import type {
   CaptionSource,
   ChatMedia,
+  ChatSeries,
   ConnectedAccount,
   ExcludedPlatform,
   ResolvedAction,
@@ -98,12 +108,26 @@ export async function resolveCreateActions(input: {
   const warnings: string[] = [];
   const resolvedActions: ResolvedCreateAction[] = [];
   const missing = new Set<"platform" | "media" | "caption" | "time">();
+  let seriesMeta: ChatSeries | undefined;
 
   if (input.actions.length === 0) {
     return { ok: false, error: input.locale === "ro" ? "Nu am ce posta." : "There is nothing to post.", missing: ["platform"] };
   }
 
-  for (const action of input.actions) {
+  for (const rawAction of input.actions) {
+    const items = orderedMedia(rawAction.media_refs, input.media);
+    const isSeries = wantsDailySeries({
+      cadence: rawAction.cadence,
+      brief: input.fallbackBrief,
+      mediaCount: items.length,
+    });
+    const action: ToolPostAction =
+      isSeries && (!rawAction.platforms || rawAction.platforms.length === 0)
+        ? { ...rawAction, platforms: [ALL_CONNECTED], mode: "schedule" }
+        : isSeries
+          ? { ...rawAction, mode: "schedule" }
+          : rawAction;
+
     const selection = resolvePlatformSelection({
       requested: action.platforms ?? [],
       excluded: action.excluded_platforms ?? [],
@@ -141,9 +165,7 @@ export async function resolveCreateActions(input: {
       };
     }
 
-    const media = action.media_refs
-      ? input.media.filter((item) => action.media_refs?.includes(item.id))
-      : input.media;
+    const media = items;
 
     let caption = action.caption?.trim() ?? "";
     let caption_source: CaptionSource = action.caption_source ?? "user_provided";
@@ -165,6 +187,74 @@ export async function resolveCreateActions(input: {
         brandVoice: input.brandVoice,
         maxChars: tightest,
       });
+    }
+
+    if (isSeries) {
+      const queue = media.slice(0, MAX_CHAT_ATTACHMENTS);
+      if (media.length > MAX_CHAT_ATTACHMENTS) {
+        warnings.push(
+          input.locale === "ro"
+            ? `Am luat primele ${MAX_CHAT_ATTACHMENTS} fișiere din serie.`
+            : `I took the first ${MAX_CHAT_ATTACHMENTS} files in the series.`,
+        );
+      }
+      const startOn = inferSeriesStartYmd({
+        brief: input.fallbackBrief,
+        scheduled_on: action.scheduled_on,
+        scheduled_at_iso: action.scheduled_at_iso,
+        timeZone: input.timezone,
+        now: input.now,
+      });
+      const clock = clockPartsFromIso(action.scheduled_at_iso);
+      const useResearchTime = !clock || wantsBestTime(action);
+      let daysBuilt = 0;
+      for (let dayIndex = 0; dayIndex < queue.length; dayIndex += 1) {
+        const item = queue[dayIndex];
+        const dayYmd = seriesDayYmd(startOn, dayIndex);
+        const collected = collectTargets({
+          platformIds: selection.platforms,
+          postingAccounts,
+          media: [item],
+          caption,
+          locale: input.locale,
+          contentType: action.content_type,
+          contentTypes: action.content_types,
+        });
+        for (const warning of collected.truncatedWarnings) {
+          if (!warnings.includes(warning)) warnings.push(warning);
+        }
+        if (collected.platforms.length === 0) {
+          if (collected.skipped.some((row) => /material|media|fișier|file/i.test(row.reason))) {
+            missing.add("media");
+          }
+          continue;
+        }
+        const pushed = pushScheduledGroups({
+          resolvedActions,
+          excluded_by_validation,
+          warnings,
+          locale: input.locale,
+          timezone: input.timezone,
+          now: input.now,
+          mode: "schedule",
+          caption_source,
+          media: [item],
+          platforms: collected.platforms,
+          skipped: collected.skipped,
+          dayIndex,
+          namedDay: dayYmd,
+          useResearchTime,
+          clock,
+        });
+        if (pushed > 0) daysBuilt += 1;
+      }
+      if (daysBuilt > 0) {
+        seriesMeta = { cadence: "daily", start_on: startOn, total_days: daysBuilt };
+        if (useResearchTime && !warnings.includes(bestTimeResearchWarning(input.locale))) {
+          warnings.push(bestTimeResearchWarning(input.locale));
+        }
+      }
+      continue;
     }
 
     let scheduledUtc: Date | null = null;
@@ -205,60 +295,20 @@ export async function resolveCreateActions(input: {
       }
     }
 
-    const platforms: ResolvedPlatform[] = [];
-    for (const platform of selection.platforms) {
-      const account = accountForPlatform(postingAccounts, platform);
-      const capability = getPlatformCapability(platform);
-      if (!account) {
-        excluded_by_validation.push({
-          platform,
-          reason:
-            input.locale === "ro"
-              ? `${platformLabel(platform)} nu e conectat.`
-              : `${platformLabel(platform)} is not connected.`,
-        });
-        continue;
-      }
-      const requestedType = contentTypeForPlatform({
-        platform,
-        contentType: action.content_type,
-        contentTypes: action.content_types,
-      });
-      const reason = validationReason({
-        platform,
-        capability,
-        media,
-        contentType: requestedType,
-        locale: input.locale,
-      });
-      if (reason) {
-        if (capability?.requiresMedia && media.length === 0) missing.add("media");
-        excluded_by_validation.push({ platform, reason });
-        continue;
-      }
-      const limited = truncateCaption(caption, capability?.maxCaptionChars);
-      if (limited.truncated) {
-        warnings.push(
-          input.locale === "ro"
-            ? `Textul pentru ${platformLabel(platform)} a fost scurtat la ${capability?.maxCaptionChars} caractere.`
-            : `The ${platformLabel(platform)} caption was shortened to ${capability?.maxCaptionChars} characters.`,
-        );
-      }
-      const adapted = adaptContentType({
-        platform,
-        requested: requestedType,
-        mediaKind: inferMediaKind(media),
-      });
-      platforms.push({
-        platform,
-        accountId: account.id,
-        zernioAccountId: account.zernio_account_id,
-        handle: handleOf(account),
-        caption: limited.caption,
-        captionTruncated: limited.truncated,
-        contentType: adapted.contentType,
-        requestId: crypto.randomUUID(),
-      });
+    const collected = collectTargets({
+      platformIds: selection.platforms,
+      postingAccounts,
+      media,
+      caption,
+      locale: input.locale,
+      contentType: action.content_type,
+      contentTypes: action.content_types,
+    });
+    warnings.push(...collected.truncatedWarnings);
+    excluded_by_validation.push(...collected.skipped);
+    const platforms = collected.platforms;
+    if (collected.skipped.some((row) => /material|media|fișier|file/i.test(row.reason))) {
+      missing.add("media");
     }
 
     if (platforms.length === 0 && missing.has("media")) {
@@ -370,8 +420,189 @@ export async function resolveCreateActions(input: {
       excluded_by_validation,
       excluded_platforms: [...new Set(excluded_platforms)],
       warnings,
+      series: seriesMeta,
     },
   };
+}
+
+function collectTargets(input: {
+  platformIds: string[];
+  postingAccounts: ConnectedAccount[];
+  media: ChatMedia[];
+  caption: string;
+  locale: string;
+  contentType?: string;
+  contentTypes?: Record<string, string>;
+}) {
+  const platforms: ResolvedPlatform[] = [];
+  const skipped: ExcludedPlatform[] = [];
+  const truncatedWarnings: string[] = [];
+  for (const platform of input.platformIds) {
+    const account = accountForPlatform(input.postingAccounts, platform);
+    const capability = getPlatformCapability(platform);
+    if (!account) {
+      skipped.push({
+        platform,
+        reason:
+          input.locale === "ro"
+            ? `${platformLabel(platform)} nu e conectat.`
+            : `${platformLabel(platform)} is not connected.`,
+      });
+      continue;
+    }
+    const requestedType = contentTypeForPlatform({
+      platform,
+      contentType: input.contentType,
+      contentTypes: input.contentTypes,
+    });
+    const reason = validationReason({
+      platform,
+      capability,
+      media: input.media,
+      contentType: requestedType,
+      locale: input.locale,
+    });
+    if (reason) {
+      skipped.push({ platform, reason });
+      continue;
+    }
+    const limited = truncateCaption(input.caption, capability?.maxCaptionChars);
+    if (limited.truncated) {
+      truncatedWarnings.push(
+        input.locale === "ro"
+          ? `Textul pentru ${platformLabel(platform)} a fost scurtat la ${capability?.maxCaptionChars} caractere.`
+          : `The ${platformLabel(platform)} caption was shortened to ${capability?.maxCaptionChars} characters.`,
+      );
+    }
+    const adapted = adaptContentType({
+      platform,
+      requested: requestedType,
+      mediaKind: inferMediaKind(input.media),
+    });
+    platforms.push({
+      platform,
+      accountId: account.id,
+      zernioAccountId: account.zernio_account_id,
+      handle: handleOf(account),
+      caption: limited.caption,
+      captionTruncated: limited.truncated,
+      contentType: adapted.contentType,
+      requestId: crypto.randomUUID(),
+    });
+  }
+  return { platforms, skipped, truncatedWarnings };
+}
+
+function pushScheduledGroups(input: {
+  resolvedActions: ResolvedCreateAction[];
+  excluded_by_validation: ExcludedPlatform[];
+  warnings: string[];
+  locale: string;
+  timezone: string;
+  now?: Date;
+  mode: ResolvedCreateAction["mode"];
+  caption_source: CaptionSource;
+  media: ChatMedia[];
+  platforms: ResolvedPlatform[];
+  skipped?: ExcludedPlatform[];
+  dayIndex?: number;
+  namedDay?: string | null;
+  useResearchTime: boolean;
+  clock?: { hour: number; minute: number } | null;
+}) {
+  if (input.mode === "schedule" && input.useResearchTime) {
+    const grouped = new Map<string, { utc: Date; platforms: ResolvedPlatform[] }>();
+    for (const platform of input.platforms) {
+      const utc = nextBestTime({
+        platform: platform.platform,
+        contentType: platform.contentType,
+        timeZone: input.timezone,
+        now: input.now,
+        onOrAfterYmd: input.namedDay,
+      });
+      if (!utc) {
+        input.excluded_by_validation.push({
+          platform: platform.platform,
+          reason:
+            input.locale === "ro"
+              ? "Nu am găsit o fereastră de vârf în următoarele zile."
+              : "I could not find a peak window in the coming days.",
+        });
+        continue;
+      }
+      const key = utc.toISOString();
+      const group = grouped.get(key);
+      if (group) group.platforms.push(platform);
+      else grouped.set(key, { utc, platforms: [platform] });
+    }
+    if (grouped.size === 0) return 0;
+    if (!input.warnings.includes(bestTimeResearchWarning(input.locale))) {
+      input.warnings.push(bestTimeResearchWarning(input.locale));
+    }
+    if (input.namedDay) {
+      const drifted = [...grouped.values()].some(
+        (group) => localIsoInZone(group.utc, input.timezone).slice(0, 10) !== input.namedDay,
+      );
+      if (drifted) {
+        const message =
+          input.locale === "ro"
+            ? "Fereastra de vârf din ziua cerută a trecut, am luat următoarea."
+            : "The peak window on that day has passed, so I took the next one.";
+        if (!input.warnings.includes(message)) input.warnings.push(message);
+      }
+    }
+    let first = true;
+    for (const group of grouped.values()) {
+      input.resolvedActions.push(
+        scheduledAction({
+          mode: input.mode,
+          scheduledUtc: group.utc,
+          timezone: input.timezone,
+          locale: input.locale,
+          scheduleSource: "best_time_research",
+          platforms: group.platforms,
+          media: input.media,
+          caption_source: input.caption_source,
+          dayIndex: input.dayIndex,
+          skipped_platforms: first ? input.skipped : undefined,
+        }),
+      );
+      first = false;
+    }
+    return grouped.size;
+  }
+
+  let scheduledUtc: Date | null = null;
+  if (input.mode === "schedule" && input.clock && input.namedDay) {
+    const hour = String(input.clock.hour).padStart(2, "0");
+    const minute = String(input.clock.minute).padStart(2, "0");
+    scheduledUtc = zonedLocalToUtc(`${input.namedDay}T${hour}:${minute}:00`, input.timezone);
+    if (scheduledUtc && !isFutureDate(scheduledUtc, input.now ?? new Date())) {
+      scheduledUtc = nextBestTime({
+        platform: input.platforms[0]?.platform ?? "instagram",
+        contentType: input.platforms[0]?.contentType,
+        timeZone: input.timezone,
+        now: input.now,
+        onOrAfterYmd: input.namedDay,
+      });
+    }
+  }
+
+  input.resolvedActions.push(
+    scheduledAction({
+      mode: input.mode,
+      scheduledUtc,
+      timezone: input.timezone,
+      locale: input.locale,
+      scheduleSource: input.mode === "schedule" ? "user" : undefined,
+      platforms: input.platforms,
+      media: input.media,
+      caption_source: input.caption_source,
+      dayIndex: input.dayIndex,
+      skipped_platforms: input.skipped,
+    }),
+  );
+  return 1;
 }
 
 function scheduledAction(input: {
@@ -383,6 +614,8 @@ function scheduledAction(input: {
   platforms: ResolvedPlatform[];
   media: ChatMedia[];
   caption_source: CaptionSource;
+  dayIndex?: number;
+  skipped_platforms?: ExcludedPlatform[];
 }): ResolvedCreateAction {
   return {
     mode: input.mode,
@@ -394,6 +627,8 @@ function scheduledAction(input: {
         ? "Acum"
         : "Now",
     schedule_source: input.scheduleSource,
+    day_index: input.dayIndex,
+    skipped_platforms: input.skipped_platforms,
     platforms: input.platforms,
     media: input.media,
     caption_source: input.caption_source,

@@ -18,6 +18,7 @@ import type {
   UserMediaPayload,
 } from "@/lib/chat-post/types";
 import { localizeCancelledContent, resultsReply } from "@/lib/chat-post/copy";
+import { MAX_CHAT_ATTACHMENTS } from "@/lib/chat-post/series";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -26,12 +27,25 @@ type ChatMessage = {
   payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | null;
 };
 
-type UploadDraft = {
+type Attachment = {
   localId: string;
   name: string;
   type: "image" | "video";
-  previewUrl: string;
+  previewUrl: string | null;
+  item: ChatMedia | null;
 };
+
+async function runPool<T>(items: T[], concurrency: number, worker: (item: T) => Promise<void>) {
+  let next = 0;
+  async function run() {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      await worker(items[index]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, Math.max(items.length, 1)) }, () => run()));
+}
 
 function visibleText(content: string) {
   return content.replace(/\n\n\[media_refs:[\s\S]*$/, "").trim();
@@ -105,8 +119,11 @@ export default function ChatStudio() {
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [media, setMedia] = useState<ChatMedia[]>([]);
-  const [uploads, setUploads] = useState<UploadDraft[]>([]);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const media = attachments
+    .map((item) => item.item)
+    .filter((item): item is ChatMedia => Boolean(item));
+  const uploading = attachments.some((item) => !item.item);
   const [listening, setListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
   const [clearing, setClearing] = useState(false);
@@ -161,18 +178,19 @@ export default function ChatStudio() {
       setError(payload.error ?? t("replyFailed"));
       return;
     }
-    for (const item of uploads) URL.revokeObjectURL(item.previewUrl);
+    for (const item of attachments) {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    }
     setConversationId(payload.conversationId ?? null);
     setMessages([]);
-    setMedia([]);
-    setUploads([]);
+    setAttachments([]);
     setInput("");
   }
 
   async function send(event?: FormEvent) {
     event?.preventDefault();
     const text = input.trim();
-    if (!text || pending || uploads.length > 0) return;
+    if (!text || pending || uploading) return;
     setInput("");
     setError(null);
     setPending(true);
@@ -197,7 +215,7 @@ export default function ChatStudio() {
       return;
     }
     setConversationId(payload.conversationId);
-    setMedia([]);
+    setAttachments([]);
     setMessages((current) => [
       ...current,
       {
@@ -219,76 +237,91 @@ export default function ChatStudio() {
   async function onFiles(files: FileList | null) {
     if (!files) return;
     setError(null);
-    for (const file of Array.from(files)) {
-      const localId = crypto.randomUUID();
-      const isVideo = file.type.startsWith("video/");
-      const previewUrl = URL.createObjectURL(file);
-      setUploads((current) => [
-        ...current,
-        {
-          localId,
-          name: file.name,
-          type: isVideo ? "video" : "image",
-          previewUrl,
-        },
-      ]);
-      try {
-        const prepareResponse = await fetch("/api/media", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "prepare",
-            filename: file.name,
-            contentType: file.type || "application/octet-stream",
-            size: file.size,
-          }),
-        });
-        const prepare = (await prepareResponse.json()) as {
-          error?: string;
-          code?: string;
-          signedUrl?: string;
-          path?: string;
-        };
-        if (!prepareResponse.ok || !prepare.signedUrl || !prepare.path) {
-          setError(
-            prepare.code === "file_too_large" ? t("fileTooLarge") : (prepare.error ?? t("uploadFailed")),
-          );
-          continue;
-        }
-
-        const put = await fetch(prepare.signedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": file.type || "application/octet-stream" },
-          body: file,
-        });
-        if (!put.ok) {
-          setError(t("uploadFailed"));
-          continue;
-        }
-
-        const completeResponse = await fetch("/api/media", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "complete",
-            path: prepare.path,
-            name: file.name,
-            type: isVideo ? "video" : "image",
-          }),
-        });
-        const payload = (await completeResponse.json()) as ChatMedia & { error?: string };
-        if (!completeResponse.ok) {
-          setError(payload.error ?? t("uploadFailed"));
-          continue;
-        }
-        setMedia((current) => [...current, payload]);
-      } catch {
-        setError(t("uploadFailed"));
-      } finally {
-        URL.revokeObjectURL(previewUrl);
-        setUploads((current) => current.filter((item) => item.localId !== localId));
-      }
+    const picked = Array.from(files);
+    const room = MAX_CHAT_ATTACHMENTS - attachments.length;
+    if (picked.length > room) {
+      setError(t("tooManyFiles", { max: MAX_CHAT_ATTACHMENTS }));
     }
+    const batch = picked.slice(0, Math.max(0, room));
+    if (batch.length === 0) return;
+    const slots: Attachment[] = batch.map((file) => ({
+      localId: crypto.randomUUID(),
+      name: file.name,
+      type: file.type.startsWith("video/") ? "video" : "image",
+      previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+      item: null,
+    }));
+    setAttachments((current) => [...current, ...slots]);
+    await runPool(
+      slots.map((slot, index) => ({ slot, file: batch[index] })),
+      4,
+      async ({ slot, file }) => {
+        try {
+          const prepareResponse = await fetch("/api/media", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "prepare",
+              filename: file.name,
+              contentType: file.type || "application/octet-stream",
+              size: file.size,
+            }),
+          });
+          const prepare = (await prepareResponse.json()) as {
+            error?: string;
+            code?: string;
+            signedUrl?: string;
+            path?: string;
+          };
+          if (!prepareResponse.ok || !prepare.signedUrl || !prepare.path) {
+            setError(
+              prepare.code === "file_too_large" ? t("fileTooLarge") : (prepare.error ?? t("uploadFailed")),
+            );
+            setAttachments((current) => current.filter((item) => item.localId !== slot.localId));
+            return;
+          }
+
+          const put = await fetch(prepare.signedUrl, {
+            method: "PUT",
+            headers: { "Content-Type": file.type || "application/octet-stream" },
+            body: file,
+          });
+          if (!put.ok) {
+            setError(t("uploadFailed"));
+            setAttachments((current) => current.filter((item) => item.localId !== slot.localId));
+            return;
+          }
+
+          const completeResponse = await fetch("/api/media", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "complete",
+              path: prepare.path,
+              name: file.name,
+              type: slot.type,
+            }),
+          });
+          const payload = (await completeResponse.json()) as ChatMedia & { error?: string };
+          if (!completeResponse.ok) {
+            setError(payload.error ?? t("uploadFailed"));
+            setAttachments((current) => current.filter((item) => item.localId !== slot.localId));
+            return;
+          }
+          setAttachments((current) =>
+            current.map((item) => (item.localId === slot.localId ? { ...item, item: payload } : item)),
+          );
+        } catch {
+          setError(t("uploadFailed"));
+          setAttachments((current) => current.filter((item) => item.localId !== slot.localId));
+        } finally {
+          if (slot.previewUrl) URL.revokeObjectURL(slot.previewUrl);
+          setAttachments((current) =>
+            current.map((item) => (item.localId === slot.localId ? { ...item, previewUrl: null } : item)),
+          );
+        }
+      },
+    );
   }
 
   function toggleDictation() {
@@ -406,53 +439,49 @@ export default function ChatStudio() {
       </div>
 
       <form onSubmit={(event) => void send(event)} className="border-t border-[#E5E5E5] bg-white px-4 py-4 sm:px-6">
-        {(uploads.length > 0 || media.length > 0) ? (
+        {attachments.length > 0 ? (
           <div className="mb-3">
             <p className="mb-2 text-xs font-medium text-[#FF4713]">
-              {uploads.length > 0
-                ? t("attaching")
+              {uploading
+                ? t("attachingProgress", { done: media.length, total: attachments.length })
                 : t("attachedReady")}
             </p>
             <ul className="flex gap-2 overflow-x-auto">
-              {uploads.map((item) => (
+              {attachments.map((item) => (
                 <li
                   key={item.localId}
-                  className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-[#FF4713] bg-[#FFF4F0]"
+                  className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-[#F5F5F5] ${
+                    item.item ? "border-[#FF4713]" : "border-[#FF4713] bg-[#FFF4F0]"
+                  }`}
                 >
-                  {item.type === "image" ? (
+                  {item.type === "image" && (item.item?.url || item.previewUrl) ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.previewUrl} alt={item.name} className="h-full w-full object-cover opacity-70" />
+                    <img
+                      src={item.item?.url ?? item.previewUrl ?? ""}
+                      alt={item.name}
+                      className={`h-full w-full object-cover ${item.item ? "" : "opacity-70"}`}
+                    />
                   ) : (
                     <span className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
                       {item.name}
                     </span>
                   )}
-                  <span className="absolute inset-x-0 bottom-0 bg-black/55 py-0.5 text-center text-[10px] text-white">
-                    {t("attaching")}
-                  </span>
-                </li>
-              ))}
-              {media.map((item) => (
-                <li
-                  key={item.id}
-                  className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[#FF4713] bg-[#F5F5F5]"
-                >
-                  {item.type === "image" ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.url} alt={item.name ?? ""} className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
-                      {item.name ?? "video"}
+                  {!item.item ? (
+                    <span className="absolute inset-x-0 bottom-0 bg-black/55 py-0.5 text-center text-[10px] text-white">
+                      {t("attaching")}
                     </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setAttachments((current) => current.filter((entry) => entry.localId !== item.localId))
+                      }
+                      className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white"
+                      aria-label={t("removeAttachment")}
+                    >
+                      <X size={12} />
+                    </button>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setMedia((current) => current.filter((entry) => entry.id !== item.id))}
-                    className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white"
-                    aria-label={t("removeAttachment")}
-                  >
-                    <X size={12} />
-                  </button>
                 </li>
               ))}
             </ul>
@@ -474,7 +503,7 @@ export default function ChatStudio() {
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 className={`relative inline-flex h-9 w-9 items-center justify-center rounded-full ${
-                  media.length > 0 || uploads.length > 0
+                  media.length > 0 || uploading
                     ? "bg-[#FF4713] text-white"
                     : "text-[#6B7280] hover:bg-white hover:text-[#FF4713]"
                 }`}
@@ -482,9 +511,9 @@ export default function ChatStudio() {
                 title={t("attach")}
               >
                 <Paperclip size={18} />
-                {media.length > 0 ? (
+                {attachments.length > 0 ? (
                   <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-semibold text-[#FF4713]">
-                    {media.length}
+                    {attachments.length}
                   </span>
                 ) : null}
               </button>
@@ -505,7 +534,7 @@ export default function ChatStudio() {
             </div>
             <button
               type="submit"
-              disabled={pending || uploads.length > 0 || !input.trim()}
+              disabled={pending || uploading || !input.trim()}
               className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#FF4713] text-white hover:bg-[#e03d0f] disabled:opacity-40"
               aria-label={t("send")}
               title={t("send")}

@@ -13,6 +13,8 @@ import type { ResolvedAction } from "@/lib/chat-post/types";
 import { localeFromRequest } from "@/lib/locale-time";
 import { createServerSupabase } from "@/lib/supabase/server";
 
+export const maxDuration = 300;
+
 export async function POST(request: Request) {
   const supabase = await createServerSupabase();
   const {
@@ -151,21 +153,24 @@ async function persistDashboardPosts(input: {
   results: Awaited<ReturnType<typeof executeResolvedAction>>;
 }) {
   const used = new Set<number>();
+  const rows = [];
   for (const action of input.resolved.actions) {
     for (const target of action.platforms) {
       const resultIndex = input.results.findIndex(
         (item, index) =>
           !used.has(index) &&
-          item.platform === target.platform &&
-          item.handle === target.handle &&
-          (item.mode ?? action.mode) === action.mode &&
-          (item.contentType ?? "") === (target.contentType ?? ""),
+          ((item.requestId && item.requestId === target.requestId) ||
+            (!item.requestId &&
+              item.platform === target.platform &&
+              item.handle === target.handle &&
+              (item.mode ?? action.mode) === action.mode &&
+              (item.contentType ?? "") === (target.contentType ?? ""))),
       );
       if (resultIndex < 0) continue;
       used.add(resultIndex);
       const result = input.results[resultIndex];
       if (result.status === "error") continue;
-      await input.supabase.from("posts").insert({
+      rows.push({
         user_id: input.userId,
         content: target.caption,
         media: action.media,
@@ -176,6 +181,9 @@ async function persistDashboardPosts(input: {
         platform_results: [],
       });
     }
+  }
+  if (rows.length > 0) {
+    await input.supabase.from("posts").insert(rows);
   }
 }
 

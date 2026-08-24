@@ -30,6 +30,12 @@ export const chatPostTools: Anthropic.Tool[] = [
                 description:
                   "True when the user asked for the best / optimal / peak posting time. Do not invent a clock time.",
               },
+              cadence: {
+                type: "string",
+                enum: ["daily"],
+                description:
+                  "Set to daily when the user wants one attached file per day (a month of posts, a series). The server expands this. Do NOT emit one action per day.",
+              },
               platforms: { type: "array", items: { type: "string" } },
               excluded_platforms: {
                 type: "array",
@@ -52,7 +58,8 @@ export const chatPostTools: Anthropic.Tool[] = [
               media_refs: {
                 type: "array",
                 items: { type: "string" },
-                description: "Internal ids of files attached in the conversation, not binary",
+                description:
+                  "Internal ids of files, in the order they should post. For a daily series pass EVERY attached id, one per day, in order.",
               },
             },
             required: ["mode", "platforms"],
@@ -146,9 +153,10 @@ export function chatPostSystemPrompt(input: {
     "If the user asks for the best time, optimal time, peak time, “cea mai bună oră”, “ora optimă”, or similar, set mode=schedule, use_best_time=true, and omit scheduled_at_iso. Do not invent 18:00 or any other clock time. The server picks the next researched peak window per platform.",
     `If they name a day but not a clock time with that request (“mâine la cea mai bună oră”), also set scheduled_on to that YYYY-MM-DD (today=${input.today}, tomorrow=${input.tomorrow}).`,
     "If they give an explicit clock time, that time wins — do not set use_best_time.",
+    "Daily series: if they attach several files and want one per day / a month of posts / “câte una pe zi”, call create_social_post ONCE with cadence=daily, use_best_time=true (unless they named a clock time), media_refs=every attached id in order, and platforms [\"__all_connected__\"] unless they named specific networks. Mix of photos and videos is allowed. The server posts each file on the next compatible networks (TikTok/YouTube skip photos). Do NOT create 30 separate actions.",
     `Canonical platform ids: ${CANONICAL_PLATFORM_IDS.join(", ")}.`,
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
-    "Never assume the platform if the user did not specify one. Ask a clarifying question in text. Do NOT call create_social_post with a guessed platform.",
+    "Never assume the platform if the user did not specify one — except a daily series with several files, which uses all connected networks. For a single post, ask in text. Do NOT guess a platform.",
     "Never assume media if the platform requires it and the user attached nothing. Ask for the file. Do not call the tool until the file is there.",
     "Formats are per network. Always include every named network in the same action when caption, time, and format-on-that-network are the same.",
     "“Postează acest video pe Instagram reel și TikTok” means platforms: [\"instagram\",\"tiktok\"] and content_types: {\"instagram\":\"reels\"}. Reel exists only on Instagram. Never set reels on TikTok.",

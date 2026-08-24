@@ -36,18 +36,35 @@ function resultMeta(input: {
   mode: PostMode;
   contentType?: string;
   scheduled_label?: string | null;
-}): Pick<PlatformExecResult, "platform" | "handle" | "mode" | "contentType" | "scheduled_label"> {
+  requestId?: string;
+}): Pick<PlatformExecResult, "platform" | "handle" | "mode" | "contentType" | "scheduled_label" | "requestId"> {
   return {
     platform: input.platform,
     handle: input.handle,
     mode: input.mode,
     contentType: input.contentType,
     scheduled_label: input.scheduled_label ?? null,
+    requestId: input.requestId,
   };
 }
 
 function publishQueue(actions: ResolvedAction["actions"]) {
   return [...actions].sort((left, right) => instagramPublishRank(left) - instagramPublishRank(right));
+}
+
+async function mapPool<T, R>(items: T[], concurrency: number, mapper: (item: T) => Promise<R>) {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      results[index] = await mapper(items[index]);
+    }
+  }
+  const size = Math.min(Math.max(concurrency, 1), Math.max(items.length, 1));
+  await Promise.all(Array.from({ length: size }, () => worker()));
+  return results;
 }
 
 function instagramPublishRank(action: ResolvedAction["actions"][number]) {
@@ -169,6 +186,7 @@ function resultFromPost(input: {
   locale: string;
   contentType?: string;
   scheduled_label?: string | null;
+  requestId?: string;
 }): PlatformExecResult {
   const meta = resultMeta(input);
   const outcome = classifyPublishOutcome({
@@ -242,6 +260,7 @@ export async function refreshPendingResults(input: {
           locale: input.locale,
           contentType: result.contentType,
           scheduled_label: result.scheduled_label,
+          requestId: result.requestId,
         });
       next.push({
         ...refreshed,
@@ -278,6 +297,7 @@ async function publishOne(input: {
     mode: input.mode,
     contentType,
     scheduled_label: input.scheduled_label,
+    requestId: input.target.requestId,
   });
   try {
     let tiktokSettings: TikTokSettings | undefined;
@@ -327,6 +347,7 @@ async function publishOne(input: {
       locale: input.locale,
       contentType,
       scheduled_label: input.scheduled_label,
+      requestId: input.target.requestId,
     });
   } catch (error) {
     const code = errorCode(error);
@@ -357,29 +378,37 @@ export async function executeResolvedAction(input: {
     return [await executeManage(input.resolved, input.locale)];
   }
 
-  const queued = new Map<string, PlatformExecResult>();
+  const jobs: Array<{
+    requestId: string;
+    action: (typeof input.resolved.actions)[number];
+    target: ResolvedPlatform;
+  }> = [];
   for (const action of publishQueue(input.resolved.actions)) {
-    const media: ZernioMediaItem[] = action.media.map((item) => ({
+    for (const target of action.platforms) {
+      jobs.push({ requestId: target.requestId, action, target });
+    }
+  }
+  const published = await mapPool(jobs, input.resolved.series ? 6 : 1, async (job) => {
+    const media: ZernioMediaItem[] = job.action.media.map((item) => ({
       url: item.url,
       type: item.type,
       title: item.name ?? undefined,
     }));
-    for (const target of action.platforms) {
-      queued.set(
-        target.requestId,
-        await publishOne({
-          target,
-          content: target.caption,
-          media,
-          mode: action.mode,
-          scheduledFor: action.scheduled_at_iso,
-          scheduled_label: action.scheduled_label,
-          timezone: input.resolved.timezone,
-          locale: input.locale,
-        }),
-      );
-    }
-  }
+    return {
+      requestId: job.requestId,
+      result: await publishOne({
+        target: job.target,
+        content: job.target.caption,
+        media,
+        mode: job.action.mode,
+        scheduledFor: job.action.scheduled_at_iso,
+        scheduled_label: job.action.scheduled_label,
+        timezone: input.resolved.timezone,
+        locale: input.locale,
+      }),
+    };
+  });
+  const queued = new Map(published.map((item) => [item.requestId, item.result]));
 
   const results: PlatformExecResult[] = [];
   for (const action of input.resolved.actions) {

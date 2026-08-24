@@ -21,6 +21,7 @@ export type ToolPostAction = {
   scheduled_at_iso?: string;
   scheduled_on?: string;
   use_best_time?: boolean | string;
+  cadence?: string;
   platforms: string[];
   excluded_platforms?: string[];
   caption?: string;
@@ -62,9 +63,17 @@ export type ResolvedCreateAction = {
   scheduled_at_utc: string | null;
   scheduled_label: string | null;
   schedule_source?: ScheduleSource;
+  day_index?: number;
+  skipped_platforms?: ExcludedPlatform[];
   platforms: ResolvedPlatform[];
   media: ChatMedia[];
   caption_source: CaptionSource;
+};
+
+export type ChatSeries = {
+  cadence: "daily";
+  start_on: string;
+  total_days: number;
 };
 
 export type ResolvedAction = {
@@ -76,6 +85,7 @@ export type ResolvedAction = {
   excluded_by_validation: ExcludedPlatform[];
   excluded_platforms: string[];
   warnings: string[];
+  series?: ChatSeries;
   manage?: {
     action: ManageAction;
     postActionId: string;
@@ -100,6 +110,7 @@ export type PlatformExecResult = {
   contentType?: string;
   mode?: PostMode;
   scheduled_label?: string | null;
+  requestId?: string;
 };
 
 export type PendingIntent = {
