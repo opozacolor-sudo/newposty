@@ -90,15 +90,27 @@ type SpeechRecognitionLike = {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
+  maxAlternatives: number;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorLike) => void) | null;
   onend: (() => void) | null;
   start: () => void;
   stop: () => void;
+  abort?: () => void;
 };
 
 type SpeechRecognitionEventLike = {
-  results: ArrayLike<{ 0: { transcript: string }; isFinal: boolean }>;
+  resultIndex: number;
+  results: ArrayLike<{
+    isFinal: boolean;
+    length: number;
+    0?: { transcript: string };
+    item?: (index: number) => { transcript: string } | undefined;
+  }>;
+};
+
+type SpeechRecognitionErrorLike = {
+  error?: string;
 };
 
 function createSpeechRecognition(): SpeechRecognitionLike | null {
@@ -109,6 +121,15 @@ function createSpeechRecognition(): SpeechRecognitionLike | null {
   };
   const Ctor = SpeechWindow.SpeechRecognition ?? SpeechWindow.webkitSpeechRecognition;
   return Ctor ? new Ctor() : null;
+}
+
+function transcriptFromResult(result: SpeechRecognitionEventLike["results"][number]) {
+  return result[0]?.transcript ?? result.item?.(0)?.transcript ?? "";
+}
+
+function speechLang(locale: string) {
+  if (locale.toLowerCase().startsWith("ro")) return "ro-RO";
+  return "en-US";
 }
 
 export default function ChatStudio() {
@@ -131,6 +152,8 @@ export default function ChatStudio() {
   const fileRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const baseInputRef = useRef("");
+  const finalTranscriptRef = useRef("");
+  const wantListenRef = useRef(false);
   const loadGenRef = useRef(0);
 
   useEffect(() => {
@@ -166,7 +189,9 @@ export default function ChatStudio() {
     loadGenRef.current += 1;
     setClearing(true);
     setError(null);
+    recognitionRef.current?.abort?.();
     recognitionRef.current?.stop();
+    wantListenRef.current = false;
     setListening(false);
     const response = await fetch("/api/chat", { method: "DELETE" });
     const payload = (await response.json().catch(() => ({}))) as {
@@ -324,8 +349,9 @@ export default function ChatStudio() {
     );
   }
 
-  function toggleDictation() {
-    if (listening) {
+  async function toggleDictation() {
+    if (listening || wantListenRef.current) {
+      wantListenRef.current = false;
       recognitionRef.current?.stop();
       setListening(false);
       return;
@@ -338,27 +364,83 @@ export default function ChatStudio() {
       return;
     }
 
+    if (!window.isSecureContext) {
+      setError(t("speechUnavailable"));
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      for (const track of stream.getTracks()) track.stop();
+    } catch {
+      setError(t("speechDenied"));
+      setListening(false);
+      return;
+    }
+
     baseInputRef.current = input ? `${input.trim()} ` : "";
-    recognition.lang = locale === "ro" ? "ro-RO" : "en-US";
+    finalTranscriptRef.current = "";
+    wantListenRef.current = true;
+    recognition.lang = speechLang(locale);
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
     recognition.onresult = (event) => {
-      const parts: string[] = [];
-      for (let index = 0; index < event.results.length; index += 1) {
-        parts.push(event.results[index][0].transcript);
+      let interim = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const piece = transcriptFromResult(result).trim();
+        if (!piece) continue;
+        if (result.isFinal) {
+          finalTranscriptRef.current = `${finalTranscriptRef.current}${piece} `;
+        } else {
+          interim += `${piece} `;
+        }
       }
-      setInput(`${baseInputRef.current}${parts.join(" ")}`.trimStart());
+      setInput(`${baseInputRef.current}${finalTranscriptRef.current}${interim}`.replace(/\s+/g, " ").trimStart());
     };
-    recognition.onerror = () => {
+    recognition.onerror = (event) => {
+      const code = event.error ?? "";
+      if (code === "no-speech" || code === "aborted") return;
+      if (code === "language-not-supported" && recognition.lang !== "en-US") {
+        recognition.lang = "en-US";
+        return;
+      }
+      wantListenRef.current = false;
       setListening(false);
+      if (code === "not-allowed" || code === "service-not-allowed") {
+        setError(t("speechDenied"));
+        return;
+      }
+      setError(t("speechError"));
     };
     recognition.onend = () => {
-      setListening(false);
+      if (!wantListenRef.current) {
+        setListening(false);
+        return;
+      }
+      window.setTimeout(() => {
+        if (!wantListenRef.current) {
+          setListening(false);
+          return;
+        }
+        try {
+          recognition.start();
+        } catch {
+          setListening(false);
+        }
+      }, 180);
     };
     recognitionRef.current = recognition;
-    recognition.start();
-    setListening(true);
-    setError(null);
+    try {
+      recognition.start();
+      setListening(true);
+      setError(null);
+    } catch {
+      wantListenRef.current = false;
+      setListening(false);
+      setError(t("speechError"));
+    }
   }
 
   return (
@@ -494,7 +576,7 @@ export default function ChatStudio() {
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={onComposerKeyDown}
             rows={3}
-            placeholder={t("placeholder")}
+            placeholder={listening ? t("speechListening") : t("placeholder")}
             className="w-full resize-none bg-transparent px-4 pb-12 pt-3 text-sm text-[#1A1A1A] outline-none placeholder:text-[#6B7280]"
           />
           <div className="absolute inset-x-2 bottom-2 flex items-center justify-between">
@@ -519,7 +601,7 @@ export default function ChatStudio() {
               </button>
               <button
                 type="button"
-                onClick={toggleDictation}
+                onClick={() => void toggleDictation()}
                 className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${
                   listening
                     ? "bg-[#FF4713] text-white"
