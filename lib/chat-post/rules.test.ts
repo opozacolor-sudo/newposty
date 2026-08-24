@@ -73,6 +73,26 @@ test("Instagram reel and TikTok applies reels only to Instagram", () => {
   assert.equal(contentTypeForPlatform({ platform: "tiktok", contentType: "reels" }), undefined);
 });
 
+test("Instagram as video and TikTok stays a normal TikTok video", () => {
+  const media = [{ id: "1", url: "https://example.com/a.mp4", type: "video" as const }];
+  assert.equal(contentTypeForPlatform({ platform: "tiktok", contentType: "video" }), "video");
+  assert.equal(contentTypeForPlatform({ platform: "instagram", contentType: "video" }), undefined);
+  assert.deepEqual(
+    adaptContentType({ platform: "instagram", requested: "video", mediaKind: "video" }),
+    { contentType: "reels", incompatible: false },
+  );
+  assert.equal(
+    validationReason({
+      platform: "tiktok",
+      capability: getPlatformCapability("tiktok"),
+      media,
+      contentType: "video",
+      locale: "ro",
+    }),
+    null,
+  );
+});
+
 test("instagram without media is excluded", () => {
   const reason = validationReason({
     platform: "instagram",

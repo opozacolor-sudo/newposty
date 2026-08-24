@@ -37,7 +37,7 @@ export const chatPostTools: Anthropic.Tool[] = [
                 type: "object",
                 additionalProperties: { type: "string" },
                 description:
-                  'Per-platform format. Example for “Instagram reel and TikTok”: {"instagram":"reels"}. Do not put reels on TikTok or YouTube.',
+                  'Per-platform format. Example for “Instagram reel and TikTok”: {"instagram":"reels"}. For “Instagram as video and TikTok”, omit this. Never put reels on TikTok or YouTube.',
               },
               media_refs: {
                 type: "array",
@@ -129,8 +129,10 @@ export function chatPostSystemPrompt(input: {
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
     "Never assume the platform if the user did not specify one. Ask a clarifying question in text. Do NOT call create_social_post with a guessed platform.",
     "Never assume media if the platform requires it and the user attached nothing. Ask for the file. Do not call the tool until the file is there.",
-    "Formats are per network. “Postează acest video pe Instagram reel și TikTok” means platforms: [\"instagram\",\"tiktok\"] and content_types: {\"instagram\":\"reels\"}. Reel was only for Instagram. Do not set a global content_type of reels, and never put reels on TikTok.",
-    "Keep those platforms in the same action when the caption and time are the same. Put a format in content_types only for the network the user named it on (story/reel/feed/carousel).",
+    "Formats are per network. Always include every named network in the same action when caption and time are the same.",
+    "“Postează acest video pe Instagram reel și TikTok” means platforms: [\"instagram\",\"tiktok\"] and content_types: {\"instagram\":\"reels\"}. Reel exists only on Instagram. Never set reels on TikTok.",
+    "“Vreau acest video pe Instagram ca video și pe TikTok” means platforms: [\"instagram\",\"tiktok\"] and omit content_type. Instagram publishes a single video as a Reel automatically. TikTok is a normal video — TikTok has no reel format.",
+    "Put a format in content_types only for the network the user named it on (story/reel/feed/carousel). Do not invent a reel for TikTok or YouTube.",
     "Phrases like “toate rețelele”, “peste tot”, “all networks”, “everywhere” must become platforms: [\"__all_connected__\"]. Do not expand that list yourself from memory.",
     "For explicit exclusions (“everywhere except X”), send platforms: [\"__all_connected__\"] and excluded_platforms: [\"x\"].",
     "Use a separate actions[] item only when platforms in the same message have different captions or times. Different formats go in content_types, not in separate actions.",
