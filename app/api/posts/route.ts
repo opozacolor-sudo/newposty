@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getZernioApiKey } from "@/lib/env";
 import { createPost, getPost, presignMedia, type ZernioMediaItem } from "@/lib/zernio";
@@ -29,6 +30,8 @@ export async function GET() {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  await purgeUnusedMediaForUser(supabase, user.id).catch(() => undefined);
 
   return NextResponse.json({ posts: data ?? [] });
 }

@@ -27,6 +27,7 @@ import type {
 import { getAnthropicApiKey } from "@/lib/env";
 import { clockSnapshot, localeFromRequest } from "@/lib/locale-time";
 import { isAdsPlatformId } from "@/lib/platforms";
+import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -102,6 +103,8 @@ export async function DELETE() {
   if (error || !created) {
     return NextResponse.json({ error: error?.message ?? "Could not start a clean chat." }, { status: 500 });
   }
+
+  await purgeUnusedMediaForUser(supabase, user.id).catch(() => undefined);
 
   return NextResponse.json({
     conversationId: created.id,

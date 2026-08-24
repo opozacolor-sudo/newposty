@@ -12,6 +12,7 @@ import {
 import type { ResolvedAction } from "@/lib/chat-post/types";
 import { localeFromRequest } from "@/lib/locale-time";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { purgeUnusedMediaForUser, removePublishedMedia } from "@/lib/media-cleanup";
 
 export const maxDuration = 300;
 
@@ -127,6 +128,15 @@ export async function POST(request: Request) {
     resolved,
     results,
   });
+
+  const stillPending = results.some((item) => item.status === "pending");
+  if (!stillPending) {
+    const publishedUrls = resolved.actions
+      .filter((action) => action.mode === "publish_now")
+      .flatMap((action) => action.media.map((item) => item.url));
+    await removePublishedMedia(supabase, publishedUrls).catch(() => undefined);
+  }
+  await purgeUnusedMediaForUser(supabase, user.id).catch(() => undefined);
 
   await replaceConfirmationWithResults({
     supabase,
