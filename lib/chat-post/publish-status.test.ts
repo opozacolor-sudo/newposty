@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { classifyPublishOutcome, platformErrorText } from "./publish-status";
+import { classifyPublishOutcome, platformErrorText, platformPublicUrl } from "./publish-status";
 import { humanZernioError } from "../zernio-error-messages";
+import { platformProfileUrl } from "../platforms";
 
 test("create accepted is not success if TikTok later failed", () => {
   const post = {
@@ -50,6 +51,13 @@ test("published without a public URL is still success", () => {
   );
 });
 
+test("platformPublicUrl reads permalink when platformPostUrl is missing", () => {
+  assert.equal(
+    platformPublicUrl({ platform: "tiktok", permalink: "https://www.tiktok.com/@a/video/1" }),
+    "https://www.tiktok.com/@a/video/1",
+  );
+});
+
 test("published Instagram is success", () => {
   assert.equal(
     classifyPublishOutcome({
@@ -63,6 +71,10 @@ test("published Instagram is success", () => {
     }),
     "success",
   );
+});
+
+test("TikTok profile fallback url is the public profile", () => {
+  assert.equal(platformProfileUrl("tiktok", "@aipixxel"), "https://www.tiktok.com/@aipixxel");
 });
 
 test("TikTok daily active-user cap is not blamed on posting too many clips", () => {

@@ -16,8 +16,10 @@ import { isFutureDate, parseScheduledAt } from "@/lib/chat-post/timezone";
 import {
   classifyPublishOutcome,
   isInFlightStatus,
+  needsLiveUrlRefresh,
   platformEntry,
   platformErrorText,
+  platformPublicUrl,
   platformStatus,
 } from "@/lib/chat-post/publish-status";
 import type {
@@ -169,7 +171,7 @@ function resultFromPost(input: {
     return {
       ...meta,
       status: "success",
-      post_url: entry?.platformPostUrl ?? null,
+      post_url: platformPublicUrl(entry),
       zernio_post_id: input.post._id,
       error_message_human: null,
     };
@@ -203,12 +205,17 @@ export async function refreshPendingResults(input: {
 }): Promise<PlatformExecResult[]> {
   const next: PlatformExecResult[] = [];
   for (const result of input.results) {
-    if (result.status !== "pending" || !result.zernio_post_id) {
+    if (!needsLiveUrlRefresh(result)) {
+      next.push(result);
+      continue;
+    }
+    const postId = result.zernio_post_id;
+    if (!postId) {
       next.push(result);
       continue;
     }
     try {
-      const post = await getPost(result.zernio_post_id);
+      const post = await getPost(postId);
       next.push(
         resultFromPost({
           post,

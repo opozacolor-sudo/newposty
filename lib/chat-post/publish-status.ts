@@ -2,6 +2,10 @@ export type PublishTarget = {
   platform?: string;
   status?: string;
   platformPostUrl?: string | null;
+  url?: string | null;
+  permalink?: string | null;
+  shareUrl?: string | null;
+  postUrl?: string | null;
   error?: string | null;
   errorMessage?: string | null;
   errorCategory?: string | null;
@@ -19,6 +23,15 @@ const OK = new Set(["published", "scheduled"]);
 
 export function platformEntry(post: PublishPost, platform: string) {
   return post.platforms?.find((item) => item.platform === platform) ?? post.platforms?.[0] ?? null;
+}
+
+export function platformPublicUrl(entry: PublishTarget | null | undefined) {
+  if (!entry) return null;
+  const candidates = [entry.platformPostUrl, entry.url, entry.permalink, entry.shareUrl, entry.postUrl];
+  for (const value of candidates) {
+    if (typeof value === "string" && /^https?:\/\//i.test(value)) return value;
+  }
+  return null;
 }
 
 export function platformStatus(post: PublishPost, platform: string) {
@@ -39,6 +52,15 @@ export function platformErrorText(post: PublishPost, platform: string) {
     (post.status === "failed" ? "failed" : "") ||
     ""
   );
+}
+
+export function needsLiveUrlRefresh(result: {
+  status: string;
+  post_url?: string | null;
+  zernio_post_id?: string | null;
+}) {
+  if (!result.zernio_post_id) return false;
+  return result.status === "pending" || (result.status === "success" && !result.post_url);
 }
 
 export function classifyPublishOutcome(input: {

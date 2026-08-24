@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { applyCaptionOverrides, executeResolvedAction, refreshPendingResults } from "@/lib/chat-post/execute";
+import { needsLiveUrlRefresh } from "@/lib/chat-post/publish-status";
 import {
   cancelPendingAction,
   claimPendingAction,
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
 
   if (claimed.kind === "already") {
     const row = await loadPendingAction({ supabase, userId: user.id, actionId: body.action_id });
-    const pending = claimed.results.some((item) => item.status === "pending");
+    const pending = claimed.results.some((item) => needsLiveUrlRefresh(item));
     const results = pending
       ? await refreshPendingResults({ results: claimed.results, locale: claimed.resolved.locale })
       : claimed.results;
@@ -192,7 +193,7 @@ export async function GET(request: Request) {
   if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const resolved = { ...(row.resolved as object), action_id: row.id } as ResolvedAction;
   let results = (row.results as Awaited<ReturnType<typeof executeResolvedAction>>) ?? [];
-  if (refresh && results.some((item) => item.status === "pending")) {
+  if (refresh && results.some((item) => needsLiveUrlRefresh(item))) {
     results = await refreshPendingResults({ results, locale: resolved.locale });
     await saveRefreshedResults({
       supabase,

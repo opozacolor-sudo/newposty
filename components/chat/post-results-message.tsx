@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { contentTypeLabel } from "@/lib/chat-post/copy";
-import { platformLabel } from "@/lib/platforms";
+import { needsLiveUrlRefresh } from "@/lib/chat-post/publish-status";
+import { platformLabel, platformProfileUrl } from "@/lib/platforms";
 import type { PlatformExecResult, ResultsPayload } from "@/lib/chat-post/types";
 
 function resultTitle(result: PlatformExecResult) {
@@ -12,6 +13,19 @@ function resultTitle(result: PlatformExecResult) {
   return [platformLabel(result.platform), format, result.handle, when ? `· ${when}` : ""]
     .filter(Boolean)
     .join(" ");
+}
+
+function openUrl(result: PlatformExecResult) {
+  return result.post_url || platformProfileUrl(result.platform, result.handle);
+}
+
+function OpenLink({ href }: { href: string }) {
+  const t = useTranslations("Chat");
+  return (
+    <a href={href} className="text-[#FF4713] underline" target="_blank" rel="noreferrer">
+      {t("viewPost")}
+    </a>
+  );
 }
 
 export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
@@ -23,7 +37,7 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
   }, [payload.results]);
 
   useEffect(() => {
-    if (!payload.results.some((result) => result.status === "pending")) return;
+    if (!payload.results.some((result) => needsLiveUrlRefresh(result))) return;
     let cancelled = false;
     let interval = 0;
     async function tick() {
@@ -32,7 +46,7 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
       const body = (await response.json()) as { results?: PlatformExecResult[] };
       if (cancelled || !body.results) return;
       setResults(body.results);
-      if (!body.results.some((result) => result.status === "pending")) {
+      if (!body.results.some((result) => needsLiveUrlRefresh(result))) {
         window.clearInterval(interval);
       }
     }
@@ -66,16 +80,12 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
           >
             {result.status === "success" ? (
               <p>
-                ✅ {resultTitle(result)}{" "}
-                {result.post_url ? (
-                  <a href={result.post_url} className="text-[#FF4713] underline" target="_blank" rel="noreferrer">
-                    {t("viewPost")}
-                  </a>
-                ) : null}
+                ✅ {resultTitle(result)} {openUrl(result) ? <OpenLink href={openUrl(result)!} /> : null}
               </p>
             ) : result.status === "pending" ? (
               <p>
-                ⏳ {resultTitle(result)}: {t("stillPublishing")}
+                ⏳ {resultTitle(result)}: {t("stillPublishing")}{" "}
+                {openUrl(result) ? <OpenLink href={openUrl(result)!} /> : null}
               </p>
             ) : (
               <p>

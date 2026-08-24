@@ -127,6 +127,35 @@ export function platformLabel(id: string) {
   );
 }
 
+export function platformProfileUrl(platform: string, handle?: string | null) {
+  const user = (handle ?? "").replace(/^@/, "").trim();
+  if (!user) return null;
+  switch (platform) {
+    case "instagram":
+      return `https://www.instagram.com/${user}/`;
+    case "tiktok":
+      return `https://www.tiktok.com/@${user}`;
+    case "youtube":
+      return `https://www.youtube.com/@${user}`;
+    case "facebook":
+      return `https://www.facebook.com/${user}`;
+    case "threads":
+      return `https://www.threads.net/@${user}`;
+    case "twitter":
+      return `https://x.com/${user}`;
+    case "linkedin":
+      return `https://www.linkedin.com/in/${user}`;
+    case "pinterest":
+      return `https://www.pinterest.com/${user}/`;
+    case "reddit":
+      return `https://www.reddit.com/user/${user}`;
+    case "bluesky":
+      return `https://bsky.app/profile/${user.includes(".") ? user : `${user}.bsky.social`}`;
+    default:
+      return null;
+  }
+}
+
 export function getPlatform(id: string) {
   return PLATFORMS.find((platform) => platform.id === id) ?? ADS_PLATFORMS.find((platform) => platform.id === id);
 }
