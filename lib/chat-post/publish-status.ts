@@ -71,15 +71,14 @@ export function classifyPublishOutcome(input: {
   const status = platformStatus(input.post, input.platform);
   const postStatus = (input.post.status ?? "").toLowerCase();
 
-  if (isInFlightStatus(status) || isInFlightStatus(postStatus)) return "pending";
   if (FAILED.has(status) || postStatus === "failed") return "error";
-  if (postStatus === "partial" && status && !OK.has(status)) return "error";
 
   if (input.mode === "schedule") {
-    if (FAILED.has(status)) return "error";
     return "success";
   }
 
+  if (isInFlightStatus(status) || isInFlightStatus(postStatus)) return "pending";
+  if (postStatus === "partial" && status && !OK.has(status)) return "error";
   if (status === "published" || postStatus === "published") return "success";
   if (!status) return "pending";
   return "error";

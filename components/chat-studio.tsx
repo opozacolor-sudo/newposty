@@ -359,7 +359,11 @@ export default function ChatStudio() {
               <MessageMedia items={message.payload.media} onDark />
             ) : null}
             <div className="whitespace-pre-wrap">
-              {visibleText(localizeCancelledContent(message.content, locale))}
+              {visibleText(
+                message.kind === "results" && message.payload?.type === "results"
+                  ? resultsReply(locale, message.payload.results)
+                  : localizeCancelledContent(message.content, locale),
+              )}
             </div>
             {message.role === "assistant" &&
             message.kind === "confirmation" &&

@@ -234,8 +234,7 @@ export async function refreshPendingResults(input: {
     }
     try {
       const post = await getPost(postId);
-      next.push(
-        resultFromPost({
+      const refreshed = resultFromPost({
           post,
           platform: result.platform,
           handle: result.handle,
@@ -243,8 +242,14 @@ export async function refreshPendingResults(input: {
           locale: input.locale,
           contentType: result.contentType,
           scheduled_label: result.scheduled_label,
-        }),
-      );
+        });
+      next.push({
+        ...refreshed,
+        contentType: refreshed.contentType ?? result.contentType,
+        mode: refreshed.mode ?? result.mode,
+        scheduled_label: refreshed.scheduled_label ?? result.scheduled_label,
+        handle: result.handle,
+      });
     } catch {
       next.push(result);
     }

@@ -73,6 +73,21 @@ test("published Instagram is success", () => {
   );
 });
 
+test("scheduled Instagram Reel is success even while the provider is still processing", () => {
+  assert.equal(
+    classifyPublishOutcome({
+      post: {
+        _id: "1",
+        status: "processing",
+        platforms: [{ platform: "instagram", status: "processing" }],
+      },
+      platform: "instagram",
+      mode: "schedule",
+    }),
+    "success",
+  );
+});
+
 test("TikTok profile fallback url is the public profile", () => {
   assert.equal(platformProfileUrl("tiktok", "@aipixxel"), "https://www.tiktok.com/@aipixxel");
 });

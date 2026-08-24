@@ -24,9 +24,40 @@ function openUrl(result: PlatformExecResult) {
 function OpenLink({ href }: { href: string }) {
   const t = useTranslations("Chat");
   return (
-    <a href={href} className="text-[#FF4713] underline" target="_blank" rel="noreferrer">
+    <a
+      href={href}
+      className="inline-flex shrink-0 items-center rounded-full border border-[#FF4713] px-2.5 py-0.5 text-[11px] font-medium text-[#FF4713] hover:bg-[#FF4713] hover:text-white"
+      target="_blank"
+      rel="noreferrer"
+    >
       {t("viewPost")}
     </a>
+  );
+}
+
+function ResultRow({ result }: { result: PlatformExecResult }) {
+  const t = useTranslations("Chat");
+  const href = openUrl(result);
+  const title = resultTitle(result);
+  return (
+    <li className="flex items-start justify-between gap-3 rounded-xl border border-[#E5E5E5] bg-white px-3 py-2 text-sm">
+      <div className="min-w-0">
+        {result.status === "success" ? (
+          <p>
+            ✅ {title}
+          </p>
+        ) : result.status === "pending" ? (
+          <p>
+            ⏳ {title}: {result.platform === "tiktok" ? t("stillPublishingTikTok") : t("stillPublishing")}
+          </p>
+        ) : (
+          <p>
+            ❌ {title}: {result.error_message_human}
+          </p>
+        )}
+      </div>
+      {href && result.status !== "error" ? <OpenLink href={href} /> : null}
+    </li>
   );
 }
 
@@ -76,26 +107,10 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
       ) : null}
       <ul className="space-y-2">
         {results.map((result, index) => (
-          <li
+          <ResultRow
             key={`${result.platform}-${result.contentType ?? ""}-${result.mode ?? ""}-${result.handle}-${index}`}
-            className="rounded-xl border border-[#E5E5E5] bg-white px-3 py-2 text-sm"
-          >
-            {result.status === "success" ? (
-              <p>
-                ✅ {resultTitle(result)} {openUrl(result) ? <OpenLink href={openUrl(result)!} /> : null}
-              </p>
-            ) : result.status === "pending" ? (
-              <p>
-                ⏳ {resultTitle(result)}:{" "}
-                {result.platform === "tiktok" ? t("stillPublishingTikTok") : t("stillPublishing")}{" "}
-                {openUrl(result) ? <OpenLink href={openUrl(result)!} /> : null}
-              </p>
-            ) : (
-              <p>
-                ❌ {resultTitle(result)}: {result.error_message_human}
-              </p>
-            )}
-          </li>
+            result={result}
+          />
         ))}
       </ul>
       {payload.excluded_by_validation && payload.excluded_by_validation.length > 0 ? (
