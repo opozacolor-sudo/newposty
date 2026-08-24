@@ -22,7 +22,9 @@ import {
   inferSeriesStartYmd,
   MAX_CHAT_ATTACHMENTS,
   orderedMedia,
+  planCrossAssignments,
   seriesDayYmd,
+  wantsBroadcastSeries,
   wantsDailySeries,
 } from "@/lib/chat-post/series";
 import {
@@ -207,11 +209,12 @@ export async function resolveCreateActions(input: {
       });
       const clock = clockPartsFromIso(action.scheduled_at_iso);
       const useResearchTime = !clock || wantsBestTime(action);
-      let daysBuilt = 0;
-      for (let dayIndex = 0; dayIndex < queue.length; dayIndex += 1) {
-        const item = queue[dayIndex];
-        const dayYmd = seriesDayYmd(startOn, dayIndex);
-        const collected = collectTargets({
+      const broadcast =
+        action.distribution === "broadcast" ||
+        (action.distribution !== "cross" && wantsBroadcastSeries(input.fallbackBrief));
+      const catalog = queue.map((item) => ({
+        item,
+        collected: collectTargets({
           platformIds: selection.platforms,
           postingAccounts,
           media: [item],
@@ -219,37 +222,98 @@ export async function resolveCreateActions(input: {
           locale: input.locale,
           contentType: action.content_type,
           contentTypes: action.content_types,
-        });
-        for (const warning of collected.truncatedWarnings) {
+        }),
+      }));
+      for (const row of catalog) {
+        for (const warning of row.collected.truncatedWarnings) {
           if (!warnings.includes(warning)) warnings.push(warning);
         }
-        if (collected.platforms.length === 0) {
-          if (collected.skipped.some((row) => /material|media|fișier|file/i.test(row.reason))) {
-            missing.add("media");
+      }
+
+      let daysBuilt = 0;
+      if (broadcast) {
+        for (let dayIndex = 0; dayIndex < catalog.length; dayIndex += 1) {
+          const row = catalog[dayIndex];
+          const dayYmd = seriesDayYmd(startOn, dayIndex);
+          if (row.collected.platforms.length === 0) {
+            if (row.collected.skipped.some((skip) => /material|media|fișier|file/i.test(skip.reason))) {
+              missing.add("media");
+            }
+            continue;
           }
-          continue;
+          const pushed = pushScheduledGroups({
+            resolvedActions,
+            excluded_by_validation,
+            warnings,
+            locale: input.locale,
+            timezone: input.timezone,
+            now: input.now,
+            mode: "schedule",
+            caption_source,
+            media: [row.item],
+            platforms: row.collected.platforms.map(cloneTarget),
+            skipped: row.collected.skipped,
+            dayIndex,
+            namedDay: dayYmd,
+            useResearchTime,
+            clock,
+          });
+          if (pushed > 0) daysBuilt += 1;
         }
-        const pushed = pushScheduledGroups({
-          resolvedActions,
-          excluded_by_validation,
-          warnings,
-          locale: input.locale,
-          timezone: input.timezone,
-          now: input.now,
-          mode: "schedule",
-          caption_source,
-          media: [item],
-          platforms: collected.platforms,
-          skipped: collected.skipped,
-          dayIndex,
-          namedDay: dayYmd,
-          useResearchTime,
-          clock,
+      } else {
+        const assignments = planCrossAssignments({
+          mediaIds: catalog.map((row) => row.item.id),
+          platforms: selection.platforms,
+          accepts: (platform, mediaId) =>
+            Boolean(
+              catalog
+                .find((row) => row.item.id === mediaId)
+                ?.collected.platforms.some((target) => target.platform === platform),
+            ),
         });
-        if (pushed > 0) daysBuilt += 1;
+        const days = new Set<number>();
+        for (const assignment of assignments) {
+          const row = catalog.find((entry) => entry.item.id === assignment.mediaId);
+          const target = row?.collected.platforms.find((item) => item.platform === assignment.platform);
+          if (!row || !target) continue;
+          const dayYmd = seriesDayYmd(startOn, assignment.dayIndex);
+          const pushed = pushScheduledGroups({
+            resolvedActions,
+            excluded_by_validation,
+            warnings,
+            locale: input.locale,
+            timezone: input.timezone,
+            now: input.now,
+            mode: "schedule",
+            caption_source,
+            media: [row.item],
+            platforms: [cloneTarget(target)],
+            dayIndex: assignment.dayIndex,
+            namedDay: dayYmd,
+            useResearchTime,
+            clock,
+          });
+          if (pushed > 0) days.add(assignment.dayIndex);
+        }
+        daysBuilt = days.size;
+        const unused = selection.platforms.filter(
+          (platform) => !assignments.some((assignment) => assignment.platform === platform),
+        );
+        for (const platform of unused) {
+          warnings.push(
+            input.locale === "ro"
+              ? `${platformLabel(platform)} nu e în serie: niciun fișier nu e compatibil.`
+              : `${platformLabel(platform)} is not in the series: no file is compatible.`,
+          );
+        }
       }
       if (daysBuilt > 0) {
-        seriesMeta = { cadence: "daily", start_on: startOn, total_days: daysBuilt };
+        seriesMeta = {
+          cadence: "daily",
+          distribution: broadcast ? "broadcast" : "cross",
+          start_on: startOn,
+          total_days: daysBuilt,
+        };
         if (useResearchTime && !warnings.includes(bestTimeResearchWarning(input.locale))) {
           warnings.push(bestTimeResearchWarning(input.locale));
         }
@@ -423,6 +487,10 @@ export async function resolveCreateActions(input: {
       series: seriesMeta,
     },
   };
+}
+
+function cloneTarget(platform: ResolvedPlatform): ResolvedPlatform {
+  return { ...platform, requestId: crypto.randomUUID() };
 }
 
 function collectTargets(input: {

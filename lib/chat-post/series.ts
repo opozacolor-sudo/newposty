@@ -17,6 +17,44 @@ export function wantsDailySeries(input: {
   );
 }
 
+export function wantsBroadcastSeries(brief?: string) {
+  const text = (brief ?? "").toLowerCase();
+  return /același pe toate|acelasi pe toate|pe toate la fel|same on all|same everywhere|broadcast/.test(text);
+}
+
+export type CrossAssignment = {
+  dayIndex: number;
+  platform: string;
+  mediaId: string;
+};
+
+/** One unique file per network per day; files rotate across days so the month stays full. */
+export function planCrossAssignments(input: {
+  mediaIds: string[];
+  platforms: string[];
+  accepts: (platform: string, mediaId: string) => boolean;
+}): CrossAssignment[] {
+  const mediaIds = input.mediaIds.filter(Boolean);
+  const platforms = input.platforms.filter(Boolean);
+  if (mediaIds.length === 0 || platforms.length === 0) return [];
+  const assignments: CrossAssignment[] = [];
+  for (let dayIndex = 0; dayIndex < mediaIds.length; dayIndex += 1) {
+    const used = new Set<string>();
+    for (let platformIndex = 0; platformIndex < platforms.length; platformIndex += 1) {
+      const platform = platforms[platformIndex];
+      for (let offset = 0; offset < mediaIds.length; offset += 1) {
+        const mediaId = mediaIds[(dayIndex + platformIndex + offset) % mediaIds.length];
+        if (used.has(mediaId)) continue;
+        if (!input.accepts(platform, mediaId)) continue;
+        assignments.push({ dayIndex, platform, mediaId });
+        used.add(mediaId);
+        break;
+      }
+    }
+  }
+  return assignments;
+}
+
 export function orderedMedia(refs: string[] | undefined, all: ChatMedia[]) {
   if (!refs || refs.length === 0) return all;
   const byId = new Map(all.map((item) => [item.id, item]));

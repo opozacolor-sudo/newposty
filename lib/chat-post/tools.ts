@@ -34,7 +34,13 @@ export const chatPostTools: Anthropic.Tool[] = [
                 type: "string",
                 enum: ["daily"],
                 description:
-                  "Set to daily when the user wants one attached file per day (a month of posts, a series). The server expands this. Do NOT emit one action per day.",
+                  "Set to daily when the user wants a multi-day series. The server expands this. Do NOT emit one action per day.",
+              },
+              distribution: {
+                type: "string",
+                enum: ["cross", "broadcast"],
+                description:
+                  "cross (default): each network gets a different file on the same day. broadcast: the same file goes to every compatible network that day.",
               },
               platforms: { type: "array", items: { type: "string" } },
               excluded_platforms: {
@@ -153,7 +159,7 @@ export function chatPostSystemPrompt(input: {
     "If the user asks for the best time, optimal time, peak time, “cea mai bună oră”, “ora optimă”, or similar, set mode=schedule, use_best_time=true, and omit scheduled_at_iso. Do not invent 18:00 or any other clock time. The server picks the next researched peak window per platform.",
     `If they name a day but not a clock time with that request (“mâine la cea mai bună oră”), also set scheduled_on to that YYYY-MM-DD (today=${input.today}, tomorrow=${input.tomorrow}).`,
     "If they give an explicit clock time, that time wins — do not set use_best_time.",
-    "Daily series: if they attach several files and want one per day / a month of posts / “câte una pe zi”, call create_social_post ONCE with cadence=daily, use_best_time=true (unless they named a clock time), media_refs=every attached id in order, and platforms [\"__all_connected__\"] unless they named specific networks. Mix of photos and videos is allowed. The server posts each file on the next compatible networks (TikTok/YouTube skip photos). Do NOT create 30 separate actions.",
+    "Daily series: if they attach several files and want one per day / a month of posts / “câte una pe zi”, call create_social_post ONCE with cadence=daily, use_best_time=true (unless they named a clock time), media_refs=every attached id in order, and platforms [\"__all_connected__\"] unless they named specific networks. Default distribution is cross: Facebook gets file 1, X file 2, TikTok file 3 on the same day, then rotate so the same file never appears on two networks the same day. Only set distribution=broadcast if they explicitly want the same file on every network that day. Mix of photos and videos is allowed. TikTok/YouTube skip photos. Do NOT create 30 separate actions.",
     `Canonical platform ids: ${CANONICAL_PLATFORM_IDS.join(", ")}.`,
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
     "Never assume the platform if the user did not specify one — except a daily series with several files, which uses all connected networks. For a single post, ask in text. Do NOT guess a platform.",

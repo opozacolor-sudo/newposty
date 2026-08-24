@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { orderedMedia, wantsDailySeries } from "./series";
+import { orderedMedia, planCrossAssignments, wantsDailySeries } from "./series";
 import type { ChatMedia } from "./types";
 
 const ZONE = "Europe/Bucharest";
@@ -28,6 +28,39 @@ test("orderedMedia follows the given id list, not object order", () => {
     orderedMedia(["c", "a"], media).map((item) => item.id),
     ["c", "a"],
   );
+});
+
+test("cross plan gives each network a different file on the same day", () => {
+  const assignments = planCrossAssignments({
+    mediaIds: ["m1", "m2", "m3"],
+    platforms: ["facebook", "twitter", "tiktok"],
+    accepts: () => true,
+  });
+  const day0 = assignments.filter((item) => item.dayIndex === 0);
+  assert.deepEqual(
+    day0.map((item) => [item.platform, item.mediaId]),
+    [
+      ["facebook", "m1"],
+      ["twitter", "m2"],
+      ["tiktok", "m3"],
+    ],
+  );
+  for (const day of [0, 1, 2]) {
+    const ids = assignments.filter((item) => item.dayIndex === day).map((item) => item.mediaId);
+    assert.equal(new Set(ids).size, ids.length);
+  }
+});
+
+test("cross plan does not give TikTok a photo", () => {
+  const assignments = planCrossAssignments({
+    mediaIds: ["pic", "clip"],
+    platforms: ["instagram", "tiktok"],
+    accepts: (platform, mediaId) => platform !== "tiktok" || mediaId === "clip",
+  });
+  assert.ok(assignments.every((item) => item.platform !== "tiktok" || item.mediaId === "clip"));
+  const day0 = assignments.filter((item) => item.dayIndex === 0);
+  assert.ok(day0.some((item) => item.platform === "instagram" && item.mediaId === "pic"));
+  assert.ok(day0.some((item) => item.platform === "tiktok" && item.mediaId === "clip"));
 });
 
 test("resolve expands one photo per day and skips TikTok on images", async () => {
@@ -65,6 +98,7 @@ test("resolve expands one photo per day and skips TikTok on images", async () =>
   assert.equal(result.ok, true);
   if (!result.ok) return;
   assert.equal(result.resolved.series?.cadence, "daily");
+  assert.equal(result.resolved.series?.distribution, "cross");
   assert.equal(result.resolved.series?.total_days, 3);
   assert.equal(result.resolved.series?.start_on, "2026-08-26");
   const days = new Set(result.resolved.actions.map((action) => action.day_index));
@@ -73,11 +107,12 @@ test("resolve expands one photo per day and skips TikTok on images", async () =>
   assert.ok(
     result.resolved.actions.every((action) => action.platforms.every((platform) => platform.platform === "instagram")),
   );
-  assert.ok(
-    result.resolved.actions.some((action) =>
-      (action.skipped_platforms ?? []).some((row) => row.platform === "tiktok"),
-    ),
-  );
+  for (const day of [0, 1, 2]) {
+    const ids: string[] = result.resolved.actions
+      .filter((action) => action.day_index === day)
+      .flatMap((action) => action.media.map((item) => item.id));
+    assert.equal(new Set(ids).size, ids.length);
+  }
 });
 
 test("a video day in a mixed series still reaches TikTok", async () => {
@@ -112,8 +147,16 @@ test("a video day in a mixed series still reaches TikTok", async () => {
   });
   assert.equal(result.ok, true);
   if (!result.ok) return;
-  const videoDay = result.resolved.actions.filter((action) => action.day_index === 1);
-  assert.ok(videoDay.some((action) => action.platforms.some((platform) => platform.platform === "tiktok")));
-  const photoDay = result.resolved.actions.filter((action) => action.day_index === 0);
-  assert.ok(photoDay.every((action) => action.platforms.every((platform) => platform.platform !== "tiktok")));
+  const day0 = result.resolved.actions.filter((action) => action.day_index === 0);
+  assert.ok(day0.some((action) => action.platforms.some((platform) => platform.platform === "instagram")));
+  assert.ok(day0.some((action) => action.platforms.some((platform) => platform.platform === "tiktok")));
+  const day0Media = day0.flatMap((action) => action.media.map((item) => item.id));
+  assert.equal(new Set(day0Media).size, day0Media.length);
+  assert.ok(
+    !day0.some(
+      (action) =>
+        action.platforms.some((platform) => platform.platform === "tiktok") &&
+        action.media.some((item) => item.type === "image"),
+    ),
+  );
 });

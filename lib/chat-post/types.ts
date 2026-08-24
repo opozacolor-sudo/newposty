@@ -22,6 +22,7 @@ export type ToolPostAction = {
   scheduled_on?: string;
   use_best_time?: boolean | string;
   cadence?: string;
+  distribution?: string;
   platforms: string[];
   excluded_platforms?: string[];
   caption?: string;
@@ -72,6 +73,7 @@ export type ResolvedCreateAction = {
 
 export type ChatSeries = {
   cadence: "daily";
+  distribution: "cross" | "broadcast";
   start_on: string;
   total_days: number;
 };

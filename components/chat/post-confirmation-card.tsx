@@ -206,9 +206,12 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
     {
       dayIndex: number;
       label: string;
-      media: { url: string; type: string; name?: string | null } | null;
-      platforms: { platform: string; handle: string; time: string | null }[];
-      skipped: { platform: string; reason: string }[];
+      slots: {
+        media: { url: string; type: string; name?: string | null } | null;
+        platform: string;
+        handle: string;
+        time: string | null;
+      }[];
     }
   >();
   for (const action of resolved.actions) {
@@ -216,24 +219,22 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
     const current = rows.get(dayIndex) ?? {
       dayIndex,
       label: action.scheduled_label ?? "",
-      media: action.media[0] ?? null,
-      platforms: [],
-      skipped: action.skipped_platforms ?? [],
+      slots: [],
     };
     for (const platform of action.platforms) {
       networks.add(platform.platform);
-      current.platforms.push({
+      current.slots.push({
+        media: action.media[0] ?? null,
         platform: platform.platform,
         handle: platform.handle,
         time: action.scheduled_label,
       });
     }
-    if ((action.skipped_platforms ?? []).length > 0) current.skipped = action.skipped_platforms ?? [];
-    if (!current.media && action.media[0]) current.media = action.media[0];
     rows.set(dayIndex, current);
   }
   const days = [...rows.values()].sort((left, right) => left.dayIndex - right.dayIndex);
   const usesResearch = resolved.actions.some((action) => action.schedule_source === "best_time_research");
+  const cross = resolved.series?.distribution !== "broadcast";
 
   return (
     <div className="space-y-3">
@@ -241,45 +242,43 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
         <p className="text-sm font-medium text-[#1A1A1A]">
           {t("seriesTitle", { days: resolved.series?.total_days ?? days.length, networks: networks.size })}
         </p>
-        <p className="text-xs text-[#6B7280]">{t("seriesHint")}</p>
+        <p className="text-xs text-[#6B7280]">{cross ? t("seriesHint") : t("seriesHintBroadcast")}</p>
         {usesResearch ? <p className="mt-1 text-[11px] text-[#6B7280]">{t("bestTimeHint")}</p> : null}
       </div>
       <ul className="max-h-80 space-y-2 overflow-y-auto pr-1">
         {days.map((day) => (
-          <li key={day.dayIndex} className="flex gap-3 rounded-xl border border-[#F3F4F6] p-2">
-            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-[#E5E5E5] bg-[#F5F5F5]">
-              {day.media?.type === "image" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={day.media.url} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <p className="flex h-full items-center justify-center px-1 text-center text-[10px] text-[#6B7280]">
-                  {day.media?.name ?? "video"}
-                </p>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-[#1A1A1A]">
-                {t("seriesDay", { day: day.dayIndex + 1 })} · {day.label}
-              </p>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {day.platforms.map((platform, index) => {
-                  const visual = getPlatform(platform.platform);
-                  return (
-                    <span
-                      key={`${platform.platform}-${platform.handle}-${index}`}
-                      className="inline-flex items-center gap-1 rounded-full bg-[#F5F5F5] px-2 py-0.5 text-[11px] text-[#1A1A1A]"
-                    >
-                      {visual ? <PlatformIcon platform={visual} connected size="sm" /> : null}
-                      {platformLabel(platform.platform)}
-                    </span>
-                  );
-                })}
-              </div>
-              {day.skipped.length > 0 ? (
-                <p className="mt-1 text-[11px] text-[#9A3412]">
-                  {day.skipped.map((item) => platformLabel(item.platform)).join(", ")} — {t("seriesSkipped")}
-                </p>
-              ) : null}
+          <li key={day.dayIndex} className="space-y-2 rounded-xl border border-[#F3F4F6] p-2">
+            <p className="text-xs font-medium text-[#1A1A1A]">
+              {t("seriesDay", { day: day.dayIndex + 1 })} · {day.label}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {day.slots.map((slot, index) => {
+                const visual = getPlatform(slot.platform);
+                return (
+                  <div
+                    key={`${slot.platform}-${slot.handle}-${index}`}
+                    className="flex items-center gap-2 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] p-1 pr-2"
+                  >
+                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-[#F5F5F5]">
+                      {slot.media?.type === "image" ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={slot.media.url} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <p className="flex h-full items-center justify-center px-1 text-center text-[9px] text-[#6B7280]">
+                          {slot.media?.name ?? "video"}
+                        </p>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-1 text-[11px] font-medium text-[#1A1A1A]">
+                        {visual ? <PlatformIcon platform={visual} connected size="sm" /> : null}
+                        {platformLabel(slot.platform)}
+                      </p>
+                      <p className="truncate text-[10px] text-[#6B7280]">{slot.handle}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </li>
         ))}
