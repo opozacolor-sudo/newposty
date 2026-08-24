@@ -336,6 +336,7 @@
     "viewPost": "Open",
     "manageCancel": "Cancel scheduled post",
     "manageReschedule": "Reschedule",
-    "manageEdit": "Edit caption"
+    "manageEdit": "Edit caption",
+    "cleanChat": "Clean chat"
   }
 }

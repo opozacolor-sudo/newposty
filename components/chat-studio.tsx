@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Mic, Paperclip, X } from "lucide-react";
+import { ArrowUp, Eraser, Mic, Paperclip, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   FormEvent,
@@ -108,15 +108,19 @@ export default function ChatStudio() {
   const [uploads, setUploads] = useState<UploadDraft[]>([]);
   const [listening, setListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [clearing, setClearing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const baseInputRef = useRef("");
+  const loadGenRef = useRef(0);
 
   useEffect(() => {
+    const gen = ++loadGenRef.current;
     void fetch("/api/chat")
       .then((response) => response.json())
       .then((chat) => {
+        if (gen !== loadGenRef.current) return;
         setConversationId(chat.conversationId ?? null);
         setMessages(
           (chat.messages ?? []).map((message: ChatMessage) => ({
@@ -138,6 +142,31 @@ export default function ChatStudio() {
       recognitionRef.current?.stop();
     };
   }, []);
+
+  async function clearChat() {
+    if (clearing || pending) return;
+    loadGenRef.current += 1;
+    setClearing(true);
+    setError(null);
+    recognitionRef.current?.stop();
+    setListening(false);
+    const response = await fetch("/api/chat", { method: "DELETE" });
+    const payload = (await response.json().catch(() => ({}))) as {
+      conversationId?: string | null;
+      error?: string;
+    };
+    setClearing(false);
+    if (!response.ok) {
+      setError(payload.error ?? t("replyFailed"));
+      return;
+    }
+    for (const item of uploads) URL.revokeObjectURL(item.previewUrl);
+    setConversationId(payload.conversationId ?? null);
+    setMessages([]);
+    setMedia([]);
+    setUploads([]);
+    setInput("");
+  }
 
   async function send(event?: FormEvent) {
     event?.preventDefault();
@@ -300,8 +329,19 @@ export default function ChatStudio() {
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col bg-white lg:h-full">
-      <header className="border-b border-[#E5E5E5] px-6 py-4">
+      <header className="flex items-center justify-between gap-3 border-b border-[#E5E5E5] px-6 py-4">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <button
+          type="button"
+          onClick={() => void clearChat()}
+          disabled={clearing || pending}
+          title={t("cleanChat")}
+          aria-label={t("cleanChat")}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#E5E5E5] px-2.5 py-1 text-[11px] text-[#6B7280] hover:border-[#FF4713] hover:text-[#FF4713] disabled:opacity-40"
+        >
+          <Eraser size={11} />
+          {t("cleanChat")}
+        </button>
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
@@ -348,6 +388,9 @@ export default function ChatStudio() {
             ) : null}
           </article>
         ))}
+        {messages.length === 0 && !pending ? (
+          <p className="max-w-xl text-sm text-[#6B7280]">{t("empty")}</p>
+        ) : null}
         {pending ? <p className="text-sm text-[#6B7280]">{t("thinking")}</p> : null}
         <div ref={bottomRef} />
       </div>

@@ -73,6 +73,38 @@ export async function GET() {
   });
 }
 
+export async function DELETE() {
+  const supabase = await createServerSupabase();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { data: created, error } = await supabase
+    .from("conversations")
+    .insert({
+      user_id: user.id,
+      title: null,
+      skip_confirmation: false,
+      pending_intent: null,
+      pending_intent_at: null,
+    })
+    .select("id")
+    .single();
+
+  if (error || !created) {
+    return NextResponse.json({ error: error?.message ?? "Could not start a clean chat." }, { status: 500 });
+  }
+
+  return NextResponse.json({
+    conversationId: created.id,
+    messages: [],
+    skipConfirmation: false,
+  });
+}
+
 export async function POST(request: Request) {
   const supabase = await createServerSupabase();
   const {

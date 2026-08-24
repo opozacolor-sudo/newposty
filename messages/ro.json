@@ -336,6 +336,7 @@
     "viewPost": "Deschide",
     "manageCancel": "Anulează postarea programată",
     "manageReschedule": "Reprogramează",
-    "manageEdit": "Editează textul"
+    "manageEdit": "Editează textul",
+    "cleanChat": "Chat nou"
   }
 }
