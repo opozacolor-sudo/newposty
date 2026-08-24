@@ -93,6 +93,18 @@ test("Instagram as video and TikTok stays a normal TikTok video", () => {
   );
 });
 
+test("Instagram story and TikTok does not stamp story onto TikTok", () => {
+  assert.equal(
+    contentTypeForPlatform({ platform: "instagram", contentTypes: { instagram: "stories" } }),
+    "stories",
+  );
+  assert.equal(contentTypeForPlatform({ platform: "tiktok", contentType: "stories" }), undefined);
+  assert.deepEqual(
+    adaptContentType({ platform: "tiktok", requested: "stories", mediaKind: "video" }),
+    { contentType: "video", incompatible: false },
+  );
+});
+
 test("instagram without media is excluded", () => {
   const reason = validationReason({
     platform: "instagram",

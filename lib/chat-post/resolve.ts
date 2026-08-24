@@ -134,7 +134,7 @@ export async function resolveCreateActions(input: {
       : input.media;
 
     let caption = action.caption?.trim() ?? "";
-    const caption_source: CaptionSource = action.caption_source ?? (caption ? "user_provided" : "ai_generated");
+    const caption_source: CaptionSource = action.caption_source ?? "user_provided";
     if (!caption && caption_source === "ai_generated") {
       const tightest =
         selection.platforms
