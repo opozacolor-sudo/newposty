@@ -68,9 +68,15 @@ export default async function DemoPage() {
         <p className="text-2xl font-semibold tracking-tight text-neutral-950">
           {t("ctaTitle")}
         </p>
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link href="/login" className={`${btnSolid} px-6 py-3`}>
             {t("ctaButton")}
+          </Link>
+          <Link
+            href="/guide"
+            className="text-sm font-medium text-[#FF4713] hover:underline"
+          >
+            {t("readGuide")}
           </Link>
         </div>
       </div>

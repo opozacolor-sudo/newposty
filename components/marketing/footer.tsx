@@ -21,6 +21,12 @@ export async function MarketingFooter() {
         </div>
         <nav className="ml-auto flex shrink-0 flex-nowrap items-center gap-1 sm:gap-5">
           <Link
+            href="/guide"
+            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
+          >
+            {t("guide")}
+          </Link>
+          <Link
             href="/privacy"
             className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
           >

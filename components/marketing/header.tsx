@@ -16,6 +16,9 @@ export function MarketingHeader() {
       <Link href="/about" className={btnGhost} onClick={() => setOpen(false)}>
         {t("about")}
       </Link>
+      <Link href="/guide" className={btnGhost} onClick={() => setOpen(false)}>
+        {t("guide")}
+      </Link>
       <Link href="/contact" className={btnGhost} onClick={() => setOpen(false)}>
         {t("contact")}
       </Link>

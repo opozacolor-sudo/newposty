@@ -11,6 +11,7 @@ import {
 } from "react";
 import { PostConfirmationCard } from "@/components/chat/post-confirmation-card";
 import { PostResultsMessage } from "@/components/chat/post-results-message";
+import { Link } from "@/i18n/navigation";
 import type {
   ChatMedia,
   ConfirmationPayload,
@@ -517,6 +518,9 @@ export default function ChatStudio() {
           <div className="max-w-xl space-y-2">
             <p className="text-sm text-[#6B7280]">{t("empty")}</p>
             <p className="text-xs leading-5 text-[#6B7280]">{t("campaignTip")}</p>
+            <Link href="/help" className="inline-block text-xs font-medium text-[#FF4713] hover:underline">
+              {t("guideLink")}
+            </Link>
           </div>
         ) : null}
         {pending ? <p className="text-sm text-[#6B7280]">{t("thinking")}</p> : null}

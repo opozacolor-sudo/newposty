@@ -7,6 +7,7 @@
     "about": "About us",
     "contact": "Contact",
     "demo": "Demo",
+    "guide": "Guide",
     "signIn": "Sign in",
     "signUp": "Sign up",
     "openMenu": "Open menu",
@@ -39,7 +40,8 @@
     "copyright": "© 2026",
     "privacy": "Privacy",
     "terms": "Terms",
-    "contact": "Contact"
+    "contact": "Contact",
+    "guide": "Guide"
   },
   "Demo": {
     "metaTitle": "How posty.now works",
@@ -49,6 +51,7 @@
     "videoSoon": "Video coming soon",
     "ctaTitle": "Ready to start?",
     "ctaButton": "Sign in",
+    "readGuide": "Read the full guide",
     "steps": {
       "connect": {
         "title": "Connect your accounts",
@@ -101,6 +104,10 @@
     "title": "Terms",
     "body": "By using posty.now you agree to use the product lawfully, keep your login private, and remain responsible for the content you publish to connected social accounts. The service is provided as-is while we grow. We may update these terms; the current version will always live on this page."
   },
+  "Guide": {
+    "metaTitle": "User guide — posty.now",
+    "metaDescription": "Complete guide to posts, ads, analytics, scheduling, and voice dictation in posty.now."
+  },
   "Auth": {
     "email": "Email",
     "password": "Password",
@@ -130,7 +137,8 @@
     "comingSoon": "Coming soon",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "localTime": "Local time"
+    "localTime": "Local time",
+    "guide": "Guide"
   },
   "ComingSoon": {
     "badge": "Coming soon",
@@ -352,6 +360,7 @@
     "manageCancel": "Cancel scheduled post",
     "manageReschedule": "Reschedule",
     "manageEdit": "Edit caption",
-    "cleanChat": "Clean chat"
+    "cleanChat": "Clean chat",
+    "guideLink": "User guide"
   }
 }

@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  BookOpen,
   ChevronDown,
   FileText,
   Megaphone,
@@ -54,6 +55,11 @@ export function StudioSidebar({ email }: { email: string }) {
         <Link href="/chat" className={itemClass(pathname === "/chat" || pathname.startsWith("/chat/"))}>
           <MessageCircle size={18} />
           {t("assistant")}
+        </Link>
+
+        <Link href="/help" className={itemClass(pathname === "/help" || pathname.startsWith("/help/"))}>
+          <BookOpen size={18} />
+          {t("guide")}
         </Link>
 
         <div>

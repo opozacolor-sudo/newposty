@@ -7,6 +7,7 @@
     "about": "Despre noi",
     "contact": "Contact",
     "demo": "Demo",
+    "guide": "Manual",
     "signIn": "Autentificare",
     "signUp": "Înregistrare",
     "openMenu": "Deschide meniul",
@@ -39,7 +40,8 @@
     "copyright": "© 2026",
     "privacy": "Privacy",
     "terms": "Terms",
-    "contact": "Contact"
+    "contact": "Contact",
+    "guide": "Manual"
   },
   "Demo": {
     "metaTitle": "Cum funcționează posty.now",
@@ -49,6 +51,7 @@
     "videoSoon": "Video în curând",
     "ctaTitle": "Pregătit să începi?",
     "ctaButton": "Autentificare",
+    "readGuide": "Citește manualul complet",
     "steps": {
       "connect": {
         "title": "Conectează-ți conturile",
@@ -101,6 +104,10 @@
     "title": "Terms",
     "body": "Folosind posty.now, ești de acord să folosești produsul legal, să îți păstrezi autentificarea privată și să rămâi responsabil pentru conținutul publicat pe conturile sociale conectate. Serviciul este oferit ca atare, pe măsură ce creștem. Putem actualiza acești termeni; versiunea curentă va fi întotdeauna pe această pagină."
   },
+  "Guide": {
+    "metaTitle": "Manual de utilizare — posty.now",
+    "metaDescription": "Ghid complet: postări, promovări, statistici, programări și dictare vocală în posty.now."
+  },
   "Auth": {
     "email": "Email",
     "password": "Parolă",
@@ -130,7 +137,8 @@
     "comingSoon": "În curând",
     "openMenu": "Deschide meniul",
     "closeMenu": "Închide meniul",
-    "localTime": "Ora locală"
+    "localTime": "Ora locală",
+    "guide": "Manual"
   },
   "ComingSoon": {
     "badge": "În curând",
@@ -352,6 +360,7 @@
     "manageCancel": "Anulează postarea programată",
     "manageReschedule": "Reprogramează",
     "manageEdit": "Editează textul",
-    "cleanChat": "Chat nou"
+    "cleanChat": "Chat nou",
+    "guideLink": "Manual de utilizare"
   }
 }
