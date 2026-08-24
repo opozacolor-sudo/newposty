@@ -339,6 +339,7 @@
     "resultsSummary": "{ok} programate, {failed} eșuate.",
     "tooManyFiles": "Poți atașa maximum {max} fișiere odată.",
     "attachingProgress": "Se încarcă {done}/{total}",
+    "campaignTip": "Sfat: o promoție sau o postare pentru o dată anume încarc-o singură și spune când să iasă. Amestecată cu alte zeci de fișiere, poate intra greșit în serie.",
     "excludedTitle": "Nu sunt incluse",
     "captionTruncated": "Textul a fost scurtat la limita platformei.",
     "dontAskAgain": "Nu mai întreba în acest chat",

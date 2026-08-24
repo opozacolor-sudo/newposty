@@ -339,6 +339,7 @@
     "resultsSummary": "{ok} scheduled, {failed} failed.",
     "tooManyFiles": "You can attach at most {max} files at once.",
     "attachingProgress": "Uploading {done}/{total}",
+    "campaignTip": "Tip: a promotion or a post for a specific date should be uploaded on its own, with a clear “publish on …”. Mixed into a pile of other files, it can land on the wrong day.",
     "excludedTitle": "Not included",
     "captionTruncated": "Caption shortened to the platform limit.",
     "dontAskAgain": "Don't ask again in this chat",

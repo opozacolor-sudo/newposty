@@ -514,7 +514,10 @@ export default function ChatStudio() {
           </article>
         ))}
         {messages.length === 0 && !pending ? (
-          <p className="max-w-xl text-sm text-[#6B7280]">{t("empty")}</p>
+          <div className="max-w-xl space-y-2">
+            <p className="text-sm text-[#6B7280]">{t("empty")}</p>
+            <p className="text-xs leading-5 text-[#6B7280]">{t("campaignTip")}</p>
+          </div>
         ) : null}
         {pending ? <p className="text-sm text-[#6B7280]">{t("thinking")}</p> : null}
         <div ref={bottomRef} />
@@ -567,6 +570,9 @@ export default function ChatStudio() {
                 </li>
               ))}
             </ul>
+            {attachments.length >= 2 ? (
+              <p className="mt-2 text-[11px] leading-4 text-[#9A3412]">{t("campaignTip")}</p>
+            ) : null}
           </div>
         ) : null}
 
