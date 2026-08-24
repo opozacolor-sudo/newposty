@@ -217,7 +217,7 @@ export async function POST(request: Request) {
     ? (conversation.pending_intent as PendingIntent)
     : null;
   const pendingIntentLine = savedIntent
-    ? `Open post intent (still valid): missing=${savedIntent.missing.join(", ")}. Continue this intent if the user just supplied the missing piece. Previous actions JSON: ${JSON.stringify(savedIntent.actions)}`
+    ? `Open post intent (still valid): missing=${savedIntent.missing.join(", ")}. Continue this intent if the user just supplied the missing piece. Previous actions JSON: ${JSON.stringify(savedIntent.actions)}. If they answer with the best / optimal time (“cea mai bună oră”), reuse those actions with use_best_time=true and omit scheduled_at_iso.`
     : "";
 
   const userContent = text;
@@ -434,6 +434,7 @@ export async function POST(request: Request) {
             reference: string;
             action: "reschedule" | "cancel" | "edit_caption";
             new_value?: string;
+            use_best_time?: boolean | string;
           };
           const managed = await resolveManageAction({
             supabase,
@@ -441,6 +442,7 @@ export async function POST(request: Request) {
             reference: input.reference,
             action: input.action,
             new_value: input.new_value,
+            use_best_time: input.use_best_time,
             timezone: timeZone,
             locale,
           });

@@ -11,8 +11,16 @@ import {
   validationReason,
 } from "@/lib/chat-post/rules";
 import {
+  bestTimeResearchWarning,
+  hasClockTime,
+  nextBestTime,
+  parseDateOnly,
+  wantsBestTime,
+} from "@/lib/chat-post/best-time";
+import {
   formatInZone,
   isFutureDate,
+  localIsoInZone,
   parseScheduledAt,
 } from "@/lib/chat-post/timezone";
 import type {
@@ -23,6 +31,7 @@ import type {
   ResolvedAction,
   ResolvedCreateAction,
   ResolvedPlatform,
+  ScheduleSource,
   ToolPostAction,
 } from "@/lib/chat-post/types";
 
@@ -77,6 +86,7 @@ export async function resolveCreateActions(input: {
   brandVoice?: string | null;
   fallbackBrief?: string;
   keepToolCaption?: boolean;
+  now?: Date;
 }): Promise<
   | { ok: true; resolved: Omit<ResolvedAction, "action_id"> }
   | { ok: false; error: string; missing?: Array<"platform" | "media" | "caption" | "time"> }
@@ -158,15 +168,18 @@ export async function resolveCreateActions(input: {
     }
 
     let scheduledUtc: Date | null = null;
-    if (action.mode === "schedule") {
-      if (!action.scheduled_at_iso) {
+    const useResearchTime = wantsBestTime(action) && !hasClockTime(action.scheduled_at_iso);
+    const namedDay =
+      parseDateOnly(action.scheduled_on) ?? parseDateOnly(action.scheduled_at_iso);
+    if (action.mode === "schedule" && !useResearchTime) {
+      if (!action.scheduled_at_iso || !hasClockTime(action.scheduled_at_iso)) {
         missing.add("time");
         return {
           ok: false,
           error:
             input.locale === "ro"
-              ? "La ce oră să programez postarea?"
-              : "What time should I schedule the post?",
+              ? "La ce oră să programez postarea? Poți spune o oră sau „cea mai bună oră”."
+              : "What time should I schedule the post? You can name a clock time or say “best time”.",
           missing: ["time"],
         };
       }
@@ -263,19 +276,76 @@ export async function resolveCreateActions(input: {
       continue;
     }
 
-    resolvedActions.push({
-      mode: action.mode,
-      scheduled_at_iso: action.mode === "schedule" ? localLabelIso(scheduledUtc, input.timezone) : null,
-      scheduled_at_utc: scheduledUtc?.toISOString() ?? null,
-      scheduled_label: scheduledUtc
-        ? formatInZone(scheduledUtc, input.timezone, input.locale)
-        : input.locale === "ro"
-          ? "Acum"
-          : "Now",
-      platforms,
-      media,
-      caption_source,
-    });
+    if (action.mode === "schedule" && useResearchTime) {
+      const grouped = new Map<string, { utc: Date; platforms: ResolvedPlatform[] }>();
+      for (const platform of platforms) {
+        const utc = nextBestTime({
+          platform: platform.platform,
+          contentType: platform.contentType,
+          timeZone: input.timezone,
+          now: input.now,
+          onOrAfterYmd: namedDay,
+        });
+        if (!utc) {
+          excluded_by_validation.push({
+            platform: platform.platform,
+            reason:
+              input.locale === "ro"
+                ? "Nu am găsit o fereastră de vârf în următoarele zile."
+                : "I could not find a peak window in the coming days.",
+          });
+          continue;
+        }
+        const key = utc.toISOString();
+        const group = grouped.get(key);
+        if (group) group.platforms.push(platform);
+        else grouped.set(key, { utc, platforms: [platform] });
+      }
+      if (grouped.size === 0) continue;
+      if (!warnings.includes(bestTimeResearchWarning(input.locale))) {
+        warnings.push(bestTimeResearchWarning(input.locale));
+      }
+      if (namedDay) {
+        const drifted = [...grouped.values()].some(
+          (group) => localIsoInZone(group.utc, input.timezone).slice(0, 10) !== namedDay,
+        );
+        if (drifted) {
+          warnings.push(
+            input.locale === "ro"
+              ? "Fereastra de vârf din ziua cerută a trecut, am luat următoarea."
+              : "The peak window on that day has passed, so I took the next one.",
+          );
+        }
+      }
+      for (const group of grouped.values()) {
+        resolvedActions.push(
+          scheduledAction({
+            mode: action.mode,
+            scheduledUtc: group.utc,
+            timezone: input.timezone,
+            locale: input.locale,
+            scheduleSource: "best_time_research",
+            platforms: group.platforms,
+            media,
+            caption_source,
+          }),
+        );
+      }
+      continue;
+    }
+
+    resolvedActions.push(
+      scheduledAction({
+        mode: action.mode,
+        scheduledUtc,
+        timezone: input.timezone,
+        locale: input.locale,
+        scheduleSource: action.mode === "schedule" ? "user" : undefined,
+        platforms,
+        media,
+        caption_source,
+      }),
+    );
   }
 
   if (resolvedActions.length === 0) {
@@ -304,18 +374,28 @@ export async function resolveCreateActions(input: {
   };
 }
 
-function localLabelIso(date: Date | null, timeZone: string) {
-  if (!date) return null;
-  const formatted = new Intl.DateTimeFormat("en-GB", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-  const get = (type: string) => formatted.find((part) => part.type === type)?.value ?? "00";
-  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`;
+function scheduledAction(input: {
+  mode: ResolvedCreateAction["mode"];
+  scheduledUtc: Date | null;
+  timezone: string;
+  locale: string;
+  scheduleSource?: ScheduleSource;
+  platforms: ResolvedPlatform[];
+  media: ChatMedia[];
+  caption_source: CaptionSource;
+}): ResolvedCreateAction {
+  return {
+    mode: input.mode,
+    scheduled_at_iso: input.scheduledUtc ? localIsoInZone(input.scheduledUtc, input.timezone) : null,
+    scheduled_at_utc: input.scheduledUtc?.toISOString() ?? null,
+    scheduled_label: input.scheduledUtc
+      ? formatInZone(input.scheduledUtc, input.timezone, input.locale)
+      : input.locale === "ro"
+        ? "Acum"
+        : "Now",
+    schedule_source: input.scheduleSource,
+    platforms: input.platforms,
+    media: input.media,
+    caption_source: input.caption_source,
+  };
 }

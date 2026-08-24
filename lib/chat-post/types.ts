@@ -19,6 +19,8 @@ export type UserMediaPayload = {
 export type ToolPostAction = {
   mode: PostMode;
   scheduled_at_iso?: string;
+  scheduled_on?: string;
+  use_best_time?: boolean | string;
   platforms: string[];
   excluded_platforms?: string[];
   caption?: string;
@@ -52,11 +54,14 @@ export type ExcludedPlatform = {
   reason: string;
 };
 
+export type ScheduleSource = "user" | "best_time_research";
+
 export type ResolvedCreateAction = {
   mode: PostMode;
   scheduled_at_iso: string | null;
   scheduled_at_utc: string | null;
   scheduled_label: string | null;
+  schedule_source?: ScheduleSource;
   platforms: ResolvedPlatform[];
   media: ChatMedia[];
   caption_source: CaptionSource;

@@ -1,7 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cancelledCopy, localizeCancelledContent, resultsReply } from "@/lib/chat-post/copy";
 import { matchScheduledReference } from "@/lib/chat-post/rules";
-import { formatInZone, parseScheduledAt } from "@/lib/chat-post/timezone";
+import {
+  bestTimeResearchWarning,
+  nextBestTime,
+  wantsBestTime,
+} from "@/lib/chat-post/best-time";
+import { formatInZone, localIsoInZone, parseScheduledAt } from "@/lib/chat-post/timezone";
 import type {
   ChatMedia,
   ManageAction,
@@ -512,6 +517,7 @@ export async function resolveManageAction(input: {
   reference: string;
   action: ManageAction;
   new_value?: string;
+  use_best_time?: boolean | string;
   timezone: string;
   locale: string;
 }): Promise<
@@ -552,6 +558,30 @@ export async function resolveManageAction(input: {
     };
   }
   const when = item.scheduled_at ? new Date(item.scheduled_at as string) : null;
+  const warnings: string[] = [];
+  let newValue = input.new_value;
+  let scheduledLabel = when ? formatInZone(when, input.timezone, input.locale) : null;
+  if (
+    input.action === "reschedule" &&
+    wantsBestTime({ use_best_time: input.use_best_time, new_value: input.new_value })
+  ) {
+    const next = nextBestTime({
+      platform: item.platform as string,
+      timeZone: input.timezone,
+    });
+    if (!next) {
+      return {
+        ok: false,
+        error:
+          input.locale === "ro"
+            ? "Nu am găsit o fereastră de vârf în următoarele zile."
+            : "I could not find a peak window in the coming days.",
+      };
+    }
+    newValue = localIsoInZone(next, input.timezone);
+    scheduledLabel = formatInZone(next, input.timezone, input.locale);
+    warnings.push(bestTimeResearchWarning(input.locale));
+  }
   return {
     ok: true,
     resolved: {
@@ -561,7 +591,7 @@ export async function resolveManageAction(input: {
       actions: [],
       excluded_by_validation: [],
       excluded_platforms: [],
-      warnings: [],
+      warnings,
       manage: {
         action: input.action,
         postActionId: item.id as string,
@@ -570,8 +600,8 @@ export async function resolveManageAction(input: {
         handle: "",
         caption: (item.caption as string) ?? "",
         scheduled_at_utc: item.scheduled_at as string | null,
-        scheduled_label: when ? formatInZone(when, input.timezone, input.locale) : null,
-        new_value: input.new_value,
+        scheduled_label: scheduledLabel,
+        new_value: newValue,
       },
     },
   };

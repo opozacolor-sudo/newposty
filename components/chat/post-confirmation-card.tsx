@@ -88,6 +88,9 @@ export function PostConfirmationCard({
             <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
               {action.mode === "schedule" ? action.scheduled_label : t("postNow")}
             </p>
+            {action.schedule_source === "best_time_research" ? (
+              <p className="text-[11px] text-[#6B7280]">{t("bestTimeHint")}</p>
+            ) : null}
             {action.media[0] ? (
               <div className="h-20 w-20 overflow-hidden rounded-xl border border-[#E5E5E5] bg-[#F5F5F5]">
                 {action.media[0].type === "image" ? (

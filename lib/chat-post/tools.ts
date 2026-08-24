@@ -18,7 +18,17 @@ export const chatPostTools: Anthropic.Tool[] = [
               scheduled_at_iso: {
                 type: "string",
                 description:
-                  "ISO 8601, required only if mode=schedule, already resolved from natural language in the user timezone",
+                  "Local ISO datetime in the user timezone when they named a clock time. Omit when use_best_time is true. Date-only YYYY-MM-DD is allowed with use_best_time.",
+              },
+              scheduled_on: {
+                type: "string",
+                description:
+                  "YYYY-MM-DD in the user timezone when they named a day but asked for the best hour, e.g. tomorrow or Friday.",
+              },
+              use_best_time: {
+                type: "boolean",
+                description:
+                  "True when the user asked for the best / optimal / peak posting time. Do not invent a clock time.",
               },
               platforms: { type: "array", items: { type: "string" } },
               excluded_platforms: {
@@ -67,6 +77,10 @@ export const chatPostTools: Anthropic.Tool[] = [
         new_value: {
           type: "string",
           description: "New local datetime ISO for reschedule, or the new caption for edit_caption.",
+        },
+        use_best_time: {
+          type: "boolean",
+          description: "True when rescheduling to the researched peak time instead of a named clock time.",
         },
       },
       required: ["reference", "action"],
@@ -129,6 +143,9 @@ export function chatPostSystemPrompt(input: {
     `Today is ${input.today}. Tomorrow is ${input.tomorrow}. Current local datetime: ${input.localIso}.`,
     "When the user says tomorrow, in N days, Monday, next week, or similar, resolve the date from this clock — not from memory.",
     `Schedule times go in scheduled_at_iso as local datetime in ${input.timeZone}, without a timezone suffix, e.g. ${input.today}T18:00:00.`,
+    "If the user asks for the best time, optimal time, peak time, “cea mai bună oră”, “ora optimă”, or similar, set mode=schedule, use_best_time=true, and omit scheduled_at_iso. Do not invent 18:00 or any other clock time. The server picks the next researched peak window per platform.",
+    `If they name a day but not a clock time with that request (“mâine la cea mai bună oră”), also set scheduled_on to that YYYY-MM-DD (today=${input.today}, tomorrow=${input.tomorrow}).`,
+    "If they give an explicit clock time, that time wins — do not set use_best_time.",
     `Canonical platform ids: ${CANONICAL_PLATFORM_IDS.join(", ")}.`,
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
     "Never assume the platform if the user did not specify one. Ask a clarifying question in text. Do NOT call create_social_post with a guessed platform.",
@@ -154,6 +171,7 @@ export function chatPostSystemPrompt(input: {
     "Never say a post is live until the results card shows a green check for that network.",
     "If a tool result has status pending, the post is still processing. Say that plainly. Do not say Perfect, live, or posted, and do not call it an error.",
     "If a tool result has status error, the post did not go live. Say that clearly. Do not say Perfect or that it was posted.",
+    "To reschedule to the best / peak time, call manage_scheduled_post with use_best_time=true and omit new_value.",
     "If a tool result has pending_confirmation, tell the user to confirm in the card below — not above.",
     "If a tool result already contains executed results, do not ask the user to confirm again.",
     input.mediaLine ?? "",

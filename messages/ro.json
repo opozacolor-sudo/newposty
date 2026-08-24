@@ -64,7 +64,7 @@
       },
       "timing": {
         "title": "Alege momentul optim",
-        "body": "AI-ul recomandă cel mai bun interval de postare pe baza audienței."
+        "body": "Posty folosește orele de vârf din research pe fiecare platformă. Poți alege oricând ora ta."
       },
       "publish": {
         "title": "Programează sau publică instant",
@@ -326,6 +326,7 @@
     "confirmPost": "Confirmă",
     "cancelPost": "Anulează / modifică",
     "postNow": "Acum",
+    "bestTimeHint": "Recomandare din research pe platforme (ore de vârf tipice, nu statisticile tale).",
     "excludedTitle": "Nu sunt incluse",
     "captionTruncated": "Textul a fost scurtat la limita platformei.",
     "dontAskAgain": "Nu mai întreba în acest chat",

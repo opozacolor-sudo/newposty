@@ -64,7 +64,7 @@
       },
       "timing": {
         "title": "Pick the best time",
-        "body": "The AI recommends the best posting window based on your audience."
+        "body": "Posty uses researched peak hours for each platform. You can still pick your own time."
       },
       "publish": {
         "title": "Schedule or publish instantly",
@@ -326,6 +326,7 @@
     "confirmPost": "Confirm",
     "cancelPost": "Cancel / edit",
     "postNow": "Now",
+    "bestTimeHint": "Recommended from platform research (typical peak hours, not your own analytics).",
     "excludedTitle": "Not included",
     "captionTruncated": "Caption shortened to the platform limit.",
     "dontAskAgain": "Don't ask again in this chat",
