@@ -5,6 +5,7 @@ import {
   claimPendingAction,
   finishAction,
   loadPendingAction,
+  replaceConfirmationWithResults,
   saveRefreshedResults,
 } from "@/lib/chat-post/store";
 import type { ResolvedAction } from "@/lib/chat-post/types";
@@ -57,6 +58,13 @@ export async function POST(request: Request) {
         results,
       });
     }
+    await replaceConfirmationWithResults({
+      supabase,
+      userId: user.id,
+      actionId: body.action_id,
+      results,
+      excluded_by_validation: claimed.resolved.excluded_by_validation,
+    });
     return NextResponse.json({
       action_id: body.action_id,
       results,
@@ -97,6 +105,14 @@ export async function POST(request: Request) {
     userId: user.id,
     resolved,
     results,
+  });
+
+  await replaceConfirmationWithResults({
+    supabase,
+    userId: user.id,
+    actionId: body.action_id,
+    results,
+    excluded_by_validation: resolved.excluded_by_validation,
   });
 
   const allFailed = results.length > 0 && results.every((item) => item.status === "error");

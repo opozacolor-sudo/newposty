@@ -237,12 +237,182 @@ export async function cancelPendingAction(input: {
   userId: string;
   actionId: string;
 }) {
+  const existing = await loadPendingAction(input);
   await input.supabase
     .from("chat_post_actions")
     .update({ status: "cancelled" })
     .eq("id", input.actionId)
     .eq("user_id", input.userId)
     .eq("status", "pending");
+
+  const locale =
+    existing?.resolved && typeof existing.resolved === "object"
+      ? (existing.resolved as { locale?: string }).locale
+      : undefined;
+  await dismissConfirmationMessages({
+    supabase: input.supabase,
+    userId: input.userId,
+    actionId: input.actionId,
+    locale,
+  });
+}
+
+async function messagesForAction(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  actionId: string;
+}) {
+  const { data } = await input.supabase
+    .from("messages")
+    .select("id, kind, payload, conversation_id")
+    .eq("user_id", input.userId)
+    .in("kind", ["confirmation", "results"]);
+  return (data ?? []).filter((message) => {
+    const payload = message.payload as { action_id?: string } | null;
+    return payload?.action_id === input.actionId;
+  });
+}
+
+function cancelledCopy(locale?: string) {
+  return locale === "ro"
+    ? "Anulat. Trimite o comandă nouă dacă vrei să schimbi."
+    : "Cancelled. Send a new instruction if you want to change it.";
+}
+
+export async function dismissConfirmationMessages(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  actionId: string;
+  locale?: string;
+}) {
+  const messages = await messagesForAction(input);
+  for (const message of messages) {
+    if (message.kind !== "confirmation") continue;
+    await input.supabase
+      .from("messages")
+      .update({
+        kind: "text",
+        payload: null,
+        content: cancelledCopy(input.locale),
+      })
+      .eq("id", message.id)
+      .eq("user_id", input.userId);
+  }
+}
+
+export async function replaceConfirmationWithResults(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  actionId: string;
+  results: PlatformExecResult[];
+  excluded_by_validation?: Array<{ platform: string; reason: string }>;
+}) {
+  const allFailed = input.results.length > 0 && input.results.every((item) => item.status === "error");
+  const messages = await messagesForAction(input);
+  for (const message of messages) {
+    if (message.kind !== "confirmation") continue;
+    const payload = message.payload as Record<string, unknown> | null;
+    await input.supabase
+      .from("messages")
+      .update({
+        kind: "results",
+        payload: {
+          type: "results",
+          action_id: input.actionId,
+          results: input.results,
+          allFailed,
+          excluded_by_validation: input.excluded_by_validation ?? payload?.excluded_by_validation ?? [],
+        },
+      })
+      .eq("id", message.id)
+      .eq("user_id", input.userId);
+  }
+}
+
+type LoadedChatMessage = {
+  role: string;
+  content: string;
+  kind?: string | null;
+  payload?: unknown;
+  created_at?: string;
+};
+
+export async function hydrateConfirmationMessages(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  messages: LoadedChatMessage[];
+}): Promise<LoadedChatMessage[]> {
+  const confirmations = input.messages.filter((message) => message.kind === "confirmation");
+  if (confirmations.length === 0) return input.messages;
+
+  const actionIds = [
+    ...new Set(
+      confirmations
+        .map((message) => (message.payload as { action_id?: string } | null)?.action_id)
+        .filter((value): value is string => Boolean(value)),
+    ),
+  ];
+  if (actionIds.length === 0) return input.messages;
+
+  const { data: actions } = await input.supabase
+    .from("chat_post_actions")
+    .select("id, status, results, resolved")
+    .eq("user_id", input.userId)
+    .in("id", actionIds);
+  const byId = new Map((actions ?? []).map((action) => [action.id as string, action]));
+
+  const next = [...input.messages];
+  for (let index = 0; index < next.length; index += 1) {
+    const message = next[index];
+    if (message.kind !== "confirmation") continue;
+    const actionId = (message.payload as { action_id?: string } | null)?.action_id;
+    const action = actionId ? byId.get(actionId) : undefined;
+    const locale =
+      action?.resolved && typeof action.resolved === "object"
+        ? (action.resolved as { locale?: string }).locale
+        : undefined;
+
+    if (!action || action.status === "cancelled") {
+      const updated = {
+        ...message,
+        kind: "text",
+        payload: null,
+        content: cancelledCopy(locale),
+      };
+      next[index] = updated;
+      if (actionId) {
+        await dismissConfirmationMessages({
+          supabase: input.supabase,
+          userId: input.userId,
+          actionId,
+          locale,
+        });
+      }
+      continue;
+    }
+
+    if (action.status === "executed" || action.status === "executing") {
+      const results = (action.results as PlatformExecResult[]) ?? [];
+      const updated = {
+        ...message,
+        kind: "results",
+        payload: {
+          type: "results",
+          action_id: action.id,
+          results,
+          allFailed: results.length > 0 && results.every((item) => item.status === "error"),
+        },
+      };
+      next[index] = updated;
+      await replaceConfirmationWithResults({
+        supabase: input.supabase,
+        userId: input.userId,
+        actionId: action.id as string,
+        results,
+      });
+    }
+  }
+  return next;
 }
 
 export async function loadConversationMedia(input: {

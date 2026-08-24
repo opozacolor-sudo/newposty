@@ -5,6 +5,7 @@ import { applyCaptionOverrides, executeResolvedAction } from "@/lib/chat-post/ex
 import {
   attachMediaToConversation,
   finishAction,
+  hydrateConfirmationMessages,
   loadConversationMedia,
   pendingIntentValid,
   savePendingAction,
@@ -59,10 +60,16 @@ export async function GET() {
     .eq("conversation_id", conversation.id)
     .order("created_at", { ascending: true });
 
+  const hydrated = await hydrateConfirmationMessages({
+    supabase,
+    userId: user.id,
+    messages: messages ?? [],
+  });
+
   return NextResponse.json({
     conversationId: conversation.id,
     skipConfirmation: Boolean(conversation.skip_confirmation),
-    messages: messages ?? [],
+    messages: hydrated,
   });
 }
 
