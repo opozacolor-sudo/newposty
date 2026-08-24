@@ -17,6 +17,7 @@ import type {
   ResultsPayload,
   UserMediaPayload,
 } from "@/lib/chat-post/types";
+import { localizeCancelledContent } from "@/lib/chat-post/copy";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -117,7 +118,7 @@ export default function ChatStudio() {
 
   useEffect(() => {
     const gen = ++loadGenRef.current;
-    void fetch("/api/chat")
+    void fetch(`/api/chat?locale=${encodeURIComponent(locale)}`)
       .then((response) => response.json())
       .then((chat) => {
         if (gen !== loadGenRef.current) return;
@@ -125,13 +126,13 @@ export default function ChatStudio() {
         setMessages(
           (chat.messages ?? []).map((message: ChatMessage) => ({
             role: message.role,
-            content: message.content,
+            content: localizeCancelledContent(message.content, locale),
             kind: message.kind,
             payload: message.payload,
           })),
         );
       });
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -357,7 +358,9 @@ export default function ChatStudio() {
             {message.role === "user" && message.payload?.type === "user_media" ? (
               <MessageMedia items={message.payload.media} onDark />
             ) : null}
-            <div className="whitespace-pre-wrap">{visibleText(message.content)}</div>
+            <div className="whitespace-pre-wrap">
+              {visibleText(localizeCancelledContent(message.content, locale))}
+            </div>
             {message.role === "assistant" &&
             message.kind === "confirmation" &&
             message.payload?.type === "confirmation" ? (

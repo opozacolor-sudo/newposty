@@ -14,6 +14,7 @@ import {
 } from "@/lib/chat-post/store";
 import { chatPostSystemPrompt, chatPostTools } from "@/lib/chat-post/tools";
 import { userRequestedCaption } from "@/lib/chat-post/rules";
+import { localizeCancelledContent } from "@/lib/chat-post/copy";
 import type {
   ChatMedia,
   ConfirmationPayload,
@@ -23,7 +24,7 @@ import type {
   ToolPostAction,
 } from "@/lib/chat-post/types";
 import { getAnthropicApiKey } from "@/lib/env";
-import { clockSnapshot, isAppLocale } from "@/lib/locale-time";
+import { clockSnapshot, localeFromRequest } from "@/lib/locale-time";
 import { isAdsPlatformId } from "@/lib/platforms";
 import { createServerSupabase } from "@/lib/supabase/server";
 
@@ -33,7 +34,7 @@ function asRecord(value: unknown) {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createServerSupabase();
   const {
     data: { user },
@@ -41,6 +42,8 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const locale = localeFromRequest(request);
 
   const { data: conversation } = await supabase
     .from("conversations")
@@ -64,6 +67,7 @@ export async function GET() {
     supabase,
     userId: user.id,
     messages: messages ?? [],
+    locale,
   });
 
   return NextResponse.json({
@@ -236,12 +240,13 @@ export async function POST(request: Request) {
     .order("created_at", { ascending: true })
     .limit(40);
 
-  const locale = isAppLocale(body.locale) ? body.locale : "en";
+  const locale = localeFromRequest(request, body.locale);
   const clock = clockSnapshot(locale);
   const timeZone = userTimezone(profile?.timezone as string | undefined);
 
   const anthropic = new Anthropic({ apiKey });
   const system = chatPostSystemPrompt({
+    locale,
     brandName: profile?.brand_name as string | null,
     brandVoice: profile?.brand_voice as string | null,
     timeZone,
@@ -256,7 +261,7 @@ export async function POST(request: Request) {
 
   const anthropicMessages: Anthropic.MessageParam[] = (history ?? []).map((message) => ({
     role: message.role as ChatMessage["role"],
-    content: message.content as string,
+    content: localizeCancelledContent(message.content as string, locale),
   }));
 
   let finalText = "";

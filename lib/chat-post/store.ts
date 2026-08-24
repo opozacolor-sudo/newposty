@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cancelledCopy, localizeCancelledContent } from "@/lib/chat-post/copy";
 import { matchScheduledReference } from "@/lib/chat-post/rules";
 import { formatInZone, parseScheduledAt } from "@/lib/chat-post/timezone";
 import type {
@@ -236,6 +237,7 @@ export async function cancelPendingAction(input: {
   supabase: SupabaseClient;
   userId: string;
   actionId: string;
+  locale?: string;
 }) {
   const existing = await loadPendingAction(input);
   await input.supabase
@@ -245,7 +247,7 @@ export async function cancelPendingAction(input: {
     .eq("user_id", input.userId)
     .eq("status", "pending");
 
-  const locale =
+  const storedLocale =
     existing?.resolved && typeof existing.resolved === "object"
       ? (existing.resolved as { locale?: string }).locale
       : undefined;
@@ -253,7 +255,7 @@ export async function cancelPendingAction(input: {
     supabase: input.supabase,
     userId: input.userId,
     actionId: input.actionId,
-    locale,
+    locale: input.locale ?? storedLocale,
   });
 }
 
@@ -271,12 +273,6 @@ async function messagesForAction(input: {
     const payload = message.payload as { action_id?: string } | null;
     return payload?.action_id === input.actionId;
   });
-}
-
-function cancelledCopy(locale?: string) {
-  return locale === "ro"
-    ? "Anulat. Trimite o comandă nouă dacă vrei să schimbi."
-    : "Cancelled. Send a new instruction if you want to change it.";
 }
 
 export async function dismissConfirmationMessages(input: {
@@ -341,9 +337,15 @@ export async function hydrateConfirmationMessages(input: {
   supabase: SupabaseClient;
   userId: string;
   messages: LoadedChatMessage[];
+  locale?: string;
 }): Promise<LoadedChatMessage[]> {
   const confirmations = input.messages.filter((message) => message.kind === "confirmation");
-  if (confirmations.length === 0) return input.messages;
+  if (confirmations.length === 0) {
+    return input.messages.map((message) => ({
+      ...message,
+      content: localizeCancelledContent(message.content, input.locale),
+    }));
+  }
 
   const actionIds = [
     ...new Set(
@@ -352,7 +354,12 @@ export async function hydrateConfirmationMessages(input: {
         .filter((value): value is string => Boolean(value)),
     ),
   ];
-  if (actionIds.length === 0) return input.messages;
+  if (actionIds.length === 0) {
+    return input.messages.map((message) => ({
+      ...message,
+      content: localizeCancelledContent(message.content, input.locale),
+    }));
+  }
 
   const { data: actions } = await input.supabase
     .from("chat_post_actions")
@@ -364,13 +371,20 @@ export async function hydrateConfirmationMessages(input: {
   const next = [...input.messages];
   for (let index = 0; index < next.length; index += 1) {
     const message = next[index];
-    if (message.kind !== "confirmation") continue;
+    if (message.kind !== "confirmation") {
+      next[index] = {
+        ...message,
+        content: localizeCancelledContent(message.content, input.locale),
+      };
+      continue;
+    }
     const actionId = (message.payload as { action_id?: string } | null)?.action_id;
     const action = actionId ? byId.get(actionId) : undefined;
-    const locale =
+    const storedLocale =
       action?.resolved && typeof action.resolved === "object"
         ? (action.resolved as { locale?: string }).locale
         : undefined;
+    const locale = input.locale ?? storedLocale;
 
     if (!action || action.status === "cancelled") {
       const updated = {

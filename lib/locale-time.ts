@@ -11,6 +11,19 @@ export function isAppLocale(value: unknown): value is AppLocale {
   return value === "ro" || value === "en";
 }
 
+export function localeFromRequest(request: Request, explicit?: string | null) {
+  if (isAppLocale(explicit)) return explicit;
+  const fromQuery = new URL(request.url).searchParams.get("locale");
+  if (isAppLocale(fromQuery)) return fromQuery;
+  const cookie = request.headers
+    .get("cookie")
+    ?.split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith("NEXT_LOCALE="))
+    ?.slice("NEXT_LOCALE=".length);
+  return isAppLocale(cookie) ? cookie : "en";
+}
+
 export function timezoneForLocale(locale: string) {
   return TIMEZONES[isAppLocale(locale) ? locale : routing.defaultLocale];
 }

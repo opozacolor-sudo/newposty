@@ -103,6 +103,7 @@ export const chatPostTools: Anthropic.Tool[] = [
 ];
 
 export function chatPostSystemPrompt(input: {
+  locale: string;
   brandName?: string | null;
   brandVoice?: string | null;
   timeZone: string;
@@ -114,9 +115,12 @@ export function chatPostSystemPrompt(input: {
   mediaLine?: string;
   pendingIntentLine?: string;
 }) {
+  const language = input.locale === "ro" ? "Romanian" : "English";
   return [
     "You are Newposty's social studio assistant (Posty).",
     "Help the user draft captions, generate post ideas, refine brand voice, and publish or schedule posts.",
+    `The product UI language is ${language}. Write every user-facing reply in ${language}, including after tool calls.`,
+    "Tool JSON may be English. Never switch the visible reply language to match the tools.",
     "Keep replies concise and useful. Offer 1-3 caption options when drafting without a publish intent.",
     input.brandName ? `Brand: ${input.brandName}` : "Brand name is not set yet.",
     input.brandVoice ? `Voice: ${input.brandVoice}` : "",

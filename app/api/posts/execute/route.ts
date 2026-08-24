@@ -9,6 +9,7 @@ import {
   saveRefreshedResults,
 } from "@/lib/chat-post/store";
 import type { ResolvedAction } from "@/lib/chat-post/types";
+import { localeFromRequest } from "@/lib/locale-time";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
@@ -23,13 +24,21 @@ export async function POST(request: Request) {
     captions?: Record<string, string>;
     cancel?: boolean;
     skip_confirmation?: boolean;
+    locale?: string;
   };
   if (!body.action_id) {
     return NextResponse.json({ error: "action_id is required" }, { status: 400 });
   }
 
+  const locale = localeFromRequest(request, body.locale);
+
   if (body.cancel) {
-    await cancelPendingAction({ supabase, userId: user.id, actionId: body.action_id });
+    await cancelPendingAction({
+      supabase,
+      userId: user.id,
+      actionId: body.action_id,
+      locale,
+    });
     return NextResponse.json({ cancelled: true });
   }
 
@@ -40,7 +49,15 @@ export async function POST(request: Request) {
   });
 
   if (claimed.kind === "missing" || claimed.kind === "expired" || claimed.kind === "cancelled") {
-    return NextResponse.json({ error: "This confirmation is no longer valid." }, { status: 409 });
+    return NextResponse.json(
+      {
+        error:
+          locale === "ro"
+            ? "Confirmarea nu mai e valabilă."
+            : "This confirmation is no longer valid.",
+      },
+      { status: 409 },
+    );
   }
 
   if (claimed.kind === "already") {

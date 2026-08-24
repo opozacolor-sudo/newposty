@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 import { getPlatform, platformLabel } from "@/lib/platforms";
 import type { ConfirmationPayload, ResolvedAction } from "@/lib/chat-post/types";
@@ -14,6 +14,7 @@ export function PostConfirmationCard({
   onDone: (next: { kind: "results" | "cancelled"; reply?: string; payload?: unknown }) => void;
 }) {
   const t = useTranslations("Chat");
+  const locale = useLocale();
   const resolved = payload.resolved;
   const [captions, setCaptions] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
@@ -40,6 +41,7 @@ export function PostConfirmationCard({
           action_id: payload.action_id,
           captions,
           skip_confirmation: skipNext,
+          locale,
         }),
       });
       const body = await response.json();
@@ -70,7 +72,7 @@ export function PostConfirmationCard({
     await fetch("/api/posts/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action_id: payload.action_id, cancel: true }),
+      body: JSON.stringify({ action_id: payload.action_id, cancel: true, locale }),
     });
     onDone({ kind: "cancelled" });
   }
