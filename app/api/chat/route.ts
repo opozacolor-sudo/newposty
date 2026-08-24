@@ -15,6 +15,7 @@ import {
 import { chatPostSystemPrompt, chatPostTools } from "@/lib/chat-post/tools";
 import { userRequestedCaption } from "@/lib/chat-post/rules";
 import { localizeCancelledContent } from "@/lib/chat-post/copy";
+import { userTimezone } from "@/lib/chat-post/timezone";
 import type {
   ChatMedia,
   ConfirmationPayload,
