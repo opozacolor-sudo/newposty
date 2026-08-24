@@ -12,6 +12,7 @@ import {
   type ZernioPost,
 } from "@/lib/zernio";
 import { humanZernioError } from "@/lib/zernio-error-messages";
+import { instagramPublishKind } from "@/lib/chat-post/rules";
 import { isFutureDate, parseScheduledAt } from "@/lib/chat-post/timezone";
 import {
   classifyPublishOutcome,
@@ -68,14 +69,31 @@ function errorMessage(error: unknown) {
   return "Unknown error";
 }
 
-function instagramPlatformData(contentType?: string): Record<string, unknown> | undefined {
-  if (contentType === "stories" || contentType === "story") {
-    return { contentType: "story" };
-  }
-  if (contentType === "reels" || contentType === "reel") {
-    return { shareToFeed: true };
-  }
+function instagramPlatformData(contentType?: string, mode?: PostMode): Record<string, unknown> | undefined {
+  const kind = instagramPublishKind({ contentType, mode });
+  if (kind === "stories") return { contentType: "story" };
+  if (kind === "reels") return { shareToFeed: true };
   return undefined;
+}
+
+function instagramDuplicateMessage(locale: string, contentType?: string) {
+  const kind = instagramPublishKind({ contentType });
+  if (locale === "ro") {
+    if (kind === "stories") {
+      return "Acest clip e deja Story pe Instagram, din ultimele 24 de ore. Un Reel e altceva — nu se blochează între ele.";
+    }
+    if (kind === "reels") {
+      return "Acest clip e deja Reel pe Instagram, din ultimele 24 de ore. Un Story e altceva — nu se blochează între ele.";
+    }
+    return "Instagram a mai primit exact acest clip pe aceeași formă (Story sau Reel) în ultimele 24 de ore.";
+  }
+  if (kind === "stories") {
+    return "This clip is already an Instagram Story from the last 24 hours. A Reel is separate and is not blocked by a Story.";
+  }
+  if (kind === "reels") {
+    return "This clip is already an Instagram Reel from the last 24 hours. A Story is separate and is not blocked by a Reel.";
+  }
+  return "Instagram already received this exact clip in the same format (Story or Reel) in the last 24 hours.";
 }
 
 function privacyLevelValues(info: TikTokCreatorInfo) {
@@ -178,16 +196,24 @@ function resultFromPost(input: {
     };
   }
   const message = platformErrorText(input.post, input.platform);
+  const human = humanZernioError({
+    code: entry?.errorCategory,
+    message,
+    locale: input.locale,
+  });
+  const duplicate =
+    entry?.errorCategory === "duplicate" ||
+    human.toLowerCase().includes("deja postat") ||
+    human.toLowerCase().includes("already posted");
   return {
     ...meta,
     status: "error",
     zernio_post_id: input.post._id,
     error_code: entry?.errorCategory ?? null,
-    error_message_human: humanZernioError({
-      code: entry?.errorCategory,
-      message,
-      locale: input.locale,
-    }),
+    error_message_human:
+      duplicate && input.platform === "instagram"
+        ? instagramDuplicateMessage(input.locale, input.contentType)
+        : human,
   };
 }
 
@@ -236,11 +262,16 @@ async function publishOne(input: {
   timezone: string;
   locale: string;
 }): Promise<PlatformExecResult> {
+  const igKind =
+    input.target.platform === "instagram"
+      ? instagramPublishKind({ contentType: input.target.contentType, mode: input.mode })
+      : undefined;
+  const contentType = igKind ?? input.target.contentType;
   const meta = resultMeta({
     platform: input.target.platform,
     handle: input.target.handle,
     mode: input.mode,
-    contentType: input.target.contentType,
+    contentType,
     scheduled_label: input.scheduled_label,
   });
   try {
@@ -265,7 +296,9 @@ async function publishOne(input: {
       platform: input.target.platform,
       accountId: input.target.zernioAccountId,
       platformSpecificData:
-        input.target.platform === "instagram" ? instagramPlatformData(input.target.contentType) : undefined,
+        input.target.platform === "instagram"
+          ? instagramPlatformData(input.target.contentType, input.mode)
+          : undefined,
     };
     let post = await createPost({
       content: input.content,
@@ -287,20 +320,26 @@ async function publishOne(input: {
       handle: input.target.handle,
       mode: input.mode,
       locale: input.locale,
-      contentType: input.target.contentType,
+      contentType,
       scheduled_label: input.scheduled_label,
     });
   } catch (error) {
     const code = errorCode(error);
+    const human = humanZernioError({
+      code,
+      message: errorMessage(error),
+      locale: input.locale,
+    });
+    const duplicate =
+      code === "duplicate" || human.toLowerCase().includes("deja postat") || human.toLowerCase().includes("already posted");
     return {
       ...meta,
       status: "error",
       error_code: code,
-      error_message_human: humanZernioError({
-        code,
-        message: errorMessage(error),
-        locale: input.locale,
-      }),
+      error_message_human:
+        duplicate && input.target.platform === "instagram"
+          ? instagramDuplicateMessage(input.locale, contentType)
+          : human,
     };
   }
 }

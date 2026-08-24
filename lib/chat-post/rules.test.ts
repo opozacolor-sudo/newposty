@@ -4,6 +4,7 @@ import { canonicalizePlatform, getPlatformCapability } from "../platform-capabil
 import {
   adaptContentType,
   contentTypeForPlatform,
+  instagramPublishKind,
   matchScheduledReference,
   resolvePlatformSelection,
   truncateCaption,
@@ -92,6 +93,13 @@ test("Instagram as video and TikTok stays a normal TikTok video", () => {
     }),
     null,
   );
+});
+
+test("Instagram story stays a story, scheduled Instagram video is a reel", () => {
+  assert.equal(instagramPublishKind({ contentType: "stories" }), "stories");
+  assert.equal(instagramPublishKind({ contentType: "story", mode: "publish_now" }), "stories");
+  assert.equal(instagramPublishKind({ contentType: "reels" }), "reels");
+  assert.equal(instagramPublishKind({ mode: "schedule" }), "reels");
 });
 
 test("Instagram story and TikTok does not stamp story onto TikTok", () => {

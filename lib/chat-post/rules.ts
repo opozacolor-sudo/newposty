@@ -84,6 +84,18 @@ export function normalizeRequestedContentType(requested?: string) {
   return value;
 }
 
+/** Story vs Reel for Instagram. These are separate surfaces — a Story must never go out as a Reel. */
+export function instagramPublishKind(input: {
+  contentType?: string;
+  mode?: "publish_now" | "schedule";
+}): "stories" | "reels" | undefined {
+  const requested = normalizeRequestedContentType(input.contentType);
+  if (requested === "stories") return "stories";
+  if (requested === "reels" || requested === "feed") return "reels";
+  if (input.mode === "schedule") return "reels";
+  return undefined;
+}
+
 /** Map a user/AI content type onto what this platform actually accepts. */
 export function adaptContentType(input: {
   platform: string;

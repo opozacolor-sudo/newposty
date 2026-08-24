@@ -8,7 +8,9 @@ import { platformLabel, platformProfileUrl } from "@/lib/platforms";
 import type { PlatformExecResult, ResultsPayload } from "@/lib/chat-post/types";
 
 function resultTitle(result: PlatformExecResult) {
-  const format = contentTypeLabel(result.contentType);
+  const format =
+    contentTypeLabel(result.contentType) ||
+    (result.platform === "instagram" && result.mode === "schedule" ? "Reel" : "");
   const when = result.mode === "schedule" && result.scheduled_label ? result.scheduled_label : null;
   return [platformLabel(result.platform), format, result.handle, when ? `· ${when}` : ""]
     .filter(Boolean)
@@ -84,7 +86,8 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
               </p>
             ) : result.status === "pending" ? (
               <p>
-                ⏳ {resultTitle(result)}: {t("stillPublishing")}{" "}
+                ⏳ {resultTitle(result)}:{" "}
+                {result.platform === "tiktok" ? t("stillPublishingTikTok") : t("stillPublishing")}{" "}
                 {openUrl(result) ? <OpenLink href={openUrl(result)!} /> : null}
               </p>
             ) : (
