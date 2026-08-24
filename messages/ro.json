@@ -205,7 +205,6 @@
   },
   "Accounts": {
     "title": "Conturi postări",
-    "intro": "Conectează-te prin OAuth-ul găzduit de Zernio. Paginile Facebook, organizațiile LinkedIn, board-urile Pinterest și locațiile Google folosesc selectorul Zernio după login.",
     "connectedNamed": "{platform} conectat. Poți publica din chat.",
     "connectedGeneric": "Cont conectat. Poți publica din chat.",
     "connect": "Conectează",

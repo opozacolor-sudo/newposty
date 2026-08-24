@@ -205,7 +205,6 @@
   },
   "Accounts": {
     "title": "Posting accounts",
-    "intro": "Connect through Zernio’s hosted OAuth. Facebook Pages, LinkedIn orgs, Pinterest boards, and Google locations use Zernio’s picker after login.",
     "connectedNamed": "{platform} connected. You can publish from chat.",
     "connectedGeneric": "Account connected. You can publish from chat.",
     "connect": "Connect",
