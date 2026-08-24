@@ -2,10 +2,23 @@
 
 import { Bell, Check, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { btnOutline, btnSolid } from "@/components/marketing/styles";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname as useAppPathname } from "@/i18n/navigation";
 import type { PresaleView } from "@/lib/presale";
+
+function PresaleViewportLock() {
+  const pathname = useAppPathname();
+
+  useEffect(() => {
+    if (pathname !== "/presale") return;
+    const root = document.documentElement;
+    root.classList.add("home-no-scroll");
+    return () => root.classList.remove("home-no-scroll");
+  }, [pathname]);
+
+  return null;
+}
 
 export function PresaleLanding({ initial }: { initial: PresaleView }) {
   const t = useTranslations("Presale");
@@ -58,119 +71,127 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
     }
   }
 
+  const others = view.tranches.filter((row) => row.state !== "current");
+
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
-      <header className="text-center">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#FF4713]">{t("kicker")}</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-5xl">
-          {t("title")}
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-neutral-500 sm:text-lg">
-          {t("subtitle")}
-        </p>
-      </header>
-
-      <ul className="mx-auto mt-10 max-w-lg space-y-3">
-        {roadmap.map((item) => (
-          <li
-            key={item.label}
-            className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-4 py-3"
-          >
-            <span
-              className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                item.done ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-500"
-              }`}
-            >
-              <item.icon size={18} />
-            </span>
-            <span className="text-sm font-medium text-neutral-800">{item.label}</span>
-            {item.done ? (
-              <span className="ml-auto text-xs font-medium text-emerald-700">{t("done")}</span>
-            ) : (
-              <span className="ml-auto text-xs text-neutral-400">{t("soon")}</span>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {view.soldOut || !current ? (
-        <div className="mt-12 rounded-3xl border border-neutral-200 bg-white p-8 text-center">
-          <p className="text-2xl font-semibold text-neutral-950">{t("soldOut")}</p>
-          <p className="mt-2 text-sm text-neutral-500">{t("soldOutBody")}</p>
-        </div>
-      ) : (
-        <form
-          onSubmit={onCheckout}
-          className="mt-12 rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8"
-        >
-          <p className="text-sm font-medium text-[#FF4713]">{t("trancheLabel", { n: current.tranche })}</p>
-          <p className="mt-2 font-serif text-5xl tracking-tight text-neutral-950 sm:text-6xl">
-            {current.priceEur} EUR
+    <section className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden px-3 py-2 sm:px-6 sm:py-3 lg:py-4">
+      <PresaleViewportLock />
+      <div className="grid min-h-0 flex-1 grid-cols-1 content-center gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(300px,400px)] lg:items-center lg:gap-8">
+        <div className="min-w-0 text-center lg:text-left">
+          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#FF4713] sm:text-xs">
+            {t("kicker")}
           </p>
-          <p className="mt-1 text-sm text-neutral-500">{t("lifetime")}</p>
-          <div className="mt-6">
-            <div className="flex items-center justify-between text-sm text-neutral-600">
-              <span>{t("remaining", { count: current.remaining, total: current.capacity })}</span>
-              <span>
-                {current.sold}/{current.capacity}
-              </span>
-            </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-neutral-100">
-              <div
-                className="h-full rounded-full bg-[#FF4713]"
-                style={{ width: `${Math.min(100, (current.sold / current.capacity) * 100)}%` }}
-              />
-            </div>
-          </div>
-          <label className="mt-6 block text-sm text-neutral-700">
-            {t("email")}
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 outline-none focus:border-[#FF4713]"
-            />
-          </label>
-          {error ? <p className="mt-3 text-sm text-[#FF4713]">{error}</p> : null}
-          <button type="submit" disabled={pending} className={`${btnSolid} mt-5 w-full !py-3 disabled:opacity-60`}>
-            {pending ? t("redirecting") : t("cta")}
-          </button>
-        </form>
-      )}
-
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
-        {view.tranches
-          .filter((row) => row.state !== "current")
-          .map((row) => (
-            <article
-              key={row.tranche}
-              className={`rounded-2xl border px-4 py-4 ${
-                row.state === "sold_out"
-                  ? "border-neutral-200 bg-neutral-50 text-neutral-400"
-                  : "border-neutral-200 bg-white text-neutral-500"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium">{t("trancheLabel", { n: row.tranche })}</p>
-                {row.state === "sold_out" ? (
-                  <span className="text-xs font-semibold tracking-wide">{t("soldOutBadge")}</span>
+          <h1 className="mt-1.5 text-[1.35rem] font-semibold leading-tight tracking-tight text-neutral-950 sm:text-4xl lg:text-[2.6rem] xl:text-5xl">
+            {t("title")}
+          </h1>
+          <p className="mx-auto mt-1.5 max-w-xl text-[12px] leading-5 text-neutral-500 sm:mt-3 sm:text-sm sm:leading-6 lg:mx-0 lg:text-base">
+            {t("subtitle")}
+          </p>
+          <ul className="mx-auto mt-3 max-w-xl space-y-1.5 lg:mx-0">
+            {roadmap.map((item) => (
+              <li
+                key={item.label}
+                className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-2.5 py-1.5 sm:px-3 sm:py-2"
+              >
+                <span
+                  className={`flex h-6 w-6 items-center justify-center rounded-full sm:h-7 sm:w-7 ${
+                    item.done ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-500"
+                  }`}
+                >
+                  <item.icon size={14} />
+                </span>
+                <span className="text-left text-[12px] font-medium text-neutral-800 sm:text-sm">{item.label}</span>
+                {item.done ? (
+                  <span className="ml-auto text-[10px] font-medium text-emerald-700 sm:text-xs">{t("done")}</span>
                 ) : (
-                  <span className="text-xs uppercase tracking-wide">{t("upcoming")}</span>
+                  <span className="ml-auto text-[10px] text-neutral-400 sm:text-xs">{t("soon")}</span>
                 )}
-              </div>
-              <p className={`mt-2 text-2xl font-semibold ${row.state === "sold_out" ? "" : "text-neutral-800"}`}>
-                {row.priceEur} EUR
-              </p>
-            </article>
-          ))}
-      </div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex justify-center lg:justify-start">
+            <Link href="/demo" className={`${btnOutline} !px-3 !py-1.5 !text-xs sm:!px-4 sm:!py-2 sm:!text-sm`}>
+              {t("whatItDoes")}
+            </Link>
+          </div>
+        </div>
 
-      <div className="mt-10 text-center">
-        <Link href="/demo" className={btnOutline}>
-          {t("whatItDoes")}
-        </Link>
+        <div className="min-w-0">
+          {view.soldOut || !current ? (
+            <div className="rounded-2xl border border-neutral-200 bg-white p-5 text-center">
+              <p className="text-xl font-semibold text-neutral-950">{t("soldOut")}</p>
+              <p className="mt-1 text-sm text-neutral-500">{t("soldOutBody")}</p>
+            </div>
+          ) : (
+            <form onSubmit={onCheckout} className="rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm sm:p-5">
+              <p className="text-xs font-medium text-[#FF4713] sm:text-sm">{t("trancheLabel", { n: current.tranche })}</p>
+              <p className="mt-0.5 font-serif text-4xl tracking-tight text-neutral-950 sm:text-5xl">
+                {current.priceEur} EUR
+              </p>
+              <p className="text-[11px] text-neutral-500 sm:text-sm">{t("lifetime")}</p>
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-[11px] text-neutral-600 sm:text-sm">
+                  <span>{t("remaining", { count: current.remaining, total: current.capacity })}</span>
+                  <span>
+                    {current.sold}/{current.capacity}
+                  </span>
+                </div>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+                  <div
+                    className="h-full rounded-full bg-[#FF4713]"
+                    style={{ width: `${Math.min(100, (current.sold / current.capacity) * 100)}%` }}
+                  />
+                </div>
+              </div>
+              <label className="mt-3 block text-[12px] text-neutral-700 sm:text-sm">
+                {t("email")}
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4 sm:py-2.5"
+                />
+              </label>
+              {error ? <p className="mt-2 text-xs text-[#FF4713]">{error}</p> : null}
+              <button
+                type="submit"
+                disabled={pending}
+                className={`${btnSolid} mt-3 w-full !py-2.5 !text-sm disabled:opacity-60`}
+              >
+                {pending ? t("redirecting") : t("cta")}
+              </button>
+            </form>
+          )}
+
+          {others.length > 0 ? (
+            <div className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-3 sm:gap-2">
+              {others.map((row) => (
+                <article
+                  key={row.tranche}
+                  className={`rounded-xl border px-1.5 py-1.5 text-center sm:px-2 sm:py-2 ${
+                    row.state === "sold_out"
+                      ? "border-neutral-200 bg-neutral-50 text-neutral-400"
+                      : "border-neutral-200 bg-white text-neutral-500"
+                  }`}
+                >
+                  <p className="text-[9px] font-medium sm:text-[11px]">{t("trancheLabel", { n: row.tranche })}</p>
+                  <p
+                    className={`mt-0.5 text-[11px] font-semibold sm:text-sm ${
+                      row.state === "sold_out" ? "" : "text-neutral-800"
+                    }`}
+                  >
+                    {row.priceEur}€
+                  </p>
+                  <p className="text-[8px] uppercase tracking-wide sm:text-[10px]">
+                    {row.state === "sold_out" ? t("soldOutBadge") : t("upcoming")}
+                  </p>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
