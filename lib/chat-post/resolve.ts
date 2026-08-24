@@ -7,6 +7,7 @@ import {
   inferMediaKind,
   resolvePlatformSelection,
   truncateCaption,
+  userRequestedCaption,
   validationReason,
 } from "@/lib/chat-post/rules";
 import {
@@ -75,6 +76,7 @@ export async function resolveCreateActions(input: {
   brandName?: string | null;
   brandVoice?: string | null;
   fallbackBrief?: string;
+  keepToolCaption?: boolean;
 }): Promise<
   | { ok: true; resolved: Omit<ResolvedAction, "action_id"> }
   | { ok: false; error: string; missing?: Array<"platform" | "media" | "caption" | "time"> }
@@ -134,7 +136,12 @@ export async function resolveCreateActions(input: {
       : input.media;
 
     let caption = action.caption?.trim() ?? "";
-    const caption_source: CaptionSource = action.caption_source ?? "user_provided";
+    let caption_source: CaptionSource = action.caption_source ?? "user_provided";
+    const keepCaption = input.keepToolCaption ?? userRequestedCaption(input.fallbackBrief ?? "");
+    if (!keepCaption) {
+      caption = "";
+      caption_source = "user_provided";
+    }
     if (!caption && caption_source === "ai_generated") {
       const tightest =
         selection.platforms

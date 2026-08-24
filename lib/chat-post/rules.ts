@@ -38,6 +38,25 @@ export function resolvePlatformSelection(input: {
   };
 }
 
+export function userRequestedCaption(text: string) {
+  const lower = text.toLowerCase();
+  if (/fără descriere|fara descriere|fără caption|fara caption|no caption|fără text|fara text/.test(lower)) {
+    return false;
+  }
+  if (
+    /descriere|caption|hashtag|aceeași descriere|aceeasi descriere|same caption|same description|scrie un text|scrie o descriere/.test(
+      lower,
+    )
+  ) {
+    return true;
+  }
+  const parts = text
+    .split(/\n\s*\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return parts.length > 1;
+}
+
 export function inferMediaKind(media: ChatMedia[]) {
   const hasImage = media.some((item) => item.type === "image");
   const hasVideo = media.some((item) => item.type === "video");

@@ -13,7 +13,7 @@ import {
   resolveManageAction,
 } from "@/lib/chat-post/store";
 import { chatPostSystemPrompt, chatPostTools } from "@/lib/chat-post/tools";
-import { userTimezone } from "@/lib/chat-post/timezone";
+import { userRequestedCaption } from "@/lib/chat-post/rules";
 import type {
   ChatMedia,
   ConfirmationPayload,
@@ -311,6 +311,7 @@ export async function POST(request: Request) {
             brandName: profile?.brand_name as string | null,
             brandVoice: profile?.brand_voice as string | null,
             fallbackBrief: text,
+            keepToolCaption: userRequestedCaption(text),
           });
           if (!resolved.ok) {
             if (resolved.missing && resolved.missing.length > 0) {

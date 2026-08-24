@@ -7,6 +7,7 @@ import {
   matchScheduledReference,
   resolvePlatformSelection,
   truncateCaption,
+  userRequestedCaption,
   validationReason,
 } from "./rules";
 import { isFutureDate, parseScheduledAt } from "./timezone";
@@ -135,4 +136,15 @@ test("ambiguous scheduled references stay as a list", () => {
     { id: "3", platform: "tiktok", caption: "hello", scheduled_at: "2026-08-21T18:00:00Z" },
   ]);
   assert.equal(matches.length, 2);
+});
+
+test("posting commands without asking for a caption do not keep old copy", () => {
+  assert.equal(
+    userRequestedCaption(
+      "posteaza acest video pe Instagram story, tiktok. si programeaza pentru instagram reel maine la ora 12:00",
+    ),
+    false,
+  );
+  assert.equal(userRequestedCaption("postează pe Instagram și fă-i o descriere"), true);
+  assert.equal(userRequestedCaption("pune și pe tiktok cu aceeași descriere"), true);
 });
