@@ -22,9 +22,45 @@ import {
 } from "@/lib/chat-post/publish-status";
 import type {
   PlatformExecResult,
+  PostMode,
   ResolvedAction,
   ResolvedPlatform,
 } from "@/lib/chat-post/types";
+
+function resultMeta(input: {
+  platform: string;
+  handle: string;
+  mode: PostMode;
+  contentType?: string;
+  scheduled_label?: string | null;
+}): Pick<PlatformExecResult, "platform" | "handle" | "mode" | "contentType" | "scheduled_label"> {
+  return {
+    platform: input.platform,
+    handle: input.handle,
+    mode: input.mode,
+    contentType: input.contentType,
+    scheduled_label: input.scheduled_label ?? null,
+  };
+}
+
+function clarifyInstagramDuplicates(results: PlatformExecResult[], locale: string) {
+  const postedIg = results.some((item) => item.platform === "instagram" && item.status === "success");
+  if (!postedIg) return results;
+  return results.map((item) => {
+    if (item.platform !== "instagram" || item.status !== "error") return item;
+    const text = `${item.error_code ?? ""} ${item.error_message_human ?? ""}`.toLowerCase();
+    const duplicate =
+      item.error_code === "duplicate" || text.includes("duplicate") || text.includes("deja postat") || text.includes("already posted");
+    if (!duplicate) return item;
+    return {
+      ...item,
+      error_message_human:
+        locale === "ro"
+          ? "Instagram a refuzat această postare: același video tocmai a fost publicat pe cont (Story și Reel în 24 de ore). Folosește un clip sau un text diferit."
+          : "Instagram blocked this because the same video was just posted on that account (Story and Reel within 24 hours). Use a different clip or caption.",
+    };
+  });
+}
 
 function errorCode(error: unknown) {
   if (error instanceof ZernioError && error.body && typeof error.body === "object" && "code" in error.body) {
@@ -117,9 +153,12 @@ function resultFromPost(input: {
   post: ZernioPost;
   platform: string;
   handle: string;
-  mode: "publish_now" | "schedule";
+  mode: PostMode;
   locale: string;
+  contentType?: string;
+  scheduled_label?: string | null;
 }): PlatformExecResult {
+  const meta = resultMeta(input);
   const outcome = classifyPublishOutcome({
     post: input.post,
     platform: input.platform,
@@ -128,8 +167,7 @@ function resultFromPost(input: {
   const entry = platformEntry(input.post, input.platform);
   if (outcome === "success") {
     return {
-      platform: input.platform,
-      handle: input.handle,
+      ...meta,
       status: "success",
       post_url: entry?.platformPostUrl ?? null,
       zernio_post_id: input.post._id,
@@ -138,8 +176,7 @@ function resultFromPost(input: {
   }
   if (outcome === "pending") {
     return {
-      platform: input.platform,
-      handle: input.handle,
+      ...meta,
       status: "pending",
       post_url: null,
       zernio_post_id: input.post._id,
@@ -148,8 +185,7 @@ function resultFromPost(input: {
   }
   const message = platformErrorText(input.post, input.platform);
   return {
-    platform: input.platform,
-    handle: input.handle,
+    ...meta,
     status: "error",
     zernio_post_id: input.post._id,
     error_code: entry?.errorCategory ?? null,
@@ -178,8 +214,10 @@ export async function refreshPendingResults(input: {
           post,
           platform: result.platform,
           handle: result.handle,
-          mode: "publish_now",
+          mode: result.mode ?? "publish_now",
           locale: input.locale,
+          contentType: result.contentType,
+          scheduled_label: result.scheduled_label,
         }),
       );
     } catch {
@@ -193,19 +231,26 @@ async function publishOne(input: {
   target: ResolvedPlatform;
   content: string;
   media: ZernioMediaItem[];
-  mode: "publish_now" | "schedule";
+  mode: PostMode;
   scheduledFor?: string | null;
+  scheduled_label?: string | null;
   timezone: string;
   locale: string;
 }): Promise<PlatformExecResult> {
+  const meta = resultMeta({
+    platform: input.target.platform,
+    handle: input.target.handle,
+    mode: input.mode,
+    contentType: input.target.contentType,
+    scheduled_label: input.scheduled_label,
+  });
   try {
     let tiktokSettings: TikTokSettings | undefined;
     if (input.target.platform === "tiktok") {
       const tiktok = await tiktokSettingsFor(input.target.zernioAccountId);
       if (!tiktok.canPostMore) {
         return {
-          platform: input.target.platform,
-          handle: input.target.handle,
+          ...meta,
           status: "error",
           error_code: "quota_exhausted",
           error_message_human: humanZernioError({
@@ -243,12 +288,13 @@ async function publishOne(input: {
       handle: input.target.handle,
       mode: input.mode,
       locale: input.locale,
+      contentType: input.target.contentType,
+      scheduled_label: input.scheduled_label,
     });
   } catch (error) {
     const code = errorCode(error);
     return {
-      platform: input.target.platform,
-      handle: input.target.handle,
+      ...meta,
       status: "error",
       error_code: code,
       error_message_human: humanZernioError({
@@ -283,13 +329,14 @@ export async function executeResolvedAction(input: {
           media,
           mode: action.mode,
           scheduledFor: action.scheduled_at_iso,
+          scheduled_label: action.scheduled_label,
           timezone: input.resolved.timezone,
           locale: input.locale,
         }),
       );
     }
   }
-  return results;
+  return clarifyInstagramDuplicates(results, input.locale);
 }
 
 async function executeManage(resolved: ResolvedAction, locale: string): Promise<PlatformExecResult> {
@@ -384,7 +431,7 @@ export function applyCaptionOverrides(resolved: ResolvedAction, overrides?: Reco
       ...action,
       platforms: action.platforms.map((platform) => ({
         ...platform,
-        caption: overrides[platform.platform] ?? platform.caption,
+        caption: overrides[platform.requestId] ?? overrides[platform.platform] ?? platform.caption,
       })),
     })),
   };

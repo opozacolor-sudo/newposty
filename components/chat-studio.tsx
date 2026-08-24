@@ -17,7 +17,7 @@ import type {
   ResultsPayload,
   UserMediaPayload,
 } from "@/lib/chat-post/types";
-import { localizeCancelledContent } from "@/lib/chat-post/copy";
+import { localizeCancelledContent, resultsReply } from "@/lib/chat-post/copy";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -376,7 +376,10 @@ export default function ChatStudio() {
                               ...item,
                               kind: "results",
                               payload: next.payload as ResultsPayload,
-                              content: item.content,
+                              content: resultsReply(
+                                locale,
+                                (next.payload as ResultsPayload).results,
+                              ),
                             }
                         : item,
                     ),

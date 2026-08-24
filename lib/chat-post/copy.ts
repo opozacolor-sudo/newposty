@@ -15,3 +15,24 @@ export function isCancelledCopy(content: string) {
 export function localizeCancelledContent(content: string, locale?: string) {
   return isCancelledCopy(content) ? cancelledCopy(locale) : content;
 }
+
+export function contentTypeLabel(type?: string | null) {
+  const value = (type ?? "").toLowerCase();
+  if (value === "stories" || value === "story") return "Story";
+  if (value === "reels" || value === "reel") return "Reel";
+  if (value === "feed") return "Feed";
+  return "";
+}
+
+export function resultsReply(locale: string | undefined, results: Array<{ status: string }>) {
+  const failed = results.filter((item) => item.status === "error").length;
+  const ok = results.length - failed;
+  if (locale === "ro") {
+    if (results.length === 0 || ok === 0) return "Nu s-a postat nimic. Vezi erorile mai jos.";
+    if (failed === 0) return "Gata. Statusul fiecărei rețele e mai jos.";
+    return "O parte din postări au plecat. Detaliile sunt mai jos.";
+  }
+  if (results.length === 0 || ok === 0) return "Nothing was posted. See the errors below.";
+  if (failed === 0) return "Done. Each network’s status is below.";
+  return "Some posts went out. Details are below.";
+}

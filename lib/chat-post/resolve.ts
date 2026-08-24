@@ -278,6 +278,21 @@ export async function resolveCreateActions(input: {
     });
   }
 
+  const instagramActions = resolvedActions.filter((action) =>
+    action.platforms.some((platform) => platform.platform === "instagram"),
+  );
+  if (instagramActions.length > 1) {
+    const firstMedia = instagramActions[0]?.media[0]?.id;
+    const sameClip = Boolean(firstMedia) && instagramActions.every((action) => action.media[0]?.id === firstMedia);
+    if (sameClip) {
+      warnings.push(
+        input.locale === "ro"
+          ? "Instagram poate respinge același video ca Story și Reel în 24 de ore. Dacă vrei ambele, schimbă clipul sau textul pe una dintre ele."
+          : "Instagram can reject the same video as a Story and a Reel within 24 hours. Use a different clip or caption on one of them if you want both.",
+      );
+    }
+  }
+
   if (resolvedActions.length === 0) {
     const reasons = excluded_by_validation.map((item) => `${platformLabel(item.platform)}: ${item.reason}`).join("\n");
     return {

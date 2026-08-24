@@ -92,6 +92,9 @@ export type PlatformExecResult = {
   zernio_post_id?: string | null;
   error_code?: string | null;
   error_message_human: string | null;
+  contentType?: string;
+  mode?: PostMode;
+  scheduled_label?: string | null;
 };
 
 export type PendingIntent = {

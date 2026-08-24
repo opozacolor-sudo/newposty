@@ -81,6 +81,7 @@ export async function POST(request: Request) {
       actionId: body.action_id,
       results,
       excluded_by_validation: claimed.resolved.excluded_by_validation,
+      locale,
     });
     return NextResponse.json({
       action_id: body.action_id,
@@ -130,6 +131,7 @@ export async function POST(request: Request) {
     actionId: body.action_id,
     results,
     excluded_by_validation: resolved.excluded_by_validation,
+    locale: resolved.locale ?? locale,
   });
 
   const allFailed = results.length > 0 && results.every((item) => item.status === "error");
@@ -147,12 +149,21 @@ async function persistDashboardPosts(input: {
   resolved: ResolvedAction;
   results: Awaited<ReturnType<typeof executeResolvedAction>>;
 }) {
+  const used = new Set<number>();
   for (const action of input.resolved.actions) {
     for (const target of action.platforms) {
-      const result = input.results.find(
-        (item) => item.platform === target.platform && item.handle === target.handle,
+      const resultIndex = input.results.findIndex(
+        (item, index) =>
+          !used.has(index) &&
+          item.platform === target.platform &&
+          item.handle === target.handle &&
+          (item.mode ?? action.mode) === action.mode &&
+          (item.contentType ?? "") === (target.contentType ?? ""),
       );
-      if (!result || result.status === "error") continue;
+      if (resultIndex < 0) continue;
+      used.add(resultIndex);
+      const result = input.results[resultIndex];
+      if (result.status === "error") continue;
       await input.supabase.from("posts").insert({
         user_id: input.userId,
         content: target.caption,

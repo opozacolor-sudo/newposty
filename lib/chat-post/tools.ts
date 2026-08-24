@@ -154,6 +154,8 @@ export function chatPostSystemPrompt(input: {
     "Never say a post is live until the results card shows a green check for that network.",
     "If a tool result has status pending, the post is still processing. Say that plainly. Do not say Perfect, live, or posted, and do not call it an error.",
     "If a tool result has status error, the post did not go live. Say that clearly. Do not say Perfect or that it was posted.",
+    "If a tool result has pending_confirmation, tell the user to confirm in the card below — not above.",
+    "If a tool result already contains executed results, do not ask the user to confirm again.",
     input.mediaLine ?? "",
     input.pendingIntentLine ?? "",
   ]

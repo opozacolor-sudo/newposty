@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { contentTypeLabel } from "@/lib/chat-post/copy";
 import { platformLabel } from "@/lib/platforms";
 import type { PlatformExecResult, ResultsPayload } from "@/lib/chat-post/types";
+
+function resultTitle(result: PlatformExecResult) {
+  const format = contentTypeLabel(result.contentType);
+  const when = result.mode === "schedule" && result.scheduled_label ? result.scheduled_label : null;
+  return [platformLabel(result.platform), format, result.handle, when ? `· ${when}` : ""]
+    .filter(Boolean)
+    .join(" ");
+}
 
 export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
   const t = useTranslations("Chat");
@@ -50,14 +59,14 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
         <p className="text-xs text-[#6B7280]">{t("postedWithoutAsking")}</p>
       ) : null}
       <ul className="space-y-2">
-        {results.map((result) => (
+        {results.map((result, index) => (
           <li
-            key={`${result.platform}-${result.handle}`}
+            key={`${result.platform}-${result.contentType ?? ""}-${result.mode ?? ""}-${result.handle}-${index}`}
             className="rounded-xl border border-[#E5E5E5] bg-white px-3 py-2 text-sm"
           >
             {result.status === "success" ? (
               <p>
-                ✅ {platformLabel(result.platform)} {result.handle}{" "}
+                ✅ {resultTitle(result)}{" "}
                 {result.post_url ? (
                   <a href={result.post_url} className="text-[#FF4713] underline" target="_blank" rel="noreferrer">
                     {t("viewPost")}
@@ -66,11 +75,11 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
               </p>
             ) : result.status === "pending" ? (
               <p>
-                ⏳ {platformLabel(result.platform)} {result.handle}: {t("stillPublishing")}
+                ⏳ {resultTitle(result)}: {t("stillPublishing")}
               </p>
             ) : (
               <p>
-                ❌ {platformLabel(result.platform)} {result.handle}: {result.error_message_human}
+                ❌ {resultTitle(result)}: {result.error_message_human}
               </p>
             )}
           </li>

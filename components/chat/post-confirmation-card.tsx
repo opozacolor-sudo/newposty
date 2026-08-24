@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { contentTypeLabel } from "@/lib/chat-post/copy";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 import { getPlatform, platformLabel } from "@/lib/platforms";
 import type { ConfirmationPayload, ResolvedAction } from "@/lib/chat-post/types";
@@ -20,7 +21,7 @@ export function PostConfirmationCard({
     const initial: Record<string, string> = {};
     for (const action of resolved.actions) {
       for (const platform of action.platforms) {
-        initial[platform.platform] = platform.caption;
+        initial[platform.requestId] = platform.caption;
       }
     }
     return initial;
@@ -103,22 +104,25 @@ export function PostConfirmationCard({
               {action.platforms.map((platform) => {
                 const visual = getPlatform(platform.platform);
                 return (
-                  <li key={platform.accountId} className="rounded-xl border border-[#F3F4F6] p-3">
+                  <li key={platform.requestId} className="rounded-xl border border-[#F3F4F6] p-3">
                     <div className="flex items-center gap-2">
                       {visual ? <PlatformIcon platform={visual} connected size="sm" /> : null}
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-[#1A1A1A]">
                           {platformLabel(platform.platform)}
+                          {contentTypeLabel(platform.contentType)
+                            ? ` · ${contentTypeLabel(platform.contentType)}`
+                            : ""}
                         </p>
                         <p className="truncate text-xs text-[#6B7280]">{platform.handle}</p>
                       </div>
                     </div>
                     <textarea
-                      value={captions[platform.platform] ?? platform.caption}
+                      value={captions[platform.requestId] ?? platform.caption}
                       onChange={(event) =>
                         setCaptions((current) => ({
                           ...current,
-                          [platform.platform]: event.target.value,
+                          [platform.requestId]: event.target.value,
                         }))
                       }
                       rows={3}

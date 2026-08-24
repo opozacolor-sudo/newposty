@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { cancelledCopy, localizeCancelledContent } from "@/lib/chat-post/copy";
+import { cancelledCopy, localizeCancelledContent, resultsReply } from "@/lib/chat-post/copy";
 import { matchScheduledReference } from "@/lib/chat-post/rules";
 import { formatInZone, parseScheduledAt } from "@/lib/chat-post/timezone";
 import type {
@@ -302,6 +302,7 @@ export async function replaceConfirmationWithResults(input: {
   actionId: string;
   results: PlatformExecResult[];
   excluded_by_validation?: Array<{ platform: string; reason: string }>;
+  locale?: string;
 }) {
   const allFailed = input.results.length > 0 && input.results.every((item) => item.status === "error");
   const messages = await messagesForAction(input);
@@ -312,6 +313,10 @@ export async function replaceConfirmationWithResults(input: {
       .from("messages")
       .update({
         kind: "results",
+        content: resultsReply(
+          input.locale ?? (payload?.resolved as { locale?: string } | undefined)?.locale,
+          input.results,
+        ),
         payload: {
           type: "results",
           action_id: input.actionId,
@@ -410,6 +415,7 @@ export async function hydrateConfirmationMessages(input: {
       const updated = {
         ...message,
         kind: "results",
+        content: resultsReply(locale, results),
         payload: {
           type: "results",
           action_id: action.id,
@@ -423,6 +429,7 @@ export async function hydrateConfirmationMessages(input: {
         userId: input.userId,
         actionId: action.id as string,
         results,
+        locale,
       });
     }
   }
