@@ -45,23 +45,15 @@ function resultMeta(input: {
   };
 }
 
-function clarifyInstagramDuplicates(results: PlatformExecResult[], locale: string) {
-  const postedIg = results.some((item) => item.platform === "instagram" && item.status === "success");
-  if (!postedIg) return results;
-  return results.map((item) => {
-    if (item.platform !== "instagram" || item.status !== "error") return item;
-    const text = `${item.error_code ?? ""} ${item.error_message_human ?? ""}`.toLowerCase();
-    const duplicate =
-      item.error_code === "duplicate" || text.includes("duplicate") || text.includes("deja postat") || text.includes("already posted");
-    if (!duplicate) return item;
-    return {
-      ...item,
-      error_message_human:
-        locale === "ro"
-          ? "Instagram a refuzat această postare: același video tocmai a fost publicat pe cont (Story și Reel în 24 de ore). Folosește un clip sau un text diferit."
-          : "Instagram blocked this because the same video was just posted on that account (Story and Reel within 24 hours). Use a different clip or caption.",
-    };
-  });
+function publishQueue(actions: ResolvedAction["actions"]) {
+  return [...actions].sort((left, right) => instagramPublishRank(left) - instagramPublishRank(right));
+}
+
+function instagramPublishRank(action: ResolvedAction["actions"][number]) {
+  const instagram = action.platforms.some((platform) => platform.platform === "instagram");
+  if (instagram && action.mode === "schedule") return 0;
+  if (instagram && action.mode === "publish_now") return 2;
+  return 1;
 }
 
 function errorCode(error: unknown) {
@@ -321,15 +313,16 @@ export async function executeResolvedAction(input: {
     return [await executeManage(input.resolved, input.locale)];
   }
 
-  const results: PlatformExecResult[] = [];
-  for (const action of input.resolved.actions) {
+  const queued = new Map<string, PlatformExecResult>();
+  for (const action of publishQueue(input.resolved.actions)) {
     const media: ZernioMediaItem[] = action.media.map((item) => ({
       url: item.url,
       type: item.type,
       title: item.name ?? undefined,
     }));
     for (const target of action.platforms) {
-      results.push(
+      queued.set(
+        target.requestId,
         await publishOne({
           target,
           content: target.caption,
@@ -343,7 +336,15 @@ export async function executeResolvedAction(input: {
       );
     }
   }
-  return clarifyInstagramDuplicates(results, input.locale);
+
+  const results: PlatformExecResult[] = [];
+  for (const action of input.resolved.actions) {
+    for (const target of action.platforms) {
+      const result = queued.get(target.requestId);
+      if (result) results.push(result);
+    }
+  }
+  return results;
 }
 
 async function executeManage(resolved: ResolvedAction, locale: string): Promise<PlatformExecResult> {
