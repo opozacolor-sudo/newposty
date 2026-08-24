@@ -1,2 +1,2 @@
-/** Flip to true when the product is ready for public signups. */
+/** Public /signup stays closed. New accounts come only from paid presale. */
 export const SIGNUPS_OPEN = false;

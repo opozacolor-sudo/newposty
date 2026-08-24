@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
-export function AccountMenu({ email }: { email: string }) {
+export function AccountMenu({ email, lifetime = false }: { email: string; lifetime?: boolean }) {
   const t = useTranslations("Nav");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -51,7 +51,12 @@ export function AccountMenu({ email }: { email: string }) {
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FF4713] text-sm font-medium text-white">
           {initial}
         </span>
-        <span className="truncate text-sm text-[#1A1A1A]">{email}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm text-[#1A1A1A]">{email}</span>
+          {lifetime ? (
+            <span className="text-[11px] font-medium text-[#FF4713]">{t("lifetime")}</span>
+          ) : null}
+        </span>
       </button>
     </div>
   );

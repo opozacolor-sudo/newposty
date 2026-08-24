@@ -11,6 +11,7 @@ export type Profile = {
   brand_voice: string | null;
   timezone: string;
   zernio_profile_id: string | null;
+  lifetime_access: boolean;
 };
 
 export async function requireUser() {

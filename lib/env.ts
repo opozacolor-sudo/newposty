@@ -26,6 +26,26 @@ export function getZernioApiKey() {
   return required("ZERNIO_API_KEY");
 }
 
+export function getSupabaseServiceRoleKey() {
+  return required("SUPABASE_SERVICE_ROLE_KEY");
+}
+
+export function getStripeSecretKey() {
+  return required("STRIPE_SECRET_KEY");
+}
+
+export function getStripeWebhookSecret() {
+  return required("STRIPE_WEBHOOK_SECRET");
+}
+
+export function getResendApiKey() {
+  return process.env.RESEND_API_KEY?.trim() ?? "";
+}
+
+export function getResendFrom() {
+  return process.env.RESEND_FROM?.trim() || "posty.now <beth.t@example.com>";
+}
+
 export function getSiteUrl() {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ?? "";
   const onVercel = Boolean(process.env.VERCEL);
