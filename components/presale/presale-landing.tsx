@@ -83,43 +83,81 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
 
   const others = view.tranches.filter((row) => row.state !== "current");
 
+  const roadmapList = (
+    <ul className="mx-auto max-w-xl space-y-2 lg:mx-0">
+      {roadmap.map((item) => (
+        <li
+          key={item.label}
+          className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2"
+        >
+          <span
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+              item.done ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-500"
+            }`}
+          >
+            <item.icon size={14} />
+          </span>
+          <span className="text-left text-[13px] font-medium text-neutral-800 sm:text-sm">{item.label}</span>
+          {item.done ? (
+            <span className="ml-auto text-[11px] font-medium text-emerald-700 sm:text-xs">{t("done")}</span>
+          ) : (
+            <span className="ml-auto text-[11px] text-neutral-400 sm:text-xs">{t("soon")}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
+  const otherTranches =
+    others.length > 0 ? (
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {others.map((row) => (
+          <article
+            key={row.tranche}
+            className={`rounded-xl border px-2 py-2 text-center ${
+              row.state === "sold_out"
+                ? "border-neutral-200 bg-neutral-50 text-neutral-400"
+                : "border-neutral-200 bg-white text-neutral-500"
+            }`}
+          >
+            <p className="text-[11px] font-medium">{t("trancheLabel", { n: row.tranche })}</p>
+            <p
+              className={`mt-0.5 text-sm font-semibold ${
+                row.state === "sold_out" ? "" : "text-neutral-800"
+              }`}
+            >
+              {row.priceEur}€
+            </p>
+            <p className="text-[10px] uppercase tracking-wide">
+              {row.state === "sold_out" ? t("soldOutBadge") : t("upcoming")}
+            </p>
+          </article>
+        ))}
+      </div>
+    ) : null;
+
   return (
-    <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-4 sm:px-6 sm:py-5 lg:min-h-0 lg:overflow-hidden lg:py-4">
+    <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-3 sm:px-6 sm:py-5 lg:min-h-0 lg:overflow-hidden lg:py-4">
       <PresaleViewportLock />
-      <div className="grid flex-1 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(300px,400px)] lg:content-center lg:items-center lg:gap-8">
+      <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,400px)] lg:content-center lg:items-center lg:gap-8">
         <div className="min-w-0 text-center lg:text-left">
           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#FF4713] sm:text-xs">
             {t("kicker")}
           </p>
-          <h1 className="mt-2 text-[1.65rem] font-semibold leading-tight tracking-tight text-neutral-950 sm:text-4xl lg:text-[2.6rem] xl:text-5xl">
+          <h1 className="mt-1.5 text-[1.7rem] font-semibold leading-[1.15] tracking-tight text-neutral-950 sm:text-4xl lg:hidden">
+            {t("hook")}
+          </h1>
+          <h1 className="mt-2 hidden font-semibold leading-tight tracking-tight text-neutral-950 lg:block lg:text-[2.6rem] xl:text-5xl">
             {t("title")}
           </h1>
-          <p className="mx-auto mt-2 max-w-xl text-[13px] leading-5 text-neutral-500 sm:mt-3 sm:text-sm sm:leading-6 lg:mx-0 lg:text-base">
+          <p className="mx-auto mt-2 max-w-xl text-[15px] font-medium leading-6 text-neutral-800 lg:hidden">
+            {t("hookBody")}
+          </p>
+          <p className="mx-auto mt-3 hidden max-w-xl text-sm leading-6 text-neutral-500 lg:mx-0 lg:mt-3 lg:block lg:text-base">
             {t("subtitle")}
           </p>
-          <ul className="mx-auto mt-4 max-w-xl space-y-2 lg:mx-0">
-            {roadmap.map((item) => (
-              <li
-                key={item.label}
-                className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2"
-              >
-                <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
-                    item.done ? "bg-emerald-100 text-emerald-700" : "bg-neutral-100 text-neutral-500"
-                  }`}
-                >
-                  <item.icon size={14} />
-                </span>
-                <span className="text-left text-[13px] font-medium text-neutral-800 sm:text-sm">{item.label}</span>
-                {item.done ? (
-                  <span className="ml-auto text-[11px] font-medium text-emerald-700 sm:text-xs">{t("done")}</span>
-                ) : (
-                  <span className="ml-auto text-[11px] text-neutral-400 sm:text-xs">{t("soon")}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-4 flex justify-center lg:justify-start">
+          <div className="mt-4 hidden lg:block">{roadmapList}</div>
+          <div className="mt-4 hidden justify-start lg:flex">
             <Link href="/demo" className={`${btnOutline} !px-4 !py-2 !text-sm`}>
               {t("whatItDoes")}
             </Link>
@@ -135,10 +173,10 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
           ) : (
             <form onSubmit={onCheckout} className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-5">
               <p className="text-xs font-medium text-[#FF4713] sm:text-sm">{t("trancheLabel", { n: current.tranche })}</p>
-              <p className="mt-0.5 font-serif text-4xl tracking-tight text-neutral-950 sm:text-5xl">
+              <p className="mt-0.5 font-serif text-[2.35rem] leading-none tracking-tight text-neutral-950 sm:text-5xl">
                 {current.priceEur} EUR
               </p>
-              <p className="text-sm text-neutral-500">{t("lifetime")}</p>
+              <p className="mt-1 text-sm text-neutral-500">{t("lifetime")}</p>
               <p className="mt-2 flex items-center gap-1.5 text-[13px] font-medium text-emerald-700">
                 <Check size={14} className="shrink-0" />
                 {t("immediate")}
@@ -164,46 +202,31 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4 sm:py-2.5"
+                  className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4"
                 />
               </label>
               {error ? <p className="mt-2 text-xs text-[#FF4713]">{error}</p> : null}
               <button
                 type="submit"
                 disabled={pending}
-                className={`${btnSolid} mt-3 w-full !py-2.5 !text-sm disabled:opacity-60`}
+                className={`${btnSolid} mt-3 w-full !py-3 !text-sm disabled:opacity-60`}
               >
                 {pending ? t("redirecting") : t("cta")}
               </button>
             </form>
           )}
 
-          {others.length > 0 ? (
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {others.map((row) => (
-                <article
-                  key={row.tranche}
-                  className={`rounded-xl border px-2 py-2 text-center ${
-                    row.state === "sold_out"
-                      ? "border-neutral-200 bg-neutral-50 text-neutral-400"
-                      : "border-neutral-200 bg-white text-neutral-500"
-                  }`}
-                >
-                  <p className="text-[11px] font-medium">{t("trancheLabel", { n: row.tranche })}</p>
-                  <p
-                    className={`mt-0.5 text-sm font-semibold ${
-                      row.state === "sold_out" ? "" : "text-neutral-800"
-                    }`}
-                  >
-                    {row.priceEur}€
-                  </p>
-                  <p className="text-[10px] uppercase tracking-wide">
-                    {row.state === "sold_out" ? t("soldOutBadge") : t("upcoming")}
-                  </p>
-                </article>
-              ))}
-            </div>
-          ) : null}
+          <div className="mt-3 hidden lg:block">{otherTranches}</div>
+        </div>
+
+        <div className="space-y-4 lg:hidden">
+          {otherTranches}
+          {roadmapList}
+          <div className="flex justify-center">
+            <Link href="/demo" className={`${btnOutline} !px-4 !py-2 !text-sm`}>
+              {t("whatItDoes")}
+            </Link>
+          </div>
         </div>
       </div>
     </section>
