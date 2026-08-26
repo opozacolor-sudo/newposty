@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { routing } from "@/i18n/routing";
-import { createAdminSupabase } from "@/lib/supabase/admin";
+import { getSupabasePublicEnv } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -21,20 +22,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "email is required" }, { status: 400 });
     }
 
-    const admin = createAdminSupabase();
-    const { error } = await admin.from("presale_waitlist").upsert(
-      { email, locale: localeFrom(body.locale) },
-      { onConflict: "email", ignoreDuplicates: true },
-    );
+    const { url, anonKey } = getSupabasePublicEnv();
+    const supabase = createClient(url, anonKey);
+    const { error } = await supabase.rpc("join_presale_waitlist", {
+      p_email: email,
+      p_locale: localeFrom(body.locale),
+    });
     if (error) {
+      console.error("[presale] waitlist join failed", error.message, error.code);
       return NextResponse.json({ error: "WAITLIST_FAILED" }, { status: 500 });
     }
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "";
-    if (message.includes("SUPABASE_SERVICE_ROLE_KEY")) {
-      return NextResponse.json({ error: "SERVER_MISCONFIGURED" }, { status: 503 });
-    }
+    const message = error instanceof Error ? error.message : "WAITLIST_FAILED";
+    console.error("[presale] waitlist failed", message);
     return NextResponse.json({ error: "WAITLIST_FAILED" }, { status: 500 });
   }
 }
