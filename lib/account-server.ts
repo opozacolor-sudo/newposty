@@ -1,6 +1,6 @@
 import { computeLifetimeRefund } from "@/lib/billing";
 import { createAdminSupabase } from "@/lib/supabase/admin";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { getRequestAuth } from "@/lib/supabase/server";
 
 export type BillingPurchase = {
   id: string;
@@ -15,16 +15,13 @@ export type BillingPurchase = {
 };
 
 export async function requireAccountUser() {
-  const supabase = await createServerSupabase();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getRequestAuth();
   if (!user) return { user: null, supabase };
   return { user, supabase };
 }
 
 export async function countActiveSocialAccounts(userId: string) {
-  const supabase = await createServerSupabase();
+  const supabase = createAdminSupabase();
   const { count, error } = await supabase
     .from("social_accounts")
     .select("id", { count: "exact", head: true })
@@ -32,6 +29,40 @@ export async function countActiveSocialAccounts(userId: string) {
     .eq("is_active", true);
   if (error) throw error;
   return count ?? 0;
+}
+
+export async function listActiveSocialAccounts(userId: string) {
+  const admin = createAdminSupabase();
+  const { data, error } = await admin
+    .from("social_accounts")
+    .select("id, platform, username, display_name, zernio_account_id")
+    .eq("user_id", userId)
+    .eq("is_active", true)
+    .order("connected_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getOwnedSocialAccount(userId: string, accountId: string) {
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("social_accounts")
+    .select("id, platform, username, display_name, zernio_account_id")
+    .eq("user_id", userId)
+    .eq("id", accountId)
+    .eq("is_active", true)
+    .maybeSingle();
+  return data;
+}
+
+export async function getZernioProfileId(userId: string) {
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("profiles")
+    .select("zernio_profile_id")
+    .eq("id", userId)
+    .maybeSingle();
+  return typeof data?.zernio_profile_id === "string" ? data.zernio_profile_id : null;
 }
 
 export async function loadLifetimePurchase(userId: string, email: string | undefined) {

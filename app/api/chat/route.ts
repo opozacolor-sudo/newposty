@@ -112,6 +112,8 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  await supabase.from("conversations").delete().eq("user_id", user.id);
+
   const { data: created, error } = await supabase
     .from("conversations")
     .insert({

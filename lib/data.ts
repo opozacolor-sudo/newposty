@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
+import { createAdminSupabase } from "@/lib/supabase/admin";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { createZernioProfile, listAccounts } from "@/lib/zernio";
 
@@ -79,7 +80,7 @@ export async function ensureZernioProfile(userId: string, email: string | undefi
 }
 
 export async function syncSocialAccounts(userId: string, zernioProfileId: string) {
-  const supabase = await createServerSupabase();
+  const supabase = createAdminSupabase();
   const accounts = await listAccounts(zernioProfileId);
 
   for (const account of accounts) {

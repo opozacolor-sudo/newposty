@@ -11,7 +11,7 @@ export async function createServerSupabase(): Promise<SupabaseClient> {
   if (authorization?.startsWith("Bearer ")) {
     return createClient(url, anonKey, {
       global: { headers: { Authorization: authorization } },
-      auth: { persistSession: false, autoRefreshToken: false },
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     });
   }
 
@@ -33,4 +33,17 @@ export async function createServerSupabase(): Promise<SupabaseClient> {
       },
     },
   });
+}
+
+export async function getRequestAuth() {
+  const headerStore = await headers();
+  const authorization = headerStore.get("authorization");
+  const supabase = await createServerSupabase();
+  const jwt = authorization?.startsWith("Bearer ")
+    ? authorization.slice("Bearer ".length).trim()
+    : undefined;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser(jwt);
+  return { supabase, user };
 }

@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
+import { getOwnedSocialAccount, getZernioProfileId } from "@/lib/account-server";
 import { loadAdsAccountAnalytics } from "@/lib/ads-analytics";
 import { isValidYmd, rangeFromPreset } from "@/lib/analytics-shared";
-import { getProfile } from "@/lib/data";
 import { isAdsPlatformId } from "@/lib/platforms";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { getRequestAuth } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const supabase = await createServerSupabase();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getRequestAuth();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -30,14 +29,7 @@ export async function GET(request: Request) {
     to = range.to;
   }
 
-  const { data: account } = await supabase
-    .from("social_accounts")
-    .select("id, platform, zernio_account_id")
-    .eq("user_id", user.id)
-    .eq("id", accountId)
-    .eq("is_active", true)
-    .maybeSingle();
-
+  const account = await getOwnedSocialAccount(user.id, accountId);
   if (
     !account ||
     !isAdsPlatformId(String(account.platform)) ||
@@ -46,8 +38,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  const profile = await getProfile(user.id);
-  if (!profile?.zernio_profile_id) {
+  const profileId = await getZernioProfileId(user.id);
+  if (!profileId) {
     return NextResponse.json({ error: "Profile is not ready" }, { status: 409 });
   }
 
@@ -58,7 +50,10 @@ export async function GET(request: Request) {
       from,
       to,
     });
-    return NextResponse.json({ from, to, ...analytics });
+    return NextResponse.json(
+      { from, to, ...analytics },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Analytics failed";
     return NextResponse.json({ error: message }, { status: 500 });

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAccountUser } from "@/lib/account-server";
+import { createAdminSupabase } from "@/lib/supabase/admin";
 import { disconnectAccount, ZernioError } from "@/lib/zernio";
 
 export const dynamic = "force-dynamic";
@@ -7,11 +8,12 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ id: string }> };
 
 export async function DELETE(_request: Request, { params }: Params) {
-  const { user, supabase } = await requireAccountUser();
-  if (!user || !supabase) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user } = await requireAccountUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { data: account } = await supabase
+  const admin = createAdminSupabase();
+  const { data: account } = await admin
     .from("social_accounts")
     .select("id, zernio_account_id")
     .eq("id", id)
@@ -28,12 +30,12 @@ export async function DELETE(_request: Request, { params }: Params) {
     }
   }
 
-  const { error } = await supabase
+  const { error } = await admin
     .from("social_accounts")
     .update({ is_active: false })
     .eq("id", account.id)
     .eq("user_id", user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
 }
