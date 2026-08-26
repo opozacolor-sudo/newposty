@@ -2,10 +2,80 @@
 
 import { Bell, Check, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useId, useMemo, useState } from "react";
 import { btnOutline, btnSolid } from "@/components/marketing/styles";
 import { Link, usePathname as useAppPathname } from "@/i18n/navigation";
 import type { PresaleView } from "@/lib/presale";
+
+function WaitlistCapture() {
+  const t = useTranslations("Presale");
+  const locale = useLocale();
+  const emailId = useId();
+  const [email, setEmail] = useState("");
+  const [pending, setPending] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error" | "invalid">("idle");
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (!email.trim().includes("@")) {
+      setStatus("invalid");
+      return;
+    }
+    setPending(true);
+    setStatus("idle");
+    try {
+      const response = await fetch("/api/presale/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, locale }),
+      });
+      if (!response.ok) {
+        setStatus("error");
+        return;
+      }
+      setEmail("");
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50/90 px-3 py-3 sm:px-4">
+      <p className="text-[13px] font-medium text-neutral-800">{t("waitlistTitle")}</p>
+      <p className="mt-0.5 text-[12px] leading-5 text-neutral-500">{t("waitlistBody")}</p>
+      {status === "success" ? (
+        <p className="mt-2 text-[12px] font-medium text-emerald-700">{t("waitlistSuccess")}</p>
+      ) : (
+        <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label className="sr-only" htmlFor={emailId}>
+            {t("email")}
+          </label>
+          <input
+            id={emailId}
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder={t("email")}
+            className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#FF4713] sm:flex-1"
+          />
+          <button
+            type="submit"
+            disabled={pending}
+            className={`${btnOutline} w-full shrink-0 !px-3 !py-2 !text-xs sm:w-auto disabled:opacity-60`}
+          >
+            {pending ? t("waitlistSending") : t("waitlistCta")}
+          </button>
+        </form>
+      )}
+      {status === "invalid" ? <p className="mt-1 text-[12px] text-[#FF4713]">{t("emailInvalid")}</p> : null}
+      {status === "error" ? <p className="mt-1 text-[12px] text-[#FF4713]">{t("waitlistError")}</p> : null}
+    </div>
+  );
+}
 
 function PresaleViewportLock() {
   const pathname = useAppPathname();
@@ -162,6 +232,9 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
               {t("whatItDoes")}
             </Link>
           </div>
+          <div className="mt-4 hidden lg:block">
+            <WaitlistCapture />
+          </div>
         </div>
 
         <div className="min-w-0">
@@ -216,6 +289,9 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
             </form>
           )}
 
+          <div className="mt-3 lg:hidden">
+            <WaitlistCapture />
+          </div>
           <div className="mt-3 hidden lg:block">{otherTranches}</div>
         </div>
 
