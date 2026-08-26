@@ -25,10 +25,12 @@ export function PresaleThanks() {
       attempts += 1;
       try {
         const response = await fetch(`/api/presale/session?session_id=${encodeURIComponent(sessionId)}`);
-        const payload = (await response.json()) as { status?: string; token?: string };
+        const payload = (await response.json()) as { status?: string; token?: string; email?: string };
         if (cancelled) return;
         if (payload.status === "registered") {
-          router.replace("/login");
+          const params = new URLSearchParams({ paid: "1" });
+          if (payload.email) params.set("email", payload.email);
+          router.replace(`/login?${params.toString()}`);
           return;
         }
         if (payload.status === "paid") {

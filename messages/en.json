@@ -123,7 +123,7 @@
     "soon": "Soon",
     "trancheLabel": "Tranche {n}",
     "lifetime": "Lifetime studio access",
-    "immediate": "Your presale account works immediately.",
+    "immediate": "After payment, the account is active immediately.",
     "remaining": "{count} of {total} slots left",
     "email": "Email",
     "emailInvalid": "Enter a valid email.",
@@ -136,8 +136,8 @@
     "upcoming": "Next",
     "whatItDoes": "What posty.now does",
     "thanksTitle": "Payment received",
-    "thanksWait": "Confirming your slot and opening registration…",
-    "thanksEmail": "If this page does not continue, use the link we sent to your email. It stays valid for 7 days.",
+    "thanksWait": "Confirming payment and activating your account…",
+    "thanksEmail": "If this page does not continue, use the confirmation email to sign in.",
     "thanksMissing": "Missing checkout session.",
     "thanksError": "We could not confirm the payment yet. Use the email link.",
     "registerTitle": "Finish your account",
@@ -170,6 +170,7 @@
     "alreadyHave": "Already have one?",
     "confirmEmail": "Check your email to confirm the account, then sign in.",
     "emailConfirmed": "Email confirmed. Sign in to continue.",
+    "paidSuccess": "Payment received. Your account is active. Sign in with the password you chose at checkout.",
     "unexpected": "Something went wrong. Please try again."
   },
   "Nav": {

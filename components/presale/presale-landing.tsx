@@ -35,6 +35,8 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
   const locale = useLocale();
   const [view, setView] = useState(initial);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const current = view.current;
@@ -50,6 +52,14 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
 
   async function onCheckout(event: FormEvent) {
     event.preventDefault();
+    if (password.length < 8) {
+      setError(t("passwordShort"));
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError(t("passwordMismatch"));
+      return;
+    }
     setPending(true);
     setError(null);
     try {
@@ -61,7 +71,7 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
       const response = await fetch("/api/presale/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, locale }),
+        body: JSON.stringify({ email, password, confirmPassword, locale }),
       });
       const payload = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !payload.url) {
@@ -70,7 +80,10 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
           setView(latest);
           return;
         }
-        setError(payload.error === "email is required" ? t("emailInvalid") : t("checkoutError"));
+        if (payload.error === "email is required") setError(t("emailInvalid"));
+        else if (payload.error === "PASSWORD_SHORT") setError(t("passwordShort"));
+        else if (payload.error === "PASSWORD_MISMATCH") setError(t("passwordMismatch"));
+        else setError(t("checkoutError"));
         return;
       }
       window.location.href = payload.url;
@@ -200,8 +213,33 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
                 <input
                   type="email"
                   required
+                  autoComplete="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4"
+                />
+              </label>
+              <label className="mt-2 block text-[12px] text-neutral-700 sm:text-sm">
+                {t("password")}
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4"
+                />
+              </label>
+              <label className="mt-2 block text-[12px] text-neutral-700 sm:text-sm">
+                {t("confirmPassword")}
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
                   className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4"
                 />
               </label>

@@ -123,7 +123,7 @@
     "soon": "În curând",
     "trancheLabel": "Tranșa {n}",
     "lifetime": "Acces pe viață în studio",
-    "immediate": "Contul presale e funcțional imediat.",
+    "immediate": "După plată, contul e activ imediat.",
     "remaining": "{count} locuri rămase din {total}",
     "email": "Email",
     "emailInvalid": "Introdu un email valid.",
@@ -136,8 +136,8 @@
     "upcoming": "Urmează",
     "whatItDoes": "Ce face posty.now",
     "thanksTitle": "Plata a reușit",
-    "thanksWait": "Confirmăm locul și deschidem înregistrarea…",
-    "thanksEmail": "Dacă pagina nu continuă, folosește linkul trimis pe email. Rămâne valabil 7 zile.",
+    "thanksWait": "Confirmăm plata și activăm contul…",
+    "thanksEmail": "Dacă pagina nu continuă, folosește emailul de confirmare ca să te autentifici.",
     "thanksMissing": "Sesiunea de checkout lipsește.",
     "thanksError": "Nu am putut confirma plata încă. Folosește linkul din email.",
     "registerTitle": "Finalizează contul",
@@ -170,6 +170,7 @@
     "alreadyHave": "Ai deja unul?",
     "confirmEmail": "Verifică emailul ca să confirmi contul, apoi autentifică-te.",
     "emailConfirmed": "Email confirmat. Autentifică-te ca să continui.",
+    "paidSuccess": "Plata a reușit. Contul e activ. Autentifică-te cu parola aleasă la checkout.",
     "unexpected": "Ceva nu a mers. Te rugăm să încerci din nou."
   },
   "Nav": {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hashPresaleToken, tokenStatus } from "@/lib/presale";
+import { createOrUpdatePresaleAuthUser } from "@/lib/presale-server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -98,35 +99,16 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminSupabase();
-    let userId: string | null = null;
-    const created = await admin.auth.admin.createUser({
-      email: loaded.email,
-      password,
-      email_confirm: true,
-    });
-
-    if (created.error) {
-      if (!/already|registered|exists/i.test(created.error.message)) {
-        return NextResponse.json({ error: created.error.message }, { status: 400 });
-      }
-      const { data: existing } = await admin
-        .from("profiles")
-        .select("id")
-        .ilike("email", loaded.email)
-        .maybeSingle();
-      userId = existing?.id ?? null;
-      if (!userId) {
+    let userId: string;
+    try {
+      const user = await createOrUpdatePresaleAuthUser(loaded.email, password);
+      userId = user.id;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "REGISTER_FAILED";
+      if (/already|registered|exists/i.test(message)) {
         return NextResponse.json({ error: "ACCOUNT_EXISTS" }, { status: 409 });
       }
-      const updated = await admin.auth.admin.updateUserById(userId, {
-        password,
-        email_confirm: true,
-      });
-      if (updated.error) {
-        return NextResponse.json({ error: updated.error.message }, { status: 400 });
-      }
-    } else {
-      userId = created.data.user.id;
+      return NextResponse.json({ error: message }, { status: 400 });
     }
 
     const { error: completeError } = await admin.rpc("complete_presale_registration", {

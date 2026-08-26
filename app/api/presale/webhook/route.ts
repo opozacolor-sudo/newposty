@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { eurosFromStripeAmount } from "@/lib/presale";
 import {
+  activatePendingSignup,
   getStripe,
   issueRegistrationToken,
+  sendPresaleReadyEmail,
   sendPresaleRegisterEmail,
 } from "@/lib/presale-server";
 import { getStripeWebhookSecret } from "@/lib/env";
@@ -16,6 +18,7 @@ type RecordResult = {
   purchase?: {
     id: string;
     email: string;
+    status?: string;
     slot_number: number;
     tranche: number;
     price_eur: number;
@@ -79,6 +82,29 @@ async function fulfillCheckout(session: Stripe.Checkout.Session) {
       catalog: result.catalog_price,
       paymentIntentId,
     });
+  }
+
+  const pendingId = session.metadata?.pending_id?.trim() ?? "";
+  const alreadyRegistered = purchase.status === "registered";
+  let activated = alreadyRegistered;
+  if (pendingId && !activated) {
+    try {
+      activated = await activatePendingSignup(pendingId, purchase.id);
+    } catch (error) {
+      console.error("[presale] pending signup activation failed", error);
+    }
+  }
+
+  if (activated) {
+    if (!alreadyRegistered) {
+      await sendPresaleReadyEmail({
+        email: purchase.email,
+        locale,
+        slot: purchase.slot_number,
+        priceEur: purchase.price_eur,
+      });
+    }
+    return;
   }
 
   if (result.replay) return;
