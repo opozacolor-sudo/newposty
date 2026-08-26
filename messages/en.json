@@ -100,6 +100,12 @@
     "title": "Privacy",
     "body": "We collect the account details you provide, the content you create in the studio, and messages you send through this site so we can operate posty.now. We do not sell your data. Contact us if you want a copy of what we store, or to ask that it be deleted."
   },
+  "DeleteAccount": {
+    "title": "Delete your account",
+    "body": "You can request that we delete your posty.now account and the data we store for it. This is handled on the website, not inside the mobile app.",
+    "how": "Send us a message from the contact page using the same email as your account, and write that you want the account deleted. We will confirm before anything is removed.",
+    "contact": "Contact us"
+  },
   "Terms": {
     "title": "Terms",
     "body": "By using posty.now you agree to use the product lawfully, keep your login private, and remain responsible for the content you publish to connected social accounts. The service is provided as-is while we grow. We may update these terms; the current version will always live on this page."

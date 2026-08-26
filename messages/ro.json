@@ -100,6 +100,12 @@
     "title": "Privacy",
     "body": "Păstrăm datele de cont pe care ni le dai, conținutul pe care îl creezi în studio și mesajele trimise de pe acest site ca să putem opera posty.now. Nu vindem datele tale. Scrie-ne dacă vrei o copie a ce stocăm sau să ceri ștergerea."
   },
+  "DeleteAccount": {
+    "title": "Șterge contul",
+    "body": "Poți cere să ștergem contul posty.now și datele pe care le păstrăm pentru el. Cererea se face pe site, nu din aplicația mobilă.",
+    "how": "Trimite un mesaj din pagina de contact, cu același email ca al contului, și scrie că vrei ștergerea. Confirmăm înainte să ștergem ceva.",
+    "contact": "Contactează-ne"
+  },
   "Terms": {
     "title": "Terms",
     "body": "Folosind posty.now, ești de acord să folosești produsul legal, să îți păstrezi autentificarea privată și să rămâi responsabil pentru conținutul publicat pe conturile sociale conectate. Serviciul este oferit ca atare, pe măsură ce creștem. Putem actualiza acești termeni; versiunea curentă va fi întotdeauna pe această pagină."

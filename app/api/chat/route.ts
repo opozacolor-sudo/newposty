@@ -46,14 +46,38 @@ export async function GET(request: Request) {
   }
 
   const locale = localeFromRequest(request);
+  const url = new URL(request.url);
 
-  const { data: conversation } = await supabase
-    .from("conversations")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  if (url.searchParams.get("list") === "1") {
+    const { data, error } = await supabase
+      .from("conversations")
+      .select("id, title, updated_at, created_at")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false })
+      .limit(80);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ conversations: data ?? [] });
+  }
+
+  const requestedId = url.searchParams.get("conversationId");
+  const conversationQuery = requestedId
+    ? supabase
+        .from("conversations")
+        .select("*")
+        .eq("id", requestedId)
+        .eq("user_id", user.id)
+        .maybeSingle()
+    : supabase
+        .from("conversations")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+  const { data: conversation } = await conversationQuery;
 
   if (!conversation) {
     return NextResponse.json({ conversationId: null, messages: [], skipConfirmation: false });

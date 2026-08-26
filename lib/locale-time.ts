@@ -15,6 +15,8 @@ export function localeFromRequest(request: Request, explicit?: string | null) {
   if (isAppLocale(explicit)) return explicit;
   const fromQuery = new URL(request.url).searchParams.get("locale");
   if (isAppLocale(fromQuery)) return fromQuery;
+  const fromHeader = request.headers.get("x-posty-locale");
+  if (isAppLocale(fromHeader)) return fromHeader;
   const cookie = request.headers
     .get("cookie")
     ?.split(";")
