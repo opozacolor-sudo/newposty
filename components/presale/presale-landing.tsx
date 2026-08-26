@@ -105,6 +105,7 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
   const locale = useLocale();
   const [view, setView] = useState(initial);
   const [email, setEmail] = useState("");
+  const [immediateStartConsent, setImmediateStartConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const current = view.current;
@@ -120,6 +121,10 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
 
   async function onCheckout(event: FormEvent) {
     event.preventDefault();
+    if (!immediateStartConsent) {
+      setError(t("consentRequired"));
+      return;
+    }
     setPending(true);
     setError(null);
     try {
@@ -131,13 +136,17 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
       const response = await fetch("/api/presale/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, locale }),
+        body: JSON.stringify({ email, locale, immediateStartConsent: true }),
       });
       const payload = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !payload.url) {
         if (payload.error === "PRESALE_SOLD_OUT") {
           const latest = await fetch("/api/presale/status").then((item) => item.json());
           setView(latest);
+          return;
+        }
+        if (payload.error === "CONSENT_REQUIRED") {
+          setError(t("consentRequired"));
           return;
         }
         setError(payload.error === "email is required" ? t("emailInvalid") : t("checkoutError"));
@@ -277,6 +286,16 @@ export function PresaleLanding({ initial }: { initial: PresaleView }) {
                   onChange={(event) => setEmail(event.target.value)}
                   className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#FF4713] sm:rounded-2xl sm:px-4"
                 />
+              </label>
+              <label className="mt-2 flex items-start gap-2 text-[11px] leading-4 text-neutral-600">
+                <input
+                  type="checkbox"
+                  required
+                  checked={immediateStartConsent}
+                  onChange={(event) => setImmediateStartConsent(event.target.checked)}
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#FF4713]"
+                />
+                <span>{t("immediateStartConsent")}</span>
               </label>
               {error ? <p className="mt-2 text-xs text-[#FF4713]">{error}</p> : null}
               <button

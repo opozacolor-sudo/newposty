@@ -15,6 +15,7 @@ export default async function AccountsPostsPage({
     .from("social_accounts")
     .select("*")
     .eq("user_id", user.id)
+    .eq("is_active", true)
     .order("connected_at", { ascending: false });
 
   const byPlatform = new Map<string, typeof accounts>();
@@ -70,6 +71,7 @@ export default async function AccountsPostsPage({
               anotherLabel={t("connectAnother")}
               notConnectedLabel={t("notConnected")}
               connectedLabel={t("statusConnected")}
+              disconnectLabel={t("disconnect")}
             />
           );
         })}

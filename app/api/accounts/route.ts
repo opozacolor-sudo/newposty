@@ -15,6 +15,7 @@ export async function GET() {
     .from("social_accounts")
     .select("*")
     .eq("user_id", user.id)
+    .eq("is_active", true)
     .order("connected_at", { ascending: false });
 
   if (error) {

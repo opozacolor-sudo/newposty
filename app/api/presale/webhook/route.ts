@@ -81,6 +81,14 @@ async function fulfillCheckout(session: Stripe.Checkout.Session) {
     });
   }
 
+  const consented = session.metadata?.immediate_start_consent === "1";
+  if (consented) {
+    await admin
+      .from("presale_purchases")
+      .update({ immediate_start_consent: true })
+      .eq("id", purchase.id);
+  }
+
   if (result.replay) return;
 
   const token = await issueRegistrationToken(purchase.id);

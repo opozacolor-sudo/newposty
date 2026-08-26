@@ -15,10 +15,14 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as {
       email?: string;
       locale?: string;
+      immediateStartConsent?: boolean;
     };
     const email = body.email?.trim().toLowerCase() ?? "";
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "email is required" }, { status: 400 });
+    }
+    if (body.immediateStartConsent !== true) {
+      return NextResponse.json({ error: "CONSENT_REQUIRED" }, { status: 400 });
     }
 
     const locale = localeFrom(body.locale);
@@ -40,9 +44,10 @@ export async function POST(request: Request) {
         quoted_slot: String(quote.nextSlot),
         quoted_tranche: String(quote.tranche),
         quoted_price_eur: String(quote.priceEur),
+        immediate_start_consent: "1",
       },
       payment_intent_data: {
-        metadata: { email, locale },
+        metadata: { email, locale, immediate_start_consent: "1" },
       },
       line_items: [
         {

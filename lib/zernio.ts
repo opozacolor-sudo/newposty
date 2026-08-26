@@ -237,6 +237,12 @@ export async function listAccounts(profileId: string) {
   return data.accounts ?? [];
 }
 
+export async function disconnectAccount(accountId: string) {
+  return zernioFetch<{ message?: string }>(`/accounts/${encodeURIComponent(accountId)}`, {
+    method: "DELETE",
+  });
+}
+
 export async function presignMedia(filename: string, contentType: string) {
   return zernioFetch<{ uploadUrl: string; publicUrl: string }>(
     "/media/presign",

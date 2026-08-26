@@ -1,4 +1,5 @@
 import { BlueskyConnectButton } from "@/components/studio/bluesky-connect-button";
+import { DisconnectButton } from "@/components/studio/disconnect-button";
 import { OpenAIAdsConnectButton } from "@/components/studio/openai-ads-connect-button";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 
@@ -27,6 +28,7 @@ export function AccountCard({
   anotherLabel,
   notConnectedLabel,
   connectedLabel,
+  disconnectLabel,
 }: {
   platform: {
     id: string;
@@ -44,6 +46,7 @@ export function AccountCard({
   anotherLabel: string;
   notConnectedLabel: string;
   connectedLabel: string;
+  disconnectLabel: string;
 }) {
   const connected = accounts.length > 0;
   const actionLabel = connected ? anotherLabel : connectLabel;
@@ -123,10 +126,13 @@ export function AccountCard({
           </p>
           <ul className="space-y-1 text-sm text-[#6B7280]">
             {accounts.map((account) => (
-              <li key={account.id} className="truncate">
-                {account.username
-                  ? `@${account.username.replace(/^@/, "")}`
-                  : (account.display_name ?? connectedLabel)}
+              <li key={account.id} className="flex items-center justify-between gap-3">
+                <span className="min-w-0 truncate">
+                  {account.username
+                    ? `@${account.username.replace(/^@/, "")}`
+                    : (account.display_name ?? connectedLabel)}
+                </span>
+                <DisconnectButton accountId={account.id} label={disconnectLabel} />
               </li>
             ))}
           </ul>

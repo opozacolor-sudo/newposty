@@ -98,17 +98,73 @@
   },
   "Privacy": {
     "title": "Privacy",
-    "body": "Păstrăm datele de cont pe care ni le dai, conținutul pe care îl creezi în studio și mesajele trimise de pe acest site ca să putem opera posty.now. Nu vindem datele tale. Scrie-ne dacă vrei o copie a ce stocăm sau să ceri ștergerea."
+    "operator": "Operator: AIPixxel SRL, pentru serviciul posty.now.",
+    "updated": "Ultima actualizare: 26 august 2026",
+    "sections": [
+      {
+        "heading": "Ce colectăm",
+        "body": [
+          "Păstrăm datele de cont pe care ni le dai (email, hash-ul parolei prin furnizorul de autentificare), conținutul din studio, metadatele conturilor sociale conectate, înregistrările de plată necesare achiziției, emailurile de reminder și mesajele trimise pe acest site.",
+          "Nu vindem datele tale."
+        ]
+      },
+      {
+        "heading": "Procesatori",
+        "body": [
+          "Folosim furnizori de hosting, autentificare/bază de date și plăți ca să operăm posty.now. Folosim și un furnizor de publicare socială ca să conectăm rețelele. Ei prelucrează datele doar ca să meargă serviciul.",
+          "Datele contului șters dispar din baza live când ștergi contul. Backup-urile criptate pentru recuperare în caz de incident pot păstra copii până se rotesc automat. E standard la orice gazdă de baze de date; copiile nu sunt folosite la prelucrare activă."
+        ]
+      },
+      {
+        "heading": "Ștergerea contului",
+        "body": [
+          "Îți poți șterge contul din studio după ce deconectezi toate conturile sociale. Apoi ștergem datele live fără întârzieri nejustificate și, ca țintă practică, în maximum 30 de zile — GDPR cere ștergere fără întârzieri nejustificate, nu un număr fix de zile.",
+          "Înregistrările de plată necesare contabilității pot rămâne anonimizate sau în forma cerută de lege. Rețelele sociale și furnizorul de publicare pot păstra loguri proprii după deconectare; le vom cere să confirme cât timp țin datele unui cont deconectat.",
+          "Ne poți scrie și din pagina de contact dacă vrei o copie a ce stocăm sau ajutor la ștergere."
+        ]
+      }
+    ]
   },
   "DeleteAccount": {
     "title": "Șterge contul",
-    "body": "Poți cere să ștergem contul posty.now și datele pe care le păstrăm pentru el. Cererea se face pe site, nu din aplicația mobilă.",
-    "how": "Trimite un mesaj din pagina de contact, cu același email ca al contului, și scrie că vrei ștergerea. Confirmăm înainte să ștergem ceva.",
+    "body": "Îți poți șterge contul posty.now din studio. Deconectează toate conturile sociale, apoi folosește Șterge cont în meniul contului și confirmă.",
+    "how": "Dacă nu te poți autentifica, trimite un mesaj din pagina de contact, cu același email ca al contului, și scrie că vrei ștergerea.",
     "contact": "Contactează-ne"
   },
   "Terms": {
-    "title": "Terms",
-    "body": "Folosind posty.now, ești de acord să folosești produsul legal, să îți păstrezi autentificarea privată și să rămâi responsabil pentru conținutul publicat pe conturile sociale conectate. Serviciul este oferit ca atare, pe măsură ce creștem. Putem actualiza acești termeni; versiunea curentă va fi întotdeauna pe această pagină."
+    "title": "Termeni și condiții",
+    "operator": "Acești termeni sunt între tine și AIPixxel SRL pentru serviciul posty.now.",
+    "updated": "Ultima actualizare: 26 august 2026",
+    "sections": [
+      {
+        "heading": "Serviciul",
+        "body": [
+          "posty.now îți permite să scrii, programezi și publici postări, plus promovări și statistici, din studio. Folosește-l legal, păstrează autentificarea privată și rămâi responsabil pentru conținutul publicat pe conturile sociale conectate."
+        ]
+      },
+      {
+        "heading": "Lifetime",
+        "body": [
+          "„Lifetime” este angajamentul AIPixxel SRL de a asigura funcționalitatea serviciilor Posty, așa cum sunt prezentate la momentul achiziției, pentru o perioadă minimă de 5 ani de la data înregistrării contului.",
+          "Este o achiziție unică, nu un abonament lunar. După acești 5 ani putem continua serviciul, îl putem schimba sau putem oferi un plan nou; dacă se întâmplă, o vom spune pe această pagină."
+        ]
+      },
+      {
+        "heading": "Rambursări",
+        "body": [
+          "Rambursarea se calculează din prețul efectiv plătit, nu din prețul altei tranșe. Fiecare lună începută contează ca lună întreagă consumată, la un preț de referință de 15 EUR/lună. Refund = preț plătit − (15 × luni începute), niciodată sub 0.",
+          "Exemplu: ai plătit 150 EUR (tranșa 2) și ceri rambursare în luna a 2-a → 150 − 2 × 15 = 120 EUR înapoi. Luna deja începută nu se pro-ratează.",
+          "O rambursare oprește accesul imediat și trimite suma calculată către metoda de plată originală. Anularea unui abonament recurent viitor (când vor exista astfel de planuri) oprește doar reînnoirea; nu este rambursare.",
+          "Consumatorii din UE au în mod normal un drept de retragere de 14 zile la contractele la distanță. Dacă bifezi la checkout că soliciți începerea imediată a serviciului, ești de acord că acest drept nu se mai aplică și se folosește formula de mai sus din prima zi. Dacă nu ai bifat, o cerere în 14 zile de la achiziție se rambursează integral. Aceasta este o politică de business; un avocat trebuie să o verifice înainte să te bazezi pe ea ca sfat juridic."
+        ]
+      },
+      {
+        "heading": "Conturi",
+        "body": [
+          "Îți poți șterge contul după ce deconectezi toate conturile sociale. Putem actualiza acești termeni; versiunea curentă e întotdeauna pe această pagină."
+        ]
+      }
+    ]
   },
   "Guide": {
     "metaTitle": "Manual de utilizare — posty.now",
@@ -133,6 +189,8 @@
     "remaining": "{count} locuri rămase din {total}",
     "email": "Email",
     "emailInvalid": "Introdu un email valid.",
+    "immediateStartConsent": "Solicit începerea imediată a furnizării serviciului și înțeleg că astfel îmi pierd dreptul de retragere de 14 zile.",
+    "consentRequired": "Bifează caseta ca să pornești checkout-ul.",
     "cta": "Fă-ți cont acum!",
     "redirecting": "Te ducem la plată…",
     "checkoutError": "Checkout-ul nu a pornit. Încearcă din nou.",
@@ -191,13 +249,38 @@
     "posts": "Postări",
     "ads": "Promovări",
     "signOut": "Deconectare",
-    "deleteAccount": "Ștergere cont",
+    "deleteAccount": "Șterge cont",
+    "refund": "Cere rambursare",
+    "cancelSubscription": "Anulează abonamentul",
+    "cancelUnavailable": "Nu există încă un plan recurent. Lifetime e o achiziție unică.",
     "comingSoon": "În curând",
     "openMenu": "Deschide meniul",
     "closeMenu": "Închide meniul",
     "localTime": "Ora locală",
     "guide": "Manual",
     "lifetime": "Pe viață"
+  },
+  "Billing": {
+    "refundTitle": "Ceri rambursare?",
+    "refundBody": "Primești înapoi {amount}€. Accesul se oprește imediat. Acțiunea e ireversibilă.",
+    "refundBodyZero": "Nu a mai rămas o sumă de rambursat. Accesul se oprește oricum imediat. Acțiunea e ireversibilă.",
+    "refundConfirm": "Confirmă rambursarea",
+    "refundWorking": "Se rambursează…",
+    "refundNeedPurchase": "Nu există o achiziție lifetime pe acest cont.",
+    "refundDone": "Rambursarea a fost trimisă către metoda de plată originală.",
+    "cancelTitle": "Anulezi abonamentul?",
+    "cancelBody": "Păstrezi accesul până la finalul perioadei deja plătite. Nu se mai reînnoiește. Nu este rambursare.",
+    "cancelConfirm": "Oprește reînnoirea",
+    "cancelWorking": "Se anulează…",
+    "cancelNone": "Nu există un abonament recurent de anulat. Lifetime e o achiziție unică.",
+    "deleteTitle": "Ștergi acest cont?",
+    "deleteBody": "Studio-ul și datele live ale contului vor fi scoase. Confirmă ca să continui.",
+    "deleteConfirm": "Șterge contul",
+    "deleteWorking": "Se șterge…",
+    "deleteNeedDisconnect": "Deconectează toate conturile sociale înainte să-ți ștergi contul.",
+    "deleteAccounts": "Deschide conturile",
+    "cancelAction": "Renunță",
+    "error": "Ceva nu a mers. Încearcă din nou."
   },
   "ComingSoon": {
     "badge": "În curând",
@@ -268,6 +351,9 @@
     "connectedGeneric": "Cont conectat. Poți publica din chat.",
     "connect": "Conectează",
     "connectAnother": "Conectează altul",
+    "disconnect": "Deconectează",
+    "disconnecting": "Se deconectează…",
+    "disconnectFailed": "Nu am putut deconecta. Încearcă din nou.",
     "notConnected": "Neconectat",
     "statusConnected": "Conectat",
     "connectedFallback": "Conectat",
