@@ -59,7 +59,6 @@ export async function ensureProfile(userId: string, email: string | undefined) {
 }
 
 export async function ensureZernioProfile(userId: string, email: string | undefined) {
-  const supabase = await createServerSupabase();
   const profile = await ensureProfile(userId, email);
   if (profile.zernio_profile_id) return profile;
 
@@ -68,15 +67,20 @@ export async function ensureZernioProfile(userId: string, email: string | undefi
     email ?? userId,
   );
 
-  const { data, error } = await supabase
+  const admin = createAdminSupabase();
+  const { data, error } = await admin
     .from("profiles")
     .update({ zernio_profile_id: created._id })
     .eq("id", userId)
+    .is("zernio_profile_id", null)
     .select("*")
-    .single();
+    .maybeSingle();
 
+  if (data) return data as Profile;
+  const raced = await getProfile(userId);
+  if (raced?.zernio_profile_id) return raced;
   if (error) throw error;
-  return data as Profile;
+  throw new Error("Could not save profile");
 }
 
 export async function syncSocialAccounts(userId: string, zernioProfileId: string) {

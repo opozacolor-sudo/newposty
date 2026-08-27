@@ -48,7 +48,7 @@ export async function POST() {
     .eq("id", purchase.id)
     .in("status", ["paid", "registered"]);
   if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 500 });
+    return NextResponse.json({ error: "REFUND_FAILED" }, { status: 500 });
   }
 
   await admin.from("profiles").update({ lifetime_access: false }).eq("id", user.id);

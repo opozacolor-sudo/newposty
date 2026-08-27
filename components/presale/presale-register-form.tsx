@@ -57,6 +57,7 @@ export function PresaleRegisterForm({ token }: { token: string }) {
         if (payload.error === "PRESALE_TOKEN_EXPIRED") setError(t("tokenExpired"));
         else if (payload.error === "PASSWORD_MISMATCH") setError(t("passwordMismatch"));
         else if (payload.error === "PASSWORD_SHORT") setError(t("passwordShort"));
+        else if (payload.error === "ACCOUNT_EXISTS") setError(t("accountExists"));
         else setError(t("registerError"));
         return;
       }

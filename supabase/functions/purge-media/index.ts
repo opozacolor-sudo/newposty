@@ -3,7 +3,21 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const MARKER = "/storage/v1/object/public/media/";
 
-Deno.serve(async () => {
+function isServiceRole(request: Request) {
+  const auth = request.headers.get("Authorization") ?? "";
+  const token = auth.replace(/^Bearer\s+/i, "").trim();
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return Boolean(serviceKey) && token === serviceKey;
+}
+
+Deno.serve(async (request) => {
+  if (request.method !== "POST") {
+    return Response.json({ error: "Method not allowed" }, { status: 405 });
+  }
+  if (!isServiceRole(request)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -13,7 +27,7 @@ Deno.serve(async () => {
     .from("posts")
     .select("status, scheduled_for, created_at, media");
   if (postsError) {
-    return Response.json({ error: postsError.message }, { status: 500 });
+    return Response.json({ error: "Could not load posts" }, { status: 500 });
   }
 
   const keep = new Set<string>();
@@ -39,7 +53,7 @@ Deno.serve(async () => {
     limit: 1000,
   });
   if (listError) {
-    return Response.json({ error: listError.message }, { status: 500 });
+    return Response.json({ error: "Could not list media" }, { status: 500 });
   }
 
   const objects: { name: string; created_at?: string }[] = [];
@@ -49,7 +63,7 @@ Deno.serve(async () => {
         .from("media")
         .list(root.name, { limit: 1000 });
       if (folderError) {
-        return Response.json({ error: folderError.message }, { status: 500 });
+        return Response.json({ error: "Could not list media" }, { status: 500 });
       }
       for (const file of files ?? []) {
         if (!file.id) continue;
@@ -70,18 +84,17 @@ Deno.serve(async () => {
     .map((object) => object.name);
 
   if (paths.length === 0) {
-    return Response.json({ removed: 0, kept: keep.size, scanned: objects?.length ?? 0 });
+    return Response.json({ removed: 0, kept: keep.size, scanned: objects.length });
   }
 
   const { error: removeError } = await supabase.storage.from("media").remove(paths);
   if (removeError) {
-    return Response.json({ error: removeError.message, paths }, { status: 500 });
+    return Response.json({ error: "Could not remove media" }, { status: 500 });
   }
 
   return Response.json({
     removed: paths.length,
     kept: keep.size,
-    scanned: objects?.length ?? 0,
-    paths,
+    scanned: objects.length,
   });
 });

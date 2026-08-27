@@ -9,13 +9,6 @@ import {
 } from "@/lib/platforms";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
-import {
-  getAdsPlatform,
-  isAdsPlatformId,
-  isConnectPlatformId,
-} from "@/lib/platforms";
-import { createServerSupabase } from "@/lib/supabase/server";
-import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
 
 function accountsHome(ads: boolean) {
   return new URL(ads ? "/accounts/ads" : "/accounts/posts", getSiteUrl());

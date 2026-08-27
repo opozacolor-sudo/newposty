@@ -25,21 +25,15 @@ export function PresaleThanks() {
       attempts += 1;
       try {
         const response = await fetch(`/api/presale/session?session_id=${encodeURIComponent(sessionId)}`);
-        const payload = (await response.json()) as { status?: string; token?: string };
+        const payload = (await response.json()) as { status?: string };
         if (cancelled) return;
         if (payload.status === "registered") {
           router.replace("/login");
           return;
         }
         if (payload.status === "paid") {
-          const minted = await fetch(
-            `/api/presale/session?session_id=${encodeURIComponent(sessionId)}&mint=1`,
-          );
-          const mintedPayload = (await minted.json()) as { token?: string };
-          if (mintedPayload.token) {
-            router.replace(`/presale/register/${mintedPayload.token}`);
-            return;
-          }
+          setMessage(t("thanksEmail"));
+          return;
         }
         if (attempts >= 15) {
           setMessage(t("thanksEmail"));

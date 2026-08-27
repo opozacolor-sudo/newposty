@@ -533,12 +533,12 @@ export async function POST(request: Request) {
             is_error: true,
           });
         }
-      } catch (error) {
+      } catch {
         toolResults.push({
           type: "tool_result",
           tool_use_id: tool.id,
           is_error: true,
-          content: error instanceof Error ? error.message : "Tool failed",
+          content: "Tool failed",
         });
       }
     }

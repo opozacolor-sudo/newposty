@@ -87,6 +87,7 @@ export async function loadLifetimePurchase(userId: string, email: string | undef
       "id, email, price_eur, created_at, registered_at, stripe_customer_id, stripe_payment_intent_id, status, immediate_start_consent",
     )
     .eq("email", normalised)
+    .is("user_id", null)
     .neq("status", "refunded")
     .order("created_at", { ascending: true })
     .limit(1)

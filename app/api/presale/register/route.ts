@@ -118,13 +118,23 @@ export async function POST(request: Request) {
       }
       const { data: existing } = await admin
         .from("profiles")
-        .select("id")
-        .ilike("email", loaded.email)
+        .select("id, lifetime_access")
+        .eq("email", loaded.email)
         .maybeSingle();
       userId = existing?.id ?? null;
       if (!userId) {
         return NextResponse.json({ error: "ACCOUNT_EXISTS" }, { status: 409 });
       }
+
+      const { data: authUser } = await admin.auth.admin.getUserById(userId);
+      const alreadyUsed =
+        Boolean(authUser.user?.last_sign_in_at) ||
+        Boolean(existing?.lifetime_access) ||
+        loaded.purchaseStatus === "registered";
+      if (alreadyUsed) {
+        return NextResponse.json({ error: "ACCOUNT_EXISTS" }, { status: 409 });
+      }
+
       const updated = await admin.auth.admin.updateUserById(userId, {
         password,
         email_confirm: true,
