@@ -7,12 +7,13 @@ import { LocaleSwitch } from "@/components/locale-switch";
 import { Link, useRouter } from "@/i18n/navigation";
 import { SIGNUPS_OPEN } from "@/lib/flags";
 import { createBrowserSupabase } from "@/lib/supabase/client";
+import { safeInternalPath } from "@/lib/safe-path";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/chat";
+  const next = safeInternalPath(searchParams.get("next"));
   const confirmed = searchParams.get("confirmed") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,13 +31,13 @@ export default function LoginPage() {
         password,
       });
       if (signInError) {
-        setError(signInError.message);
+        setError(t("unexpected"));
         return;
       }
-      router.push(next.startsWith("/") ? next : "/chat");
+      router.push(next);
       router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("unexpected"));
+    } catch {
+      setError(t("unexpected"));
     } finally {
       setPending(false);
     }

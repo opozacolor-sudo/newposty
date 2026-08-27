@@ -67,7 +67,7 @@ export async function sendPresaleRegisterEmail(input: {
          <p>This link is valid for 7 days.</p>`;
 
   if (!key) {
-    console.info("[presale] skipping email; set RESEND_API_KEY. register url ready for thanks page.");
+    console.info("[presale] skipping email; set RESEND_API_KEY.");
     return { sent: false, url };
   }
 
@@ -85,8 +85,8 @@ export async function sendPresaleRegisterEmail(input: {
     }),
   });
   if (!response.ok) {
-    const body = await response.text();
-    console.error("[presale] resend failed", response.status, body.slice(0, 500));
+    await response.text().catch(() => "");
+    console.error("[presale] resend failed", response.status);
     return { sent: false, url };
   }
   return { sent: true, url };

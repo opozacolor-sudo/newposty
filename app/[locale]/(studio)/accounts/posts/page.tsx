@@ -38,7 +38,11 @@ export default async function AccountsPostsPage({
       ) : null}
       {params.error ? (
         <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-accent">
-          {params.error}
+          {params.error === "oauth_state"
+            ? t("oauthState")
+            : params.error === "connect_failed"
+              ? t("connectFailed")
+              : t("connectFailed")}
         </p>
       ) : null}
 

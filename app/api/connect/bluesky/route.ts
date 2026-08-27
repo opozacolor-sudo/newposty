@@ -39,7 +39,6 @@ export async function POST(request: Request) {
     await syncSocialAccounts(user.id, profile.zernio_profile_id);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Bluesky connect failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Bluesky connect failed" }, { status: 500 });
   }
 }

@@ -3,14 +3,20 @@ import { routing } from "@/i18n/routing";
 import { getSiteUrl } from "@/lib/env";
 import { quoteForSoldCount } from "@/lib/presale";
 import { fetchPresaleView, getStripe } from "@/lib/presale-server";
+import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function localeFrom(value: unknown) {
   return routing.locales.find((item) => item === value) ?? routing.defaultLocale;
 }
 
 export async function POST(request: Request) {
+  const limited = rateLimit(`checkout:${clientIp(request)}`, 8, 15 * 60 * 1000);
+  if (!limited.ok) return tooMany(limited.retryAfterSec);
+
   try {
     const body = (await request.json().catch(() => ({}))) as {
       email?: string;
@@ -18,7 +24,7 @@ export async function POST(request: Request) {
       immediateStartConsent?: boolean;
     };
     const email = body.email?.trim().toLowerCase() ?? "";
-    if (!email || !email.includes("@")) {
+    if (!emailPattern.test(email) || email.length > 320) {
       return NextResponse.json({ error: "email is required" }, { status: 400 });
     }
     if (body.immediateStartConsent !== true) {
@@ -71,8 +77,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ url: session.url, priceEur: quote.priceEur, tranche: quote.tranche });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not start checkout.";
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Could not start checkout." }, { status: 500 });
   }
 }

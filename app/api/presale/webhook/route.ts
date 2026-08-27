@@ -60,7 +60,7 @@ async function fulfillCheckout(session: Stripe.Checkout.Session) {
     if (error.message.includes("PRESALE_SOLD_OUT")) {
       const stripe = getStripe();
       await stripe.refunds.create({ payment_intent: paymentIntentId });
-      console.error("[presale] refunded oversold payment", paymentIntentId);
+      console.error("[presale] refunded oversold payment");
       return;
     }
     throw error;
@@ -72,12 +72,10 @@ async function fulfillCheckout(session: Stripe.Checkout.Session) {
 
   if (result.price_mismatch) {
     console.warn("[presale] paid price differs from allocated tranche catalog price", {
-      email: purchase.email,
       slot: purchase.slot_number,
       tranche: purchase.tranche,
       paid: purchase.price_eur,
       catalog: result.catalog_price,
-      paymentIntentId,
     });
   }
 
@@ -112,9 +110,8 @@ export async function POST(request: Request) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(raw, signature, getStripeWebhookSecret());
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid signature";
-    return NextResponse.json({ error: message }, { status: 400 });
+  } catch {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   if (event.type === "checkout.session.completed") {

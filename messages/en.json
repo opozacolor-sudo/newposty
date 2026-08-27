@@ -354,6 +354,8 @@
     "disconnect": "Disconnect",
     "disconnecting": "Disconnecting…",
     "disconnectFailed": "Could not disconnect. Try again.",
+    "connectFailed": "Could not connect the account. Try again.",
+    "oauthState": "The connection could not be confirmed. Start connect again from this page.",
     "notConnected": "Not connected",
     "statusConnected": "Connected",
     "connectedFallback": "Connected",

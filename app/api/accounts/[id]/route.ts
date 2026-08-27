@@ -25,8 +25,7 @@ export async function DELETE(_request: Request, { params }: Params) {
     await disconnectAccount(String(account.zernio_account_id));
   } catch (error) {
     if (!(error instanceof ZernioError) || (error.status !== 404 && error.status !== 405)) {
-      const message = error instanceof Error ? error.message : "DISCONNECT_FAILED";
-      return NextResponse.json({ error: message }, { status: 502 });
+      return NextResponse.json({ error: "DISCONNECT_FAILED" }, { status: 502 });
     }
   }
 
@@ -35,7 +34,7 @@ export async function DELETE(_request: Request, { params }: Params) {
     .update({ is_active: false })
     .eq("id", account.id)
     .eq("user_id", user.id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "DISCONNECT_FAILED" }, { status: 500 });
 
   return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
 }

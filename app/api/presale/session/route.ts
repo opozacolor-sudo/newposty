@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { getStripe, issueRegistrationToken } from "@/lib/presale-server";
+import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  const limited = rateLimit(`session:${clientIp(request)}`, 20, 15 * 60 * 1000);
+  if (!limited.ok) return tooMany(limited.retryAfterSec);
+
   const url = new URL(request.url);
   const sessionId = url.searchParams.get("session_id")?.trim();
   const mint = url.searchParams.get("mint") === "1";

@@ -7,8 +7,7 @@ export async function GET() {
   try {
     const view = await fetchPresaleView();
     return NextResponse.json(view);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not load presale status.";
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Could not load presale status." }, { status: 500 });
   }
 }

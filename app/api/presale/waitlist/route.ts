@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { routing } from "@/i18n/routing";
 import { getSupabasePublicEnv } from "@/lib/env";
+import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,9 @@ function localeFrom(value: unknown) {
 }
 
 export async function POST(request: Request) {
+  const limited = rateLimit(`waitlist:${clientIp(request)}`, 10, 15 * 60 * 1000);
+  if (!limited.ok) return tooMany(limited.retryAfterSec);
+
   try {
     const body = (await request.json().catch(() => ({}))) as {
       email?: string;
@@ -29,13 +33,10 @@ export async function POST(request: Request) {
       p_locale: localeFrom(body.locale),
     });
     if (error) {
-      console.error("[presale] waitlist join failed", error.message, error.code);
       return NextResponse.json({ error: "WAITLIST_FAILED" }, { status: 500 });
     }
     return NextResponse.json({ ok: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "WAITLIST_FAILED";
-    console.error("[presale] waitlist failed", message);
+  } catch {
     return NextResponse.json({ error: "WAITLIST_FAILED" }, { status: 500 });
   }
 }

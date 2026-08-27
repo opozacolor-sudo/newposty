@@ -18,8 +18,7 @@ export async function GET() {
   try {
     accounts = await listActiveSocialAccounts(user.id);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load accounts";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to load accounts" }, { status: 500 });
   }
 
   const posting = accounts.filter(

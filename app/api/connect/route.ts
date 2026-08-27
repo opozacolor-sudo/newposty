@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { getSiteUrl } from "@/lib/env";
 import { ensureZernioProfile, syncSocialAccounts } from "@/lib/data";
+import { createOAuthState, withOAuthStateCookie } from "@/lib/oauth-state";
+import {
+  getAdsPlatform,
+  isAdsPlatformId,
+  isConnectPlatformId,
+} from "@/lib/platforms";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
 import {
   getAdsPlatform,
   isAdsPlatformId,
@@ -81,9 +89,10 @@ export async function GET(request: Request) {
       throw new Error("Could not create a Zernio profile for this user.");
     }
 
+    const state = createOAuthState();
     const redirectUrl = mobile
-      ? `${getSiteUrl()}/api/oauth/mobile-callback?platform=${encodeURIComponent(platform)}`
-      : `${getSiteUrl()}/accounts/connected?platform=${platform}`;
+      ? `${getSiteUrl()}/api/oauth/mobile-callback?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`
+      : `${getSiteUrl()}/accounts/connected?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`;
 
     if (ads) {
       const adsPlatform = getAdsPlatform(platform);
@@ -133,8 +142,8 @@ export async function GET(request: Request) {
         return NextResponse.redirect(target);
       }
 
-      if (json) return NextResponse.json({ authUrl: result.authUrl });
-      return NextResponse.redirect(result.authUrl);
+      if (json) return NextResponse.json({ authUrl: result.authUrl, state });
+      return withOAuthStateCookie(NextResponse.redirect(result.authUrl), state);
     }
 
     const authUrl = await getConnectUrl({
@@ -143,13 +152,12 @@ export async function GET(request: Request) {
       redirectUrl,
     });
 
-    if (json) return NextResponse.json({ authUrl });
-    return NextResponse.redirect(authUrl);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Connect failed";
-    if (json) return NextResponse.json({ error: message }, { status: 500 });
+    if (json) return NextResponse.json({ authUrl, state });
+    return withOAuthStateCookie(NextResponse.redirect(authUrl), state);
+  } catch {
+    if (json) return NextResponse.json({ error: "Connect failed" }, { status: 500 });
     const target = accountsHome(ads);
-    target.searchParams.set("error", message);
+    target.searchParams.set("error", "connect_failed");
     return NextResponse.redirect(target);
   }
 }

@@ -28,7 +28,7 @@ export async function GET() {
     .limit(50);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Could not load posts" }, { status: 500 });
   }
 
   await purgeUnusedMediaForUser(supabase, user.id).catch(() => undefined);
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Could not save post" }, { status: 500 });
   }
 
   return NextResponse.json({ post });
@@ -169,7 +169,7 @@ export async function PATCH(request: Request) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Could not save post" }, { status: 500 });
   }
 
   return NextResponse.json({ post });

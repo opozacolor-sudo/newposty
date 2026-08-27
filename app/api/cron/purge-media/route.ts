@@ -7,9 +7,7 @@ export async function GET(request: Request) {
   const cron = request.headers.get("x-vercel-cron");
   const secret = process.env.CRON_SECRET?.trim();
   const auth = request.headers.get("authorization");
-  const allowed =
-    cron === "1" ||
-    (secret ? auth === `Bearer ${secret}` : process.env.NODE_ENV !== "production");
+  const allowed = Boolean(secret) && (cron === "1" || auth === `Bearer ${secret}`);
   if (!allowed) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

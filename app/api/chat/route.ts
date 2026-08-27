@@ -56,7 +56,7 @@ export async function GET(request: Request) {
       .order("updated_at", { ascending: false })
       .limit(80);
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: "Could not load chat" }, { status: 500 });
     }
     return NextResponse.json({ conversations: data ?? [] });
   }
@@ -203,7 +203,7 @@ export async function POST(request: Request) {
       .select("id, skip_confirmation, pending_intent, pending_intent_at")
       .single();
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: "Could not load chat" }, { status: 500 });
     }
     conversationId = created.id as string;
   }

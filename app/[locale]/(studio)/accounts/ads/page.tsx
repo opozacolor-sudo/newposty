@@ -30,7 +30,11 @@ export default async function AccountsAdsPage({
       ? t("adsNeedXFirst")
       : params.error === "openai_key"
         ? t("openaiIntro")
-        : params.error;
+        : params.error === "oauth_state"
+          ? t("oauthState")
+          : params.error
+            ? t("connectFailed")
+            : null;
 
   return (
     <main className="h-full overflow-y-auto px-6 py-8">

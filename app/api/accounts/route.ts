@@ -24,7 +24,7 @@ export async function GET() {
     .order("connected_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Could not load accounts" }, { status: 500 });
   }
 
   return NextResponse.json({ accounts: data ?? [] }, noStore);
@@ -57,7 +57,6 @@ export async function POST() {
       noStore,
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Sync failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Sync failed" }, { status: 500 });
   }
 }

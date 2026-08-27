@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hashPresaleToken, tokenStatus } from "@/lib/presale";
+import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +42,9 @@ function misconfigured(error: unknown) {
 }
 
 export async function GET(request: Request) {
+  const limited = rateLimit(`register-get:${clientIp(request)}`, 20, 15 * 60 * 1000);
+  if (!limited.ok) return tooMany(limited.retryAfterSec);
+
   try {
     const token = new URL(request.url).searchParams.get("token")?.trim() ?? "";
     if (!token) {
@@ -63,6 +67,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const limited = rateLimit(`register-post:${clientIp(request)}`, 8, 15 * 60 * 1000);
+  if (!limited.ok) return tooMany(limited.retryAfterSec);
+
   try {
     const body = (await request.json().catch(() => ({}))) as {
       token?: string;
@@ -107,7 +114,7 @@ export async function POST(request: Request) {
 
     if (created.error) {
       if (!/already|registered|exists/i.test(created.error.message)) {
-        return NextResponse.json({ error: created.error.message }, { status: 400 });
+        return NextResponse.json({ error: "REGISTER_FAILED" }, { status: 400 });
       }
       const { data: existing } = await admin
         .from("profiles")
@@ -123,7 +130,7 @@ export async function POST(request: Request) {
         email_confirm: true,
       });
       if (updated.error) {
-        return NextResponse.json({ error: updated.error.message }, { status: 400 });
+        return NextResponse.json({ error: "REGISTER_FAILED" }, { status: 400 });
       }
     } else {
       userId = created.data.user.id;
@@ -141,7 +148,7 @@ export async function POST(request: Request) {
       if (message.includes("PRESALE_TOKEN_USED")) {
         return NextResponse.json({ error: "PRESALE_TOKEN_USED" }, { status: 409 });
       }
-      return NextResponse.json({ error: message }, { status: 400 });
+      return NextResponse.json({ error: "REGISTER_FAILED" }, { status: 400 });
     }
 
     return NextResponse.json({ ok: true, email: loaded.email, lifetimeAccess: true });

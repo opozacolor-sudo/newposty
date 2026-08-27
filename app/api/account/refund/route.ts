@@ -34,8 +34,7 @@ export async function POST() {
       });
       stripeRefundId = refund.id;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "REFUND_FAILED";
-      return NextResponse.json({ error: message }, { status: 502 });
+      return NextResponse.json({ error: "REFUND_FAILED" }, { status: 502 });
     }
   }
 

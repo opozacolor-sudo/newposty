@@ -354,6 +354,8 @@
     "disconnect": "Deconectează",
     "disconnecting": "Se deconectează…",
     "disconnectFailed": "Nu am putut deconecta. Încearcă din nou.",
+    "connectFailed": "Nu am putut conecta contul. Încearcă din nou.",
+    "oauthState": "Conectarea nu a putut fi confirmată. Pornește din nou conectarea din această pagină.",
     "notConnected": "Neconectat",
     "statusConnected": "Conectat",
     "connectedFallback": "Conectat",

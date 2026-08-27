@@ -38,10 +38,9 @@ export async function POST() {
 
     return NextResponse.json({ ok: true, cancelAtPeriodEnd: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "CANCEL_FAILED";
-    if (message.includes("STRIPE_SECRET_KEY")) {
+    if (error instanceof Error && error.message.includes("STRIPE_SECRET_KEY")) {
       return NextResponse.json({ error: "NO_SUBSCRIPTION" }, { status: 409 });
     }
-    return NextResponse.json({ error: message }, { status: 502 });
+    return NextResponse.json({ error: "CANCEL_FAILED" }, { status: 502 });
   }
 }

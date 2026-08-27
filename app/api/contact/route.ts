@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
+  const limited = rateLimit(`contact:${clientIp(request)}`, 5, 15 * 60 * 1000);
+  if (!limited.ok) return tooMany(limited.retryAfterSec);
+
   let payload: { name?: unknown; email?: unknown; message?: unknown };
   try {
     payload = await request.json();
