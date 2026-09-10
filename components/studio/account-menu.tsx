@@ -2,11 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-
-type BillingState = {
-  canDelete: boolean;
-};
 
 type DialogKind = "delete" | null;
 
@@ -15,7 +10,6 @@ export function AccountMenu({ email }: { email: string }) {
   const t = useTranslations("Billing");
   const locale = useLocale();
   const [open, setOpen] = useState(false);
-  const [billing, setBilling] = useState<BillingState | null>(null);
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,25 +27,6 @@ export function AccountMenu({ email }: { email: string }) {
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    let cancelled = false;
-    fetch("/api/account/billing")
-      .then(async (response) => {
-        if (!response.ok) return null;
-        return (await response.json()) as BillingState;
-      })
-      .then((payload) => {
-        if (!cancelled && payload) setBilling(payload);
-      })
-      .catch(() => {
-        if (!cancelled) setBilling(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
-
   function closeDialog() {
     if (working) return;
     setDialog(null);
@@ -68,13 +43,8 @@ export function AccountMenu({ email }: { email: string }) {
     setError(null);
     try {
       const response = await fetch("/api/account/delete", { method: "POST" });
-      const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) {
-        if (payload.error === "DISCONNECT_REQUIRED") {
-          setError(t("deleteNeedDisconnect"));
-        } else {
-          setError(t("error"));
-        }
+        setError(t("error"));
         return;
       }
       window.location.assign(`/${locale}`);
@@ -84,9 +54,6 @@ export function AccountMenu({ email }: { email: string }) {
       setWorking(false);
     }
   }
-
-  const canDelete = billing?.canDelete ?? false;
-  const billingReady = billing !== null;
 
   return (
     <div className="relative" ref={rootRef}>
@@ -110,27 +77,14 @@ export function AccountMenu({ email }: { email: string }) {
           </form>
           <button
             type="button"
-            disabled={!billingReady || !canDelete}
-            title={canDelete ? undefined : t("deleteNeedDisconnect")}
             onClick={() => {
-              if (!canDelete) return;
               setError(null);
               setDialog("delete");
             }}
-            className={`w-full rounded-xl px-3 py-2 text-left text-sm ${
-              canDelete ? "text-[#1A1A1A] hover:bg-[#F5F5F5]" : "cursor-not-allowed text-[#9CA3AF]"
-            }`}
+            className="w-full rounded-xl px-3 py-2 text-left text-sm text-[#1A1A1A] hover:bg-[#F5F5F5]"
           >
             {tNav("deleteAccount")}
           </button>
-          {billingReady && !canDelete ? (
-            <p className="px-3 pb-2 text-[11px] leading-4 text-[#6B7280]">
-              {t("deleteNeedDisconnect")}{" "}
-              <Link href="/accounts/posts" className="text-[#FF4713]">
-                {t("deleteAccounts")}
-              </Link>
-            </p>
-          ) : null}
 
           {dialog === "delete" ? (
             <div className="mt-1 rounded-xl border border-[#E5E5E5] bg-[#FAFAFA] p-3">

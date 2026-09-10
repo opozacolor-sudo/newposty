@@ -118,7 +118,7 @@
       {
         "heading": "Deleting your account",
         "body": [
-          "You can delete your account from the studio after you disconnect every connected social account. We then delete the live account data without undue delay, and in any event within 30 days as a practical target — GDPR requires deletion without undue delay rather than a fixed number of days.",
+          "You can delete your account from the studio. Connected social accounts are disconnected as part of deletion. We then delete the live account data without undue delay, and in any event within 30 days as a practical target — GDPR requires deletion without undue delay rather than a fixed number of days.",
           "Social networks and our publishing provider may keep their own logs after you disconnect; we will ask that provider to confirm how long disconnected-account data is kept.",
           "You can also write to us from the contact page if you want a copy of what we store or help with deletion."
         ]
@@ -127,7 +127,7 @@
   },
   "DeleteAccount": {
     "title": "Delete your account",
-    "body": "You can delete your posty.now account from the studio. Disconnect every social account first, then use Delete account in the account menu and confirm.",
+    "body": "You can delete your posty.now account from the studio. Use Delete account in the account menu and confirm.",
     "how": "If you cannot sign in, send a message from the contact page with the same email as the account and write that you want it deleted.",
     "contact": "Contact us"
   },
@@ -145,7 +145,7 @@
       {
         "heading": "Accounts",
         "body": [
-          "You may delete your account after disconnecting every connected social account. We may update these terms; the current version always lives on this page."
+          "You may delete your account from the studio. We may update these terms; the current version always lives on this page."
         ]
       }
     ]
@@ -243,11 +243,9 @@
   },
   "Billing": {
     "deleteTitle": "Delete this account?",
-    "deleteBody": "The studio and live data for this account will be removed. Confirm to continue.",
+    "deleteBody": "This removes the studio, disconnects your networks, and deletes live data. Confirm to continue.",
     "deleteConfirm": "Delete account",
     "deleteWorking": "Deleting…",
-    "deleteNeedDisconnect": "Disconnect all social accounts before you delete your account.",
-    "deleteAccounts": "Open accounts",
     "cancelAction": "Cancel",
     "error": "Something went wrong. Try again."
   },

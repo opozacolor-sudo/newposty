@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import {
-  countActiveSocialAccounts,
+  listActiveSocialAccounts,
   logBillingEvent,
   requireAccountUser,
 } from "@/lib/account-server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { disconnectAccount, ZernioError } from "@/lib/zernio";
 
 export const dynamic = "force-dynamic";
 
@@ -12,12 +13,19 @@ export async function POST() {
   const { user, supabase } = await requireAccountUser();
   if (!user || !supabase) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const connected = await countActiveSocialAccounts(user.id);
-  if (connected > 0) {
-    return NextResponse.json({ error: "DISCONNECT_REQUIRED", connected }, { status: 409 });
-  }
-
   const admin = createAdminSupabase();
+  const accounts = await listActiveSocialAccounts(user.id);
+  for (const account of accounts) {
+    try {
+      await disconnectAccount(String(account.zernio_account_id));
+    } catch (error) {
+      if (!(error instanceof ZernioError) || (error.status !== 404 && error.status !== 405)) {
+        console.error("[account] disconnect failed during delete");
+      }
+    }
+  }
+  await admin.from("social_accounts").update({ is_active: false }).eq("user_id", user.id);
+
   try {
     const { data: objects } = await admin.storage.from("media").list(user.id, { limit: 1000 });
     const paths = (objects ?? [])

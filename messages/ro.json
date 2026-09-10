@@ -118,7 +118,7 @@
       {
         "heading": "Ștergerea contului",
         "body": [
-          "Îți poți șterge contul din studio după ce deconectezi toate conturile sociale. Apoi ștergem datele live fără întârzieri nejustificate și, ca țintă practică, în maximum 30 de zile — GDPR cere ștergere fără întârzieri nejustificate, nu un număr fix de zile.",
+          "Îți poți șterge contul din studio. Conturile sociale conectate se deconectează odată cu ștergerea. Apoi ștergem datele live fără întârzieri nejustificate și, ca țintă practică, în maximum 30 de zile — GDPR cere ștergere fără întârzieri nejustificate, nu un număr fix de zile.",
           "Rețelele sociale și furnizorul de publicare pot păstra loguri proprii după deconectare; le vom cere să confirme cât timp țin datele unui cont deconectat.",
           "Ne poți scrie și din pagina de contact dacă vrei o copie a ce stocăm sau ajutor la ștergere."
         ]
@@ -127,7 +127,7 @@
   },
   "DeleteAccount": {
     "title": "Șterge contul",
-    "body": "Îți poți șterge contul posty.now din studio. Deconectează toate conturile sociale, apoi folosește Șterge cont în meniul contului și confirmă.",
+    "body": "Îți poți șterge contul posty.now din studio. Folosește Șterge cont în meniul contului și confirmă.",
     "how": "Dacă nu te poți autentifica, trimite un mesaj din pagina de contact, cu același email ca al contului, și scrie că vrei ștergerea.",
     "contact": "Contactează-ne"
   },
@@ -145,7 +145,7 @@
       {
         "heading": "Conturi",
         "body": [
-          "Îți poți șterge contul după ce deconectezi toate conturile sociale. Putem actualiza acești termeni; versiunea curentă e întotdeauna pe această pagină."
+          "Îți poți șterge contul din studio. Putem actualiza acești termeni; versiunea curentă e întotdeauna pe această pagină."
         ]
       }
     ]
@@ -243,11 +243,9 @@
   },
   "Billing": {
     "deleteTitle": "Ștergi acest cont?",
-    "deleteBody": "Studio-ul și datele live ale contului vor fi scoase. Confirmă ca să continui.",
+    "deleteBody": "Se șterge studio-ul, se deconectează rețelele și dispar datele live. Confirmă ca să continui.",
     "deleteConfirm": "Șterge contul",
     "deleteWorking": "Se șterge…",
-    "deleteNeedDisconnect": "Deconectează toate conturile sociale înainte să-ți ștergi contul.",
-    "deleteAccounts": "Deschide conturile",
     "cancelAction": "Renunță",
     "error": "Ceva nu a mers. Încearcă din nou."
   },
