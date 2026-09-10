@@ -42,8 +42,21 @@ export function getResendApiKey() {
   return process.env.RESEND_API_KEY?.trim() ?? "";
 }
 
+const RESEND_FROM_DEFAULT = "Posty <hello@posty.now>";
+const EMAIL_ONLY = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+const NAME_AND_EMAIL = /^([^<>]+)<([^\s@<>]+@[^\s@<>]+\.[^\s@<>]+)>$/;
+const NAME_THEN_EMAIL = /^(.+?)\s+([^\s@<>]+@[^\s@<>]+\.[^\s@<>]+)$/;
+
 export function getResendFrom() {
-  return process.env.RESEND_FROM?.trim() || "Posty <hello@posty.now>";
+  const raw = (process.env.RESEND_FROM?.trim() ?? "").replace(/^["']|["']$/g, "").trim();
+  if (!raw) return RESEND_FROM_DEFAULT;
+  if (EMAIL_ONLY.test(raw)) return raw;
+  const named = raw.match(NAME_AND_EMAIL);
+  if (named) return `${named[1].trim()} <${named[2]}>`;
+  const loose = raw.match(NAME_THEN_EMAIL);
+  if (loose) return `${loose[1].trim()} <${loose[2]}>`;
+  console.error("[resend] invalid RESEND_FROM, using default");
+  return RESEND_FROM_DEFAULT;
 }
 
 export function getSiteUrl() {
