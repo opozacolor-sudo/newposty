@@ -1,15 +1,7 @@
-import { Suspense } from "react";
-import type { Metadata } from "next";
-import { PresaleThanks } from "@/components/presale/presale-thanks";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
-
-export default function PresaleThanksPage() {
-  return (
-    <Suspense>
-      <PresaleThanks />
-    </Suspense>
-  );
+export default async function PresaleThanksPage() {
+  const locale = await getLocale();
+  redirect({ href: "/", locale });
 }

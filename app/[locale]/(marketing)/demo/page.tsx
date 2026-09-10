@@ -69,7 +69,7 @@ export default async function DemoPage() {
           {t("ctaTitle")}
         </p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href="/login" className={`${btnSolid} px-6 py-3`}>
+          <Link href="/signup" className={`${btnSolid} px-6 py-3`}>
             {t("ctaButton")}
           </Link>
           <Link

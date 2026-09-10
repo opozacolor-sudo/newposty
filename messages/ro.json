@@ -50,7 +50,7 @@
     "subtitle": "Vezi fiecare pas în acțiune.",
     "videoSoon": "Video în curând",
     "ctaTitle": "Pregătit să începi?",
-    "ctaButton": "Autentificare",
+    "ctaButton": "Creează cont",
     "readGuide": "Citește manualul complet",
     "steps": {
       "connect": {
@@ -99,19 +99,19 @@
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, pentru serviciul posty.now.",
-    "updated": "Ultima actualizare: 26 august 2026",
+    "updated": "Ultima actualizare: 10 septembrie 2026",
     "sections": [
       {
         "heading": "Ce colectăm",
         "body": [
-          "Păstrăm datele de cont pe care ni le dai (email, hash-ul parolei prin furnizorul de autentificare), conținutul din studio, metadatele conturilor sociale conectate, înregistrările de plată necesare achiziției, emailurile de reminder și mesajele trimise pe acest site.",
+          "Păstrăm datele de cont pe care ni le dai (email, hash-ul parolei prin furnizorul de autentificare), conținutul din studio, metadatele conturilor sociale conectate și mesajele trimise pe acest site.",
           "Nu vindem datele tale."
         ]
       },
       {
         "heading": "Procesatori",
         "body": [
-          "Folosim furnizori de hosting, autentificare/bază de date și plăți ca să operăm posty.now. Folosim și un furnizor de publicare socială ca să conectăm rețelele. Ei prelucrează datele doar ca să meargă serviciul.",
+          "Folosim furnizori de hosting și autentificare/bază de date ca să operăm posty.now. Folosim și un furnizor de publicare socială ca să conectăm rețelele. Ei prelucrează datele doar ca să meargă serviciul.",
           "Datele contului șters dispar din baza live când ștergi contul. Backup-urile criptate pentru recuperare în caz de incident pot păstra copii până se rotesc automat. E standard la orice gazdă de baze de date; copiile nu sunt folosite la prelucrare activă."
         ]
       },
@@ -119,7 +119,7 @@
         "heading": "Ștergerea contului",
         "body": [
           "Îți poți șterge contul din studio după ce deconectezi toate conturile sociale. Apoi ștergem datele live fără întârzieri nejustificate și, ca țintă practică, în maximum 30 de zile — GDPR cere ștergere fără întârzieri nejustificate, nu un număr fix de zile.",
-          "Înregistrările de plată necesare contabilității pot rămâne anonimizate sau în forma cerută de lege. Rețelele sociale și furnizorul de publicare pot păstra loguri proprii după deconectare; le vom cere să confirme cât timp țin datele unui cont deconectat.",
+          "Rețelele sociale și furnizorul de publicare pot păstra loguri proprii după deconectare; le vom cere să confirme cât timp țin datele unui cont deconectat.",
           "Ne poți scrie și din pagina de contact dacă vrei o copie a ce stocăm sau ajutor la ștergere."
         ]
       }
@@ -134,28 +134,12 @@
   "Terms": {
     "title": "Termeni și condiții",
     "operator": "Acești termeni sunt între tine și AIPixxel SRL pentru serviciul posty.now.",
-    "updated": "Ultima actualizare: 26 august 2026",
+    "updated": "Ultima actualizare: 10 septembrie 2026",
     "sections": [
       {
         "heading": "Serviciul",
         "body": [
-          "posty.now îți permite să scrii, programezi și publici postări, plus promovări și statistici, din studio. Folosește-l legal, păstrează autentificarea privată și rămâi responsabil pentru conținutul publicat pe conturile sociale conectate."
-        ]
-      },
-      {
-        "heading": "Lifetime",
-        "body": [
-          "„Lifetime” este angajamentul AIPixxel SRL de a asigura funcționalitatea serviciilor Posty, așa cum sunt prezentate la momentul achiziției, pentru o perioadă minimă de 5 ani de la data înregistrării contului.",
-          "Este o achiziție unică, nu un abonament lunar. După acești 5 ani putem continua serviciul, îl putem schimba sau putem oferi un plan nou; dacă se întâmplă, o vom spune pe această pagină."
-        ]
-      },
-      {
-        "heading": "Rambursări",
-        "body": [
-          "Rambursarea se calculează din prețul efectiv plătit, nu din prețul altei tranșe. Fiecare lună începută contează ca lună întreagă consumată, la un preț de referință de 15 EUR/lună. Refund = preț plătit − (15 × luni începute), niciodată sub 0.",
-          "Exemplu: ai plătit 150 EUR (tranșa 2) și ceri rambursare în luna a 2-a → 150 − 2 × 15 = 120 EUR înapoi. Luna deja începută nu se pro-ratează.",
-          "O rambursare oprește accesul imediat și trimite suma calculată către metoda de plată originală. Anularea unui abonament recurent viitor (când vor exista astfel de planuri) oprește doar reînnoirea; nu este rambursare.",
-          "Consumatorii din UE au în mod normal un drept de retragere de 14 zile la contractele la distanță. Dacă bifezi la checkout că soliciți începerea imediată a serviciului, ești de acord că acest drept nu se mai aplică și se folosește formula de mai sus din prima zi. Dacă nu ai bifat, o cerere în 14 zile de la achiziție se rambursează integral. Aceasta este o politică de business; un avocat trebuie să o verifice înainte să te bazezi pe ea ca sfat juridic."
+          "posty.now îți permite să scrii, programezi și publici postări, plus promovări și statistici, din studio. Studio-ul public este un beta gratuit. Folosește-l legal, păstrează autentificarea privată și rămâi responsabil pentru conținutul publicat pe conturile sociale conectate."
         ]
       },
       {
@@ -235,7 +219,7 @@
     "newHere": "Ești nou aici?",
     "createAccount": "Creează un cont",
     "signupTitle": "Deschide un studio",
-    "signupSubtitle": "Email și parolă. Fără pași extra.",
+    "signupSubtitle": "Beta — gratuit. Email și parolă.",
     "create": "Creează cont",
     "creating": "Se creează…",
     "alreadyHave": "Ai deja unul?",
@@ -251,29 +235,13 @@
     "ads": "Promovări",
     "signOut": "Deconectare",
     "deleteAccount": "Șterge cont",
-    "refund": "Cere rambursare",
-    "cancelSubscription": "Anulează abonamentul",
-    "cancelUnavailable": "Nu există încă un plan recurent. Lifetime e o achiziție unică.",
     "comingSoon": "În curând",
     "openMenu": "Deschide meniul",
     "closeMenu": "Închide meniul",
     "localTime": "Ora locală",
-    "guide": "Manual",
-    "lifetime": "Pe viață"
+    "guide": "Manual"
   },
   "Billing": {
-    "refundTitle": "Ceri rambursare?",
-    "refundBody": "Primești înapoi {amount}€. Accesul se oprește imediat. Acțiunea e ireversibilă.",
-    "refundBodyZero": "Nu a mai rămas o sumă de rambursat. Accesul se oprește oricum imediat. Acțiunea e ireversibilă.",
-    "refundConfirm": "Confirmă rambursarea",
-    "refundWorking": "Se rambursează…",
-    "refundNeedPurchase": "Nu există o achiziție lifetime pe acest cont.",
-    "refundDone": "Rambursarea a fost trimisă către metoda de plată originală.",
-    "cancelTitle": "Anulezi abonamentul?",
-    "cancelBody": "Păstrezi accesul până la finalul perioadei deja plătite. Nu se mai reînnoiește. Nu este rambursare.",
-    "cancelConfirm": "Oprește reînnoirea",
-    "cancelWorking": "Se anulează…",
-    "cancelNone": "Nu există un abonament recurent de anulat. Lifetime e o achiziție unică.",
     "deleteTitle": "Ștergi acest cont?",
     "deleteBody": "Studio-ul și datele live ale contului vor fi scoase. Confirmă ca să continui.",
     "deleteConfirm": "Șterge contul",
@@ -447,7 +415,7 @@
       "openaiads": "Complete (impresii, clicks, spend, zilnic)"
     },
     "adsNote": {
-      "openaiads": "Doar imagini statice (fără video), buget doar lifetime (minim $1), necesită eligibilitate business SUA."
+      "openaiads": "Doar imagini statice (fără video), buget fix de campanie (minim $1), necesită eligibilitate business SUA."
     },
     "openaiTitle": "Conectează OpenAI Ads",
     "openaiIntro": "OpenAI Ads folosește o cheie API din ChatGPT Ads Manager, nu un login popup.",

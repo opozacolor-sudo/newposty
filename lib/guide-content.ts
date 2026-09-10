@@ -484,7 +484,7 @@ const EN: GuideDoc = {
       body: [
         "Go to Accounts → Ads. Connect Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads, and OpenAI Ads.",
         "An ads account does not publish to the feed. It unlocks paid campaigns: what is running, what you spend, what you get back. You read that under Statistics → Ads.",
-        "X Ads needs X connected on Accounts → Posts first, then you connect X Ads. OpenAI Ads has no login popup: you paste an API key from ChatGPT Ads Manager. Those ads are cards inside ChatGPT (title, text, image, link), static images only, lifetime budget (minimum $1), and business eligibility — currently the United States, Canada, Australia, and New Zealand.",
+        "X Ads needs X connected on Accounts → Posts first, then you connect X Ads. OpenAI Ads has no login popup: you paste an API key from ChatGPT Ads Manager. Those ads are cards inside ChatGPT (title, text, image, link), static images only, a fixed campaign budget (minimum $1), and business eligibility — currently the United States, Canada, Australia, and New Zealand.",
       ],
       tips: [
         {

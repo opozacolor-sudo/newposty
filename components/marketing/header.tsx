@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./brand-logo";
-import { btnGhost, btnOutline } from "./styles";
+import { btnGhost, btnSolid } from "./styles";
 
 export function MarketingHeader() {
   const t = useTranslations("Header");
@@ -21,6 +21,9 @@ export function MarketingHeader() {
       </Link>
       <Link href="/contact" className={btnGhost} onClick={() => setOpen(false)}>
         {t("contact")}
+      </Link>
+      <Link href="/demo" className={btnGhost} onClick={() => setOpen(false)}>
+        {t("demo")}
       </Link>
     </>
   );
@@ -45,20 +48,31 @@ export function MarketingHeader() {
           <BrandLogo className="h-5 w-auto sm:h-8" width={97} height={20} />
         </Link>
 
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
+          <Link href="/login" className={`${btnGhost} hidden sm:inline`} onClick={() => setOpen(false)}>
+            {t("signIn")}
+          </Link>
           <Link
-            href="/demo"
-            className={`${btnOutline} !px-2.5 !py-1.5 !text-xs sm:!px-4 sm:!py-2.5 sm:!text-sm`}
+            href="/signup"
+            className={`${btnSolid} !px-2.5 !py-1.5 !text-xs sm:!px-4 sm:!py-2.5 sm:!text-sm`}
             onClick={() => setOpen(false)}
           >
-            {t("demo")}
+            {t("signUp")}
           </Link>
         </div>
       </div>
 
       {open ? (
         <div className="border-t border-neutral-100 bg-white px-4 py-4 md:hidden">
-          <nav className="flex flex-col gap-3">{leftLinks}</nav>
+          <nav className="flex flex-col gap-3">
+            {leftLinks}
+            <Link href="/login" className={btnGhost} onClick={() => setOpen(false)}>
+              {t("signIn")}
+            </Link>
+            <Link href="/signup" className={btnSolid} onClick={() => setOpen(false)}>
+              {t("signUp")}
+            </Link>
+          </nav>
         </div>
       ) : null}
     </header>

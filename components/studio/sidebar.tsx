@@ -27,7 +27,7 @@ function itemClass(active: boolean) {
   }`;
 }
 
-export function StudioSidebar({ email, lifetime = false }: { email: string; lifetime?: boolean }) {
+export function StudioSidebar({ email }: { email: string }) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const inStats = pathname.startsWith("/dashboard");
@@ -128,7 +128,7 @@ export function StudioSidebar({ email, lifetime = false }: { email: string; life
       <div className="mt-4 shrink-0 space-y-3 border-t border-[#E5E5E5] pt-4">
         <LocaleClock />
         <LocaleSwitch variant="names" />
-        <AccountMenu email={email} lifetime={lifetime} />
+        <AccountMenu email={email} />
       </div>
     </>
   );
