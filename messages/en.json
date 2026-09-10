@@ -138,20 +138,91 @@
     "contact": "Contact us"
   },
   "Terms": {
-    "title": "Terms of Service",
-    "operator": "These terms are between you and AIPixxel SRL for the posty.now service.",
-    "updated": "Last updated: 10 September 2026",
+    "title": "Terms and Conditions of Use",
+    "operator": "These Terms and Conditions (“Terms”) govern access to and use of the Posty platform available at https://posty.now (the “Service”). By creating an account or using the Service, you agree to these Terms. Operator: AIPixxel SRL.",
+    "updated": "Last updated: 28 June 2026",
     "sections": [
       {
-        "heading": "The service",
+        "heading": "1. The Service",
         "body": [
-          "posty.now lets you write, schedule and publish social posts, plus promotions and analytics, through the studio. The public studio is a free beta. Use it lawfully, keep your login private, and stay responsible for content published to connected social accounts."
+          "Posty lets you connect social-network accounts, create content with AI assistance, schedule posts, and publish to supported platforms directly from the chat interface. Features may change, and some platforms may require separate approvals from social-network providers before public publishing is available."
         ]
       },
       {
-        "heading": "Accounts",
+        "heading": "2. Eligibility and User Account",
         "body": [
-          "You may delete your account from the studio. We may update these terms; the current version always lives on this page."
+          "You must be at least 16 years old and have the legal capacity to enter into a binding contract.",
+          "You are responsible for keeping your login credentials secure and for all activity under your account.",
+          "You agree to provide accurate information and to notify us promptly of any unauthorized access."
+        ]
+      },
+      {
+        "heading": "3. Connected Platforms",
+        "body": [
+          "When you connect a third-party account (e.g. Instagram, Facebook, TikTok, LinkedIn), you authorize Posty to access and use that account solely to provide the scheduling and publishing services you request.",
+          "You remain fully responsible for complying with each connected platform’s terms, policies, and API rules. Posty is not directly affiliated with Meta, Google, TikTok, LinkedIn, Pinterest, or other networks, unless expressly stated."
+        ]
+      },
+      {
+        "heading": "4. Content Rights",
+        "body": [
+          "Ownership: You retain ownership of all materials and content you upload or create through the Service.",
+          "License: You grant Posty a limited license to host, process, transmit, and display your content solely to operate the Service (media storage, sending text to APIs, showing previews).",
+          "You represent that you hold all rights needed to publish uploaded materials and that they do not violate any law or third-party right."
+        ]
+      },
+      {
+        "heading": "5. Acceptable Use",
+        "body": [
+          "You agree NOT to use the Service for: spam, fraud, harassment, or other illegal activity; bypassing technical limits of connected platforms, unauthorized data scraping, or disrupting the Service; uploading content that infringes copyright, trademarks, or privacy rights; unauthorized resale or sharing of your account."
+        ]
+      },
+      {
+        "heading": "6. AI-Generated Content",
+        "body": [
+          "AI suggestions or text may contain inaccuracies or errors. You are responsible for reviewing captions, hashtags, images, and scheduled times before publishing. Posty does not guarantee any level of reach, engagement, or approval of content by social networks."
+        ]
+      },
+      {
+        "heading": "7. Fees and Payments",
+        "body": [
+          "Posty may offer free and paid options/plans. If paid features are introduced, prices and billing terms will be clearly presented before any payment is processed."
+        ]
+      },
+      {
+        "heading": "8. Disclaimer of Warranties",
+        "body": [
+          "THE SERVICE IS PROVIDED “AS IS” AND “AS AVAILABLE”, WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED OR ERROR-FREE."
+        ]
+      },
+      {
+        "heading": "9. Limitation of Liability",
+        "body": [
+          "To the maximum extent permitted by law, Posty and its operators are not liable for indirect, incidental, special, or consequential damages (including loss of profit, data, or reputation). Our total liability for any claim related to the Service is limited to the amount you paid in the last 12 months or EUR 100, whichever is greater."
+        ]
+      },
+      {
+        "heading": "10. Termination",
+        "body": [
+          "You may stop using the Service at any time and delete your account from profile settings. We may suspend or close access if you breach these Terms or if the law requires it."
+        ]
+      },
+      {
+        "heading": "11. Changes to the Terms",
+        "body": [
+          "We may update these Terms from time to time. The updated version will be published on this page with the last-modified date. Continued use of the Service after changes take effect constitutes your acceptance."
+        ]
+      },
+      {
+        "heading": "12. Governing Law and Jurisdiction",
+        "body": [
+          "These Terms are governed by the laws of Romania. Any dispute will be resolved by the competent courts of Romania, unless mandatory consumer-protection rules in your country provide otherwise."
+        ]
+      },
+      {
+        "heading": "13. Contact",
+        "body": [
+          "For questions about these Terms and Conditions, contact us at opozacolor@gmail.com."
         ]
       }
     ]

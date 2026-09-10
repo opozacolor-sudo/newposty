@@ -138,20 +138,91 @@
     "contact": "Contactează-ne"
   },
   "Terms": {
-    "title": "Termeni și condiții",
-    "operator": "Acești termeni sunt între tine și AIPixxel SRL pentru serviciul posty.now.",
-    "updated": "Ultima actualizare: 10 septembrie 2026",
+    "title": "Termeni și Condiții de Utilizare",
+    "operator": "Acești Termeni și Condiții („Termenii”) guvernează accesul și utilizarea platformei Posty disponibilă la adresa https://posty.now („Serviciul”). Prin crearea unui cont sau prin utilizarea Serviciului, sunteți de acord cu acești Termeni. Operator: AIPixxel SRL.",
+    "updated": "Ultima actualizare: 28 iunie 2026",
     "sections": [
       {
-        "heading": "Serviciul",
+        "heading": "1. Serviciul",
         "body": [
-          "posty.now îți permite să scrii, programezi și publici postări, plus promovări și statistici, din studio. Studio-ul public este un beta gratuit. Folosește-l legal, păstrează autentificarea privată și rămâi responsabil pentru conținutul publicat pe conturile sociale conectate."
+          "Posty vă permite să vă conectați conturile de rețele sociale, să creați conținut cu asistență AI, să programați postări și să publicați conținut pe platformele suportate direct din interfața de chat. Caracteristicile pot suferi modificări, iar anumite platforme pot necesita aprobări separate din partea furnizorilor de rețele sociale înainte ca publicarea publică să fie disponibilă."
         ]
       },
       {
-        "heading": "Conturi",
+        "heading": "2. Eligibilitate și Contul de Utilizator",
         "body": [
-          "Îți poți șterge contul din studio. Putem actualiza acești termeni; versiunea curentă e întotdeauna pe această pagină."
+          "Trebuie să aveți vârsta minimă de 16 ani și capacitatea legală de a încheia un contract cu caracter obligatoriu.",
+          "Sunteți responsabil pentru păstrarea în siguranță a datelor de autentificare și pentru toate activitățile desfășurate în cadrul contului dumneavoastră.",
+          "Vă obligați să furnizați informații exacte și să ne notificați prompt în cazul oricărui acces neautorizat."
+        ]
+      },
+      {
+        "heading": "3. Platformele Conectate",
+        "body": [
+          "Atunci când conectați un cont terț (ex: Instagram, Facebook, TikTok, LinkedIn etc.), autorizați Posty să acceseze și să utilizeze acel cont exclusiv pentru furnizarea serviciilor de programare și publicare solicitate.",
+          "Sunteți pe deplin responsabil de respectarea termenilor, politicilor și regulilor API ale fiecărei platforme conectate. Posty nu este afiliat direct cu Meta, Google, TikTok, LinkedIn, Pinterest sau alte rețele, cu excepția cazului în care se specifică explicit."
+        ]
+      },
+      {
+        "heading": "4. Drepturile asupra Conținutului",
+        "body": [
+          "Proprietate: Păstrați drepturile de proprietate asupra tuturor materialelor și conținutului pe care le încărcați sau le creați prin intermediul serviciului.",
+          "Licență de utilizare: Acordați Posty o licență limitată pentru a găzdui, procesa, transmite și afișa conținutul dumneavoastră exclusiv în scopul operării Serviciului (stocare media, trimitere de texte către API-uri, afișare de previzualizări).",
+          "Declarați că dețineți toate drepturile necesare pentru publicarea materialelor încărcate și că acestea nu încalcă nicio lege sau drept terț."
+        ]
+      },
+      {
+        "heading": "5. Utilizare Acceptabilă",
+        "body": [
+          "Vă angajați să NU utilizați Serviciul pentru: trimiterea de spam, fraude, hărțuire sau alte activități ilegale; ocolirea limitărilor tehnice ale platformelor conectate, extragerea neautorizată de date (scraping) sau perturbarea Serviciului; încărcarea de conținut care încalcă drepturi de autor, mărci înregistrate sau drepturi la viață privată; revânzarea sau partajarea neautorizată a contului dumneavoastră."
+        ]
+      },
+      {
+        "heading": "6. Conținut Generat de AI",
+        "body": [
+          "Sugestiile sau textele generate de Inteligența Artificială pot conține neconcordanțe sau erori. Sunteți direct responsabil pentru verificarea descrierilor, a hashtag-urilor, a imaginilor și a orelor de programare înainte de publicare. Posty nu garantează un anumit nivel de reach, engagement sau aprobarea conținutului de către rețelele sociale."
+        ]
+      },
+      {
+        "heading": "7. Tarife și Plăți",
+        "body": [
+          "Posty poate oferi opțiuni/planuri gratuite și plătite. În cazul introducerii unor funcționalități contra cost, prețurile și condițiile de facturare vă vor fi prezentate în mod clar înainte de procesarea oricărei plăți."
+        ]
+      },
+      {
+        "heading": "8. Exonerare de Garanții (Disclaimer)",
+        "body": [
+          "SERVICIUL ESTE FURNIZAT „AȘA CUM ESTE” ȘI „ÎN FUNCȚIE DE DISPONIBILITATE”, FĂRĂ GARANȚII DE NICIUN FEL, EXPRESE SAU IMPLICITE. NU GARANTĂM CĂ FUNCȚIONAREA SERVICIULUI VA FI FĂRĂ ÎNTRERUPERI SAU FĂRĂ ERORI."
+        ]
+      },
+      {
+        "heading": "9. Limitarea Răspunderii",
+        "body": [
+          "În măsura maximă permisă de lege, Posty și operatorii săi nu vor fi răspunzători pentru daune indirecte, incidentale, speciale sau consecutive (inclusiv pierderi de profit, date sau reputație). Răspunderea noastră totală pentru orice reclamație legată de Serviciu este limitată la suma plătită de dumneavoastră în ultimele 12 luni sau suma de 100 EUR (oricare este mai mare)."
+        ]
+      },
+      {
+        "heading": "10. Încetarea Serviciilor",
+        "body": [
+          "Puteți înceta utilizarea Serviciului în orice moment și vă puteți șterge contul din setările profilului. Ne rezervăm dreptul de a suspenda sau închide accesul dacă încălcați acești Termeni sau dacă legea o impune."
+        ]
+      },
+      {
+        "heading": "11. Modificări ale Termenilor",
+        "body": [
+          "Putem actualiza acești Termeni periodic. Versiunea actualizată va fi publicată pe această pagină cu data ultimei modificări. Utilizarea continuă a Serviciului după aplicarea modificărilor reprezintă acceptul dumneavoastră."
+        ]
+      },
+      {
+        "heading": "12. Legea Aplicabilă și Jurisdicția",
+        "body": [
+          "Acești Termeni sunt guvernați de legislația din România. Orice litigiu va fi soluționat de instanțele competente din România, cu excepția cazului în care normele imperative privind protecția consumatorilor din țara dumneavoastră prevăd altfel."
+        ]
+      },
+      {
+        "heading": "13. Contact",
+        "body": [
+          "Pentru întrebări sau clarificări legate de acești Termeni și Condiții, ne puteți contacta la adresa de e-mail: opozacolor@gmail.com."
         ]
       }
     ]
