@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { escapeHtml, getContactInbox, sendResendEmail } from "@/lib/email";
 import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
+import { createServerSupabase } from "@/lib/supabase/server";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -41,6 +42,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Could not save message" }, { status: 500 });
   }
 
-  // TODO: send an internal email via Resend/SMTP when RESEND_API_KEY (or SMTP) is configured.
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message).replaceAll("\n", "<br>");
+  const sent = await sendResendEmail({
+    to: getContactInbox(),
+    replyTo: email,
+    subject: `Posty contact: ${name}`,
+    html: `<p><strong>${safeName}</strong> &lt;${safeEmail}&gt;</p><p>${safeMessage}</p>`,
+  });
+
+  if (!sent.sent) {
+    return NextResponse.json({ error: "Could not send message" }, { status: 502 });
+  }
+
   return NextResponse.json({ ok: true });
 }

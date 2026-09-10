@@ -43,7 +43,7 @@ export function getResendApiKey() {
 }
 
 export function getResendFrom() {
-  return process.env.RESEND_FROM?.trim() || "posty.now <beth.t@example.com>";
+  return process.env.RESEND_FROM?.trim() || "Posty <hello@posty.now>";
 }
 
 export function getSiteUrl() {

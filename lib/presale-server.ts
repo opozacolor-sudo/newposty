@@ -1,8 +1,7 @@
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { sendResendEmail } from "@/lib/email";
 import {
-  getResendApiKey,
-  getResendFrom,
   getSiteUrl,
   getStripeSecretKey,
   getSupabasePublicEnv,
@@ -52,7 +51,6 @@ export async function sendPresaleRegisterEmail(input: {
   priceEur: number;
 }) {
   const url = registrationUrl(input.locale, input.token);
-  const key = getResendApiKey();
   const subject =
     input.locale === "ro"
       ? "Finalizează contul posty.now"
@@ -66,28 +64,13 @@ export async function sendPresaleRegisterEmail(input: {
          <p><a href="${url}">Create your password and open the studio</a></p>
          <p>This link is valid for 7 days.</p>`;
 
-  if (!key) {
-    console.info("[presale] skipping email; set RESEND_API_KEY.");
-    return { sent: false, url };
-  }
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: getResendFrom(),
-      to: input.email,
-      subject,
-      html,
-    }),
+  const result = await sendResendEmail({
+    to: input.email,
+    subject,
+    html,
   });
-  if (!response.ok) {
-    await response.text().catch(() => "");
-    console.error("[presale] resend failed", response.status);
-    return { sent: false, url };
+  if (!result.sent) {
+    console.info("[presale] skipping email;", result.reason);
   }
-  return { sent: true, url };
+  return { sent: result.sent, url };
 }
