@@ -31,6 +31,17 @@ test("all networks expands from connected accounts and applies exclusions", () =
   assert.equal(result.wantsAll, true);
 });
 
+test("disabled platforms are omitted even when connected", () => {
+  const result = resolvePlatformSelection({
+    requested: ["__all_connected__"],
+    excluded: [],
+    connectedPlatforms: ["instagram", "twitter", "tiktok"],
+    disabledPlatforms: ["twitter"],
+  });
+  assert.deepEqual(result.platforms.sort(), ["instagram", "tiktok"]);
+  assert.deepEqual(result.disabledRequested, ["twitter"]);
+});
+
 test("tiktok rejects images", () => {
   const reason = validationReason({
     platform: "tiktok",

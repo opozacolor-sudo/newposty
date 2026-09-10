@@ -5,6 +5,7 @@ import { createOAuthState, withOAuthStateCookie } from "@/lib/oauth-state";
 import {
   getAdsPlatform,
   isAdsPlatformId,
+  isConnectDisabled,
   isConnectPlatformId,
 } from "@/lib/platforms";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -46,6 +47,14 @@ export async function GET(request: Request) {
 
   if (!isConnectPlatformId(platform)) {
     return NextResponse.json({ error: "Unknown platform" }, { status: 400 });
+  }
+  if (isConnectDisabled(platform)) {
+    if (json) {
+      return NextResponse.json({ error: "COMING_SOON" }, { status: 403 });
+    }
+    const target = accountsHome(ads);
+    target.searchParams.set("error", "coming_soon");
+    return NextResponse.redirect(target);
   }
   if (platform === "bluesky") {
     if (json) {

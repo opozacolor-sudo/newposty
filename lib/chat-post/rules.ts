@@ -12,6 +12,7 @@ export function resolvePlatformSelection(input: {
   requested: string[];
   excluded: string[];
   connectedPlatforms: string[];
+  disabledPlatforms?: string[];
 }) {
   const unknown: string[] = [];
   const excludedIds = input.excluded
@@ -27,13 +28,17 @@ export function resolvePlatformSelection(input: {
     if (!canonicalizePlatform(value)) unknown.push(value);
   }
 
+  const disabled = new Set(input.disabledPlatforms ?? []);
   const selected = wantsAll ? [...input.connectedPlatforms] : explicit;
-  const platforms = selected.filter((platform) => !excludedIds.includes(platform));
+  const available = selected.filter((platform) => !excludedIds.includes(platform));
+  const disabledRequested = available.filter((platform) => disabled.has(platform));
+  const platforms = available.filter((platform) => !disabled.has(platform));
 
   return {
     wantsAll,
     platforms,
     excludedIds,
+    disabledRequested,
     unknown,
   };
 }

@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { AccountCard } from "@/components/studio/account-card";
 import { requireUser } from "@/lib/data";
-import { PLATFORMS, platformLabel } from "@/lib/platforms";
+import { PLATFORMS, isConnectDisabled, platformLabel } from "@/lib/platforms";
 
 export default async function AccountsPostsPage({
   searchParams,
@@ -40,6 +40,8 @@ export default async function AccountsPostsPage({
         <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-accent">
           {params.error === "oauth_state"
             ? t("oauthState")
+            : params.error === "coming_soon"
+              ? t("comingSoon")
             : params.error === "connect_failed"
               ? t("connectFailed")
               : t("connectFailed")}
@@ -76,6 +78,7 @@ export default async function AccountsPostsPage({
               notConnectedLabel={t("notConnected")}
               connectedLabel={t("statusConnected")}
               disconnectLabel={t("disconnect")}
+              comingSoonLabel={isConnectDisabled(platform.id) ? t("comingSoon") : undefined}
             />
           );
         })}

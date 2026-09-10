@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ALL_CONNECTED, getPlatformCapability } from "@/lib/platform-capabilities";
-import { isPlatformId, platformLabel } from "@/lib/platforms";
+import { isConnectDisabled, isPlatformId, platformLabel } from "@/lib/platforms";
 import {
   adaptContentType,
   contentTypeForPlatform,
@@ -103,7 +103,9 @@ export async function resolveCreateActions(input: {
   | { ok: true; resolved: Omit<ResolvedAction, "action_id"> }
   | { ok: false; error: string; missing?: Array<"platform" | "media" | "caption" | "time"> }
 > {
-  const postingAccounts = input.accounts.filter((account) => isPlatformId(account.platform));
+  const postingAccounts = input.accounts.filter(
+    (account) => isPlatformId(account.platform) && !isConnectDisabled(account.platform),
+  );
   const connectedPlatforms = [...new Set(postingAccounts.map((account) => account.platform))];
   const excluded_by_validation: ExcludedPlatform[] = [];
   const excluded_platforms: string[] = [];
@@ -134,8 +136,16 @@ export async function resolveCreateActions(input: {
       requested: action.platforms ?? [],
       excluded: action.excluded_platforms ?? [],
       connectedPlatforms,
+      disabledPlatforms: ["twitter"],
     });
     excluded_platforms.push(...selection.excludedIds);
+    if (selection.disabledRequested.length > 0) {
+      warnings.push(
+        input.locale === "ro"
+          ? "X (Twitter) nu e disponibil momentan."
+          : "X (Twitter) is not available yet.",
+      );
+    }
 
     if (selection.unknown.length > 0) {
       warnings.push(
@@ -146,6 +156,15 @@ export async function resolveCreateActions(input: {
     }
 
     if (!selection.wantsAll && selection.platforms.length === 0) {
+      if (selection.disabledRequested.length > 0) {
+        return {
+          ok: false,
+          error:
+            input.locale === "ro"
+              ? "X (Twitter) nu e disponibil momentan."
+              : "X (Twitter) is not available yet.",
+        };
+      }
       missing.add("platform");
       return {
         ok: false,

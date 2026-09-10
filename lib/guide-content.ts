@@ -80,7 +80,7 @@ const RO: GuideDoc = {
       id: "accounts-posts",
       title: "Conturi de postări",
       body: [
-        "Mergi la Conturi → Postări. Aici leagă Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, X, Bluesky și Reddit.",
+        "Mergi la Conturi → Postări. Aici leagă Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, Bluesky și Reddit. X e marcat În curând.",
         "Apasă Conectează, autorizează-ți contul, gata. Pe Facebook alegi pagina, pe LinkedIn poți alege profil sau pagină de companie, pe Pinterest board-ul, pe Google Business locația.",
         "Bluesky nu are login clasic: folosește un App Password (parolă de aplicație), nu parola obișnuită a contului. Dacă nu știi de unde o iei, butonul de ajutor de pe card te duce la instrucțiuni.",
         "Poți conecta mai multe conturi pe aceeași rețea. Ce e conectat aici e ce asistentul poate publica.",
@@ -97,9 +97,9 @@ const RO: GuideDoc = {
       title: "Conturi de promovări (ads)",
       lead: "Postările aduc reach organic. Ads-urile plătesc ca să fie văzute. În posty.now ambele își au locul — dar se conectează separat.",
       body: [
-        "Mergi la Conturi → Promovări. Aici leagă Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads și OpenAI Ads.",
+        "Mergi la Conturi → Promovări. Aici leagă Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads și OpenAI Ads. X Ads e marcat În curând.",
         "Un cont de promovare nu publică poze în feed. El îți dă acces la campaniile plătite: ce rulează, cât cheltui, ce rezultate ai. Statisticile le vezi la Statistică → Promovări.",
-        "X Ads cere mai întâi X conectat la Conturi → Postări, apoi conectezi X Ads. OpenAI Ads nu are fereastră de login: lipești o cheie API din ChatGPT Ads Manager. Reclamele OpenAI sunt carduri în ChatGPT (titlu, text, imagine, link), doar imagini statice, buget pe toată durata campaniei (minim 1 $), și eligibilitate de business — momentan SUA, Canada, Australia, Noua Zeelandă.",
+        "OpenAI Ads nu are fereastră de login: lipești o cheie API din ChatGPT Ads Manager. Reclamele OpenAI sunt carduri în ChatGPT (titlu, text, imagine, link), doar imagini statice, buget pe toată durata campaniei (minim 1 $), și eligibilitate de business — momentan SUA, Canada, Australia, Noua Zeelandă.",
       ],
       tips: [
         {
@@ -465,7 +465,7 @@ const EN: GuideDoc = {
       id: "accounts-posts",
       title: "Posting accounts",
       body: [
-        "Go to Accounts → Posts. Connect Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, X, Bluesky, and Reddit.",
+        "Go to Accounts → Posts. Connect Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, Bluesky, and Reddit. X is marked Coming soon.",
         "Hit Connect, authorize, done. Facebook asks for a Page, LinkedIn can be a profile or a company page, Pinterest a board, Google Business a location.",
         "Bluesky does not use a normal login: it needs an App Password, not your regular account password. The help link on the card explains how to create one.",
         "You can connect more than one account on the same network. Whatever is connected here is what the assistant can publish to.",
@@ -482,9 +482,9 @@ const EN: GuideDoc = {
       title: "Ads accounts",
       lead: "Posts earn organic reach. Ads pay to be seen. In posty.now both belong — they just connect separately.",
       body: [
-        "Go to Accounts → Ads. Connect Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads, and OpenAI Ads.",
+        "Go to Accounts → Ads. Connect Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, and OpenAI Ads. X Ads is marked Coming soon.",
         "An ads account does not publish to the feed. It unlocks paid campaigns: what is running, what you spend, what you get back. You read that under Statistics → Ads.",
-        "X Ads needs X connected on Accounts → Posts first, then you connect X Ads. OpenAI Ads has no login popup: you paste an API key from ChatGPT Ads Manager. Those ads are cards inside ChatGPT (title, text, image, link), static images only, a fixed campaign budget (minimum $1), and business eligibility — currently the United States, Canada, Australia, and New Zealand.",
+        "OpenAI Ads has no login popup: you paste an API key from ChatGPT Ads Manager. Those ads are cards inside ChatGPT (title, text, image, link), static images only, a fixed campaign budget (minimum $1), and business eligibility — currently the United States, Canada, Australia, and New Zealand.",
       ],
       tips: [
         {

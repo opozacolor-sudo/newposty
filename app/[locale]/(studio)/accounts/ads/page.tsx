@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { AccountCard } from "@/components/studio/account-card";
 import { requireUser } from "@/lib/data";
-import { ADS_PLATFORMS, platformLabel } from "@/lib/platforms";
+import { ADS_PLATFORMS, isConnectDisabled, platformLabel } from "@/lib/platforms";
 
 export default async function AccountsAdsPage({
   searchParams,
@@ -30,6 +30,8 @@ export default async function AccountsAdsPage({
       ? t("adsNeedXFirst")
       : params.error === "openai_key"
         ? t("openaiIntro")
+        : params.error === "coming_soon"
+          ? t("comingSoon")
         : params.error === "oauth_state"
           ? t("oauthState")
           : params.error
@@ -107,6 +109,7 @@ export default async function AccountsAdsPage({
               notConnectedLabel={t("notConnected")}
               connectedLabel={t("statusConnected")}
               disconnectLabel={t("disconnect")}
+              comingSoonLabel={isConnectDisabled(platform.id) ? t("comingSoon") : undefined}
             />
           );
         })}

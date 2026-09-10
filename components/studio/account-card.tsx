@@ -29,6 +29,7 @@ export function AccountCard({
   notConnectedLabel,
   connectedLabel,
   disconnectLabel,
+  comingSoonLabel,
 }: {
   platform: {
     id: string;
@@ -47,6 +48,7 @@ export function AccountCard({
   notConnectedLabel: string;
   connectedLabel: string;
   disconnectLabel: string;
+  comingSoonLabel?: string;
 }) {
   const connected = accounts.length > 0;
   const actionLabel = connected ? anotherLabel : connectLabel;
@@ -63,13 +65,17 @@ export function AccountCard({
         borderLeftColor: connected ? platform.brand : "#E5E5E5",
       }}
     >
-      {newBadge ? (
+      {comingSoonLabel ? (
+        <span className="absolute right-3 top-3 rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[10px] font-medium text-[#6B7280]">
+          {comingSoonLabel}
+        </span>
+      ) : newBadge ? (
         <span className="absolute right-3 top-3 rounded-full bg-[#FF4713] px-2 py-0.5 text-[10px] font-medium text-white">
           {newBadge}
         </span>
       ) : null}
 
-      <div className={`flex items-start justify-between gap-3 ${newBadge ? "pr-10" : ""}`}>
+      <div className={`flex items-start justify-between gap-3 ${comingSoonLabel || newBadge ? "pr-10" : ""}`}>
         <div className="flex min-w-0 items-start gap-3">
           <PlatformIcon platform={platform} connected={connected} />
           <div className="min-w-0">
@@ -78,7 +84,7 @@ export function AccountCard({
             </h2>
           </div>
         </div>
-        {platform.id === "bluesky" ? (
+        {comingSoonLabel ? null : platform.id === "bluesky" ? (
           <BlueskyConnectButton label={actionLabel} />
         ) : platform.id === "openaiads" ? (
           <OpenAIAdsConnectButton label={actionLabel} />

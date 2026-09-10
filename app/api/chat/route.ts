@@ -26,7 +26,7 @@ import type {
 } from "@/lib/chat-post/types";
 import { getAnthropicApiKey } from "@/lib/env";
 import { clockSnapshot, localeFromRequest } from "@/lib/locale-time";
-import { isAdsPlatformId } from "@/lib/platforms";
+import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 
@@ -183,7 +183,10 @@ export async function POST(request: Request) {
     .eq("is_active", true);
 
   const posting = (accounts ?? []).filter(
-    (account) => !isAdsPlatformId(String(account.platform)) && typeof account.zernio_account_id === "string",
+    (account) =>
+      !isAdsPlatformId(String(account.platform)) &&
+      !isConnectDisabled(String(account.platform)) &&
+      typeof account.zernio_account_id === "string",
   ) as Array<{
     id: string;
     platform: string;
