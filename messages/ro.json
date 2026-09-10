@@ -239,7 +239,8 @@
     "openMenu": "Deschide meniul",
     "closeMenu": "Închide meniul",
     "localTime": "Ora locală",
-    "guide": "Manual"
+    "guide": "Manual",
+    "contact": "Contact"
   },
   "Billing": {
     "deleteTitle": "Ștergi acest cont?",

@@ -5,6 +5,7 @@ import {
   BookOpen,
   ChevronDown,
   FileText,
+  Mail,
   Megaphone,
   Menu,
   MessageCircle,
@@ -60,6 +61,10 @@ export function StudioSidebar({ email }: { email: string }) {
         <Link href="/help" className={itemClass(pathname === "/help" || pathname.startsWith("/help/"))}>
           <BookOpen size={18} />
           {t("guide")}
+        </Link>
+        <Link href="/contact" className={itemClass(pathname === "/contact")}>
+          <Mail size={18} />
+          {t("contact")}
         </Link>
 
         <div>

@@ -7,7 +7,7 @@ import { btnSolid } from "./styles";
 const fieldClass =
   "mt-2 w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-[#FF4713]";
 
-export function ContactForm() {
+export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
   const t = useTranslations("Contact");
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error" | "invalid">(
@@ -61,6 +61,7 @@ export function ContactForm() {
           type="email"
           required
           maxLength={320}
+          defaultValue={defaultEmail}
           className={fieldClass}
         />
       </label>

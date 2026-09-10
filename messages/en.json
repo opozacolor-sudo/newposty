@@ -239,7 +239,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "localTime": "Local time",
-    "guide": "Guide"
+    "guide": "Guide",
+    "contact": "Contact"
   },
   "Billing": {
     "deleteTitle": "Delete this account?",

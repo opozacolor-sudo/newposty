@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 type DialogKind = "delete" | null;
 
@@ -60,6 +61,13 @@ export function AccountMenu({ email }: { email: string }) {
       {open ? (
         <div className="absolute bottom-full left-0 right-0 z-20 mb-2 rounded-2xl border border-[#E5E5E5] bg-white p-2 shadow-lg">
           <p className="truncate px-3 py-2 text-xs text-[#6B7280]">{email}</p>
+          <Link
+            href="/contact"
+            className="block w-full rounded-xl px-3 py-2 text-left text-sm text-[#1A1A1A] hover:bg-[#F5F5F5]"
+            onClick={() => setOpen(false)}
+          >
+            {tNav("contact")}
+          </Link>
           <form
             action="/api/logout"
             method="post"
