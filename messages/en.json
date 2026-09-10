@@ -81,8 +81,14 @@
   },
   "About": {
     "title": "About us",
-    "p1": "posty.now is an AI assistant for social media. You talk, it drafts, schedules, and publishes — without bouncing between apps.",
-    "p2": "One studio for captions, promotions, analytics, and timing. Built to feel quiet and fast, not crowded."
+    "p1": "posty.now exists to give you back the most precious resource you have: time. Instead of losing hours every week logging into Instagram, TikTok, Facebook, LinkedIn, or Pinterest, you do it all from one place — in a few minutes.",
+    "bulkTitle": "Add up to 30 pieces of content in one go",
+    "bulkBody": "Upload a full month of content in a few seconds.",
+    "timeTitle": "We know when to post",
+    "timeBody": "You don’t have to guess peak hours. Our algorithm picks the best time for each network, so your content gets the most impact.",
+    "studioTitle": "A complete studio with an AI assistant",
+    "studioBody": "You talk or dictate exactly what you want. The assistant drafts, schedules, and publishes.",
+    "close": "What used to take a whole day, you now do in a single minute."
   },
   "Contact": {
     "title": "Contact",

@@ -81,8 +81,14 @@
   },
   "About": {
     "title": "Despre noi",
-    "p1": "posty.now este un asistent AI pentru social media. Tu vorbești, el redactează, programează și publică — fără să sari între aplicații.",
-    "p2": "Un singur studio pentru texte, promovări, analize și timing. Construit să se simtă liniștit și rapid, nu aglomerat."
+    "p1": "posty.now a apărut din dorința de a-ți reda cea mai prețioasă resursă: timpul. În loc să pierzi ore în fiecare săptămână conectându-te pe Instagram, TikTok, Facebook, LinkedIn sau Pinterest, faci totul dintr-un singur loc, în doar câteva minute.",
+    "bulkTitle": "Adaugi până la 30 de materiale dintr-o singură mișcare",
+    "bulkBody": "Încarci tot conținutul pentru o lună întreagă în câteva secunde.",
+    "timeTitle": "Noi știm când să postăm",
+    "timeBody": "Nu trebuie să ghicești orele de vârf. Algoritmul nostru alege automat cea mai bună oră pentru fiecare rețea în parte, astfel încât conținutul tău să aibă impact maxim.",
+    "studioTitle": "Un studio complet cu Asistent AI",
+    "studioBody": "Vorbești sau îi dictezi asistentului exact ce vrei, iar el redactează, programează și distribuie.",
+    "close": "Faci într-un singur minut ce înainte îți lua o zi întreagă."
   },
   "Contact": {
     "title": "Contact",
