@@ -26,6 +26,7 @@ import type {
 } from "@/lib/chat-post/types";
 import { getAnthropicApiKey } from "@/lib/env";
 import { clockSnapshot, localeFromRequest } from "@/lib/locale-time";
+import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -48,11 +49,16 @@ export async function GET(request: Request) {
   const locale = localeFromRequest(request);
   const url = new URL(request.url);
 
+  const workspace = await loadWorkspace(supabase, user.id);
+
   if (url.searchParams.get("list") === "1") {
-    const { data, error } = await supabase
-      .from("conversations")
-      .select("id, title, updated_at, created_at")
-      .eq("user_id", user.id)
+    const { data, error } = await applyClientScope(
+      supabase
+        .from("conversations")
+        .select("id, title, updated_at, created_at")
+        .eq("user_id", user.id),
+      workspace,
+    )
       .order("updated_at", { ascending: false })
       .limit(80);
     if (error) {
@@ -63,16 +69,14 @@ export async function GET(request: Request) {
 
   const requestedId = url.searchParams.get("conversationId");
   const conversationQuery = requestedId
-    ? supabase
-        .from("conversations")
-        .select("*")
-        .eq("id", requestedId)
-        .eq("user_id", user.id)
-        .maybeSingle()
-    : supabase
-        .from("conversations")
-        .select("*")
-        .eq("user_id", user.id)
+    ? applyClientScope(
+        supabase.from("conversations").select("*").eq("id", requestedId).eq("user_id", user.id),
+        workspace,
+      ).maybeSingle()
+    : applyClientScope(
+        supabase.from("conversations").select("*").eq("user_id", user.id),
+        workspace,
+      )
         .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -112,7 +116,11 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await supabase.from("conversations").delete().eq("user_id", user.id);
+  const workspace = await loadWorkspace(supabase, user.id);
+  if (workspace.isTeam && !workspace.clientId) {
+    return NextResponse.json({ error: "NEED_CLIENT" }, { status: 400 });
+  }
+  await applyClientScope(supabase.from("conversations").delete().eq("user_id", user.id), workspace);
 
   const { data: created, error } = await supabase
     .from("conversations")
@@ -122,6 +130,7 @@ export async function DELETE() {
       skip_confirmation: false,
       pending_intent: null,
       pending_intent_at: null,
+      client_id: workspace.clientId,
     })
     .select("id")
     .single();
@@ -170,19 +179,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
   }
 
+  const workspace = await loadWorkspace(supabase, user.id);
+  if (workspace.isTeam && !workspace.clientId) {
+    return NextResponse.json({ error: "NEED_CLIENT" }, { status: 400 });
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
 
-  const { data: accounts } = await supabase
-    .from("social_accounts")
-    .select("id, platform, username, display_name, zernio_account_id")
-    .eq("user_id", user.id)
-    .eq("is_active", true);
+  const { data: accountRows } = await applyClientScope(
+    supabase
+      .from("social_accounts")
+      .select("id, platform, username, display_name, zernio_account_id")
+      .eq("user_id", user.id)
+      .eq("is_active", true),
+    workspace,
+  );
 
-  const posting = (accounts ?? []).filter(
+  const posting = asRows<{
+    id: string;
+    platform: string;
+    username: string | null;
+    display_name: string | null;
+    zernio_account_id: string | null;
+  }>(accountRows).filter(
     (account) =>
       !isAdsPlatformId(String(account.platform)) &&
       !isConnectDisabled(String(account.platform)) &&
@@ -202,6 +225,7 @@ export async function POST(request: Request) {
       .insert({
         user_id: user.id,
         title: text.slice(0, 72),
+        client_id: workspace.clientId,
       })
       .select("id, skip_confirmation, pending_intent, pending_intent_at")
       .single();
@@ -211,12 +235,14 @@ export async function POST(request: Request) {
     conversationId = created.id as string;
   }
 
-  const { data: conversation } = await supabase
-    .from("conversations")
-    .select("id, skip_confirmation, pending_intent, pending_intent_at")
-    .eq("id", conversationId)
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { data: conversation } = await applyClientScope(
+    supabase
+      .from("conversations")
+      .select("id, skip_confirmation, pending_intent, pending_intent_at")
+      .eq("id", conversationId)
+      .eq("user_id", user.id),
+    workspace,
+  ).maybeSingle();
   if (!conversation) {
     return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
   }
@@ -619,8 +645,14 @@ async function runExecution(input: {
     for (const target of action.platforms) {
       const result = results.find((item) => item.platform === target.platform && item.handle === target.handle);
       if (!result || result.status === "error") continue;
+      const { data: conversationRow } = await input.supabase
+        .from("conversations")
+        .select("client_id")
+        .eq("id", input.conversationId)
+        .maybeSingle();
       await input.supabase.from("posts").insert({
         user_id: input.userId,
+        client_id: conversationRow?.client_id ?? null,
         content: target.caption,
         media: action.media,
         status: action.mode === "schedule" ? "scheduled" : "publishing",

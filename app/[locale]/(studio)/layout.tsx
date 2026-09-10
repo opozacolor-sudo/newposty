@@ -1,6 +1,8 @@
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { StudioChrome } from "@/components/studio/chrome";
+import { TeamGate } from "@/components/studio/team-gate";
+import { loadWorkspace } from "@/lib/clients";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -20,5 +22,16 @@ export default async function StudioLayout({
     throw new Error("Unauthorized");
   }
 
-  return <StudioChrome email={user.email ?? ""}>{children}</StudioChrome>;
+  const workspace = await loadWorkspace(supabase, user.id);
+
+  return (
+    <StudioChrome
+      email={user.email ?? ""}
+      accountKind={workspace.kind}
+      clients={workspace.clients}
+      selectedClientId={workspace.clientId}
+    >
+      <TeamGate needsClient={workspace.isTeam && !workspace.clientId}>{children}</TeamGate>
+    </StudioChrome>
+  );
 }

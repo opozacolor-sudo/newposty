@@ -18,7 +18,9 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { BrandLogo } from "@/components/marketing/brand-logo";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { AccountMenu } from "@/components/studio/account-menu";
+import { ClientSwitcher } from "@/components/studio/client-switcher";
 import { LocaleClock } from "@/components/studio/locale-clock";
+import type { ClientRow } from "@/lib/clients";
 
 function itemClass(active: boolean) {
   return `flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition ${
@@ -28,7 +30,17 @@ function itemClass(active: boolean) {
   }`;
 }
 
-export function StudioSidebar({ email }: { email: string }) {
+export function StudioSidebar({
+  email,
+  accountKind = "individual",
+  clients = [],
+  selectedClientId = null,
+}: {
+  email: string;
+  accountKind?: "individual" | "team";
+  clients?: ClientRow[];
+  selectedClientId?: string | null;
+}) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const inStats = pathname.startsWith("/dashboard");
@@ -131,9 +143,12 @@ export function StudioSidebar({ email }: { email: string }) {
       </nav>
 
       <div className="mt-4 shrink-0 space-y-3 border-t border-[#E5E5E5] pt-4">
+        {accountKind === "team" ? (
+          <ClientSwitcher clients={clients} selectedId={selectedClientId} />
+        ) : null}
         <LocaleClock />
         <LocaleSwitch variant="names" />
-        <AccountMenu email={email} />
+        <AccountMenu email={email} accountKind={accountKind} />
       </div>
     </>
   );

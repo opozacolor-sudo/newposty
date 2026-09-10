@@ -4,6 +4,7 @@ import { resolveManageAction, savePendingAction } from "@/lib/chat-post/store";
 import { userTimezone } from "@/lib/chat-post/timezone";
 import type { ChatMedia, ManageAction, ToolPostAction } from "@/lib/chat-post/types";
 import { getAnthropicApiKey } from "@/lib/env";
+import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { isAdsPlatformId } from "@/lib/platforms";
 import { createServerSupabase } from "@/lib/supabase/server";
 
@@ -27,22 +28,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "conversationId is required" }, { status: 400 });
   }
 
-  const { data: conversation } = await supabase
-    .from("conversations")
-    .select("id, skip_confirmation")
-    .eq("id", body.conversationId)
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const workspace = await loadWorkspace(supabase, user.id);
+  const { data: conversation } = await applyClientScope(
+    supabase
+      .from("conversations")
+      .select("id, skip_confirmation")
+      .eq("id", body.conversationId)
+      .eq("user_id", user.id),
+    workspace,
+  ).maybeSingle();
   if (!conversation) return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-  const { data: accounts } = await supabase
-    .from("social_accounts")
-    .select("id, platform, username, display_name, zernio_account_id")
-    .eq("user_id", user.id)
-    .eq("is_active", true);
+  const { data: accounts } = await applyClientScope(
+    supabase
+      .from("social_accounts")
+      .select("id, platform, username, display_name, zernio_account_id")
+      .eq("user_id", user.id)
+      .eq("is_active", true),
+    workspace,
+  );
 
-  const posting = (accounts ?? []).filter(
+  const posting = asRows<{
+    id: string;
+    platform: string;
+    username: string | null;
+    display_name: string | null;
+    zernio_account_id: string | null;
+  }>(accounts).filter(
     (account) => !isAdsPlatformId(String(account.platform)) && typeof account.zernio_account_id === "string",
   ) as Array<{
     id: string;

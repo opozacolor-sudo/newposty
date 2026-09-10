@@ -1,6 +1,7 @@
 import { computeLifetimeRefund } from "@/lib/billing";
+import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { createAdminSupabase } from "@/lib/supabase/admin";
-import { getRequestAuth } from "@/lib/supabase/server";
+import { createServerSupabase, getRequestAuth } from "@/lib/supabase/server";
 
 export type BillingPurchase = {
   id: string;
@@ -31,28 +32,44 @@ export async function countActiveSocialAccounts(userId: string) {
   return count ?? 0;
 }
 
-export async function listActiveSocialAccounts(userId: string) {
+export type ActiveSocialAccount = {
+  id: string;
+  platform: string;
+  username: string | null;
+  display_name: string | null;
+  zernio_account_id: string | null;
+};
+
+export async function listActiveSocialAccounts(userId: string): Promise<ActiveSocialAccount[]> {
+  const supabase = await createServerSupabase();
+  const workspace = await loadWorkspace(supabase, userId);
   const admin = createAdminSupabase();
-  const { data, error } = await admin
-    .from("social_accounts")
-    .select("id, platform, username, display_name, zernio_account_id")
-    .eq("user_id", userId)
-    .eq("is_active", true)
-    .order("connected_at", { ascending: false });
+  const { data, error } = await applyClientScope(
+    admin
+      .from("social_accounts")
+      .select("id, platform, username, display_name, zernio_account_id")
+      .eq("user_id", userId)
+      .eq("is_active", true),
+    workspace,
+  ).order("connected_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  return asRows<ActiveSocialAccount>(data);
 }
 
 export async function getOwnedSocialAccount(userId: string, accountId: string) {
+  const supabase = await createServerSupabase();
+  const workspace = await loadWorkspace(supabase, userId);
   const admin = createAdminSupabase();
-  const { data } = await admin
-    .from("social_accounts")
-    .select("id, platform, username, display_name, zernio_account_id")
-    .eq("user_id", userId)
-    .eq("id", accountId)
-    .eq("is_active", true)
-    .maybeSingle();
-  return data;
+  const { data } = await applyClientScope(
+    admin
+      .from("social_accounts")
+      .select("id, platform, username, display_name, zernio_account_id")
+      .eq("user_id", userId)
+      .eq("id", accountId)
+      .eq("is_active", true),
+    workspace,
+  ).maybeSingle();
+  return (data as ActiveSocialAccount | null) ?? null;
 }
 
 export async function getZernioProfileId(userId: string) {

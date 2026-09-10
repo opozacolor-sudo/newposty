@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getZernioApiKey } from "@/lib/env";
@@ -20,10 +21,11 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("user_id", user.id)
+  const workspace = await loadWorkspace(supabase, user.id);
+  const { data, error } = await applyClientScope(
+    supabase.from("posts").select("*").eq("user_id", user.id),
+    workspace,
+  )
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -72,11 +74,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Pick at least one connected account." }, { status: 400 });
   }
 
-  const { data: accounts, error: accountError } = await supabase
-    .from("social_accounts")
-    .select("*")
-    .eq("user_id", user.id)
-    .in("id", accountIds);
+  const workspace = await loadWorkspace(supabase, user.id);
+  if (workspace.isTeam && !workspace.clientId) {
+    return NextResponse.json({ error: "NEED_CLIENT" }, { status: 400 });
+  }
+  const { data: accounts, error: accountError } = await applyClientScope(
+    supabase.from("social_accounts").select("*").eq("user_id", user.id).in("id", accountIds),
+    workspace,
+  );
 
   if (accountError) {
     return NextResponse.json({ error: accountError.message }, { status: 500 });
@@ -99,7 +104,7 @@ export async function POST(request: Request) {
 
   const zernioPost = await createPost({
     content,
-    platforms: accounts.map((account) => ({
+    platforms: asRows<{ platform: string; zernio_account_id: string }>(accounts).map((account) => ({
       platform: account.platform as string,
       accountId: account.zernio_account_id as string,
     })),
@@ -114,6 +119,7 @@ export async function POST(request: Request) {
     .from("posts")
     .insert({
       user_id: user.id,
+      client_id: workspace.clientId,
       content,
       media: mediaItems,
       status,

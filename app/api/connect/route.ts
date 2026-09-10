@@ -8,6 +8,7 @@ import {
   isConnectDisabled,
   isConnectPlatformId,
 } from "@/lib/platforms";
+import { loadWorkspace } from "@/lib/clients";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
 
@@ -24,16 +25,19 @@ async function parentAccountId(
   supabase: Awaited<ReturnType<typeof createServerSupabase>>,
   userId: string,
   platform: string,
+  clientId: string | null,
+  isTeam: boolean,
 ) {
-  const { data } = await supabase
+  let query = supabase
     .from("social_accounts")
     .select("zernio_account_id")
     .eq("user_id", userId)
     .eq("platform", platform)
     .eq("is_active", true)
     .order("connected_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(1);
+  query = isTeam ? query.eq("client_id", clientId ?? "00000000-0000-0000-0000-000000000000") : query.is("client_id", null);
+  const { data } = await query.maybeSingle();
   return typeof data?.zernio_account_id === "string" ? data.zernio_account_id : null;
 }
 
@@ -85,6 +89,14 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login", getSiteUrl()));
   }
 
+  const workspace = await loadWorkspace(supabase, user.id);
+  if (workspace.isTeam && !workspace.clientId) {
+    if (json) return NextResponse.json({ error: "NEED_CLIENT" }, { status: 400 });
+    const target = accountsHome(ads);
+    target.searchParams.set("error", "need_client");
+    return NextResponse.redirect(target);
+  }
+
   try {
     const profile = await ensureZernioProfile(user.id, user.email);
     if (!profile.zernio_profile_id) {
@@ -108,6 +120,8 @@ export async function GET(request: Request) {
           supabase,
           user.id,
           adsPlatform.parentPlatform,
+          workspace.clientId,
+          workspace.isTeam,
         );
         const required =
           "parentRequired" in adsPlatform && adsPlatform.parentRequired === true;
@@ -134,7 +148,7 @@ export async function GET(request: Request) {
       });
 
       if ("alreadyConnected" in result) {
-        await syncSocialAccounts(user.id, profile.zernio_profile_id);
+        await syncSocialAccounts(user.id, profile.zernio_profile_id, workspace.clientId);
         if (json) {
           return NextResponse.json({ alreadyConnected: true, platform });
         }
@@ -145,7 +159,7 @@ export async function GET(request: Request) {
       }
 
       if (json) return NextResponse.json({ authUrl: result.authUrl, state });
-      return withOAuthStateCookie(NextResponse.redirect(result.authUrl), state);
+      return withOAuthStateCookie(NextResponse.redirect(result.authUrl), state, workspace.clientId);
     }
 
     const authUrl = await getConnectUrl({
@@ -155,7 +169,7 @@ export async function GET(request: Request) {
     });
 
     if (json) return NextResponse.json({ authUrl, state });
-    return withOAuthStateCookie(NextResponse.redirect(authUrl), state);
+    return withOAuthStateCookie(NextResponse.redirect(authUrl), state, workspace.clientId);
   } catch {
     if (json) return NextResponse.json({ error: "Connect failed" }, { status: 500 });
     const target = accountsHome(ads);

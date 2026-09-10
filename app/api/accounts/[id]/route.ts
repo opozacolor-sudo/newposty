@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAccountUser } from "@/lib/account-server";
+import { applyClientScope, loadWorkspace } from "@/lib/clients";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { createServerSupabase } from "@/lib/supabase/server";
 import { disconnectAccount, ZernioError } from "@/lib/zernio";
 
 export const dynamic = "force-dynamic";
@@ -12,13 +14,13 @@ export async function DELETE(_request: Request, { params }: Params) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
+  const supabase = await createServerSupabase();
+  const workspace = await loadWorkspace(supabase, user.id);
   const admin = createAdminSupabase();
-  const { data: account } = await admin
-    .from("social_accounts")
-    .select("id, zernio_account_id")
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { data: account } = await applyClientScope(
+    admin.from("social_accounts").select("id, zernio_account_id").eq("id", id).eq("user_id", user.id),
+    workspace,
+  ).maybeSingle();
   if (!account) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
 
   try {

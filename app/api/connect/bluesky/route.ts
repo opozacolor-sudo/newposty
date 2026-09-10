@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { loadWorkspace } from "@/lib/clients";
 import { ensureZernioProfile, syncSocialAccounts } from "@/lib/data";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { connectBlueskyCredentials } from "@/lib/zernio";
@@ -10,6 +11,10 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const workspace = await loadWorkspace(supabase, user.id);
+  if (workspace.isTeam && !workspace.clientId) {
+    return NextResponse.json({ error: "NEED_CLIENT" }, { status: 400 });
   }
 
   const body = (await request.json()) as {
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
       appPassword,
       profileId: profile.zernio_profile_id,
     });
-    await syncSocialAccounts(user.id, profile.zernio_profile_id);
+    await syncSocialAccounts(user.id, profile.zernio_profile_id, workspace.clientId);
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json({ error: "Bluesky connect failed" }, { status: 500 });

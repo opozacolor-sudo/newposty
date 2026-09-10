@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/marketing/contact-form";
 import { MarketingShell } from "@/components/marketing/shell";
 import { StudioChrome } from "@/components/studio/chrome";
+import { loadWorkspace } from "@/lib/clients";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,17 @@ export default async function ContactPage() {
   );
 
   if (user) {
-    return <StudioChrome email={user.email ?? ""}>{content}</StudioChrome>;
+    const workspace = await loadWorkspace(supabase, user.id);
+    return (
+      <StudioChrome
+        email={user.email ?? ""}
+        accountKind={workspace.kind}
+        clients={workspace.clients}
+        selectedClientId={workspace.clientId}
+      >
+        {content}
+      </StudioChrome>
+    );
   }
 
   return <MarketingShell>{content}</MarketingShell>;

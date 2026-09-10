@@ -122,9 +122,15 @@ export async function POST(request: Request) {
     results,
   });
 
+  const { data: conversationRow } = await supabase
+    .from("conversations")
+    .select("client_id")
+    .eq("id", claimed.row.conversation_id)
+    .maybeSingle();
   await persistDashboardPosts({
     supabase,
     userId: user.id,
+    clientId: conversationRow?.client_id ?? null,
     resolved,
     results,
   });
@@ -159,6 +165,7 @@ export async function POST(request: Request) {
 async function persistDashboardPosts(input: {
   supabase: Awaited<ReturnType<typeof createServerSupabase>>;
   userId: string;
+  clientId?: string | null;
   resolved: ResolvedAction;
   results: Awaited<ReturnType<typeof executeResolvedAction>>;
 }) {
@@ -182,6 +189,7 @@ async function persistDashboardPosts(input: {
       if (result.status === "error") continue;
       rows.push({
         user_id: input.userId,
+        client_id: input.clientId ?? null,
         content: target.caption,
         media: action.media,
         status: action.mode === "schedule" ? "scheduled" : "publishing",

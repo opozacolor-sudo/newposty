@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PlatformAnalyticsDetail } from "@/components/studio/platform-analytics-detail";
+import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { requireUser } from "@/lib/data";
 import { PLATFORMS, isPlatformId } from "@/lib/platforms";
 
@@ -17,17 +18,25 @@ export default async function DashboardPlatformPage({
   if (!visual) notFound();
 
   const { supabase, user } = await requireUser();
-  let query = supabase
-    .from("social_accounts")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("platform", platform)
-    .eq("is_active", true)
-    .order("connected_at", { ascending: false });
+  const workspace = await loadWorkspace(supabase, user.id);
+  let query = applyClientScope(
+    supabase
+      .from("social_accounts")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("platform", platform)
+      .eq("is_active", true),
+    workspace,
+  ).order("connected_at", { ascending: false });
   if (account) query = query.eq("id", account);
 
-  const { data: accounts } = await query;
-  const selected = accounts?.[0];
+  const { data } = await query;
+  const accounts = asRows<{
+    id: string;
+    username: string | null;
+    display_name: string | null;
+  }>(data);
+  const selected = accounts[0];
   const accountLabel = selected
     ? selected.username
       ? `@${String(selected.username).replace(/^@/, "")}`

@@ -13,6 +13,7 @@ export type Profile = {
   timezone: string;
   zernio_profile_id: string | null;
   lifetime_access: boolean;
+  account_kind?: "individual" | "team";
 };
 
 export async function requireUser() {
@@ -83,11 +84,23 @@ export async function ensureZernioProfile(userId: string, email: string | undefi
   throw new Error("Could not save profile");
 }
 
-export async function syncSocialAccounts(userId: string, zernioProfileId: string) {
+export async function syncSocialAccounts(
+  userId: string,
+  zernioProfileId: string,
+  clientId?: string | null,
+) {
   const supabase = createAdminSupabase();
   const accounts = await listAccounts(zernioProfileId);
+  const { data: existing } = await supabase
+    .from("social_accounts")
+    .select("zernio_account_id, client_id")
+    .eq("user_id", userId);
+  const clientByZernio = new Map(
+    (existing ?? []).map((row) => [String(row.zernio_account_id), row.client_id as string | null]),
+  );
 
   for (const account of accounts) {
+    const previousClient = clientByZernio.get(account._id) ?? null;
     const { error } = await supabase.from("social_accounts").upsert(
       {
         user_id: userId,
@@ -97,6 +110,7 @@ export async function syncSocialAccounts(userId: string, zernioProfileId: string
         display_name: account.displayName ?? null,
         avatar_url: account.profilePicture ?? null,
         is_active: account.isActive !== false,
+        client_id: previousClient ?? clientId ?? null,
       },
       { onConflict: "user_id,zernio_account_id" },
     );

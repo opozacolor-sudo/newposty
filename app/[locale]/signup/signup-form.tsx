@@ -13,6 +13,7 @@ export default function SignupForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [accountKind, setAccountKind] = useState<"individual" | "team">("individual");
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -31,7 +32,10 @@ export default function SignupForm() {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${getPublicSiteUrl()}/auth/callback` },
+        options: {
+          emailRedirectTo: `${getPublicSiteUrl()}/auth/callback`,
+          data: { account_kind: accountKind },
+        },
       });
       if (signUpError) {
         setError(signUpError.message);
@@ -61,6 +65,26 @@ export default function SignupForm() {
       <h1 className="mt-8 font-serif text-4xl">{t("signupTitle")}</h1>
       <p className="mt-2 text-sm text-muted">{t("signupSubtitle")}</p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
+        <fieldset>
+          <legend className="text-sm">{t("accountKind")}</legend>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {(["individual", "team"] as const).map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => setAccountKind(kind)}
+                className={`rounded-2xl border px-3 py-3 text-left text-sm ${
+                  accountKind === kind
+                    ? "border-[#FF4713] bg-[#FF4713]/5 text-[#1A1A1A]"
+                    : "border-line bg-card text-muted"
+                }`}
+              >
+                <span className="block font-medium text-[#1A1A1A]">{t(`${kind}Label`)}</span>
+                <span className="mt-1 block text-xs leading-4">{t(`${kind}Hint`)}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
         <label className="block text-sm">
           {t("email")}
           <input

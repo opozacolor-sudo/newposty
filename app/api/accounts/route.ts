@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { applyClientScope, loadWorkspace } from "@/lib/clients";
 import { ensureZernioProfile, syncSocialAccounts } from "@/lib/data";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { createServerSupabase } from "@/lib/supabase/server";
 import { getRequestAuth } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -15,13 +17,13 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const supabase = await createServerSupabase();
+  const workspace = await loadWorkspace(supabase, user.id);
   const admin = createAdminSupabase();
-  const { data, error } = await admin
-    .from("social_accounts")
-    .select(ACCOUNT_FIELDS)
-    .eq("user_id", user.id)
-    .eq("is_active", true)
-    .order("connected_at", { ascending: false });
+  const { data, error } = await applyClientScope(
+    admin.from("social_accounts").select(ACCOUNT_FIELDS).eq("user_id", user.id).eq("is_active", true),
+    workspace,
+  ).order("connected_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: "Could not load accounts" }, { status: 500 });
@@ -41,10 +43,19 @@ export async function POST() {
     if (!profile.zernio_profile_id) {
       throw new Error("Missing Zernio profile");
     }
-    const accounts = await syncSocialAccounts(user.id, profile.zernio_profile_id);
+    const supabase = await createServerSupabase();
+    const workspace = await loadWorkspace(supabase, user.id);
+    const accounts = await syncSocialAccounts(
+      user.id,
+      profile.zernio_profile_id,
+      workspace.clientId,
+    );
+    const scoped = workspace.isTeam
+      ? accounts.filter((account) => account.client_id === workspace.clientId)
+      : accounts.filter((account) => !account.client_id);
     return NextResponse.json(
       {
-        accounts: accounts.map((account) => ({
+        accounts: scoped.map((account) => ({
           id: account.id,
           platform: account.platform,
           username: account.username,
