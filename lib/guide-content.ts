@@ -296,7 +296,7 @@ const RO: GuideDoc = {
         "Atașează până la 30 de fișiere, în ordinea în care vrei să iasă. Spune „începând de mâine, câte una pe zi, pe fiecare rețea, la cea mai bună oră”. Poți amesteca poze și video.",
         "Implicit e cross, nu copy-paste. În aceeași zi, fiecare rețea primește alt fișier. Facebook poate lua media 1, X media 2, TikTok media 3. Același material nu apare pe două rețele în aceeași zi. Pe parcursul lunii fișierele rotează, ca luna să rămână plină.",
         "Dacă vrei același fișier pe toate rețelele în ziua aia, trebuie să o spui: „același pe toate”. Altfel rămâne cross.",
-        "TikTok și YouTube sar pozele — nu primesc foto. Video-urile da. În cardul de confirmare vezi, pe zile, ce rețea ce fișier ia. Seriile mari cer confirmare; nu sar peste card.",
+        "TikTok ia și poze (mod foto / carusel), și video. YouTube sare pozele — nu primește foto. În cardul de confirmare vezi, pe zile, ce rețea ce fișier ia. Seriile mari cer confirmare; nu sar peste card.",
       ],
       examples: [
         "Începând de mâine, câte una pe zi, pe fiecare rețea, la cea mai bună oră.",
@@ -335,6 +335,7 @@ const RO: GuideDoc = {
       body: [
         "Reel există pe Instagram, nu pe TikTok. Story există pe Instagram (și Facebook), nu pe TikTok. „Postează pe Instagram reel și pe TikTok” = Reel pe Instagram + video normal pe TikTok.",
         "„Instagram ca story și pe TikTok” = Story pe Instagram + video TikTok. „Ca video pe Instagram și TikTok” = Instagram publică video-ul ca Reel automat, TikTok ca video.",
+        "Pe TikTok poți și poze (o poză sau carusel), nu doar video.",
         "Spune formatul doar pe rețeaua care îl are. Nu cere reel pe YouTube sau story pe LinkedIn.",
         "Instagram, TikTok, YouTube, Pinterest cer media. LinkedIn, X, Threads, Bluesky, Facebook, Reddit pot și text. X taie la 280 de caractere. Nu combina imagine și video în același tweet.",
       ],
@@ -681,7 +682,7 @@ const EN: GuideDoc = {
         "Attach up to 30 files, in the order they should go out. Say “starting tomorrow, one a day, on every network, at the best time”. Photos and videos can mix.",
         "The default is cross, not copy-paste. On the same day, each network gets a different file. Facebook might get media 1, X media 2, TikTok media 3. The same file never goes out on two networks that day. Across the month the files rotate so the calendar stays full.",
         "If you want the same file on every network that day, say so: “the same on all of them”. Otherwise it stays cross.",
-        "TikTok and YouTube skip photos — they will not get stills. Videos are fine. The confirmation card shows, per day, which network gets which file. Large series always ask for confirmation; they will not skip the card.",
+        "TikTok takes photos (photo mode / carousel) and video. YouTube skips photos — it will not get stills. The confirmation card shows, per day, which network gets which file. Large series always ask for confirmation; they will not skip the card.",
       ],
       examples: [
         "Starting tomorrow, one a day, on every network, at the best time.",
@@ -720,6 +721,7 @@ const EN: GuideDoc = {
       body: [
         "Reel exists on Instagram, not TikTok. Story exists on Instagram (and Facebook), not TikTok. “Post on Instagram as a reel and on TikTok” = Instagram Reel + a normal TikTok video.",
         "“Instagram as a story and TikTok” = Instagram Story + TikTok video. “As a video on Instagram and TikTok” = Instagram publishes the video as a Reel automatically, TikTok as a video.",
+        "TikTok also takes stills (one photo or a carousel), not only video.",
         "Name a format only on the network that has it. Do not ask for a reel on YouTube or a story on LinkedIn.",
         "Instagram, TikTok, YouTube, and Pinterest require media. LinkedIn, X, Threads, Bluesky, Facebook, and Reddit can be text. X trims at 280 characters. Do not mix image and video in the same tweet.",
       ],

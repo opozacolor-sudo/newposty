@@ -125,7 +125,10 @@ function tiktokCanPostMore(info: TikTokCreatorInfo) {
   return true;
 }
 
-async function tiktokSettingsFor(accountId: string): Promise<{
+async function tiktokSettingsFor(
+  accountId: string,
+  mediaType: "video" | "photo" = "video",
+): Promise<{
   canPostMore: boolean;
   settings: TikTokSettings;
 }> {
@@ -138,7 +141,7 @@ async function tiktokSettingsFor(accountId: string): Promise<{
     express_consent_given: true,
   };
   try {
-    const info = await getTikTokCreatorInfo(accountId, "video");
+    const info = await getTikTokCreatorInfo(accountId, mediaType);
     const levels = privacyLevelValues(info);
     const interactions = info.postingLimits?.interactionSettings;
     return {
@@ -302,7 +305,9 @@ async function publishOne(input: {
   try {
     let tiktokSettings: TikTokSettings | undefined;
     if (input.target.platform === "tiktok") {
-      const tiktok = await tiktokSettingsFor(input.target.zernioAccountId);
+      const tiktokMediaType =
+        input.media.length > 0 && input.media.every((item) => item.type === "image") ? "photo" : "video";
+      const tiktok = await tiktokSettingsFor(input.target.zernioAccountId, tiktokMediaType);
       if (!tiktok.canPostMore) {
         return {
           ...meta,

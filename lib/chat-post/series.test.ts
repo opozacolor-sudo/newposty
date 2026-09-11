@@ -63,7 +63,7 @@ test("cross plan does not give TikTok a photo", () => {
   assert.ok(day0.some((item) => item.platform === "tiktok" && item.mediaId === "clip"));
 });
 
-test("resolve expands one photo per day and skips TikTok on images", async () => {
+test("resolve expands one photo per day including TikTok", async () => {
   const { resolveCreateActions } = await import("./resolve");
   const now = new Date("2026-08-25T07:00:00.000Z");
   const media: ChatMedia[] = [
@@ -105,7 +105,14 @@ test("resolve expands one photo per day and skips TikTok on images", async () =>
   assert.deepEqual([...days].sort(), [0, 1, 2]);
   assert.ok(result.resolved.actions.every((action) => action.media.length === 1));
   assert.ok(
-    result.resolved.actions.every((action) => action.platforms.every((platform) => platform.platform === "instagram")),
+    result.resolved.actions.some((action) =>
+      action.platforms.some((platform) => platform.platform === "tiktok"),
+    ),
+  );
+  assert.ok(
+    result.resolved.actions.some((action) =>
+      action.platforms.some((platform) => platform.platform === "instagram"),
+    ),
   );
   for (const day of [0, 1, 2]) {
     const ids: string[] = result.resolved.actions

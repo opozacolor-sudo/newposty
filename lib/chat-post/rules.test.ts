@@ -42,15 +42,25 @@ test("disabled platforms are omitted even when connected", () => {
   assert.deepEqual(result.disabledRequested, ["twitter"]);
 });
 
-test("tiktok rejects images", () => {
+test("tiktok accepts images as photo posts", () => {
   const reason = validationReason({
     platform: "tiktok",
     capability: getPlatformCapability("tiktok"),
     media: [{ id: "1", url: "https://example.com/a.jpg", type: "image" }],
     locale: "en",
   });
+  assert.equal(reason, null);
+});
+
+test("tiktok still rejects text-only", () => {
+  const reason = validationReason({
+    platform: "tiktok",
+    capability: getPlatformCapability("tiktok"),
+    media: [],
+    locale: "en",
+  });
   assert.ok(reason);
-  assert.match(reason ?? "", /video/i);
+  assert.match(reason ?? "", /photo|video|media/i);
 });
 
 test("tiktok accepts a reel-tagged video instead of dropping the platform", () => {

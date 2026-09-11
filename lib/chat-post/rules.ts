@@ -184,10 +184,10 @@ export function validationReason(input: {
       : `This platform requires media (photo or video). ${capability.notes ?? ""}`.trim();
   }
 
-  if (input.platform === "tiktok" && kind !== "video") {
+  if (input.platform === "tiktok" && kind === "none") {
     return ro
-      ? "TikTok acceptă doar video, fără imagine sau text."
-      : "TikTok only accepts video, not images or text-only posts.";
+      ? "TikTok cere un video sau cel puțin o poză."
+      : "TikTok needs a video or at least one photo.";
   }
 
   if (input.platform === "youtube" && kind !== "video") {

@@ -45,11 +45,13 @@ export const PLATFORM_CAPABILITIES: Record<string, PlatformCapability> = {
     notes: "Stories fără caption vizibil, max 120s; doar Pages",
   },
   tiktok: {
-    contentTypes: ["video"],
+    contentTypes: ["video", "photo", "image", "carousel"],
     requiresMedia: true,
     maxCaptionChars: 2200,
     maxVideoSeconds: 600,
-    notes: "doar video, fără imagine/text-only",
+    maxImageMB: 20,
+    maxAttachments: 35,
+    notes: "video sau poze (mod foto / carusel, până la 35 de imagini)",
   },
   youtube: {
     contentTypes: ["video"],
