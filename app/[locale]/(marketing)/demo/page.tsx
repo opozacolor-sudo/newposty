@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { DemoReveal, DemoVideoPlaceholder } from "@/components/marketing/demo-media";
+import { DemoReveal, DemoYouTube } from "@/components/marketing/demo-media";
 import { btnSolid } from "@/components/marketing/styles";
 import { Link } from "@/i18n/navigation";
 
-const STEP_IDS = [
-  "connect",
-  "chat",
-  "caption",
-  "timing",
-  "publish",
-  "analytics",
+const STEPS = [
+  { id: "connect", videoId: "9iuqHmI04ck" },
+  { id: "chat", videoId: "fWTkhJS3I4U" },
+  { id: "caption", videoId: "ly0-BHfZil0" },
+  { id: "timing", videoId: "ly0-BHfZil0" },
+  { id: "publish", videoId: "TSpik-u6rcg" },
+  { id: "analytics", videoId: "AW24I0apIYk" },
 ] as const;
 
 export async function generateMetadata({
@@ -39,24 +39,24 @@ export default async function DemoPage() {
       </header>
 
       <div className="mt-14 flex flex-col gap-16 sm:mt-20 sm:gap-24">
-        {STEP_IDS.map((id, index) => {
+        {STEPS.map((step, index) => {
           const reverse = index % 2 === 1;
           return (
-            <DemoReveal key={id}>
+            <DemoReveal key={step.id}>
               <section className="grid items-center gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
                 <div className={reverse ? "md:order-2" : undefined}>
                   <p className="text-sm font-medium text-[#FF4713]">
                     {String(index + 1).padStart(2, "0")}
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-                    {t(`steps.${id}.title`)}
+                    {t(`steps.${step.id}.title`)}
                   </h2>
                   <p className="mt-3 max-w-md text-base leading-7 text-neutral-500">
-                    {t(`steps.${id}.body`)}
+                    {t(`steps.${step.id}.body`)}
                   </p>
                 </div>
                 <div className={reverse ? "md:order-1" : undefined}>
-                  <DemoVideoPlaceholder label={t("videoSoon")} />
+                  <DemoYouTube videoId={step.videoId} title={t(`steps.${step.id}.title`)} />
                 </div>
               </section>
             </DemoReveal>

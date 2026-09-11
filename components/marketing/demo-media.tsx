@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Play } from "lucide-react";
 import type { ReactNode } from "react";
 
 export function DemoReveal({ children }: { children: ReactNode }) {
@@ -19,15 +18,18 @@ export function DemoReveal({ children }: { children: ReactNode }) {
   );
 }
 
-export function DemoVideoPlaceholder({ label }: { label: string }) {
+export function DemoYouTube({ videoId, title }: { videoId: string; title: string }) {
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-3xl bg-neutral-100 shadow-lg">
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FF4713] shadow-md">
-          <Play className="ml-0.5 h-5 w-5 fill-white text-white" aria-hidden />
-        </span>
-        <p className="text-sm text-neutral-500">{label}</p>
-      </div>
+      <iframe
+        className="absolute inset-0 h-full w-full"
+        src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      />
     </div>
   );
 }
