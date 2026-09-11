@@ -59,10 +59,16 @@ export function getResendFrom() {
   return RESEND_FROM_DEFAULT;
 }
 
+const PRODUCTION_SITE_URL = "https://posty.now";
+
+function isLocalHostUrl(value: string) {
+  return /localhost|127\.0\.0\.1/.test(value);
+}
+
 export function getSiteUrl() {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ?? "";
   const onVercel = Boolean(process.env.VERCEL);
-  if (explicit && !(onVercel && explicit.includes("localhost"))) {
+  if (explicit && !(onVercel && isLocalHostUrl(explicit))) {
     return explicit;
   }
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
@@ -71,15 +77,15 @@ export function getSiteUrl() {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  return explicit || "http://localhost:3000";
+  if (explicit && !isLocalHostUrl(explicit)) return explicit;
+  return onVercel ? PRODUCTION_SITE_URL : explicit || "http://localhost:3000";
 }
 
 export function getPublicSiteUrl() {
-  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ?? "";
-  if (typeof window !== "undefined") {
-    const origin = window.location.origin;
-    if (!origin.includes("localhost")) return origin;
+  if (typeof window !== "undefined" && !isLocalHostUrl(window.location.origin)) {
+    return window.location.origin;
   }
-  if (fromEnv && !fromEnv.includes("localhost")) return fromEnv;
-  return fromEnv || "https://newposty.vercel.app";
+  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ?? "";
+  if (fromEnv && !isLocalHostUrl(fromEnv)) return fromEnv;
+  return PRODUCTION_SITE_URL;
 }
