@@ -12,7 +12,7 @@ import {
   type ZernioPost,
 } from "@/lib/zernio";
 import { humanZernioError } from "@/lib/zernio-error-messages";
-import { instagramPublishKind } from "@/lib/chat-post/rules";
+import { inferMediaKind, instagramPublishKind } from "@/lib/chat-post/rules";
 import { isFutureDate, parseScheduledAt } from "@/lib/chat-post/timezone";
 import {
   classifyPublishOutcome,
@@ -86,10 +86,15 @@ function errorMessage(error: unknown) {
   return "Unknown error";
 }
 
-function instagramPlatformData(contentType?: string, mode?: PostMode): Record<string, unknown> | undefined {
-  const kind = instagramPublishKind({ contentType, mode });
+function instagramPlatformData(
+  contentType?: string,
+  mode?: PostMode,
+  mediaKind?: ReturnType<typeof inferMediaKind>,
+): Record<string, unknown> | undefined {
+  const kind = instagramPublishKind({ contentType, mode, mediaKind });
   if (kind === "stories") return { contentType: "story" };
   if (kind === "reels") return { shareToFeed: true };
+  if (kind === "feed") return { contentType: "feed" };
   return undefined;
 }
 
@@ -289,9 +294,16 @@ async function publishOne(input: {
   timezone: string;
   locale: string;
 }): Promise<PlatformExecResult> {
+  const mediaKind = inferMediaKind(
+    input.media.map((item, index) => ({
+      id: String(index),
+      url: item.url,
+      type: item.type,
+    })),
+  );
   const igKind =
     input.target.platform === "instagram"
-      ? instagramPublishKind({ contentType: input.target.contentType, mode: input.mode })
+      ? instagramPublishKind({ contentType: input.target.contentType, mode: input.mode, mediaKind })
       : undefined;
   const contentType = igKind ?? input.target.contentType;
   const meta = resultMeta({
@@ -327,7 +339,7 @@ async function publishOne(input: {
       accountId: input.target.zernioAccountId,
       platformSpecificData:
         input.target.platform === "instagram"
-          ? instagramPlatformData(input.target.contentType, input.mode)
+          ? instagramPlatformData(input.target.contentType, input.mode, mediaKind)
           : undefined,
     };
     let post = await createPost({

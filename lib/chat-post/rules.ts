@@ -89,15 +89,18 @@ export function normalizeRequestedContentType(requested?: string) {
   return value;
 }
 
-/** Story vs Reel for Instagram. These are separate surfaces — a Story must never go out as a Reel. */
+/** Story vs Reel vs Feed for Instagram. Photos cannot go out as Reels. */
 export function instagramPublishKind(input: {
   contentType?: string;
   mode?: "publish_now" | "schedule";
-}): "stories" | "reels" | undefined {
+  mediaKind?: ReturnType<typeof inferMediaKind>;
+}): "stories" | "reels" | "feed" | undefined {
   const requested = normalizeRequestedContentType(input.contentType);
+  const photo = input.mediaKind === "image" || input.mediaKind === "mixed";
   if (requested === "stories") return "stories";
-  if (requested === "reels" || requested === "feed") return "reels";
-  if (input.mode === "schedule") return "reels";
+  if (photo) return requested === "stories" ? "stories" : "feed";
+  if (requested === "reels" || requested === "feed") return requested === "feed" ? "feed" : "reels";
+  if (input.mode === "schedule") return input.mediaKind === "video" ? "reels" : "feed";
   return undefined;
 }
 

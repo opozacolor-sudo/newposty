@@ -116,11 +116,13 @@ test("Instagram as video and TikTok stays a normal TikTok video", () => {
   );
 });
 
-test("Instagram story stays a story, scheduled Instagram video is a reel", () => {
+test("Instagram story stays a story, scheduled video is a reel, scheduled photo is feed", () => {
   assert.equal(instagramPublishKind({ contentType: "stories" }), "stories");
   assert.equal(instagramPublishKind({ contentType: "story", mode: "publish_now" }), "stories");
-  assert.equal(instagramPublishKind({ contentType: "reels" }), "reels");
-  assert.equal(instagramPublishKind({ mode: "schedule" }), "reels");
+  assert.equal(instagramPublishKind({ contentType: "reels", mediaKind: "video" }), "reels");
+  assert.equal(instagramPublishKind({ mode: "schedule", mediaKind: "video" }), "reels");
+  assert.equal(instagramPublishKind({ mode: "schedule", mediaKind: "image" }), "feed");
+  assert.equal(instagramPublishKind({ contentType: "reels", mediaKind: "image" }), "feed");
 });
 
 test("Instagram story and TikTok does not stamp story onto TikTok", () => {

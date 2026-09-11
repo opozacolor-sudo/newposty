@@ -561,11 +561,17 @@ function collectTargets(input: {
           : `The ${platformLabel(platform)} caption was shortened to ${capability?.maxCaptionChars} characters.`,
       );
     }
+    const kind = inferMediaKind(input.media);
     const adapted = adaptContentType({
       platform,
       requested: requestedType,
-      mediaKind: inferMediaKind(input.media),
+      mediaKind: kind,
     });
+    let contentType = adapted.contentType;
+    if (platform === "instagram" && !contentType) {
+      if (kind === "image" || kind === "mixed") contentType = "feed";
+      else if (kind === "video") contentType = "reels";
+    }
     platforms.push({
       platform,
       accountId: account.id,
@@ -573,7 +579,7 @@ function collectTargets(input: {
       handle: handleOf(account),
       caption: limited.caption,
       captionTruncated: limited.truncated,
-      contentType: adapted.contentType,
+      contentType,
       requestId: crypto.randomUUID(),
     });
   }
