@@ -81,6 +81,24 @@ export function getSiteUrl() {
   return onVercel ? PRODUCTION_SITE_URL : explicit || "http://localhost:3000";
 }
 
+export function getTrustedRequestOrigin(request: Request) {
+  const url = new URL(request.url);
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const host = forwardedHost || request.headers.get("host") || url.host;
+  const proto = forwardedProto || url.protocol.replace(":", "") || "https";
+  const origin = `${proto}://${host}`.replace(/\/$/, "");
+  try {
+    const hostname = new URL(origin).hostname;
+    if (hostname === "posty.now" || hostname === "www.posty.now") return origin;
+    if (hostname.endsWith(".vercel.app")) return origin;
+    if (hostname === "localhost" || hostname === "127.0.0.1") return origin;
+  } catch {
+    return getSiteUrl();
+  }
+  return getSiteUrl();
+}
+
 export function getPublicSiteUrl() {
   if (typeof window !== "undefined" && !isLocalHostUrl(window.location.origin)) {
     return window.location.origin;

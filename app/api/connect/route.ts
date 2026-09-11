@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSiteUrl } from "@/lib/env";
+import { getTrustedRequestOrigin } from "@/lib/env";
 import { ensureZernioProfile, syncSocialAccounts } from "@/lib/data";
 import { createOAuthState, withOAuthStateCookie } from "@/lib/oauth-state";
 import {
@@ -12,8 +12,8 @@ import { loadWorkspace } from "@/lib/clients";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
 
-function accountsHome(ads: boolean) {
-  return new URL(ads ? "/accounts/ads" : "/accounts/posts", getSiteUrl());
+function accountsHome(ads: boolean, origin: string) {
+  return new URL(ads ? "/accounts/ads" : "/accounts/posts", origin);
 }
 
 function wantsJson(request: Request) {
@@ -48,6 +48,7 @@ export async function GET(request: Request) {
   const ads = isAdsPlatformId(platform);
   const json = wantsJson(request);
   const mobile = url.searchParams.get("client") === "mobile";
+  const origin = getTrustedRequestOrigin(request);
 
   if (!isConnectPlatformId(platform)) {
     return NextResponse.json({ error: "Unknown platform" }, { status: 400 });
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
     if (json) {
       return NextResponse.json({ error: "COMING_SOON" }, { status: 403 });
     }
-    const target = accountsHome(ads);
+    const target = accountsHome(ads, origin);
     target.searchParams.set("error", "coming_soon");
     return NextResponse.redirect(target);
   }
@@ -67,7 +68,7 @@ export async function GET(request: Request) {
         { status: 400 },
       );
     }
-    const target = accountsHome(false);
+    const target = accountsHome(false, origin);
     target.searchParams.set("error", "Bluesky uses an app password, not OAuth.");
     return NextResponse.redirect(target);
   }
@@ -75,7 +76,7 @@ export async function GET(request: Request) {
     if (json) {
       return NextResponse.json({ error: "openai_key" }, { status: 400 });
     }
-    const target = accountsHome(true);
+    const target = accountsHome(true, origin);
     target.searchParams.set("error", "openai_key");
     return NextResponse.redirect(target);
   }
@@ -86,13 +87,13 @@ export async function GET(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) {
     if (json) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    return NextResponse.redirect(new URL("/login", getSiteUrl()));
+    return NextResponse.redirect(new URL("/login", origin));
   }
 
   const workspace = await loadWorkspace(supabase, user.id);
   if (workspace.isTeam && !workspace.clientId) {
     if (json) return NextResponse.json({ error: "NEED_CLIENT" }, { status: 400 });
-    const target = accountsHome(ads);
+    const target = accountsHome(ads, origin);
     target.searchParams.set("error", "need_client");
     return NextResponse.redirect(target);
   }
@@ -103,10 +104,14 @@ export async function GET(request: Request) {
       throw new Error("Could not create a Zernio profile for this user.");
     }
 
-    const state = createOAuthState();
+    const state = createOAuthState({
+      userId: user.id,
+      platform,
+      clientId: workspace.clientId,
+    });
     const redirectUrl = mobile
-      ? `${getSiteUrl()}/api/oauth/mobile-callback?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`
-      : `${getSiteUrl()}/accounts/connected?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`;
+      ? `${origin}/api/oauth/mobile-callback?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`
+      : `${origin}/accounts/connected?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`;
 
     if (ads) {
       const adsPlatform = getAdsPlatform(platform);
@@ -132,7 +137,7 @@ export async function GET(request: Request) {
               { status: 400 },
             );
           }
-          const target = accountsHome(true);
+          const target = accountsHome(true, origin);
           target.searchParams.set("error", "need_x");
           return NextResponse.redirect(target);
         }
@@ -152,7 +157,7 @@ export async function GET(request: Request) {
         if (json) {
           return NextResponse.json({ alreadyConnected: true, platform });
         }
-        const target = accountsHome(true);
+        const target = accountsHome(true, origin);
         target.searchParams.set("connected", "1");
         target.searchParams.set("platform", platform);
         return NextResponse.redirect(target);
@@ -172,7 +177,7 @@ export async function GET(request: Request) {
     return withOAuthStateCookie(NextResponse.redirect(authUrl), state, workspace.clientId);
   } catch {
     if (json) return NextResponse.json({ error: "Connect failed" }, { status: 500 });
-    const target = accountsHome(ads);
+    const target = accountsHome(ads, origin);
     target.searchParams.set("error", "connect_failed");
     return NextResponse.redirect(target);
   }
