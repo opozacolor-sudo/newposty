@@ -21,7 +21,7 @@ export default function SignupForm() {
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (!SIGNUPS_OPEN) {
-      router.replace("/login");
+      router.replace("/waitlist");
       return;
     }
     setPending(true);

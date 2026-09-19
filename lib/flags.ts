@@ -1,2 +1,2 @@
-/** Public /signup is open. The studio is a free beta. */
-export const SIGNUPS_OPEN = true;
+/** Public /signup is closed until launch. Existing accounts can still sign in. */
+export const SIGNUPS_OPEN = false;

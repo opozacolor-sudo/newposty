@@ -46,7 +46,7 @@ export async function updateSession(request: NextRequest, response: NextResponse
   const { locale, path } = splitLocale(request.nextUrl.pathname);
   if (!SIGNUPS_OPEN && path === "/signup") {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = `/${locale}/login`;
+    redirectUrl.pathname = `/${locale}/waitlist`;
     redirectUrl.search = "";
     return copyCookies(response, NextResponse.redirect(redirectUrl));
   }

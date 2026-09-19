@@ -3,6 +3,7 @@
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { SIGNUPS_OPEN } from "@/lib/flags";
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./brand-logo";
 import { btnGhost, btnSolid } from "./styles";
@@ -53,11 +54,11 @@ export function MarketingHeader() {
             {t("signIn")}
           </Link>
           <Link
-            href="/signup"
+            href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
             className={`${btnSolid} !px-2.5 !py-1.5 !text-xs sm:!px-4 sm:!py-2.5 sm:!text-sm`}
             onClick={() => setOpen(false)}
           >
-            {t("signUp")}
+            {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
           </Link>
         </div>
       </div>
@@ -69,8 +70,12 @@ export function MarketingHeader() {
             <Link href="/login" className={btnGhost} onClick={() => setOpen(false)}>
               {t("signIn")}
             </Link>
-            <Link href="/signup" className={btnSolid} onClick={() => setOpen(false)}>
-              {t("signUp")}
+            <Link
+              href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
+              className={btnSolid}
+              onClick={() => setOpen(false)}
+            >
+              {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
             </Link>
           </nav>
         </div>

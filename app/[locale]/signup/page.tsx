@@ -6,7 +6,7 @@ import SignupForm from "./signup-form";
 export default async function SignupPage() {
   if (!SIGNUPS_OPEN) {
     const locale = await getLocale();
-    redirect({ href: "/login", locale });
+    redirect({ href: "/waitlist", locale });
   }
 
   return <SignupForm />;

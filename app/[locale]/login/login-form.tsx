@@ -93,7 +93,14 @@ export default function LoginPage() {
             {t("createAccount")}
           </Link>
         </p>
-      ) : null}
+      ) : (
+        <p className="mt-6 text-sm text-muted">
+          {t("waitlistHint")}{" "}
+          <Link href="/waitlist" className="text-ink underline">
+            {t("waitlistLink")}
+          </Link>
+        </p>
+      )}
     </main>
   );
 }

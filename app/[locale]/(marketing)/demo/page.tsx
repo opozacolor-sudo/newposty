@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { DemoReveal, DemoYouTube } from "@/components/marketing/demo-media";
 import { btnSolid } from "@/components/marketing/styles";
+import { SIGNUPS_OPEN } from "@/lib/flags";
 import { Link } from "@/i18n/navigation";
 
 const STEPS = [
@@ -69,7 +70,7 @@ export default async function DemoPage() {
           {t("ctaTitle")}
         </p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href="/signup" className={`${btnSolid} px-6 py-3`}>
+          <Link href={SIGNUPS_OPEN ? "/signup" : "/waitlist"} className={`${btnSolid} px-6 py-3`}>
             {t("ctaButton")}
           </Link>
           <Link
