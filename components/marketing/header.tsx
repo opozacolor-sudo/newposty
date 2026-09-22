@@ -47,7 +47,7 @@ function DesktopMenu({
     <div className="relative" ref={ref} onMouseEnter={onOpen} onMouseLeave={onClose}>
       <button
         type="button"
-        className={`${btnGhost} inline-flex items-center gap-1`}
+        className={`${btnGhost} inline-flex items-center gap-1 whitespace-nowrap`}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => (open ? onClose() : onOpen())}
@@ -82,8 +82,8 @@ export function MarketingHeader() {
 
   return (
     <header className="relative z-50 shrink-0 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-3 sm:h-16 sm:px-6">
-        <div className="flex items-center justify-start gap-4 lg:gap-5">
+      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-6">
+        <div className="flex min-w-0 items-center justify-start gap-4 lg:gap-5">
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 lg:hidden"
@@ -93,7 +93,7 @@ export function MarketingHeader() {
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <nav className="hidden items-center gap-4 lg:flex xl:gap-6">
+          <nav className="hidden min-w-0 items-center gap-3 lg:flex xl:gap-5">
             <DesktopMenu
               label={t("features")}
               open={desktop === "features"}
@@ -119,17 +119,11 @@ export function MarketingHeader() {
             >
               <MadeForPanel onNavigate={closeAll} />
             </DesktopMenu>
-            <Link href="/about" className={btnGhost} onClick={closeAll}>
+            <Link href="/about" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
               {t("about")}
             </Link>
-            <Link href="/guide" className={btnGhost} onClick={closeAll}>
-              {t("guide")}
-            </Link>
-            <Link href="/contact" className={btnGhost} onClick={closeAll}>
+            <Link href="/contact" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
               {t("contact")}
-            </Link>
-            <Link href="/demo" className={btnGhost} onClick={closeAll}>
-              {t("demo")}
             </Link>
           </nav>
         </div>
@@ -200,14 +194,8 @@ export function MarketingHeader() {
             <Link href="/about" className={btnGhost} onClick={closeAll}>
               {t("about")}
             </Link>
-            <Link href="/guide" className={btnGhost} onClick={closeAll}>
-              {t("guide")}
-            </Link>
             <Link href="/contact" className={btnGhost} onClick={closeAll}>
               {t("contact")}
-            </Link>
-            <Link href="/demo" className={btnGhost} onClick={closeAll}>
-              {t("demo")}
             </Link>
             <Link href="/login" className={btnGhost} onClick={closeAll}>
               {t("signIn")}
