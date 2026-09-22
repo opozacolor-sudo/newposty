@@ -4,6 +4,11 @@
     "description": "Posts, promotions, analytics and scheduling — all in a minute, with the posty.now AI assistant."
   },
   "Header": {
+    "platforms": "Platforms",
+    "channels": "Channels",
+    "ads": "Ads",
+    "comingSoon": "Coming soon",
+    "seeAllPlatforms": "See all platforms",
     "about": "About us",
     "contact": "Contact",
     "demo": "Demo",
@@ -53,6 +58,16 @@
     "terms": "Terms",
     "contact": "Contact",
     "guide": "Guide"
+  },
+  "PlatformsPage": {
+    "metaTitle": "Platforms — posty.now",
+    "metaDescription": "Post and run ads on Instagram, TikTok, Facebook, LinkedIn, YouTube and more — from one chat.",
+    "title": "Every network in one studio",
+    "subtitle": "Connect the channels you post on and the ad accounts you advertise with. X is coming soon.",
+    "channels": "Channels",
+    "ads": "Ads",
+    "comingSoon": "Coming soon",
+    "ctaTitle": "Opens 15 October"
   },
   "Demo": {
     "metaTitle": "How posty.now works",

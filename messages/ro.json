@@ -4,6 +4,11 @@
     "description": "Postări, promovări, analize și programări — totul într-un minut, cu asistentul AI posty.now."
   },
   "Header": {
+    "platforms": "Platforme",
+    "channels": "Canale",
+    "ads": "Reclame",
+    "comingSoon": "În curând",
+    "seeAllPlatforms": "Vezi toate platformele",
     "about": "Despre noi",
     "contact": "Contact",
     "demo": "Demo",
@@ -53,6 +58,16 @@
     "terms": "Terms",
     "contact": "Contact",
     "guide": "Manual"
+  },
+  "PlatformsPage": {
+    "metaTitle": "Platforme — posty.now",
+    "metaDescription": "Postează și pune reclame pe Instagram, TikTok, Facebook, LinkedIn, YouTube și altele — dintr-un singur chat.",
+    "title": "Toate rețelele, într-un studio",
+    "subtitle": "Conectezi canalele pe care postezi și conturile de ads. X urmează în curând.",
+    "channels": "Canale",
+    "ads": "Reclame",
+    "comingSoon": "În curând",
+    "ctaTitle": "Deschidere 15 octombrie"
   },
   "Demo": {
     "metaTitle": "Cum funcționează posty.now",
