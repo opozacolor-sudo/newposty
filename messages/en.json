@@ -5,6 +5,7 @@
   },
   "Header": {
     "platforms": "Platforms",
+    "madeFor": "Made for",
     "channels": "Channels",
     "ads": "Ads",
     "comingSoon": "Coming soon",
@@ -67,6 +68,16 @@
     "channels": "Channels",
     "ads": "Ads",
     "comingSoon": "Coming soon",
+    "ctaTitle": "Opens 15 October"
+  },
+  "MadeFor": {
+    "howTitle": "How it works",
+    "faqTitle": "Questions",
+    "alsoTitle": "Also made for",
+    "channels": "Where it posts",
+    "ads": "Paid ads",
+    "soon": "Coming soon",
+    "cta": "Pre-register for a free month",
     "ctaTitle": "Opens 15 October"
   },
   "Demo": {

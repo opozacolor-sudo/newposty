@@ -2,28 +2,37 @@
 
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SIGNUPS_OPEN } from "@/lib/flags";
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./brand-logo";
+import { MadeForPanel } from "./made-for-menu";
 import { PlatformsPanel } from "./platforms-menu";
 import { btnGhost, btnSolid } from "./styles";
 
-export function MarketingHeader() {
-  const t = useTranslations("Header");
-  const [open, setOpen] = useState(false);
-  const [platformsOpen, setPlatformsOpen] = useState(false);
-  const [platformsMobile, setPlatformsMobile] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+function DesktopMenu({
+  label,
+  open,
+  onOpen,
+  onClose,
+  children,
+  wide,
+}: {
+  label: string;
+  open: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  children: ReactNode;
+  wide?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onPointerDown(event: PointerEvent) {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        setPlatformsOpen(false);
-      }
+      if (!ref.current?.contains(event.target as Node)) onClose();
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setPlatformsOpen(false);
+      if (event.key === "Escape") onClose();
     }
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKey);
@@ -31,18 +40,49 @@ export function MarketingHeader() {
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, []);
+  }, [onClose]);
+
+  return (
+    <div className="relative" ref={ref} onMouseEnter={onOpen} onMouseLeave={onClose}>
+      <button
+        type="button"
+        className={`${btnGhost} inline-flex items-center gap-1`}
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => (open ? onClose() : onOpen())}
+      >
+        {label}
+        <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
+      </button>
+      {open ? (
+        <div className="absolute left-0 top-full z-50 pt-3">
+          <div
+            className={`${wide ? "w-[min(36rem,calc(100vw-2rem))]" : "w-[min(32rem,calc(100vw-2rem))]"} rounded-2xl border border-neutral-100 bg-white p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)] sm:p-5`}
+          >
+            {children}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function MarketingHeader() {
+  const t = useTranslations("Header");
+  const [open, setOpen] = useState(false);
+  const [desktop, setDesktop] = useState<"platforms" | "madeFor" | null>(null);
+  const [mobile, setMobile] = useState<"platforms" | "madeFor" | null>(null);
 
   const closeAll = () => {
     setOpen(false);
-    setPlatformsOpen(false);
-    setPlatformsMobile(false);
+    setDesktop(null);
+    setMobile(null);
   };
 
   return (
     <header className="relative z-50 shrink-0 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
       <div className="mx-auto grid h-14 max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-3 sm:h-16 sm:px-6">
-        <div className="flex items-center justify-start gap-4 lg:gap-6">
+        <div className="flex items-center justify-start gap-4 lg:gap-5">
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 lg:hidden"
@@ -52,31 +92,24 @@ export function MarketingHeader() {
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <nav className="hidden items-center gap-4 lg:flex lg:gap-6">
-            <div
-              className="relative"
-              ref={menuRef}
-              onMouseEnter={() => setPlatformsOpen(true)}
-              onMouseLeave={() => setPlatformsOpen(false)}
+          <nav className="hidden items-center gap-4 lg:flex xl:gap-6">
+            <DesktopMenu
+              label={t("platforms")}
+              open={desktop === "platforms"}
+              onOpen={() => setDesktop("platforms")}
+              onClose={() => setDesktop((value) => (value === "platforms" ? null : value))}
+              wide
             >
-              <button
-                type="button"
-                className={`${btnGhost} inline-flex items-center gap-1`}
-                aria-expanded={platformsOpen}
-                aria-haspopup="true"
-                onClick={() => setPlatformsOpen((value) => !value)}
-              >
-                {t("platforms")}
-                <ChevronDown size={14} className={platformsOpen ? "rotate-180 transition" : "transition"} />
-              </button>
-              {platformsOpen ? (
-                <div className="absolute left-0 top-full z-50 pt-3">
-                  <div className="w-[min(36rem,calc(100vw-2rem))] rounded-2xl border border-neutral-100 bg-white p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)] sm:p-5">
-                    <PlatformsPanel onNavigate={closeAll} />
-                  </div>
-                </div>
-              ) : null}
-            </div>
+              <PlatformsPanel onNavigate={closeAll} />
+            </DesktopMenu>
+            <DesktopMenu
+              label={t("madeFor")}
+              open={desktop === "madeFor"}
+              onOpen={() => setDesktop("madeFor")}
+              onClose={() => setDesktop((value) => (value === "madeFor" ? null : value))}
+            >
+              <MadeForPanel onNavigate={closeAll} />
+            </DesktopMenu>
             <Link href="/about" className={btnGhost} onClick={closeAll}>
               {t("about")}
             </Link>
@@ -116,15 +149,29 @@ export function MarketingHeader() {
             <button
               type="button"
               className={`${btnGhost} inline-flex items-center justify-between text-left`}
-              aria-expanded={platformsMobile}
-              onClick={() => setPlatformsMobile((value) => !value)}
+              aria-expanded={mobile === "platforms"}
+              onClick={() => setMobile((value) => (value === "platforms" ? null : "platforms"))}
             >
               {t("platforms")}
-              <ChevronDown size={16} className={platformsMobile ? "rotate-180 transition" : "transition"} />
+              <ChevronDown size={16} className={mobile === "platforms" ? "rotate-180 transition" : "transition"} />
             </button>
-            {platformsMobile ? (
+            {mobile === "platforms" ? (
               <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-3">
                 <PlatformsPanel onNavigate={closeAll} />
+              </div>
+            ) : null}
+            <button
+              type="button"
+              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              aria-expanded={mobile === "madeFor"}
+              onClick={() => setMobile((value) => (value === "madeFor" ? null : "madeFor"))}
+            >
+              {t("madeFor")}
+              <ChevronDown size={16} className={mobile === "madeFor" ? "rotate-180 transition" : "transition"} />
+            </button>
+            {mobile === "madeFor" ? (
+              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-3">
+                <MadeForPanel onNavigate={closeAll} />
               </div>
             ) : null}
             <Link href="/about" className={btnGhost} onClick={closeAll}>

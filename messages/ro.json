@@ -5,6 +5,7 @@
   },
   "Header": {
     "platforms": "Platforme",
+    "madeFor": "Creat pentru",
     "channels": "Canale",
     "ads": "Reclame",
     "comingSoon": "În curând",
@@ -67,6 +68,16 @@
     "channels": "Canale",
     "ads": "Reclame",
     "comingSoon": "În curând",
+    "ctaTitle": "Deschidere 15 octombrie"
+  },
+  "MadeFor": {
+    "howTitle": "Cum merge",
+    "faqTitle": "Întrebări",
+    "alsoTitle": "Creat și pentru",
+    "channels": "Unde postează",
+    "ads": "Reclame plătite",
+    "soon": "În curând",
+    "cta": "Preînregistrează-te pentru o lună gratuită",
     "ctaTitle": "Deschidere 15 octombrie"
   },
   "Demo": {
