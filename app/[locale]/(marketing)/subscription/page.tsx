@@ -7,10 +7,14 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return legalMetadata(locale, "terms");
+  return legalMetadata(locale, "subscription");
 }
 
-export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function SubscriptionTermsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
-  return <LegalScreen locale={locale} id="terms" />;
+  return <LegalScreen locale={locale} id="subscription" />;
 }

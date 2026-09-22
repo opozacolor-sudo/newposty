@@ -56,10 +56,15 @@
   },
   "Footer": {
     "copyright": "© 2026",
-    "privacy": "Privacy",
-    "terms": "Terms",
+    "privacy": "Confidențialitate",
+    "terms": "Termeni",
+    "legal": "Legal",
     "contact": "Contact",
     "guide": "Manual"
+  },
+  "LegalIndex": {
+    "title": "Documente legale",
+    "intro": "Contractul, confidențialitatea, cookie-urile, anularea și abonamentul posty.now sunt cu VLN MOTORS SRL."
   },
   "PlatformsPage": {
     "metaTitle": "Platforme — posty.now",

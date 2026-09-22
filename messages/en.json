@@ -58,8 +58,13 @@
     "copyright": "© 2026",
     "privacy": "Privacy",
     "terms": "Terms",
+    "legal": "Legal",
     "contact": "Contact",
     "guide": "Guide"
+  },
+  "LegalIndex": {
+    "title": "Legal",
+    "intro": "The contract, privacy, cookies, cancellation, and subscription for posty.now are with VLN MOTORS SRL."
   },
   "PlatformsPage": {
     "metaTitle": "Platforms — posty.now",

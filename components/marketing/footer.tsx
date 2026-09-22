@@ -38,6 +38,12 @@ export async function MarketingFooter() {
           >
             {t("terms")}
           </Link>
+          <Link
+            href="/legal"
+            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
+          >
+            {t("legal")}
+          </Link>
           <LocaleSwitch className="shrink-0 scale-90 sm:scale-100" />
         </nav>
       </div>

@@ -1,16 +1,16 @@
-import { getTranslations } from "next-intl/server";
-import { LegalDoc } from "@/components/marketing/legal-doc";
+import type { Metadata } from "next";
+import { LegalScreen, legalMetadata } from "@/components/marketing/legal-screen";
 
-export default async function PrivacyPage() {
-  const t = await getTranslations("Privacy");
-  const sections = t.raw("sections") as { heading: string; body: string[] }[];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return legalMetadata(locale, "privacy");
+}
 
-  return (
-    <LegalDoc
-      title={t("title")}
-      updated={t("updated")}
-      operator={t("operator")}
-      sections={Array.isArray(sections) ? sections : []}
-    />
-  );
+export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return <LegalScreen locale={locale} id="privacy" />;
 }
