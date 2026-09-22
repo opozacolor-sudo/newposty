@@ -4,6 +4,7 @@
     "description": "Posts, promotions, analytics and scheduling — all in a minute, with the posty.now AI assistant."
   },
   "Header": {
+    "features": "Features",
     "platforms": "Platforms",
     "madeFor": "Made for",
     "channels": "Channels",
@@ -76,6 +77,16 @@
     "alsoTitle": "Also made for",
     "channels": "Where it posts",
     "ads": "Paid ads",
+    "soon": "Coming soon",
+    "cta": "Pre-register for a free month",
+    "ctaTitle": "Opens 15 October"
+  },
+  "Features": {
+    "howTitle": "How it works",
+    "faqTitle": "Questions",
+    "alsoTitle": "More features",
+    "channels": "Where it posts",
+    "ads": "Ad accounts",
     "soon": "Coming soon",
     "cta": "Pre-register for a free month",
     "ctaTitle": "Opens 15 October"

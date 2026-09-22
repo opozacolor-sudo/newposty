@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SIGNUPS_OPEN } from "@/lib/flags";
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./brand-logo";
+import { FeaturesPanel } from "./features-menu";
 import { MadeForPanel } from "./made-for-menu";
 import { PlatformsPanel } from "./platforms-menu";
 import { btnGhost, btnSolid } from "./styles";
@@ -70,8 +71,8 @@ function DesktopMenu({
 export function MarketingHeader() {
   const t = useTranslations("Header");
   const [open, setOpen] = useState(false);
-  const [desktop, setDesktop] = useState<"platforms" | "madeFor" | null>(null);
-  const [mobile, setMobile] = useState<"platforms" | "madeFor" | null>(null);
+  const [desktop, setDesktop] = useState<"features" | "platforms" | "madeFor" | null>(null);
+  const [mobile, setMobile] = useState<"features" | "platforms" | "madeFor" | null>(null);
 
   const closeAll = () => {
     setOpen(false);
@@ -93,6 +94,14 @@ export function MarketingHeader() {
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
           <nav className="hidden items-center gap-4 lg:flex xl:gap-6">
+            <DesktopMenu
+              label={t("features")}
+              open={desktop === "features"}
+              onOpen={() => setDesktop("features")}
+              onClose={() => setDesktop((value) => (value === "features" ? null : value))}
+            >
+              <FeaturesPanel onNavigate={closeAll} />
+            </DesktopMenu>
             <DesktopMenu
               label={t("platforms")}
               open={desktop === "platforms"}
@@ -146,6 +155,20 @@ export function MarketingHeader() {
       {open ? (
         <div className="border-t border-neutral-100 bg-white px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-3">
+            <button
+              type="button"
+              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              aria-expanded={mobile === "features"}
+              onClick={() => setMobile((value) => (value === "features" ? null : "features"))}
+            >
+              {t("features")}
+              <ChevronDown size={16} className={mobile === "features" ? "rotate-180 transition" : "transition"} />
+            </button>
+            {mobile === "features" ? (
+              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-3">
+                <FeaturesPanel onNavigate={closeAll} />
+              </div>
+            ) : null}
             <button
               type="button"
               className={`${btnGhost} inline-flex items-center justify-between text-left`}

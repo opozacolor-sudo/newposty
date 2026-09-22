@@ -4,6 +4,7 @@
     "description": "Postări, promovări, analize și programări — totul într-un minut, cu asistentul AI posty.now."
   },
   "Header": {
+    "features": "Funcții",
     "platforms": "Platforme",
     "madeFor": "Creat pentru",
     "channels": "Canale",
@@ -76,6 +77,16 @@
     "alsoTitle": "Creat și pentru",
     "channels": "Unde postează",
     "ads": "Reclame plătite",
+    "soon": "În curând",
+    "cta": "Preînregistrează-te pentru o lună gratuită",
+    "ctaTitle": "Deschidere 15 octombrie"
+  },
+  "Features": {
+    "howTitle": "Cum merge",
+    "faqTitle": "Întrebări",
+    "alsoTitle": "Alte funcții",
+    "channels": "Unde postează",
+    "ads": "Conturi de reclame",
     "soon": "În curând",
     "cta": "Preînregistrează-te pentru o lună gratuită",
     "ctaTitle": "Deschidere 15 octombrie"
