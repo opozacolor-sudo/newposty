@@ -36,7 +36,7 @@ export default async function ConnectedPage({
   }
 
   if ((signed && signed.userId !== user.id) || (!signed && !cookieMatches)) {
-    redirect({ href: "/accounts/posts?error=oauth_state", locale });
+    redirect({ href: "/connections?error=oauth_state", locale });
   }
 
   const platform = signed?.platform || params.platform || "";
@@ -59,7 +59,7 @@ export default async function ConnectedPage({
   const target = new URLSearchParams({ connected: "1" });
   if (platform) target.set("platform", platform);
   const href = isAdsPlatformId(platform)
-    ? `/accounts/ads?${target.toString()}`
-    : `/accounts/posts?${target.toString()}`;
+    ? `/connections?${target.toString()}#promotions`
+    : `/connections?${target.toString()}`;
   redirect({ href, locale });
 }

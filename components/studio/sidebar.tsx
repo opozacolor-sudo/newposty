@@ -5,11 +5,12 @@ import {
   BookOpen,
   ChevronDown,
   FileText,
+  Inbox,
+  Link2,
   Mail,
   Megaphone,
   Menu,
   MessageCircle,
-  Users,
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -43,16 +44,21 @@ export function StudioSidebar({
 }) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const inStats = pathname.startsWith("/dashboard");
-  const inAccounts = pathname.startsWith("/accounts");
-  const [statsOpen, setStatsOpen] = useState(inStats);
-  const [accountsOpen, setAccountsOpen] = useState(inAccounts);
+  const inAssistant =
+    pathname.startsWith("/chat") ||
+    pathname.startsWith("/connections") ||
+    pathname.startsWith("/posts") ||
+    pathname.startsWith("/analytics") ||
+    pathname.startsWith("/inbox") ||
+    pathname.startsWith("/ads") ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/accounts");
+  const [assistantOpen, setAssistantOpen] = useState(inAssistant);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (inStats) setStatsOpen(true);
-    if (inAccounts) setAccountsOpen(true);
-  }, [inAccounts, inStats]);
+    if (inAssistant) setAssistantOpen(true);
+  }, [inAssistant]);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -65,10 +71,49 @@ export function StudioSidebar({
       </Link>
 
       <nav className="mt-8 flex flex-1 flex-col gap-1 overflow-y-auto">
-        <Link href="/chat" className={itemClass(pathname === "/chat" || pathname.startsWith("/chat/"))}>
-          <MessageCircle size={18} />
-          {t("assistant")}
-        </Link>
+        <div>
+          <button
+            type="button"
+            onClick={() => setAssistantOpen((value) => !value)}
+            className={itemClass(inAssistant)}
+            aria-expanded={assistantOpen}
+          >
+            <MessageCircle size={18} />
+            {t("assistant")}
+            <ChevronDown
+              size={16}
+              className={`ml-auto shrink-0 transition ${assistantOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          {assistantOpen ? (
+            <div className="mt-1 space-y-1 pl-4">
+              <Link href="/chat" className={itemClass(pathname === "/chat" || pathname.startsWith("/chat/"))}>
+                <MessageCircle size={16} />
+                {t("chat")}
+              </Link>
+              <Link href="/connections" className={itemClass(pathname.startsWith("/connections") || pathname.startsWith("/accounts"))}>
+                <Link2 size={16} />
+                {t("connections")}
+              </Link>
+              <Link href="/posts" className={itemClass(pathname.startsWith("/posts") || pathname.startsWith("/dashboard/posts"))}>
+                <FileText size={16} />
+                {t("posts")}
+              </Link>
+              <Link href="/analytics" className={itemClass(pathname.startsWith("/analytics"))}>
+                <BarChart3 size={16} />
+                {t("analytics")}
+              </Link>
+              <Link href="/inbox" className={itemClass(pathname.startsWith("/inbox"))}>
+                <Inbox size={16} />
+                {t("messages")}
+              </Link>
+              <Link href="/ads" className={itemClass(pathname === "/ads" || pathname.startsWith("/ads/") || pathname.startsWith("/dashboard/ads"))}>
+                <Megaphone size={16} />
+                {t("ads")}
+              </Link>
+            </div>
+          ) : null}
+        </div>
 
         <Link href="/help" className={itemClass(pathname === "/help" || pathname.startsWith("/help/"))}>
           <BookOpen size={18} />
@@ -79,67 +124,6 @@ export function StudioSidebar({
           {t("contact")}
         </Link>
 
-        <div>
-          <button
-            type="button"
-            onClick={() => setStatsOpen((value) => !value)}
-            className={itemClass(inStats)}
-            aria-expanded={statsOpen}
-          >
-            <BarChart3 size={18} />
-            {t("stats")}
-            <ChevronDown
-              size={16}
-              className={`ml-auto shrink-0 transition ${statsOpen ? "rotate-180" : ""}`}
-            />
-          </button>
-          {statsOpen ? (
-            <div className="mt-1 space-y-1 pl-4">
-              <Link
-                href="/dashboard/posts"
-                className={itemClass(pathname.startsWith("/dashboard/posts"))}
-              >
-                <FileText size={16} />
-                {t("posts")}
-              </Link>
-              <Link href="/dashboard/ads" className={itemClass(pathname.startsWith("/dashboard/ads"))}>
-                <Megaphone size={16} />
-                {t("ads")}
-              </Link>
-            </div>
-          ) : null}
-        </div>
-
-        <div>
-          <button
-            type="button"
-            onClick={() => setAccountsOpen((value) => !value)}
-            className={itemClass(inAccounts)}
-            aria-expanded={accountsOpen}
-          >
-            <Users size={18} />
-            {t("accounts")}
-            <ChevronDown
-              size={16}
-              className={`ml-auto shrink-0 transition ${accountsOpen ? "rotate-180" : ""}`}
-            />
-          </button>
-          {accountsOpen ? (
-            <div className="mt-1 space-y-1 pl-4">
-              <Link
-                href="/accounts/posts"
-                className={itemClass(pathname === "/accounts/posts")}
-              >
-                <FileText size={16} />
-                {t("posts")}
-              </Link>
-              <Link href="/accounts/ads" className={itemClass(pathname === "/accounts/ads")}>
-                <Megaphone size={16} />
-                {t("ads")}
-              </Link>
-            </div>
-          ) : null}
-        </div>
       </nav>
 
       <div className="mt-4 shrink-0 space-y-3 border-t border-[#E5E5E5] pt-4">

@@ -13,7 +13,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
 
 function accountsHome(ads: boolean, origin: string) {
-  return new URL(ads ? "/accounts/ads" : "/accounts/posts", origin);
+  return new URL(ads ? "/connections#promotions" : "/connections", origin);
 }
 
 function wantsJson(request: Request) {

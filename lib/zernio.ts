@@ -318,6 +318,81 @@ export async function getPost(postId: string) {
   return data.post;
 }
 
+export async function listPosts(query: {
+  profileId: string;
+  accountId?: string;
+  platform?: string;
+  status?: string;
+  source?: string;
+  fromDate?: string;
+  toDate?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return zernioFetch<{ posts?: ZernioPost[]; pagination?: { page?: number; hasMore?: boolean } }>(
+    withQuery("/posts", query),
+  );
+}
+
+export type ZernioConversation = {
+  id: string;
+  platform?: string;
+  accountId?: string;
+  accountUsername?: string;
+  participantName?: string;
+  lastMessage?: string;
+  updatedTime?: string;
+  status?: string;
+  unreadCount?: number | null;
+};
+
+export async function listConversations(query: {
+  profileId: string;
+  accountId?: string;
+  platform?: string;
+  status?: string;
+  limit?: number;
+}) {
+  return zernioFetch<{ data?: ZernioConversation[] }>(withQuery("/inbox/conversations", query));
+}
+
+export async function getConversation(conversationId: string, accountId: string) {
+  return zernioFetch<{ conversation?: ZernioConversation } & ZernioConversation>(
+    withQuery(`/inbox/conversations/${encodeURIComponent(conversationId)}`, { accountId }),
+  );
+}
+
+export async function listConversationMessages(conversationId: string, accountId: string) {
+  return zernioFetch<{
+    messages?: Array<{ id?: string; message?: string; text?: string; createdTime?: string; direction?: string }>;
+    data?: Array<{ id?: string; message?: string; text?: string; createdTime?: string; direction?: string }>;
+  }>(withQuery(`/inbox/conversations/${encodeURIComponent(conversationId)}/messages`, { accountId }));
+}
+
+export async function sendConversationMessage(conversationId: string, accountId: string, message: string) {
+  return zernioFetch<unknown>(`/inbox/conversations/${encodeURIComponent(conversationId)}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ accountId, message }),
+  });
+}
+
+export async function replyToComment(input: {
+  postId: string;
+  accountId: string;
+  message: string;
+  commentId?: string;
+}) {
+  return zernioFetch<unknown>(`/inbox/comments/${encodeURIComponent(input.postId)}`, {
+    method: "POST",
+    body: JSON.stringify({
+      accountId: input.accountId,
+      message: input.message,
+      commentId: input.commentId,
+    }),
+  });
+}
+
 function withQuery(path: string, query: Record<string, string | number | undefined>) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
@@ -397,6 +472,7 @@ export async function getPostAnalytics(query: {
   profileId?: string;
   accountId?: string;
   platform?: string;
+  source?: string;
   fromDate?: string;
   toDate?: string;
   limit?: number;
