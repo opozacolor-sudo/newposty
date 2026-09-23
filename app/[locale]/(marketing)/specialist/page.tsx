@@ -1,0 +1,102 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { WaitlistForm } from "@/components/marketing/waitlist-form";
+import { Link } from "@/i18n/navigation";
+import { SPECIALIST } from "@/lib/specialist";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const copy = locale === "ro" ? SPECIALIST.ro : SPECIALIST.en;
+  return { title: copy.metaTitle, description: copy.metaDescription };
+}
+
+export default async function SpecialistPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const copy = locale === "ro" ? SPECIALIST.ro : SPECIALIST.en;
+  const t = await getTranslations("Features");
+  const contact = await getTranslations("Header");
+
+  return (
+    <article className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+      <header className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#FF4713]">{copy.kicker}</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl lg:text-5xl">
+            {copy.title}
+          </h1>
+          <p className="mt-4 text-base leading-7 text-neutral-500 sm:text-lg">{copy.subtitle}</p>
+          <Link href="/contact" className="mt-6 inline-flex text-sm font-medium text-[#FF4713] hover:underline">
+            {contact("contact")}
+          </Link>
+        </div>
+        <img src={SPECIALIST.hero} alt="" className="aspect-[16/9] w-full rounded-3xl object-cover" />
+      </header>
+
+      <section className="mt-16 grid gap-4 sm:grid-cols-3">
+        {copy.features.map((feature) => (
+          <div key={feature.title} className="rounded-2xl border border-neutral-100 bg-neutral-50/70 p-5">
+            <h2 className="text-base font-semibold text-neutral-950">{feature.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-neutral-500">{feature.body}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="mt-16 grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+        <img src={SPECIALIST.detail} alt="" className="aspect-[4/3] w-full rounded-3xl object-cover" />
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">{copy.batchTitle}</h2>
+          <p className="mt-3 text-base leading-7 text-neutral-500">{copy.batchBody}</p>
+        </div>
+      </section>
+
+      <section className="mt-16 rounded-3xl bg-neutral-950 px-6 py-10 text-white sm:px-10">
+        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#FF4713]">{copy.examplesTitle}</p>
+        <ul className="mt-4 max-w-2xl space-y-3">
+          {copy.examples.map((example) => (
+            <li key={example} className="text-base leading-7 text-neutral-100">
+              “{example}”
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-16">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-950">{t("howTitle")}</h2>
+        <ol className="mt-6 grid gap-4 sm:grid-cols-2">
+          {copy.steps.map((step, index) => (
+            <li key={step.title} className="rounded-2xl border border-neutral-100 p-5">
+              <p className="text-sm font-medium text-[#FF4713]">{String(index + 1).padStart(2, "0")}</p>
+              <h3 className="mt-2 text-base font-semibold text-neutral-950">{step.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-neutral-500">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="mt-16">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-950">{t("faqTitle")}</h2>
+        <div className="mt-6 divide-y divide-neutral-100 border-y border-neutral-100">
+          {copy.faqs.map((item) => (
+            <details key={item.q} className="group py-4">
+              <summary className="cursor-pointer list-none text-base font-medium text-neutral-950">{item.q}</summary>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-500">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <div className="mx-auto mt-16 max-w-xl border-t border-neutral-100 pt-12 text-center">
+        <p className="text-2xl font-semibold tracking-tight text-neutral-950">{t("ctaTitle")}</p>
+        <WaitlistForm />
+      </div>
+    </article>
+  );
+}

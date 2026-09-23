@@ -82,18 +82,18 @@ export function MarketingHeader() {
 
   return (
     <header className="relative z-50 shrink-0 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-6">
-        <div className="flex min-w-0 items-center justify-start gap-4 lg:gap-5">
+      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-6">
+        <div className="flex min-w-0 items-center justify-start gap-4 xl:gap-5">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 lg:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 xl:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-label={open ? t("closeMenu") : t("openMenu")}
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <nav className="hidden min-w-0 items-center gap-3 lg:flex xl:gap-5">
+          <nav className="hidden min-w-0 items-center gap-3 xl:flex">
             <DesktopMenu
               label={t("features")}
               open={desktop === "features"}
@@ -119,6 +119,9 @@ export function MarketingHeader() {
             >
               <MadeForPanel onNavigate={closeAll} />
             </DesktopMenu>
+            <Link href="/specialist" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
+              {t("specialist")}
+            </Link>
             <Link href="/about" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
               {t("about")}
             </Link>
@@ -147,7 +150,7 @@ export function MarketingHeader() {
       </div>
 
       {open ? (
-        <div className="border-t border-neutral-100 bg-white px-4 py-4 lg:hidden">
+        <div className="border-t border-neutral-100 bg-white px-4 py-4 xl:hidden">
           <nav className="flex flex-col gap-3">
             <button
               type="button"
@@ -191,6 +194,9 @@ export function MarketingHeader() {
                 <MadeForPanel onNavigate={closeAll} />
               </div>
             ) : null}
+            <Link href="/specialist" className={btnGhost} onClick={closeAll}>
+              {t("specialist")}
+            </Link>
             <Link href="/about" className={btnGhost} onClick={closeAll}>
               {t("about")}
             </Link>
