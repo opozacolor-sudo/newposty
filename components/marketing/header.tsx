@@ -18,6 +18,7 @@ function DesktopMenu({
   onClose,
   children,
   wide,
+  narrow,
 }: {
   label: string;
   open: boolean;
@@ -25,6 +26,7 @@ function DesktopMenu({
   onClose: () => void;
   children: ReactNode;
   wide?: boolean;
+  narrow?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -58,7 +60,13 @@ function DesktopMenu({
       {open ? (
         <div className="absolute left-0 top-full z-50 pt-3">
           <div
-            className={`${wide ? "w-[min(36rem,calc(100vw-2rem))]" : "w-[min(32rem,calc(100vw-2rem))]"} rounded-2xl border border-neutral-100 bg-white p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)] sm:p-5`}
+            className={`${
+              narrow
+                ? "w-52 p-2"
+                : wide
+                  ? "w-[min(36rem,calc(100vw-2rem))] p-4 sm:p-5"
+                  : "w-[min(32rem,calc(100vw-2rem))] p-4 sm:p-5"
+            } rounded-2xl border border-neutral-100 bg-white shadow-[0_18px_50px_rgba(0,0,0,0.12)]`}
           >
             {children}
           </div>
@@ -68,11 +76,36 @@ function DesktopMenu({
   );
 }
 
+function MoreLinks({ onNavigate }: { onNavigate?: () => void }) {
+  const t = useTranslations("Header");
+  const items = [
+    { href: "/specialist", label: t("specialist") },
+    { href: "/about", label: t("about") },
+    { href: "/contact", label: t("contact") },
+  ] as const;
+
+  return (
+    <ul className="flex flex-col">
+      {items.map((item) => (
+        <li key={item.href}>
+          <Link
+            href={item.href}
+            onClick={onNavigate}
+            className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-950 hover:bg-neutral-50"
+          >
+            {item.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function MarketingHeader() {
   const t = useTranslations("Header");
   const [open, setOpen] = useState(false);
-  const [desktop, setDesktop] = useState<"features" | "platforms" | "madeFor" | null>(null);
-  const [mobile, setMobile] = useState<"features" | "platforms" | "madeFor" | null>(null);
+  const [desktop, setDesktop] = useState<"features" | "platforms" | "madeFor" | "more" | null>(null);
+  const [mobile, setMobile] = useState<"features" | "platforms" | "madeFor" | "more" | null>(null);
 
   const closeAll = () => {
     setOpen(false);
@@ -82,18 +115,18 @@ export function MarketingHeader() {
 
   return (
     <header className="relative z-50 shrink-0 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-6">
-        <div className="flex min-w-0 items-center justify-start gap-4 xl:gap-5">
+      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-6">
+        <div className="flex min-w-0 items-center justify-start gap-4 lg:gap-5">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 xl:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 lg:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-label={open ? t("closeMenu") : t("openMenu")}
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <nav className="hidden min-w-0 items-center gap-3 xl:flex">
+          <nav className="hidden min-w-0 items-center gap-4 lg:flex xl:gap-5">
             <DesktopMenu
               label={t("features")}
               open={desktop === "features"}
@@ -119,15 +152,15 @@ export function MarketingHeader() {
             >
               <MadeForPanel onNavigate={closeAll} />
             </DesktopMenu>
-            <Link href="/specialist" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
-              {t("specialist")}
-            </Link>
-            <Link href="/about" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
-              {t("about")}
-            </Link>
-            <Link href="/contact" className={`${btnGhost} whitespace-nowrap`} onClick={closeAll}>
-              {t("contact")}
-            </Link>
+            <DesktopMenu
+              label={t("more")}
+              open={desktop === "more"}
+              onOpen={() => setDesktop("more")}
+              onClose={() => setDesktop((value) => (value === "more" ? null : value))}
+              narrow
+            >
+              <MoreLinks onNavigate={closeAll} />
+            </DesktopMenu>
           </nav>
         </div>
 
@@ -150,7 +183,7 @@ export function MarketingHeader() {
       </div>
 
       {open ? (
-        <div className="border-t border-neutral-100 bg-white px-4 py-4 xl:hidden">
+        <div className="border-t border-neutral-100 bg-white px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-3">
             <button
               type="button"
@@ -194,15 +227,20 @@ export function MarketingHeader() {
                 <MadeForPanel onNavigate={closeAll} />
               </div>
             ) : null}
-            <Link href="/specialist" className={btnGhost} onClick={closeAll}>
-              {t("specialist")}
-            </Link>
-            <Link href="/about" className={btnGhost} onClick={closeAll}>
-              {t("about")}
-            </Link>
-            <Link href="/contact" className={btnGhost} onClick={closeAll}>
-              {t("contact")}
-            </Link>
+            <button
+              type="button"
+              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              aria-expanded={mobile === "more"}
+              onClick={() => setMobile((value) => (value === "more" ? null : "more"))}
+            >
+              {t("more")}
+              <ChevronDown size={16} className={mobile === "more" ? "rotate-180 transition" : "transition"} />
+            </button>
+            {mobile === "more" ? (
+              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-2">
+                <MoreLinks onNavigate={closeAll} />
+              </div>
+            ) : null}
             <Link href="/login" className={btnGhost} onClick={closeAll}>
               {t("signIn")}
             </Link>
