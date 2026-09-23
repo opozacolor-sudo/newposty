@@ -383,7 +383,8 @@
     "switchToTeam": "Switch to Team",
     "connections": "Connections",
     "analytics": "Analytics",
-    "messages": "Messages"
+    "messages": "Messages",
+    "commentsNav": "Comments"
   },
   "Studio": {
     "postsTitle": "Posts",
@@ -407,6 +408,8 @@
     "published": "Published",
     "draft": "Drafts",
     "failed": "Failed",
+    "pending": "Pending",
+    "noContent": "No content",
     "active": "Active",
     "past": "Past",
     "authored": "Created here",
@@ -435,7 +438,19 @@
     "views": "Views",
     "clicks": "Clicks",
     "spend": "Spend",
-    "name": "Campaign"
+    "name": "Campaign",
+    "followers": "Followers",
+    "postsPlatform": "Posts per platform",
+    "postsTime": "Posts over time",
+    "likesPlatform": "Likes per platform",
+    "likesTime": "Likes over time",
+    "engagementTime": "Engagement over time",
+    "bestTime": "Best time to post",
+    "followerEvolution": "Follower evolution",
+    "formats": "Content format",
+    "breakdown": "Platform breakdown",
+    "topPosts": "Top posts",
+    "createInChat": "New campaigns are created in chat."
   },
   "Clients": {
     "label": "Client",
@@ -528,6 +543,8 @@
     "title": "Posting accounts",
     "connectionsTitle": "Connections",
     "connectionsLead": "Posting networks and ad accounts stay in separate sections. You only see what is connected for the selected client.",
+    "socialHeading": "SOCIAL",
+    "adsHeading": "ADS",
     "connectedNamed": "{platform} connected. You can publish from chat.",
     "connectedGeneric": "Account connected. You can publish from chat.",
     "connect": "Connect",

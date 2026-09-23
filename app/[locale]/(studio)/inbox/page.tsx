@@ -48,10 +48,10 @@ export default async function InboxPage({
       : null;
 
   return (
-    <main className="h-full overflow-y-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("inboxTitle")}</h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("inboxLead")}</p>
-      <div className="mt-4 flex gap-2 text-sm">
+    <main className="flex h-full min-h-0 flex-col">
+      <div className="border-b border-neutral-100 px-4 py-3">
+      <h1 className="text-lg font-semibold tracking-tight">{t("inboxTitle")}</h1>
+      <div className="mt-2 flex gap-2 text-sm">
         <Link
           href="/inbox?tab=messages"
           className={tab === "messages" ? "font-medium text-[#FF4713]" : "text-neutral-500"}
@@ -105,51 +105,30 @@ export default async function InboxPage({
           ) : null}
         </FilterForm>
       )}
+      </div>
       <StudioNotice
         kind={listedError}
         labels={{ failed: t("loadFailed"), unavailable: t("unavailable"), unknown: t("unknownAccount") }}
       />
-      <ul className="mt-8 space-y-3">
+      <div className="grid min-h-0 flex-1 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <ul className="min-h-0 overflow-y-auto border-r border-neutral-100">
         {tab === "messages"
           ? conversations.rows.flatMap((row) => {
               if (!("id" in row) || !row.id || !row.accountId) return [];
               const open = params.conversation === row.id;
               return [
-                <li key={row.id} className="rounded-2xl border border-neutral-100 px-4 py-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-medium">{row.participantName || "—"}</p>
-                      <p className="text-xs text-neutral-500">
-                        {platformLabel(row.platform ?? "")}
-                        {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
-                        {row.unreadCount ? ` · ${row.unreadCount}` : ""}
-                      </p>
-                    </div>
-                    <Link
-                      href={`/inbox?tab=messages&conversation=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
-                      className="text-sm font-medium text-[#FF4713]"
-                    >
-                      {t("reply")}
-                    </Link>
-                  </div>
-                  <p className="mt-2 text-sm text-neutral-700">{row.lastMessage || ""}</p>
-                  {open && thread ? (
-                    <div className="mt-3 space-y-2 border-t border-neutral-100 pt-3">
-                      {thread.messages.map((message, index) => (
-                        <p key={message.id || index} className="text-sm text-neutral-800">
-                          {message.message || message.text || ""}
-                        </p>
-                      ))}
-                      <InboxReplyForm
-                        endpoint="/api/inbox/messages"
-                        fields={{ conversationId: row.id, accountId: row.accountId }}
-                        placeholder={t("replyPlaceholder")}
-                        sendLabel={t("reply")}
-                        sendingLabel={t("sending")}
-                        errorLabel={t("replyFailed")}
-                      />
-                    </div>
-                  ) : null}
+                <li key={row.id}>
+                  <Link
+                    href={`/inbox?tab=messages&conversation=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
+                    className={`block border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
+                  >
+                    <p className="truncate text-sm font-medium">{row.participantName || "—"}</p>
+                    <p className="truncate text-xs text-neutral-500">
+                      {platformLabel(row.platform ?? "")}
+                      {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-neutral-600">{row.lastMessage || ""}</p>
+                  </Link>
                 </li>,
               ];
             })
@@ -157,45 +136,68 @@ export default async function InboxPage({
               if (!("id" in row) || !row.id || !row.accountId) return [];
               const open = params.post === row.id && params.threadAccount === row.accountId;
               return [
-                <li key={`${row.accountId}-${row.id}`} className="rounded-2xl border border-neutral-100 px-4 py-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-medium">{platformLabel(row.platform ?? "")}</p>
-                      <p className="text-xs text-neutral-500">
-                        {row.accountUsername ? `@${row.accountUsername.replace(/^@/, "")}` : ""}
-                        {typeof row.commentCount === "number" ? ` · ${row.commentCount}` : ""}
-                      </p>
-                    </div>
-                    <Link
-                      href={`/inbox?tab=comments&post=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
-                      className="text-sm font-medium text-[#FF4713]"
-                    >
-                      {t("comments")}
-                    </Link>
-                  </div>
-                  <p className="mt-2 text-sm text-neutral-700">{row.content || ""}</p>
-                  {open && comments ? (
-                    <div className="mt-3 space-y-2 border-t border-neutral-100 pt-3">
-                      {comments.comments.map((comment, index) => (
-                        <div key={comment.id || index} className="text-sm">
-                          <p className="text-xs text-neutral-500">{comment.from?.username || comment.from?.name || ""}</p>
-                          <p>{comment.message}</p>
-                        </div>
-                      ))}
-                      <InboxReplyForm
-                        endpoint="/api/inbox/reply"
-                        fields={{ postId: row.id, accountId: row.accountId }}
-                        placeholder={t("replyPlaceholder")}
-                        sendLabel={t("reply")}
-                        sendingLabel={t("sending")}
-                        errorLabel={t("replyFailed")}
-                      />
-                    </div>
-                  ) : null}
+                <li key={`${row.accountId}-${row.id}`}>
+                  <Link
+                    href={`/inbox?tab=comments&post=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
+                    className={`block border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
+                  >
+                    <p className="truncate text-sm font-medium">{row.content || platformLabel(row.platform ?? "")}</p>
+                    <p className="truncate text-xs text-neutral-500">
+                      {platformLabel(row.platform ?? "")}
+                      {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
+                      {typeof row.commentCount === "number" ? ` · ${row.commentCount}` : ""}
+                    </p>
+                  </Link>
                 </li>,
               ];
             })}
       </ul>
+      <section className="flex min-h-0 flex-col">
+        {tab === "messages" && thread && params.conversation ? (
+          <>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+              {thread.messages.map((message, index) => (
+                <p key={message.id || index} className="max-w-xl rounded-2xl bg-neutral-100 px-3 py-2 text-sm">
+                  {message.message || message.text || ""}
+                </p>
+              ))}
+            </div>
+            <div className="border-t border-neutral-100 px-4 py-3">
+              <InboxReplyForm
+                endpoint="/api/inbox/messages"
+                fields={{ conversationId: params.conversation, accountId: openAccount }}
+                placeholder={t("replyPlaceholder")}
+                sendLabel={t("reply")}
+                sendingLabel={t("sending")}
+                errorLabel={t("replyFailed")}
+              />
+            </div>
+          </>
+        ) : null}
+        {tab === "comments" && comments && params.post ? (
+          <>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+              {comments.comments.map((comment, index) => (
+                <div key={comment.id || index} className="text-sm">
+                  <p className="text-xs text-neutral-500">{comment.from?.username || comment.from?.name || ""}</p>
+                  <p>{comment.message}</p>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-neutral-100 px-4 py-3">
+              <InboxReplyForm
+                endpoint="/api/inbox/reply"
+                fields={{ postId: params.post, accountId: openAccount }}
+                placeholder={t("replyPlaceholder")}
+                sendLabel={t("reply")}
+                sendingLabel={t("sending")}
+                errorLabel={t("replyFailed")}
+              />
+            </div>
+          </>
+        ) : null}
+      </section>
+      </div>
       {posting.length > 0 &&
       (tab === "messages" ? conversations.rows.length : commentPosts.rows.length) === 0 &&
       !listedError ? (

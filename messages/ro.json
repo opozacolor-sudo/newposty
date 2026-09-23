@@ -383,7 +383,8 @@
     "switchToTeam": "Trece pe Team",
     "connections": "Conexiuni",
     "analytics": "Statistici",
-    "messages": "Mesaje"
+    "messages": "Mesaje",
+    "commentsNav": "Comentarii"
   },
   "Studio": {
     "postsTitle": "Postări",
@@ -407,6 +408,8 @@
     "published": "Publicate",
     "draft": "Ciorne",
     "failed": "Eșuate",
+    "pending": "În așteptare",
+    "noContent": "Fără text",
     "active": "Active",
     "past": "Trecut",
     "authored": "Create aici",
@@ -435,7 +438,19 @@
     "views": "Vizualizări",
     "clicks": "Clickuri",
     "spend": "Cheltuială",
-    "name": "Campanie"
+    "name": "Campanie",
+    "followers": "Urmăritori",
+    "postsPlatform": "Postări pe platformă",
+    "postsTime": "Postări în timp",
+    "likesPlatform": "Aprecieri pe platformă",
+    "likesTime": "Aprecieri în timp",
+    "engagementTime": "Interacțiuni în timp",
+    "bestTime": "Cea mai bună oră",
+    "followerEvolution": "Evoluția urmăritorilor",
+    "formats": "Format",
+    "breakdown": "Pe platformă",
+    "topPosts": "Cele mai bune postări",
+    "createInChat": "Campaniile noi se fac din chat."
   },
   "Clients": {
     "label": "Client",
@@ -528,6 +543,8 @@
     "title": "Conturi postări",
     "connectionsTitle": "Conexiuni",
     "connectionsLead": "Rețelele pe care postezi și conturile de reclame stau separate. Vezi doar ce e conectat la clientul selectat.",
+    "socialHeading": "SOCIAL",
+    "adsHeading": "RECLAME",
     "connectedNamed": "{platform} conectat. Poți publica din chat.",
     "connectedGeneric": "Cont conectat. Poți publica din chat.",
     "connect": "Conectează",

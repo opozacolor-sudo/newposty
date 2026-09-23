@@ -1,10 +1,12 @@
 import { getTranslations } from "next-intl/server";
+import { PlatformIcon } from "@/components/studio/platform-icon";
 import { FilterField, FilterForm, StudioNotice, filterControl } from "@/components/studio/studio-filters";
+import { Link } from "@/i18n/navigation";
 import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
-import { isPlatformId, platformLabel } from "@/lib/platforms";
+import { getPlatform, isPlatformId, platformLabel } from "@/lib/platforms";
 import { loadScopedPosts, loadStudioScopeWithProfile } from "@/lib/studio-feed";
-import { Link } from "@/i18n/navigation";
+import type { ZernioPost } from "@/lib/zernio";
 
 export default async function PostsHistoryPage({
   searchParams,
@@ -92,36 +94,84 @@ export default async function PostsHistoryPage({
         kind={result.error}
         labels={{ failed: t("loadFailed"), unavailable: t("unavailable"), unknown: t("unknownAccount") }}
       />
-      <ul className="mt-8 divide-y divide-neutral-100 rounded-2xl border border-neutral-100">
+      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {result.posts.map((post) => (
-          <li key={post._id} className="px-4 py-4">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
-              <span className="font-medium text-neutral-800">{post.status || "—"}</span>
-              <span>{post.scheduledFor ? new Date(post.scheduledFor).toLocaleString() : ""}</span>
-            </div>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-800">{post.content || "—"}</p>
-            <ul className="mt-2 flex flex-wrap gap-2 text-xs">
-              {(post.platforms ?? []).map((target, index) => (
-                <li key={`${post._id}-${index}`} className="rounded-full bg-neutral-100 px-2 py-1">
-                  {platformLabel(target.platform)}
-                  {target.status ? ` · ${target.status}` : ""}
-                  {target.platformPostUrl ? (
-                    <>
-                      {" "}
-                      <a href={target.platformPostUrl} className="text-[#FF4713]" target="_blank" rel="noreferrer">
-                        URL
-                      </a>
-                    </>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </li>
+          <PostCard key={post._id} post={post} statusLabel={statusLabel(post.status, t)} emptyLabel={t("noContent")} />
         ))}
       </ul>
       {posting.length > 0 && result.posts.length === 0 && !result.error ? (
         <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
       ) : null}
     </main>
+  );
+}
+
+function statusLabel(
+  status: string | undefined,
+  t: (key: "scheduled" | "published" | "draft" | "failed" | "pending") => string,
+) {
+  if (status === "scheduled" || status === "published" || status === "draft" || status === "failed") return t(status);
+  if (status === "pending" || status === "publishing") return t("pending");
+  return status || "";
+}
+
+function postThumb(post: ZernioPost) {
+  const media = post.mediaItems?.[0];
+  if (media?.thumbnail) return media.thumbnail;
+  if (media?.url && media.type !== "video") return media.url;
+  if (typeof post.thumbnailUrl === "string") return post.thumbnailUrl;
+  return null;
+}
+
+function PostCard({
+  post,
+  statusLabel: label,
+  emptyLabel,
+}: {
+  post: ZernioPost;
+  statusLabel: string;
+  emptyLabel: string;
+}) {
+  const thumb = postThumb(post);
+  const platform = post.platforms?.[0];
+  const meta = platform ? getPlatform(platform.platform) : null;
+  const when = post.scheduledFor ? new Date(post.scheduledFor) : null;
+  return (
+    <li className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+      <div className="relative aspect-square bg-neutral-100">
+        {thumb ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={thumb} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center px-3 text-center text-xs text-neutral-400">
+            {post.content?.slice(0, 80) || emptyLabel}
+          </div>
+        )}
+        {label ? (
+          <span className="absolute bottom-2 left-2 rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-700">
+            {label}
+          </span>
+        ) : null}
+      </div>
+      <div className="flex items-center gap-2 px-2.5 py-2">
+        {meta ? <PlatformIcon size="sm" connected platform={meta} /> : null}
+        <div className="min-w-0">
+          <p className="truncate text-[11px] text-neutral-500">
+            {when
+              ? when.toLocaleString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                })
+              : ""}
+          </p>
+          <p className="truncate text-[11px] text-neutral-400">
+            {platform ? platformLabel(platform.platform) : ""}
+            {post.content ? ` · ${post.content}` : ""}
+          </p>
+        </div>
+      </div>
+    </li>
   );
 }

@@ -93,6 +93,8 @@ export type ZernioPost = {
   status?: string;
   content?: string;
   scheduledFor?: string;
+  mediaItems?: Array<{ url?: string; type?: string; thumbnail?: string }>;
+  thumbnailUrl?: string;
   platforms?: Array<{
     platform: string;
     status?: string;

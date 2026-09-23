@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { BrandLogo } from "@/components/marketing/brand-logo";
@@ -44,21 +45,15 @@ export function StudioSidebar({
 }) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const inAssistant =
-    pathname.startsWith("/chat") ||
-    pathname.startsWith("/connections") ||
-    pathname.startsWith("/posts") ||
-    pathname.startsWith("/analytics") ||
-    pathname.startsWith("/inbox") ||
-    pathname.startsWith("/ads") ||
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/accounts");
-  const [assistantOpen, setAssistantOpen] = useState(inAssistant);
+  const searchParams = useSearchParams();
+  const inInbox = pathname.startsWith("/inbox");
+  const commentsOpen = inInbox && searchParams.get("tab") === "comments";
+  const [inboxOpen, setInboxOpen] = useState(inInbox);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (inAssistant) setAssistantOpen(true);
-  }, [inAssistant]);
+    if (inInbox) setInboxOpen(true);
+  }, [inInbox]);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -71,49 +66,50 @@ export function StudioSidebar({
       </Link>
 
       <nav className="mt-8 flex flex-1 flex-col gap-1 overflow-y-auto">
+        <Link href="/chat" className={itemClass(pathname === "/chat" || pathname.startsWith("/chat/"))}>
+          <MessageCircle size={18} />
+          {t("assistant")}
+        </Link>
+        <Link href="/connections" className={itemClass(pathname.startsWith("/connections") || pathname.startsWith("/accounts"))}>
+          <Link2 size={18} />
+          {t("connections")}
+        </Link>
+        <Link href="/posts" className={itemClass(pathname.startsWith("/posts") || pathname.startsWith("/dashboard/posts"))}>
+          <FileText size={18} />
+          {t("posts")}
+        </Link>
+        <Link href="/analytics" className={itemClass(pathname.startsWith("/analytics"))}>
+          <BarChart3 size={18} />
+          {t("analytics")}
+        </Link>
         <div>
           <button
             type="button"
-            onClick={() => setAssistantOpen((value) => !value)}
-            className={itemClass(inAssistant)}
-            aria-expanded={assistantOpen}
+            onClick={() => setInboxOpen((value) => !value)}
+            className={itemClass(inInbox)}
+            aria-expanded={inboxOpen}
           >
-            <MessageCircle size={18} />
-            {t("assistant")}
-            <ChevronDown
-              size={16}
-              className={`ml-auto shrink-0 transition ${assistantOpen ? "rotate-180" : ""}`}
-            />
+            <Inbox size={18} />
+            {t("messages")}
+            <ChevronDown size={16} className={`ml-auto shrink-0 transition ${inboxOpen ? "rotate-180" : ""}`} />
           </button>
-          {assistantOpen ? (
+          {inboxOpen ? (
             <div className="mt-1 space-y-1 pl-4">
-              <Link href="/chat" className={itemClass(pathname === "/chat" || pathname.startsWith("/chat/"))}>
-                <MessageCircle size={16} />
-                {t("chat")}
-              </Link>
-              <Link href="/connections" className={itemClass(pathname.startsWith("/connections") || pathname.startsWith("/accounts"))}>
-                <Link2 size={16} />
-                {t("connections")}
-              </Link>
-              <Link href="/posts" className={itemClass(pathname.startsWith("/posts") || pathname.startsWith("/dashboard/posts"))}>
-                <FileText size={16} />
-                {t("posts")}
-              </Link>
-              <Link href="/analytics" className={itemClass(pathname.startsWith("/analytics"))}>
-                <BarChart3 size={16} />
-                {t("analytics")}
-              </Link>
-              <Link href="/inbox" className={itemClass(pathname.startsWith("/inbox"))}>
-                <Inbox size={16} />
+              <Link href="/inbox?tab=messages" className={itemClass(inInbox && !commentsOpen)}>
+                <Mail size={16} />
                 {t("messages")}
               </Link>
-              <Link href="/ads" className={itemClass(pathname === "/ads" || pathname.startsWith("/ads/") || pathname.startsWith("/dashboard/ads"))}>
-                <Megaphone size={16} />
-                {t("ads")}
+              <Link href="/inbox?tab=comments" className={itemClass(commentsOpen)}>
+                <MessageCircle size={16} />
+                {t("commentsNav")}
               </Link>
             </div>
           ) : null}
         </div>
+        <Link href="/ads" className={itemClass(pathname === "/ads" || pathname.startsWith("/ads/") || pathname.startsWith("/dashboard/ads"))}>
+          <Megaphone size={18} />
+          {t("ads")}
+        </Link>
 
         <Link href="/help" className={itemClass(pathname === "/help" || pathname.startsWith("/help/"))}>
           <BookOpen size={18} />

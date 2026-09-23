@@ -1,10 +1,11 @@
 import { getTranslations } from "next-intl/server";
+import { AnalyticsBoardView } from "@/components/studio/analytics-board";
 import { FilterField, FilterForm, StudioNotice, filterControl } from "@/components/studio/studio-filters";
 import { Link } from "@/i18n/navigation";
 import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
 import { isPlatformId, platformLabel } from "@/lib/platforms";
-import { loadScopedAnalytics, loadStudioScopeWithProfile } from "@/lib/studio-feed";
+import { loadAnalyticsBoard, loadStudioScopeWithProfile, type AnalyticsBoard } from "@/lib/studio-feed";
 
 function isoDaysAgo(days: number) {
   const date = new Date();
@@ -24,10 +25,30 @@ export default async function AnalyticsPage({
   const posting = scope.accounts.filter((account) => isPlatformId(account.platform));
   const from = params.from || isoDaysAgo(30);
   const to = params.to || new Date().toISOString().slice(0, 10);
+  const emptyBoard: AnalyticsBoard = {
+    engagementRate: 0,
+    reach: 0,
+    followers: 0,
+    posts: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    saves: 0,
+    views: 0,
+    impressions: 0,
+    clicks: 0,
+    byPlatform: [],
+    weeks: [],
+    followersSeries: [],
+    formats: [],
+    top: [],
+    heatmap: Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0)),
+    best: [],
+  };
   const result =
     posting.length === 0
-      ? { rows: [], error: null }
-      : await loadScopedAnalytics(scope, {
+      ? { board: emptyBoard, error: null }
+      : await loadAnalyticsBoard(scope, {
           accountId: params.account,
           platform: params.platform,
           source: params.source,
@@ -36,17 +57,6 @@ export default async function AnalyticsPage({
           sortBy: params.sort === "engagement" ? "engagement" : "date",
           order: "desc",
         });
-
-  const totals = result.rows.reduce(
-    (sum, row) => ({
-      impressions: sum.impressions + row.impressions,
-      reach: sum.reach + row.reach,
-      likes: sum.likes + row.likes,
-      comments: sum.comments + row.comments,
-      views: sum.views + row.views,
-    }),
-    { impressions: 0, reach: 0, likes: 0, comments: 0, views: 0 },
-  );
 
   return (
     <main className="h-full overflow-y-auto px-6 py-8">
@@ -101,76 +111,39 @@ export default async function AnalyticsPage({
               <input type="date" name="to" defaultValue={to} className={filterControl} />
             </FilterField>
           </FilterForm>
-          <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
-            {(
-              [
-                ["impressions", totals.impressions],
-                ["reach", totals.reach],
-                ["likes", totals.likes],
-                ["comments", totals.comments],
-                ["views", totals.views],
-              ] as const
-            ).map(([key, value]) => (
-              <div key={key} className="rounded-2xl border border-neutral-100 px-4 py-3">
-                <dt className="text-xs text-neutral-500">{t(key)}</dt>
-                <dd className="mt-1 text-lg font-semibold">{value.toLocaleString()}</dd>
-              </div>
-            ))}
-          </dl>
         </>
       )}
       <StudioNotice
         kind={result.error}
         labels={{ failed: t("loadFailed"), unavailable: t("unavailable"), unknown: t("unknownAccount") }}
       />
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-neutral-100">
-        <table className="min-w-full text-left text-sm">
-          <thead className="text-xs text-neutral-500">
-            <tr>
-              <th className="px-3 py-2 font-medium">{t("postsTitle")}</th>
-              <th className="px-3 py-2 font-medium">{t("platform")}</th>
-              <th className="px-3 py-2 font-medium">{t("impressions")}</th>
-              <th className="px-3 py-2 font-medium">{t("reach")}</th>
-              <th className="px-3 py-2 font-medium">{t("likes")}</th>
-              <th className="px-3 py-2 font-medium">{t("comments")}</th>
-              <th className="px-3 py-2 font-medium">{t("shares")}</th>
-              <th className="px-3 py-2 font-medium">{t("views")}</th>
-              <th className="px-3 py-2 font-medium">{t("clicks")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {result.rows.map((row, index) => (
-              <tr key={`${row.id}-${row.accountId}-${index}`} className="border-t border-neutral-100">
-                <td className="max-w-xs px-3 py-3">
-                  <p className="line-clamp-2">{row.content || "—"}</p>
-                  <p className="mt-1 text-xs text-neutral-500">
-                    {row.username ? `@${row.username.replace(/^@/, "")}` : ""}
-                    {row.publishedAt ? ` · ${new Date(row.publishedAt).toLocaleDateString()}` : ""}
-                    {row.url ? (
-                      <>
-                        {" "}
-                        <a href={row.url} className="text-[#FF4713]" target="_blank" rel="noreferrer">
-                          URL
-                        </a>
-                      </>
-                    ) : null}
-                  </p>
-                </td>
-                <td className="px-3 py-3">{platformLabel(row.platform)}</td>
-                <td className="px-3 py-3">{row.impressions.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.reach.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.likes.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.comments.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.shares.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.views.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.clicks.toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {posting.length > 0 && result.rows.length === 0 && !result.error ? (
-        <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
+      {posting.length > 0 ? (
+        <AnalyticsBoardView
+          board={result.board}
+          labels={{
+            engagement: t("engagement"),
+            reach: t("reach"),
+            followers: t("followers"),
+            posts: t("postsTitle"),
+            postsPlatform: t("postsPlatform"),
+            postsTime: t("postsTime"),
+            likesPlatform: t("likesPlatform"),
+            likesTime: t("likesTime"),
+            engagementTime: t("engagementTime"),
+            bestTime: t("bestTime"),
+            followerEvolution: t("followerEvolution"),
+            formats: t("formats"),
+            breakdown: t("breakdown"),
+            top: t("topPosts"),
+            likes: t("likes"),
+            comments: t("comments"),
+            shares: t("shares"),
+            views: t("views"),
+            impressions: t("impressions"),
+            clicks: t("clicks"),
+            saves: t("saves"),
+          }}
+        />
       ) : null}
     </main>
   );

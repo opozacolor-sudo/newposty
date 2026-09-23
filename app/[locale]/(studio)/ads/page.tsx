@@ -78,34 +78,39 @@ export default async function AdsCampaignsPage({
         kind={result.error}
         labels={{ failed: t("loadFailed"), unavailable: t("unavailable"), unknown: t("unknownAccount") }}
       />
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-neutral-100">
-        <table className="min-w-full text-left text-sm">
-          <thead className="text-xs text-neutral-500">
-            <tr>
-              <th className="px-3 py-2 font-medium">{t("name")}</th>
-              <th className="px-3 py-2 font-medium">{t("platform")}</th>
-              <th className="px-3 py-2 font-medium">{t("account")}</th>
-              <th className="px-3 py-2 font-medium">{t("status")}</th>
-              <th className="px-3 py-2 font-medium">{t("spend")}</th>
-              <th className="px-3 py-2 font-medium">{t("impressions")}</th>
-              <th className="px-3 py-2 font-medium">{t("clicks")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {result.rows.map((row) => (
-              <tr key={`${row.accountId}-${row.id}`} className="border-t border-neutral-100">
-                <td className="px-3 py-3 font-medium">{row.name}</td>
-                <td className="px-3 py-3">{platformLabel(row.platform)}</td>
-                <td className="px-3 py-3">{row.username || "—"}</td>
-                <td className="px-3 py-3">{row.status || "—"}</td>
-                <td className="px-3 py-3">{row.spend.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.impressions.toLocaleString()}</td>
-                <td className="px-3 py-3">{row.clicks.toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <p className="mt-3 text-sm text-neutral-500">{t("createInChat")}</p>
+      <ul className="mt-6 grid gap-3 md:grid-cols-2">
+        {result.rows.map((row) => (
+          <li key={`${row.accountId}-${row.id}`} className="rounded-2xl border border-neutral-200 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-medium">{row.name}</p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  {platformLabel(row.platform)}
+                  {row.username ? ` · ${row.username}` : ""}
+                </p>
+              </div>
+              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+                {row.status || "—"}
+              </span>
+            </div>
+            <dl className="mt-4 grid grid-cols-3 gap-2 text-sm">
+              <div>
+                <dt className="text-xs text-neutral-500">{t("spend")}</dt>
+                <dd className="font-semibold">{row.spend.toLocaleString()}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-neutral-500">{t("impressions")}</dt>
+                <dd className="font-semibold">{row.impressions.toLocaleString()}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-neutral-500">{t("clicks")}</dt>
+                <dd className="font-semibold">{row.clicks.toLocaleString()}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
       {ads.length > 0 && result.rows.length === 0 && !result.error ? (
         <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
       ) : null}

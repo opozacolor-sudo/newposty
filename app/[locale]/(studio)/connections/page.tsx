@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { AccountCard } from "@/components/studio/account-card";
+import { ConnectionList } from "@/components/studio/connection-list";
 import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { requireUser } from "@/lib/data";
 import {
@@ -69,98 +69,48 @@ export default async function ConnectionsPage({
         </p>
       ) : null}
 
-      <section className="mt-10">
-        <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-          {PLATFORMS.map((platform) => {
-            const connected = byPlatform.get(platform.id) ?? [];
-            return (
-              <AccountCard
-                key={platform.id}
-                platform={platform}
-                accounts={connected.map((account) => ({
-                  id: account.id,
-                  username: account.username,
-                  display_name: account.display_name,
-                }))}
-                rows={[
-                  { label: t("canPost"), value: t(`canPostValues.${platform.id}`) },
-                  platform.stats === "limited"
-                    ? {
-                        label: t("stats"),
-                        value: t("statsLimited"),
-                        badge: t("statsLimited"),
-                        tooltip: t("statsLimitedTooltip"),
-                        note: platform.id === "bluesky" ? t("statsLimitedNoteBluesky") : undefined,
-                      }
-                    : { label: t("stats"), value: t("statsComplete") },
-                ]}
-                connectLabel={t("connect")}
-                anotherLabel={t("connectAnother")}
-                notConnectedLabel={t("notConnected")}
-                connectedLabel={t("statusConnected")}
-                disconnectLabel={t("disconnect")}
-                comingSoonLabel={isConnectDisabled(platform.id) ? t("comingSoon") : undefined}
-              />
-            );
-          })}
-        </ul>
-      </section>
-
-      <section id="promotions" className="mt-12">
-        <h2 className="text-lg font-semibold">{t("adsTitle")}</h2>
-        <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-          {ADS_PLATFORMS.map((platform) => {
-            const connected = byPlatform.get(platform.id) ?? [];
-            const audienceRow =
-              platform.audienceBadge === "readonly"
-                ? {
-                    label: t("audiences"),
-                    value: t("audiencesReadonly"),
-                    badge: t("audiencesReadonly"),
-                    tooltip: t("audiencesReadonlyTooltip"),
-                  }
-                : platform.audienceBadge === "unavailable"
-                  ? {
-                      label: t("audiences"),
-                      value: t("audiencesUnavailable"),
-                      badge: t("audiencesUnavailable"),
-                      tooltip:
-                        platform.id === "googleads"
-                          ? t("audiencesUnavailableTooltipGoogle")
-                          : t("audiencesUnavailableTooltipX"),
-                    }
-                  : { label: t("audiences"), value: t(`adsAudiences.${platform.id}`) };
-
-            return (
-              <AccountCard
-                key={platform.id}
-                platform={platform}
-                accounts={connected.map((account) => ({
-                  id: account.id,
-                  username: account.username,
-                  display_name: account.display_name,
-                }))}
-                rows={[
-                  { label: t("canCreate"), value: t(`adsCanCreate.${platform.id}`) },
-                  { label: t("boost"), value: t(`adsBoost.${platform.id}`) },
-                  audienceRow,
-                  { label: t("stats"), value: t(`adsStats.${platform.id}`) },
-                ]}
-                newBadge={platform.isNew ? t("newBadge") : undefined}
-                footerNote={platform.id === "openaiads" ? t("adsNote.openaiads") : undefined}
-                connectForce
-                connectLabel={t("connect")}
-                anotherLabel={t("connectAnother")}
-                notConnectedLabel={t("notConnected")}
-                connectedLabel={t("statusConnected")}
-                disconnectLabel={t("disconnect")}
-                comingSoonLabel={isConnectDisabled(platform.id) ? t("comingSoon") : undefined}
-              />
-            );
-          })}
-        </ul>
-      </section>
+      <div className="mx-auto mt-4 max-w-xl">
+        <ConnectionList
+          title={t("socialHeading")}
+          disconnectLabel={t("disconnect")}
+          connectLabel={t("connect")}
+          items={PLATFORMS.map((platform) => ({
+            id: platform.id,
+            label: platform.label,
+            brand: platform.brand,
+            iconBg: platform.iconBg,
+            iconPath: platform.icon.path,
+            connectHref: `/api/connect?platform=${platform.id}`,
+            comingSoon: isConnectDisabled(platform.id) ? t("comingSoon") : undefined,
+            accounts: (byPlatform.get(platform.id) ?? []).map((account) => ({
+              id: account.id,
+              username: account.username,
+              display_name: account.display_name,
+            })),
+          }))}
+        />
+        <div id="promotions">
+          <ConnectionList
+            title={t("adsHeading")}
+            disconnectLabel={t("disconnect")}
+            connectLabel={t("connect")}
+            items={ADS_PLATFORMS.map((platform) => ({
+              id: platform.id,
+              label: platform.label,
+              brand: platform.brand,
+              iconBg: platform.iconBg,
+              iconPath: platform.icon.path,
+              connectHref: `/api/connect?platform=${platform.id}&force=1`,
+              comingSoon: isConnectDisabled(platform.id) ? t("comingSoon") : undefined,
+              accounts: (byPlatform.get(platform.id) ?? []).map((account) => ({
+                id: account.id,
+                username: account.username,
+                display_name: account.display_name,
+              })),
+            }))}
+          />
+        </div>
+      </div>
     </main>
   );
 }

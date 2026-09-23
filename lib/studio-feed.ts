@@ -4,6 +4,8 @@ import { ownsAccount, platformAccountId, scopeByAccountId, scopePosts } from "@/
 import {
   ZernioError,
   getConversation,
+  getDailyMetrics,
+  getFollowerStats,
   getInboxPostComments,
   listConversationMessages,
   getPostAnalytics,
@@ -146,6 +148,7 @@ export type AnalyticsRow = {
   saves: number;
   views: number;
   clicks: number;
+  mediaType: string | null;
 };
 
 function num(value: unknown) {
@@ -224,6 +227,7 @@ export async function loadScopedAnalytics(
           saves: num(metrics.saves),
           views: num(metrics.views),
           clicks: num(metrics.clicks),
+          mediaType: typeof post.mediaType === "string" ? post.mediaType : null,
         });
       }
     }
@@ -389,4 +393,218 @@ export async function loadScopedCampaigns(
     }
   }
   return { rows: rows.filter((row) => row.id), error: rows.length > 0 ? null : error };
+}
+
+export type AnalyticsBoard = {
+  engagementRate: number;
+  reach: number;
+  followers: number;
+  posts: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  saves: number;
+  views: number;
+  impressions: number;
+  clicks: number;
+  byPlatform: Array<{ platform: string; posts: number; likes: number; comments: number; shares: number; saves: number; views: number; impressions: number; reach: number; clicks: number }>;
+  weeks: Array<{ label: string; posts: number; likes: number; comments: number; views: number; impressions: number }>;
+  followersSeries: Array<{ date: string; followers: number }>;
+  formats: Array<{ type: string; posts: number }>;
+  top: Array<{ platform: string; content: string; publishedAt: string | null; likes: number; comments: number; shares: number; saves: number; views: number; impressions: number; reach: number; clicks: number; rate: number }>;
+  heatmap: number[][];
+  best: Array<{ day: number; hour: number }>;
+};
+
+function weekLabel(date: Date) {
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function rateOf(row: { likes: number; comments: number; shares: number; saves: number; impressions: number; reach: number; views: number }) {
+  const interactions = row.likes + row.comments + row.shares + row.saves;
+  const base = row.impressions || row.reach || row.views;
+  if (!base) return 0;
+  return Math.round((interactions / base) * 10000) / 100;
+}
+
+export async function loadAnalyticsBoard(
+  scope: StudioScope,
+  filters: {
+    accountId?: string;
+    platform?: string;
+    source?: string;
+    fromDate: string;
+    toDate: string;
+    sortBy?: string;
+    order?: string;
+  },
+): Promise<{ board: AnalyticsBoard; error: "failed" | "unavailable" | "unknown" | null }> {
+  const analytics = await loadScopedAnalytics(scope, filters);
+  const chosen = selectedAccount(scope, filters.accountId, false);
+  const targets =
+    chosen === undefined
+      ? []
+      : (chosen ? [chosen] : scope.accounts.filter((account) => isPlatformId(account.platform))).filter(
+          (account) => !filters.platform || account.platform === filters.platform,
+        );
+
+  const dailySettled =
+    scope.profileId && targets.length
+      ? await Promise.allSettled(
+          targets.map((account) =>
+            getDailyMetrics({
+              profileId: scope.profileId as string,
+              accountId: account.zernioAccountId,
+              platform: account.platform,
+              fromDate: filters.fromDate,
+              toDate: filters.toDate,
+            }),
+          ),
+        )
+      : [];
+
+  const weeks = new Map<string, { label: string; posts: number; likes: number; comments: number; views: number; impressions: number; sort: number }>();
+  for (const result of dailySettled) {
+    if (result.status !== "fulfilled") continue;
+    for (const day of result.value.dailyData ?? []) {
+      const date = new Date(day.date);
+      if (Number.isNaN(date.getTime())) continue;
+      const start = new Date(date);
+      start.setUTCDate(start.getUTCDate() - start.getUTCDay());
+      const key = start.toISOString().slice(0, 10);
+      const current = weeks.get(key) ?? { label: weekLabel(start), posts: 0, likes: 0, comments: 0, views: 0, impressions: 0, sort: start.getTime() };
+      current.posts += day.postCount ?? 0;
+      current.likes += day.metrics?.likes ?? 0;
+      current.comments += day.metrics?.comments ?? 0;
+      current.views += day.metrics?.views ?? 0;
+      current.impressions += day.metrics?.impressions ?? 0;
+      weeks.set(key, current);
+    }
+  }
+
+  let followers = 0;
+  const followerDays = new Map<string, number>();
+  if (targets.length) {
+    try {
+      const stats = await getFollowerStats({
+        accountIds: targets.map((account) => account.zernioAccountId).join(","),
+        fromDate: filters.fromDate,
+        toDate: filters.toDate,
+        granularity: "daily",
+      });
+      const allowed = new Set(targets.map((account) => account.zernioAccountId));
+      for (const account of stats.accounts ?? []) {
+        if (!account._id || !allowed.has(account._id)) continue;
+        followers += account.currentFollowers ?? 0;
+      }
+      for (const [id, series] of Object.entries(stats.stats ?? {})) {
+        if (!allowed.has(id)) continue;
+        for (const point of series) {
+          followerDays.set(point.date, (followerDays.get(point.date) ?? 0) + (point.followers ?? 0));
+        }
+      }
+    } catch {
+      followers = 0;
+    }
+  }
+
+  const byPlatform = new Map<string, AnalyticsBoard["byPlatform"][number]>();
+  for (const row of analytics.rows) {
+    const current = byPlatform.get(row.platform) ?? {
+      platform: row.platform,
+      posts: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      saves: 0,
+      views: 0,
+      impressions: 0,
+      reach: 0,
+      clicks: 0,
+    };
+    current.posts += 1;
+    current.likes += row.likes;
+    current.comments += row.comments;
+    current.shares += row.shares;
+    current.saves += row.saves;
+    current.views += row.views;
+    current.impressions += row.impressions;
+    current.reach += row.reach;
+    current.clicks += row.clicks;
+    byPlatform.set(row.platform, current);
+  }
+
+  const formats = new Map<string, number>();
+  for (const row of analytics.rows) {
+    const type = (row.mediaType || "text").toLowerCase();
+    formats.set(type, (formats.get(type) ?? 0) + 1);
+  }
+
+  const heatmap = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
+  for (const row of analytics.rows) {
+    if (!row.publishedAt) continue;
+    const date = new Date(row.publishedAt);
+    if (Number.isNaN(date.getTime())) continue;
+    const weight = row.likes + row.comments + row.shares + row.saves + row.views;
+    const day = heatmap[date.getDay()];
+    if (!day) continue;
+    day[date.getHours()] = (day[date.getHours()] ?? 0) + Math.max(weight, 1);
+  }
+  const best = heatmap
+    .flatMap((hours, day) => hours.map((score, hour) => ({ day, hour, score })))
+    .filter((slot) => slot.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map(({ day, hour }) => ({ day, hour }));
+
+  const totals = analytics.rows.reduce(
+    (sum, row) => ({
+      likes: sum.likes + row.likes,
+      comments: sum.comments + row.comments,
+      shares: sum.shares + row.shares,
+      saves: sum.saves + row.saves,
+      views: sum.views + row.views,
+      impressions: sum.impressions + row.impressions,
+      reach: sum.reach + row.reach,
+      clicks: sum.clicks + row.clicks,
+    }),
+    { likes: 0, comments: 0, shares: 0, saves: 0, views: 0, impressions: 0, reach: 0, clicks: 0 },
+  );
+
+  const top = [...analytics.rows]
+    .sort((a, b) => b.likes + b.comments + b.views - (a.likes + a.comments + a.views))
+    .slice(0, 8)
+    .map((row) => ({
+      platform: row.platform,
+      content: row.content,
+      publishedAt: row.publishedAt,
+      likes: row.likes,
+      comments: row.comments,
+      shares: row.shares,
+      saves: row.saves,
+      views: row.views,
+      impressions: row.impressions,
+      reach: row.reach,
+      clicks: row.clicks,
+      rate: rateOf(row),
+    }));
+
+  return {
+    error: analytics.error,
+    board: {
+      engagementRate: rateOf(totals),
+      followers,
+      posts: Math.max(analytics.rows.length, [...weeks.values()].reduce((sum, week) => sum + week.posts, 0)),
+      ...totals,
+      byPlatform: [...byPlatform.values()].sort((a, b) => b.posts - a.posts),
+      weeks: [...weeks.values()].sort((a, b) => a.sort - b.sort).map(({ sort: _sort, ...week }) => week),
+      followersSeries: [...followerDays.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([date, value]) => ({ date, followers: value })),
+      formats: [...formats.entries()].map(([type, posts]) => ({ type, posts })),
+      top,
+      heatmap,
+      best,
+    },
+  };
 }
