@@ -32,7 +32,7 @@ export default async function PostsHistoryPage({
         });
 
   return (
-    <main className="h-full overflow-y-auto px-6 py-8">
+    <main className="h-full overflow-y-auto px-4 py-5 sm:px-6 sm:py-8">
       <h1 className="text-2xl font-semibold tracking-tight">{t("postsTitle")}</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("postsLead")}</p>
       {posting.length === 0 ? (
@@ -85,7 +85,7 @@ export default async function PostsHistoryPage({
           <FilterField label={t("to")}>
             <input type="date" name="to" defaultValue={params.to ?? ""} className={filterControl} />
           </FilterField>
-          <FilterField label={t("search")}>
+          <FilterField label={t("search")} wide>
             <input type="search" name="q" defaultValue={params.q ?? ""} className={filterControl} />
           </FilterField>
         </FilterForm>

@@ -120,14 +120,17 @@ export default async function InboxPage({
                 <li key={row.id}>
                   <Link
                     href={`/inbox?tab=messages&conversation=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
-                    className={`block border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
+                    className={`flex items-center gap-3 border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
                   >
-                    <p className="truncate text-sm font-medium">{row.participantName || "—"}</p>
-                    <p className="truncate text-xs text-neutral-500">
-                      {platformLabel(row.platform ?? "")}
-                      {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
-                    </p>
-                    <p className="mt-1 truncate text-xs text-neutral-600">{row.lastMessage || ""}</p>
+                    <Face src={row.participantPicture} name={row.participantName || "?"} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">{row.participantName || "—"}</span>
+                      <span className="block truncate text-xs text-neutral-500">
+                        {platformLabel(row.platform ?? "")}
+                        {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
+                      </span>
+                      <span className="mt-0.5 block truncate text-xs text-neutral-600">{row.lastMessage || ""}</span>
+                    </span>
                   </Link>
                 </li>,
               ];
@@ -139,14 +142,17 @@ export default async function InboxPage({
                 <li key={`${row.accountId}-${row.id}`}>
                   <Link
                     href={`/inbox?tab=comments&post=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
-                    className={`block border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
+                    className={`flex items-center gap-3 border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
                   >
-                    <p className="truncate text-sm font-medium">{row.content || platformLabel(row.platform ?? "")}</p>
-                    <p className="truncate text-xs text-neutral-500">
-                      {platformLabel(row.platform ?? "")}
-                      {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
-                      {typeof row.commentCount === "number" ? ` · ${row.commentCount}` : ""}
-                    </p>
+                    <PostFace src={row.picture} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">{row.content || platformLabel(row.platform ?? "")}</span>
+                      <span className="block truncate text-xs text-neutral-500">
+                        {platformLabel(row.platform ?? "")}
+                        {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
+                        {typeof row.commentCount === "number" ? ` · ${row.commentCount}` : ""}
+                      </span>
+                    </span>
                   </Link>
                 </li>,
               ];
@@ -155,6 +161,10 @@ export default async function InboxPage({
       <section className="flex min-h-0 flex-col">
         {tab === "messages" && thread && params.conversation ? (
           <>
+            <ThreadPerson
+              src={conversations.rows.find((row) => row.id === params.conversation)?.participantPicture}
+              name={conversations.rows.find((row) => row.id === params.conversation)?.participantName || ""}
+            />
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {thread.messages.map((message, index) => (
                 <p key={message.id || index} className="max-w-xl rounded-2xl bg-neutral-100 px-3 py-2 text-sm">
@@ -176,11 +186,18 @@ export default async function InboxPage({
         ) : null}
         {tab === "comments" && comments && params.post ? (
           <>
+            <ThreadPost
+              src={commentPosts.rows.find((row) => row.id === params.post)?.picture}
+              caption={commentPosts.rows.find((row) => row.id === params.post)?.content || ""}
+            />
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {comments.comments.map((comment, index) => (
-                <div key={comment.id || index} className="text-sm">
-                  <p className="text-xs text-neutral-500">{comment.from?.username || comment.from?.name || ""}</p>
-                  <p>{comment.message}</p>
+                <div key={comment.id || index} className="flex gap-2 text-sm">
+                  <Face src={comment.from?.picture} name={comment.from?.name || comment.from?.username || "?"} />
+                  <div className="min-w-0">
+                    <p className="text-xs text-neutral-500">{comment.from?.username || comment.from?.name || ""}</p>
+                    <p>{comment.message}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -204,5 +221,47 @@ export default async function InboxPage({
         <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
       ) : null}
     </main>
+  );
+}
+
+function Face({ src, name }: { src?: string; name: string }) {
+  const letter = name.trim().charAt(0).toUpperCase() || "?";
+  if (!src) {
+    return (
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-500">
+        {letter}
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
+  );
+}
+
+function PostFace({ src }: { src?: string }) {
+  if (!src) return <span className="inline-block h-12 w-12 shrink-0 rounded-lg bg-neutral-100" />;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+  );
+}
+
+function ThreadPerson({ src, name }: { src?: string; name: string }) {
+  if (!name && !src) return null;
+  return (
+    <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3">
+      <Face src={src} name={name || "?"} />
+      <p className="truncate text-sm font-medium">{name}</p>
+    </div>
+  );
+}
+
+function ThreadPost({ src, caption }: { src?: string; caption: string }) {
+  return (
+    <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3">
+      <PostFace src={src} />
+      <p className="line-clamp-2 text-sm text-neutral-700">{caption}</p>
+    </div>
   );
 }

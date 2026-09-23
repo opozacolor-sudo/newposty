@@ -343,6 +343,7 @@ export type ZernioConversation = {
   accountId?: string;
   accountUsername?: string;
   participantName?: string;
+  participantPicture?: string;
   lastMessage?: string;
   updatedTime?: string;
   status?: string;

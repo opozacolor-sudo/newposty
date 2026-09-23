@@ -52,7 +52,7 @@ export default async function ConnectionsPage({
                 : null;
 
   return (
-    <main className="h-full overflow-y-auto px-6 py-8">
+    <main className="h-full overflow-y-auto px-4 py-5 sm:px-6 sm:py-8">
       <h1 className="text-2xl font-semibold tracking-tight">{t("connectionsTitle")}</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("connectionsLead")}</p>
 
@@ -74,6 +74,8 @@ export default async function ConnectionsPage({
           title={t("socialHeading")}
           disconnectLabel={t("disconnect")}
           connectLabel={t("connect")}
+          connectedLabel={t("statusConnected")}
+          connectAnotherLabel={t("connectAnother")}
           items={PLATFORMS.map((platform) => ({
             id: platform.id,
             label: platform.label,
@@ -94,6 +96,8 @@ export default async function ConnectionsPage({
             title={t("adsHeading")}
             disconnectLabel={t("disconnect")}
             connectLabel={t("connect")}
+            connectedLabel={t("statusConnected")}
+            connectAnotherLabel={t("connectAnother")}
             items={ADS_PLATFORMS.map((platform) => ({
               id: platform.id,
               label: platform.label,

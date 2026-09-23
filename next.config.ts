@@ -18,7 +18,7 @@ const securityHeaders = [
       "frame-ancestors 'none'",
       "script-src 'self' 'unsafe-inline' https://js.stripe.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://*.supabase.co https://media.zernio.com https://i.ytimg.com https://*.ytimg.com",
+      "img-src 'self' data: blob: https:",
       "media-src 'self' blob: https://*.supabase.co https://media.zernio.com",
       "font-src 'self'",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://zernio.com https://*.zernio.com",
