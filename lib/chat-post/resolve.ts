@@ -21,7 +21,7 @@ import {
 import {
   inferSeriesStartYmd,
   MAX_CHAT_ATTACHMENTS,
-  orderedMedia,
+  mediaForThisTurn,
   planCrossAssignments,
   seriesDayYmd,
   wantsBroadcastSeries,
@@ -34,6 +34,7 @@ import {
   parseScheduledAt,
   zonedLocalToUtc,
 } from "@/lib/chat-post/timezone";
+import { photoBlocksForClaude, photosOnly, withPhotos } from "@/lib/chat-post/vision";
 import type {
   CaptionSource,
   ChatMedia,
@@ -63,7 +64,9 @@ async function generateCaption(input: {
   brandName?: string | null;
   brandVoice?: string | null;
   maxChars: number;
+  media?: ChatMedia[];
 }) {
+  const photos = await photoBlocksForClaude(input.media ?? []);
   const anthropic = new Anthropic({ apiKey: input.apiKey });
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
@@ -72,12 +75,20 @@ async function generateCaption(input: {
       "Write one social caption ready to publish. No preamble, no quotes around the whole caption.",
       `Language: ${input.locale === "ro" ? "Romanian" : "English"}.`,
       `Hard max length: ${input.maxChars} characters.`,
+      photos.length > 0
+        ? "You can see the attached photo(s). Write about what is actually in them. Do not invent a car, product, or scene that is not in the photo."
+        : "There is no photo you can see (video cannot be watched). If the user did not name a subject, return an empty string. Do not invent a car or product.",
       input.brandName ? `Brand: ${input.brandName}` : "",
       input.brandVoice ? `Voice: ${input.brandVoice}` : "",
     ]
       .filter(Boolean)
       .join("\n"),
-    messages: [{ role: "user", content: input.brief || "Write a short caption for the attached media." }],
+    messages: [
+      {
+        role: "user",
+        content: withPhotos(input.brief || "Write a short caption for the attached photo.", photos),
+      },
+    ],
   });
   const text = response.content
     .filter((block) => block.type === "text")
@@ -91,6 +102,7 @@ export async function resolveCreateActions(input: {
   actions: ToolPostAction[];
   accounts: ConnectedAccount[];
   media: ChatMedia[];
+  thisMessageMedia?: ChatMedia[];
   locale: string;
   timezone: string;
   apiKey: string;
@@ -119,7 +131,12 @@ export async function resolveCreateActions(input: {
   }
 
   for (const rawAction of input.actions) {
-    const items = orderedMedia(rawAction.media_refs, input.media);
+    const items = mediaForThisTurn({
+      refs: rawAction.media_refs,
+      all: input.media,
+      thisMessage: input.thisMessageMedia ?? [],
+      brief: input.fallbackBrief,
+    });
     const isSeries = wantsDailySeries({
       cadence: rawAction.cadence,
       brief: input.fallbackBrief,
@@ -207,6 +224,7 @@ export async function resolveCreateActions(input: {
         brandName: input.brandName,
         brandVoice: input.brandVoice,
         maxChars: tightest,
+        media: photosOnly(media),
       });
     }
 

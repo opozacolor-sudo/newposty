@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { orderedMedia, planCrossAssignments, wantsDailySeries } from "./series";
+import { mediaForThisTurn, orderedMedia, planCrossAssignments, wantsDailySeries } from "./series";
 import type { ChatMedia } from "./types";
 
 const ZONE = "Europe/Bucharest";
@@ -27,6 +27,48 @@ test("orderedMedia follows the given id list, not object order", () => {
   assert.deepEqual(
     orderedMedia(["c", "a"], media).map((item) => item.id),
     ["c", "a"],
+  );
+});
+
+test("a new batch drops earlier chat files unless the user asks for them", () => {
+  const older: ChatMedia[] = [
+    { id: "old1", url: "https://example.com/old1.jpg", type: "image" },
+    { id: "old2", url: "https://example.com/old2.jpg", type: "image" },
+  ];
+  const incoming: ChatMedia[] = [
+    { id: "n1", url: "https://example.com/n1.jpg", type: "image" },
+    { id: "n2", url: "https://example.com/n2.jpg", type: "image" },
+    { id: "n3", url: "https://example.com/n3.jpg", type: "image" },
+    { id: "n4", url: "https://example.com/n4.jpg", type: "image" },
+    { id: "n5", url: "https://example.com/n5.jpg", type: "image" },
+  ];
+  const all = [...older, ...incoming];
+  assert.deepEqual(
+    mediaForThisTurn({
+      refs: ["old1", "old2", "n1", "n2", "n3", "n4", "n5"],
+      all,
+      thisMessage: incoming,
+      brief: "câte una pe zi începând cu 28.09 la cea mai bună oră",
+    }).map((item) => item.id),
+    ["n1", "n2", "n3", "n4", "n5"],
+  );
+  assert.deepEqual(
+    mediaForThisTurn({
+      refs: ["old1", "old2"],
+      all,
+      thisMessage: incoming,
+      brief: "câte una pe zi",
+    }).map((item) => item.id),
+    ["n1", "n2", "n3", "n4", "n5"],
+  );
+  assert.deepEqual(
+    mediaForThisTurn({
+      refs: ["old1", "n1"],
+      all,
+      thisMessage: incoming,
+      brief: "și pe cele dinainte, câte una pe zi",
+    }).map((item) => item.id),
+    ["old1", "n1"],
   );
 });
 

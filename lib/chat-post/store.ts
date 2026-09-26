@@ -447,6 +447,26 @@ export async function hydrateConfirmationMessages(input: {
   return next;
 }
 
+export async function loadLatestUserMediaBatch(input: {
+  supabase: SupabaseClient;
+  conversationId: string;
+}) {
+  const { data } = await input.supabase
+    .from("messages")
+    .select("payload")
+    .eq("conversation_id", input.conversationId)
+    .eq("role", "user")
+    .order("created_at", { ascending: false })
+    .limit(20);
+  for (const row of data ?? []) {
+    const payload = row.payload as { type?: string; media?: ChatMedia[] } | null;
+    if (payload?.type === "user_media" && Array.isArray(payload.media) && payload.media.length > 0) {
+      return payload.media.filter((item) => item.id && item.url);
+    }
+  }
+  return [] as ChatMedia[];
+}
+
 export async function loadConversationMedia(input: {
   supabase: SupabaseClient;
   userId: string;

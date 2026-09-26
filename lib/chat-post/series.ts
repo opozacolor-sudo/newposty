@@ -66,6 +66,28 @@ export function orderedMedia(refs: string[] | undefined, all: ChatMedia[]) {
   return ordered;
 }
 
+export function wantsOlderChatMedia(brief?: string) {
+  const text = (brief ?? "").toLowerCase();
+  return /dinainte|de mai devreme|din spate|și pe celelalte|si pe celelalte|toate pozele din chat|toate fișierele|toate fisierele|earlier (files|photos|ones)|previous (files|photos|ones)|the (other|older) (ones|files|photos)/.test(
+    text,
+  );
+}
+
+export function mediaForThisTurn(input: {
+  refs?: string[];
+  all: ChatMedia[];
+  thisMessage: ChatMedia[];
+  brief?: string;
+}) {
+  const ordered = orderedMedia(input.refs, input.all);
+  if (input.thisMessage.length === 0 || wantsOlderChatMedia(input.brief)) {
+    return ordered;
+  }
+  const allowed = new Set(input.thisMessage.map((item) => item.id));
+  const scoped = ordered.filter((item) => allowed.has(item.id));
+  return scoped.length > 0 ? scoped : input.thisMessage;
+}
+
 export function inferSeriesStartYmd(input: {
   brief?: string;
   scheduled_on?: string;
