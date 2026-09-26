@@ -20,6 +20,7 @@ import type {
 } from "@/lib/chat-post/types";
 import { localizeCancelledContent, resultsReply } from "@/lib/chat-post/copy";
 import { MAX_CHAT_ATTACHMENTS } from "@/lib/chat-post/series";
+import { composeSpeechTranscript, isAndroidSpeech } from "@/lib/chat-post/speech";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -122,10 +123,6 @@ function createSpeechRecognition(): SpeechRecognitionLike | null {
   };
   const Ctor = SpeechWindow.SpeechRecognition ?? SpeechWindow.webkitSpeechRecognition;
   return Ctor ? new Ctor() : null;
-}
-
-function transcriptFromResult(result: SpeechRecognitionEventLike["results"][number]) {
-  return result[0]?.transcript ?? result.item?.(0)?.transcript ?? "";
 }
 
 function speechLang(locale: string) {
@@ -382,23 +379,17 @@ export default function ChatStudio() {
     baseInputRef.current = input ? `${input.trim()} ` : "";
     finalTranscriptRef.current = "";
     wantListenRef.current = true;
+    const android = isAndroidSpeech();
     recognition.lang = speechLang(locale);
-    recognition.continuous = true;
+    recognition.continuous = !android;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognition.onresult = (event) => {
-      let interim = "";
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const result = event.results[index];
-        const piece = transcriptFromResult(result).trim();
-        if (!piece) continue;
-        if (result.isFinal) {
-          finalTranscriptRef.current = `${finalTranscriptRef.current}${piece} `;
-        } else {
-          interim += `${piece} `;
-        }
-      }
-      setInput(`${baseInputRef.current}${finalTranscriptRef.current}${interim}`.replace(/\s+/g, " ").trimStart());
+      const next = composeSpeechTranscript(event.results);
+      finalTranscriptRef.current = next.finalText ? `${next.finalText} ` : "";
+      setInput(
+        `${baseInputRef.current}${finalTranscriptRef.current}${next.interim}`.replace(/\s+/g, " ").trimStart(),
+      );
     };
     recognition.onerror = (event) => {
       const code = event.error ?? "";
@@ -416,7 +407,8 @@ export default function ChatStudio() {
       setError(t("speechError"));
     };
     recognition.onend = () => {
-      if (!wantListenRef.current) {
+      if (!wantListenRef.current || android) {
+        wantListenRef.current = false;
         setListening(false);
         return;
       }
