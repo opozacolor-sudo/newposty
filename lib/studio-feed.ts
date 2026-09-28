@@ -1,9 +1,18 @@
 import { listActiveSocialAccounts } from "@/lib/account-server";
+import {
+  analyticsPageCount,
+  analyticsPosts,
+  engagementRate,
+  flattenAnalyticsPost,
+  heatmapFromBestTime,
+  sumDailyMetrics,
+} from "@/lib/analytics-parse";
 import { previousEquivalentRange } from "@/lib/analytics-shared";
 import { isAdsPlatformId, isPlatformId } from "@/lib/platforms";
 import { ownsAccount, platformAccountId, scopeByAccountId, scopePosts } from "@/lib/studio-scope";
 import {
   ZernioError,
+  getBestTimeToPost,
   getConversation,
   getDailyMetrics,
   getFollowerStats,
@@ -150,22 +159,23 @@ export type AnalyticsRow = {
   saves: number;
   views: number;
   clicks: number;
+  follows: number;
   mediaType: string | null;
 };
 
-function mediaThumb(post: Record<string, unknown>) {
-  if (typeof post.thumbnailUrl === "string" && post.thumbnailUrl) return post.thumbnailUrl;
-  const items = Array.isArray(post.mediaItems) ? post.mediaItems : [];
-  for (const item of items) {
-    const media = asRecord(item);
-    if (typeof media?.thumbnail === "string" && media.thumbnail) return media.thumbnail;
-    if (typeof media?.url === "string" && media.url) return media.url;
-  }
-  return null;
-}
-
 function num(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+const ANALYTICS_PAGE_SIZE = 50;
+const ANALYTICS_MAX_PAGES = 20;
+
+async function swallow<T>(fn: () => Promise<T>): Promise<T | null> {
+  try {
+    return await fn();
+  } catch {
+    return null;
+  }
 }
 
 export async function loadScopedAnalytics(
@@ -188,62 +198,32 @@ export async function loadScopedAnalytics(
   );
   if (targets.length === 0) return { rows: [] as AnalyticsRow[], error: null };
 
-  const settled = await Promise.allSettled(
-    targets.map((account) =>
-      getPostAnalytics({
+  const rows: AnalyticsRow[] = [];
+  let error: "failed" | "unavailable" | null = null;
+  let page = 1;
+  let pages = 1;
+  while (page <= pages && page <= ANALYTICS_MAX_PAGES) {
+    try {
+      const body = await getPostAnalytics({
         profileId: scope.profileId as string,
-        accountId: account.zernioAccountId,
-        platform: account.platform,
+        accountId: chosen?.zernioAccountId,
+        platform: filters.platform || undefined,
         source: filters.source || "all",
         fromDate: filters.fromDate,
         toDate: filters.toDate,
         sortBy: filters.sortBy || "date",
         order: filters.order || "desc",
-        limit: 50,
-        page: 1,
-      }),
-    ),
-  );
-
-  const rows: AnalyticsRow[] = [];
-  let error: "failed" | "unavailable" | null = null;
-  for (const result of settled) {
-    if (result.status === "rejected") {
-      error ??= feedErrorKind(result.reason);
-      continue;
-    }
-    const body = asRecord(result.value);
-    const posts = Array.isArray(body?.posts) ? body.posts : [];
-    for (const item of posts) {
-      const post = asRecord(item);
-      if (!post) continue;
-      const slices = Array.isArray(post.platformAnalytics) ? post.platformAnalytics : [];
-      for (const slice of slices) {
-        const platform = asRecord(slice);
-        if (!platform) continue;
-        const accountId = platformAccountId(platform.accountId);
-        if (!accountId || !scope.ownedIds.has(accountId)) continue;
-        const metrics = asRecord(platform.analytics) ?? asRecord(post.analytics) ?? {};
-        rows.push({
-          id: String(post.postId ?? post._id ?? `${accountId}-${rows.length}`),
-          content: String(post.content ?? ""),
-          publishedAt: typeof post.publishedAt === "string" ? post.publishedAt : null,
-          platform: String(platform.platform ?? ""),
-          accountId,
-          username: typeof platform.accountUsername === "string" ? platform.accountUsername : null,
-          url: typeof platform.platformPostUrl === "string" ? platform.platformPostUrl : null,
-          thumbnailUrl: mediaThumb(post),
-          impressions: num(metrics.impressions),
-          reach: num(metrics.reach),
-          likes: num(metrics.likes),
-          comments: num(metrics.comments),
-          shares: num(metrics.shares),
-          saves: num(metrics.saves),
-          views: num(metrics.views),
-          clicks: num(metrics.clicks),
-          mediaType: typeof post.mediaType === "string" ? post.mediaType : null,
-        });
+        limit: ANALYTICS_PAGE_SIZE,
+        page,
+      });
+      pages = analyticsPageCount(body);
+      for (const post of analyticsPosts(body)) {
+        rows.push(...flattenAnalyticsPost(post, scope.ownedIds));
       }
+      page += 1;
+    } catch (reason) {
+      error ??= feedErrorKind(reason);
+      break;
     }
   }
   return { rows, error: rows.length > 0 ? null : error };
@@ -520,11 +500,16 @@ function weekLabel(date: Date) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function rateOf(row: { likes: number; comments: number; shares: number; saves?: number; impressions: number; reach?: number; views: number }) {
-  const interactions = row.likes + row.comments + (row.shares ?? 0) + (row.saves ?? 0);
-  const base = row.impressions || row.reach || row.views;
-  if (!base) return 0;
-  return Math.round((interactions / base) * 10000) / 100;
+function rateOf(row: {
+  likes: number;
+  comments: number;
+  shares?: number;
+  saves?: number;
+  impressions?: number;
+  reach?: number;
+  views?: number;
+}) {
+  return engagementRate(row);
 }
 
 function percentDelta(current: number, previous: number): number | null {
@@ -550,11 +535,6 @@ export async function loadAnalyticsBoard(
     order?: string;
   },
 ): Promise<{ board: AnalyticsBoard; error: "failed" | "unavailable" | "unknown" | null }> {
-  const priorRange = previousEquivalentRange(filters.fromDate, filters.toDate);
-  const [analytics, priorAnalytics] = await Promise.all([
-    loadScopedAnalytics(scope, filters),
-    loadScopedAnalytics(scope, { ...filters, fromDate: priorRange.from, toDate: priorRange.to }),
-  ]);
   const chosen = selectedAccount(scope, filters.accountId, false);
   const targets =
     chosen === undefined
@@ -562,53 +542,93 @@ export async function loadAnalyticsBoard(
       : (chosen ? [chosen] : scope.accounts.filter((account) => isPlatformId(account.platform))).filter(
           (account) => !filters.platform || account.platform === filters.platform,
         );
-
-  const dailySettled =
+  const allowedPlatforms = new Set(targets.map((account) => account.platform));
+  const priorRange = previousEquivalentRange(filters.fromDate, filters.toDate);
+  const dailyQuery = {
+    profileId: scope.profileId ?? undefined,
+    accountId: chosen?.zernioAccountId,
+    platform: filters.platform || undefined,
+    source: filters.source || "all",
+    attribution: "publish" as const,
+  };
+  const [analytics, currentDaily, priorDaily, bestTime] = await Promise.all([
+    loadScopedAnalytics(scope, filters),
     scope.profileId && targets.length
-      ? await Promise.allSettled(
-          targets.map((account) =>
-            getDailyMetrics({
-              profileId: scope.profileId as string,
-              accountId: account.zernioAccountId,
-              platform: account.platform,
-              fromDate: filters.fromDate,
-              toDate: filters.toDate,
-              attribution: "publish",
-            }),
-          ),
+      ? swallow(() =>
+          getDailyMetrics({
+            ...dailyQuery,
+            fromDate: filters.fromDate,
+            toDate: filters.toDate,
+          }),
         )
-      : [];
+      : Promise.resolve(null),
+    scope.profileId && targets.length
+      ? swallow(() =>
+          getDailyMetrics({
+            ...dailyQuery,
+            fromDate: priorRange.from,
+            toDate: priorRange.to,
+          }),
+        )
+      : Promise.resolve(null),
+    scope.profileId && targets.length
+      ? swallow(() =>
+          getBestTimeToPost({
+            profileId: scope.profileId as string,
+            accountId: chosen?.zernioAccountId,
+            platform: filters.platform || undefined,
+            source: filters.source || "all",
+          }),
+        )
+      : Promise.resolve(null),
+  ]);
 
-  const weeks = new Map<string, { label: string; posts: number; likes: number; comments: number; views: number; impressions: number; sort: number }>();
-  const platformWeekMap = new Map<string, Map<string, { posts: number; likes: number; comments: number; impressions: number; views: number }>>();
-  dailySettled.forEach((result, index) => {
-    if (result.status !== "fulfilled") return;
-    const platform = targets[index]?.platform;
-    if (!platform) return;
-    const perWeek = platformWeekMap.get(platform) ?? new Map();
-    for (const day of result.value.dailyData ?? []) {
-      const date = new Date(day.date);
-      if (Number.isNaN(date.getTime())) continue;
-      const start = new Date(date);
-      start.setUTCDate(start.getUTCDate() - start.getUTCDay());
-      const key = start.toISOString().slice(0, 10);
-      const current = weeks.get(key) ?? { label: weekLabel(start), posts: 0, likes: 0, comments: 0, views: 0, impressions: 0, sort: start.getTime() };
-      current.posts += day.postCount ?? 0;
-      current.likes += day.metrics?.likes ?? 0;
-      current.comments += day.metrics?.comments ?? 0;
-      current.views += day.metrics?.views ?? 0;
-      current.impressions += day.metrics?.impressions ?? 0;
-      weeks.set(key, current);
-      const pw = perWeek.get(key) ?? { posts: 0, likes: 0, comments: 0, impressions: 0, views: 0 };
-      pw.posts += day.postCount ?? 0;
-      pw.likes += day.metrics?.likes ?? 0;
-      pw.comments += day.metrics?.comments ?? 0;
-      pw.impressions += day.metrics?.impressions ?? 0;
-      pw.views += day.metrics?.views ?? 0;
+  const weeks = new Map<
+    string,
+    { label: string; posts: number; likes: number; comments: number; views: number; impressions: number; reach: number; sort: number }
+  >();
+  const platformWeekMap = new Map<
+    string,
+    Map<string, { posts: number; likes: number; comments: number; impressions: number; views: number; reach: number }>
+  >();
+  for (const day of currentDaily?.dailyData ?? []) {
+    const date = new Date(day.date);
+    if (Number.isNaN(date.getTime())) continue;
+    const start = new Date(date);
+    start.setUTCDate(start.getUTCDate() - start.getUTCDay());
+    const key = start.toISOString().slice(0, 10);
+    const current = weeks.get(key) ?? {
+      label: weekLabel(start),
+      posts: 0,
+      likes: 0,
+      comments: 0,
+      views: 0,
+      impressions: 0,
+      reach: 0,
+      sort: start.getTime(),
+    };
+    current.posts += day.postCount ?? 0;
+    current.likes += day.metrics?.likes ?? 0;
+    current.comments += day.metrics?.comments ?? 0;
+    current.views += day.metrics?.views ?? 0;
+    current.impressions += day.metrics?.impressions ?? 0;
+    current.reach += day.metrics?.reach ?? 0;
+    weeks.set(key, current);
+    const perPlatform = day.platformMetrics ?? {};
+    for (const [platform, metrics] of Object.entries(perPlatform)) {
+      if (allowedPlatforms.size && !allowedPlatforms.has(platform)) continue;
+      const perWeek = platformWeekMap.get(platform) ?? new Map();
+      const pw = perWeek.get(key) ?? { posts: 0, likes: 0, comments: 0, impressions: 0, views: 0, reach: 0 };
+      pw.posts += metrics.postCount ?? 0;
+      pw.likes += metrics.likes ?? 0;
+      pw.comments += metrics.comments ?? 0;
+      pw.impressions += metrics.impressions ?? 0;
+      pw.views += metrics.views ?? 0;
+      pw.reach += metrics.reach ?? 0;
       perWeek.set(key, pw);
+      platformWeekMap.set(platform, perWeek);
     }
-    platformWeekMap.set(platform, perWeek);
-  });
+  }
 
   let followers = 0;
   let followerGrowth = 0;
@@ -617,6 +637,7 @@ export async function loadAnalyticsBoard(
   if (targets.length) {
     try {
       const stats = await getFollowerStats({
+        profileId: scope.profileId ?? undefined,
         accountIds: targets.map((account) => account.zernioAccountId).join(","),
         fromDate: filters.fromDate,
         toDate: filters.toDate,
@@ -659,31 +680,69 @@ export async function loadAnalyticsBoard(
     }
   }
 
+  const dailyTotals = sumDailyMetrics(currentDaily, allowedPlatforms.size ? allowedPlatforms : undefined);
+  const priorDailyTotals = sumDailyMetrics(priorDaily, allowedPlatforms.size ? allowedPlatforms : undefined);
+  const rowTotals = analytics.rows.reduce(
+    (sum, row) => ({
+      likes: sum.likes + row.likes,
+      comments: sum.comments + row.comments,
+      shares: sum.shares + row.shares,
+      saves: sum.saves + row.saves,
+      views: sum.views + row.views,
+      impressions: sum.impressions + row.impressions,
+      reach: sum.reach + row.reach,
+      clicks: sum.clicks + row.clicks,
+    }),
+    { likes: 0, comments: 0, shares: 0, saves: 0, views: 0, impressions: 0, reach: 0, clicks: 0 },
+  );
+  const totals = dailyTotals.posts > 0 || dailyTotals.reach > 0 || dailyTotals.likes > 0 ? dailyTotals : { ...rowTotals, posts: analytics.rows.length };
+  const priorTotals = priorDailyTotals;
+
   const byPlatform = new Map<string, AnalyticsBoard["byPlatform"][number]>();
-  for (const row of analytics.rows) {
-    const current = byPlatform.get(row.platform) ?? {
-      platform: row.platform,
-      posts: 0,
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      saves: 0,
-      views: 0,
-      impressions: 0,
-      reach: 0,
-      clicks: 0,
-      rate: 0,
-    };
-    current.posts += 1;
-    current.likes += row.likes;
-    current.comments += row.comments;
-    current.shares += row.shares;
-    current.saves += row.saves;
-    current.views += row.views;
-    current.impressions += row.impressions;
-    current.reach += row.reach;
-    current.clicks += row.clicks;
-    byPlatform.set(row.platform, current);
+  const breakdown = currentDaily?.platformBreakdown ?? [];
+  if (breakdown.length) {
+    for (const row of breakdown) {
+      if (allowedPlatforms.size && !allowedPlatforms.has(row.platform)) continue;
+      byPlatform.set(row.platform, {
+        platform: row.platform,
+        posts: row.postCount ?? 0,
+        likes: row.likes ?? 0,
+        comments: row.comments ?? 0,
+        shares: row.shares ?? 0,
+        saves: row.saves ?? 0,
+        views: row.views ?? 0,
+        impressions: row.impressions ?? 0,
+        reach: row.reach ?? 0,
+        clicks: row.clicks ?? 0,
+        rate: 0,
+      });
+    }
+  } else {
+    for (const row of analytics.rows) {
+      const current = byPlatform.get(row.platform) ?? {
+        platform: row.platform,
+        posts: 0,
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        saves: 0,
+        views: 0,
+        impressions: 0,
+        reach: 0,
+        clicks: 0,
+        rate: 0,
+      };
+      current.posts += 1;
+      current.likes += row.likes;
+      current.comments += row.comments;
+      current.shares += row.shares;
+      current.saves += row.saves;
+      current.views += row.views;
+      current.impressions += row.impressions;
+      current.reach += row.reach;
+      current.clicks += row.clicks;
+      byPlatform.set(row.platform, current);
+    }
   }
   for (const row of byPlatform.values()) {
     row.rate = rateOf(row);
@@ -713,53 +772,32 @@ export async function loadAnalyticsBoard(
     formatStats.set(type, current);
   }
 
-  const heatmap = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
-  for (const row of analytics.rows) {
-    if (!row.publishedAt) continue;
-    const date = new Date(row.publishedAt);
-    if (Number.isNaN(date.getTime())) continue;
-    const weight = row.likes + row.comments + row.shares + row.saves + row.views;
-    const day = heatmap[date.getDay()];
-    if (!day) continue;
-    day[date.getHours()] = (day[date.getHours()] ?? 0) + Math.max(weight, 1);
+  const fromBestTime = heatmapFromBestTime(bestTime?.slots ?? []);
+  let heatmap = fromBestTime.heatmap;
+  let best = fromBestTime.best;
+  if (!best.length) {
+    heatmap = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
+    for (const row of analytics.rows) {
+      if (!row.publishedAt) continue;
+      const date = new Date(row.publishedAt);
+      if (Number.isNaN(date.getTime())) continue;
+      const weight = row.likes + row.comments + row.shares + row.saves;
+      const day = heatmap[date.getDay()];
+      if (!day) continue;
+      day[date.getHours()] = (day[date.getHours()] ?? 0) + Math.max(weight, 1);
+    }
+    const maxHeat = Math.max(1, ...heatmap.flat());
+    best = heatmap
+      .flatMap((hours, day) => hours.map((score, hour) => ({ day, hour, score })))
+      .filter((slot) => slot.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4)
+      .map(({ day, hour, score }) => ({ day, hour, score: Math.round((score / maxHeat) * 100) / 10 }));
   }
-  const maxHeat = Math.max(1, ...heatmap.flat());
-  const best = heatmap
-    .flatMap((hours, day) => hours.map((score, hour) => ({ day, hour, score })))
-    .filter((slot) => slot.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4)
-    .map(({ day, hour, score }) => ({ day, hour, score: Math.round((score / maxHeat) * 100) / 10 }));
 
-  const totals = analytics.rows.reduce(
-    (sum, row) => ({
-      likes: sum.likes + row.likes,
-      comments: sum.comments + row.comments,
-      shares: sum.shares + row.shares,
-      saves: sum.saves + row.saves,
-      views: sum.views + row.views,
-      impressions: sum.impressions + row.impressions,
-      reach: sum.reach + row.reach,
-      clicks: sum.clicks + row.clicks,
-    }),
-    { likes: 0, comments: 0, shares: 0, saves: 0, views: 0, impressions: 0, reach: 0, clicks: 0 },
-  );
-  const priorTotals = priorAnalytics.rows.reduce(
-    (sum, row) => ({
-      likes: sum.likes + row.likes,
-      comments: sum.comments + row.comments,
-      shares: sum.shares + row.shares,
-      saves: sum.saves + row.saves,
-      impressions: sum.impressions + row.impressions,
-      reach: sum.reach + row.reach,
-      views: sum.views + row.views,
-    }),
-    { likes: 0, comments: 0, shares: 0, saves: 0, impressions: 0, reach: 0, views: 0 },
-  );
-
-  const posts = Math.max(analytics.rows.length, [...weeks.values()].reduce((sum, week) => sum + week.posts, 0));
-  const priorPosts = priorAnalytics.rows.length;
-  const engagementRate = rateOf(totals);
+  const posts = totals.posts || analytics.rows.length;
+  const priorPosts = priorTotals.posts;
+  const currentRate = rateOf(totals);
   const priorRate = rateOf(priorTotals);
 
   const top = [...analytics.rows]
@@ -777,13 +815,12 @@ export async function loadAnalyticsBoard(
       impressions: row.impressions,
       reach: row.reach,
       clicks: row.clicks,
-      follows: 0,
+      follows: row.follows,
       rate: rateOf(row),
       url: row.url,
       thumbnailUrl: row.thumbnailUrl,
     }));
 
-  const avgRate = engagementRate;
   const formats = [...formatStats.entries()]
     .map(([type, stats]) => {
       const rate = rateOf(stats);
@@ -791,7 +828,7 @@ export async function loadAnalyticsBoard(
         type,
         posts: stats.posts,
         rate,
-        vsAvg: avgRate ? Math.round(((rate - avgRate) / avgRate) * 100) : null,
+        vsAvg: currentRate ? Math.round(((rate - currentRate) / currentRate) * 100) : null,
       };
     })
     .sort((a, b) => b.rate - a.rate);
@@ -802,7 +839,7 @@ export async function loadAnalyticsBoard(
     for (const week of weeksMap.values()) {
       const bucket = cadenceBucket(week.posts);
       const list = buckets.get(bucket) ?? [];
-      list.push(rateOf({ ...week, shares: 0, saves: 0, reach: 0 }));
+      list.push(rateOf(week));
       buckets.set(bucket, list);
     }
     const points = (["1-2", "3-5", "6-10"] as const)
@@ -820,16 +857,23 @@ export async function loadAnalyticsBoard(
   return {
     error: analytics.error,
     board: {
-      engagementRate,
+      engagementRate: currentRate,
       followers,
       followerGrowth,
       posts,
-      ...totals,
+      likes: totals.likes,
+      comments: totals.comments,
+      shares: totals.shares,
+      saves: totals.saves,
+      views: totals.views,
+      impressions: totals.impressions,
+      reach: totals.reach,
+      clicks: totals.clicks,
       deltas: {
         engagementRate: {
-          current: engagementRate,
+          current: currentRate,
           previous: priorRate,
-          percent: percentDelta(engagementRate, priorRate),
+          percent: percentDelta(currentRate, priorRate),
         },
         reach: { current: totals.reach, previous: priorTotals.reach, percent: percentDelta(totals.reach, priorTotals.reach) },
         posts: { current: posts, previous: priorPosts, percent: percentDelta(posts, priorPosts) },
@@ -845,7 +889,7 @@ export async function loadAnalyticsBoard(
           }
         : null,
       byPlatform: [...byPlatform.values()].sort((a, b) => b.posts - a.posts),
-      weeks: [...weeks.values()].sort((a, b) => a.sort - b.sort).map(({ sort: _sort, ...week }) => week),
+      weeks: [...weeks.values()].sort((a, b) => a.sort - b.sort).map(({ sort: _sort, reach: _reach, ...week }) => week),
       followersSeries: [...followerDays.entries()]
         .sort((a, b) => a[0].localeCompare(b[0]))
         .map(([date, value]) => ({ date, followers: value })),

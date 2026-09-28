@@ -406,20 +406,25 @@ function withQuery(path: string, query: Record<string, string | number | undefin
   return encoded ? `${path}?${encoded}` : path;
 }
 
+export type ZernioDayMetrics = {
+  impressions?: number;
+  reach?: number;
+  likes?: number;
+  comments?: number;
+  shares?: number;
+  saves?: number;
+  clicks?: number;
+  views?: number;
+  postCount?: number;
+};
+
 export type ZernioDailyMetrics = {
   dailyData?: Array<{
     date: string;
     postCount?: number;
-    metrics?: {
-      impressions?: number;
-      reach?: number;
-      likes?: number;
-      comments?: number;
-      shares?: number;
-      saves?: number;
-      clicks?: number;
-      views?: number;
-    };
+    platforms?: Record<string, number>;
+    platformMetrics?: Record<string, ZernioDayMetrics>;
+    metrics?: ZernioDayMetrics;
   }>;
   platformBreakdown?: Array<{
     platform: string;
@@ -432,6 +437,15 @@ export type ZernioDailyMetrics = {
     saves?: number;
     clicks?: number;
     views?: number;
+  }>;
+};
+
+export type ZernioBestTime = {
+  slots?: Array<{
+    day_of_week?: number;
+    hour?: number;
+    avg_engagement?: number;
+    post_count?: number;
   }>;
 };
 
@@ -492,9 +506,19 @@ export async function getDailyMetrics(query: {
   platform?: string;
   fromDate?: string;
   toDate?: string;
+  source?: string;
   attribution?: "publish" | "received";
 }) {
   return zernioFetch<ZernioDailyMetrics>(withQuery("/analytics/daily-metrics", query));
+}
+
+export async function getBestTimeToPost(query: {
+  profileId?: string;
+  accountId?: string;
+  platform?: string;
+  source?: string;
+}) {
+  return zernioFetch<ZernioBestTime>(withQuery("/analytics/best-time", query));
 }
 
 export async function getFollowerStats(query: {

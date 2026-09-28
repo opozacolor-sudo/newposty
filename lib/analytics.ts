@@ -99,18 +99,26 @@ function analyticsPosts(body: unknown): Record<string, unknown>[] {
 }
 
 function postMetrics(post: Record<string, unknown>) {
-  const analytics = asRecord(post.analytics) ?? {};
+  const slice = Array.isArray(post.platforms) ? asRecord(post.platforms[0]) : null;
+  const analytics = asRecord(post.analytics) ?? asRecord(slice?.analytics) ?? {};
   const likes = num(analytics.likes);
   const comments = num(analytics.comments);
   const shares = num(analytics.shares);
   const impressions = num(analytics.impressions);
   const views = num(analytics.views);
+  const url =
+    typeof slice?.platformPostUrl === "string"
+      ? slice.platformPostUrl
+      : typeof post.platformPostUrl === "string"
+        ? post.platformPostUrl
+        : null;
   return {
     likes,
     comments,
     shares,
     views: impressions > 0 ? impressions : views,
     engagement: likes + comments + shares,
+    url,
   };
 }
 
@@ -269,7 +277,7 @@ export async function loadAccountAnalytics(input: {
         likes: metrics.likes,
         comments: metrics.comments,
         shares: metrics.shares,
-        url: typeof post.platformPostUrl === "string" ? post.platformPostUrl : null,
+        url: metrics.url,
         engagement: metrics.engagement,
       };
     })
