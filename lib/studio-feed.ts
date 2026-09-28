@@ -1,4 +1,5 @@
 import { listActiveSocialAccounts } from "@/lib/account-server";
+import { previousEquivalentRange } from "@/lib/analytics-shared";
 import { isAdsPlatformId, isPlatformId } from "@/lib/platforms";
 import { ownsAccount, platformAccountId, scopeByAccountId, scopePosts } from "@/lib/studio-scope";
 import {
@@ -140,6 +141,7 @@ export type AnalyticsRow = {
   accountId: string;
   username: string | null;
   url: string | null;
+  thumbnailUrl: string | null;
   impressions: number;
   reach: number;
   likes: number;
@@ -150,6 +152,17 @@ export type AnalyticsRow = {
   clicks: number;
   mediaType: string | null;
 };
+
+function mediaThumb(post: Record<string, unknown>) {
+  if (typeof post.thumbnailUrl === "string" && post.thumbnailUrl) return post.thumbnailUrl;
+  const items = Array.isArray(post.mediaItems) ? post.mediaItems : [];
+  for (const item of items) {
+    const media = asRecord(item);
+    if (typeof media?.thumbnail === "string" && media.thumbnail) return media.thumbnail;
+    if (typeof media?.url === "string" && media.url) return media.url;
+  }
+  return null;
+}
 
 function num(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
@@ -186,7 +199,7 @@ export async function loadScopedAnalytics(
         toDate: filters.toDate,
         sortBy: filters.sortBy || "date",
         order: filters.order || "desc",
-        limit: 25,
+        limit: 50,
         page: 1,
       }),
     ),
@@ -219,6 +232,7 @@ export async function loadScopedAnalytics(
           accountId,
           username: typeof platform.accountUsername === "string" ? platform.accountUsername : null,
           url: typeof platform.platformPostUrl === "string" ? platform.platformPostUrl : null,
+          thumbnailUrl: mediaThumb(post),
           impressions: num(metrics.impressions),
           reach: num(metrics.reach),
           likes: num(metrics.likes),
@@ -395,10 +409,17 @@ export async function loadScopedCampaigns(
   return { rows: rows.filter((row) => row.id), error: rows.length > 0 ? null : error };
 }
 
+export type AnalyticsDelta = {
+  current: number;
+  previous: number;
+  percent: number | null;
+};
+
 export type AnalyticsBoard = {
   engagementRate: number;
   reach: number;
   followers: number;
+  followerGrowth: number;
   posts: number;
   likes: number;
   comments: number;
@@ -407,24 +428,114 @@ export type AnalyticsBoard = {
   views: number;
   impressions: number;
   clicks: number;
-  byPlatform: Array<{ platform: string; posts: number; likes: number; comments: number; shares: number; saves: number; views: number; impressions: number; reach: number; clicks: number }>;
+  deltas: {
+    engagementRate: AnalyticsDelta;
+    reach: AnalyticsDelta;
+    posts: AnalyticsDelta;
+  };
+  bestPost: {
+    platform: string;
+    content: string;
+    publishedAt: string | null;
+    likes: number;
+    url: string | null;
+    thumbnailUrl: string | null;
+  } | null;
+  byPlatform: Array<{
+    platform: string;
+    posts: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    saves: number;
+    views: number;
+    impressions: number;
+    reach: number;
+    clicks: number;
+    rate: number;
+  }>;
   weeks: Array<{ label: string; posts: number; likes: number; comments: number; views: number; impressions: number }>;
   followersSeries: Array<{ date: string; followers: number }>;
-  formats: Array<{ type: string; posts: number }>;
-  top: Array<{ platform: string; content: string; publishedAt: string | null; likes: number; comments: number; shares: number; saves: number; views: number; impressions: number; reach: number; clicks: number; rate: number }>;
+  followersByPlatform: Array<{ platform: string; current: number; series: Array<{ date: string; followers: number }> }>;
+  formats: Array<{ type: string; posts: number; rate: number; vsAvg: number | null }>;
+  top: Array<{
+    platform: string;
+    content: string;
+    publishedAt: string | null;
+    likes: number;
+    comments: number;
+    shares: number;
+    saves: number;
+    views: number;
+    impressions: number;
+    reach: number;
+    clicks: number;
+    follows: number;
+    rate: number;
+    url: string | null;
+    thumbnailUrl: string | null;
+  }>;
   heatmap: number[][];
-  best: Array<{ day: number; hour: number }>;
+  best: Array<{ day: number; hour: number; score: number }>;
+  cadence: Array<{
+    platform: string;
+    points: Array<{ bucket: "1-2" | "3-5" | "6-10"; rate: number }>;
+    optimal: { bucket: "1-2" | "3-5" | "6-10"; rate: number } | null;
+  }>;
 };
+
+export function emptyAnalyticsBoard(): AnalyticsBoard {
+  return {
+    engagementRate: 0,
+    reach: 0,
+    followers: 0,
+    followerGrowth: 0,
+    posts: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    saves: 0,
+    views: 0,
+    impressions: 0,
+    clicks: 0,
+    deltas: {
+      engagementRate: { current: 0, previous: 0, percent: 0 },
+      reach: { current: 0, previous: 0, percent: 0 },
+      posts: { current: 0, previous: 0, percent: 0 },
+    },
+    bestPost: null,
+    byPlatform: [],
+    weeks: [],
+    followersSeries: [],
+    followersByPlatform: [],
+    formats: [],
+    top: [],
+    heatmap: Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0)),
+    best: [],
+    cadence: [],
+  };
+}
 
 function weekLabel(date: Date) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function rateOf(row: { likes: number; comments: number; shares: number; saves: number; impressions: number; reach: number; views: number }) {
-  const interactions = row.likes + row.comments + row.shares + row.saves;
+function rateOf(row: { likes: number; comments: number; shares: number; saves?: number; impressions: number; reach?: number; views: number }) {
+  const interactions = row.likes + row.comments + (row.shares ?? 0) + (row.saves ?? 0);
   const base = row.impressions || row.reach || row.views;
   if (!base) return 0;
   return Math.round((interactions / base) * 10000) / 100;
+}
+
+function percentDelta(current: number, previous: number): number | null {
+  if (previous === 0) return current === 0 ? 0 : null;
+  return Math.round(((current - previous) / previous) * 100);
+}
+
+function cadenceBucket(postsPerWeek: number): "1-2" | "3-5" | "6-10" {
+  if (postsPerWeek <= 2) return "1-2";
+  if (postsPerWeek <= 5) return "3-5";
+  return "6-10";
 }
 
 export async function loadAnalyticsBoard(
@@ -439,7 +550,11 @@ export async function loadAnalyticsBoard(
     order?: string;
   },
 ): Promise<{ board: AnalyticsBoard; error: "failed" | "unavailable" | "unknown" | null }> {
-  const analytics = await loadScopedAnalytics(scope, filters);
+  const priorRange = previousEquivalentRange(filters.fromDate, filters.toDate);
+  const [analytics, priorAnalytics] = await Promise.all([
+    loadScopedAnalytics(scope, filters),
+    loadScopedAnalytics(scope, { ...filters, fromDate: priorRange.from, toDate: priorRange.to }),
+  ]);
   const chosen = selectedAccount(scope, filters.accountId, false);
   const targets =
     chosen === undefined
@@ -458,14 +573,19 @@ export async function loadAnalyticsBoard(
               platform: account.platform,
               fromDate: filters.fromDate,
               toDate: filters.toDate,
+              attribution: "publish",
             }),
           ),
         )
       : [];
 
   const weeks = new Map<string, { label: string; posts: number; likes: number; comments: number; views: number; impressions: number; sort: number }>();
-  for (const result of dailySettled) {
-    if (result.status !== "fulfilled") continue;
+  const platformWeekMap = new Map<string, Map<string, { posts: number; likes: number; comments: number; impressions: number; views: number }>>();
+  dailySettled.forEach((result, index) => {
+    if (result.status !== "fulfilled") return;
+    const platform = targets[index]?.platform;
+    if (!platform) return;
+    const perWeek = platformWeekMap.get(platform) ?? new Map();
     for (const day of result.value.dailyData ?? []) {
       const date = new Date(day.date);
       if (Number.isNaN(date.getTime())) continue;
@@ -479,11 +599,21 @@ export async function loadAnalyticsBoard(
       current.views += day.metrics?.views ?? 0;
       current.impressions += day.metrics?.impressions ?? 0;
       weeks.set(key, current);
+      const pw = perWeek.get(key) ?? { posts: 0, likes: 0, comments: 0, impressions: 0, views: 0 };
+      pw.posts += day.postCount ?? 0;
+      pw.likes += day.metrics?.likes ?? 0;
+      pw.comments += day.metrics?.comments ?? 0;
+      pw.impressions += day.metrics?.impressions ?? 0;
+      pw.views += day.metrics?.views ?? 0;
+      perWeek.set(key, pw);
     }
-  }
+    platformWeekMap.set(platform, perWeek);
+  });
 
   let followers = 0;
+  let followerGrowth = 0;
   const followerDays = new Map<string, number>();
+  const followersByPlatform: AnalyticsBoard["followersByPlatform"] = [];
   if (targets.length) {
     try {
       const stats = await getFollowerStats({
@@ -493,15 +623,36 @@ export async function loadAnalyticsBoard(
         granularity: "daily",
       });
       const allowed = new Set(targets.map((account) => account.zernioAccountId));
+      const accountPlatform = new Map(targets.map((account) => [account.zernioAccountId, account.platform]));
+      const perPlatform = new Map<string, { current: number; series: Map<string, number> }>();
       for (const account of stats.accounts ?? []) {
         if (!account._id || !allowed.has(account._id)) continue;
         followers += account.currentFollowers ?? 0;
+        followerGrowth += account.growth ?? 0;
+        const platform = account.platform || accountPlatform.get(account._id);
+        if (!platform) continue;
+        const bucket = perPlatform.get(platform) ?? { current: 0, series: new Map() };
+        bucket.current += account.currentFollowers ?? 0;
+        perPlatform.set(platform, bucket);
       }
       for (const [id, series] of Object.entries(stats.stats ?? {})) {
         if (!allowed.has(id)) continue;
+        const platform = accountPlatform.get(id);
+        const bucket = platform ? perPlatform.get(platform) ?? { current: 0, series: new Map() } : null;
         for (const point of series) {
           followerDays.set(point.date, (followerDays.get(point.date) ?? 0) + (point.followers ?? 0));
+          if (bucket) bucket.series.set(point.date, (bucket.series.get(point.date) ?? 0) + (point.followers ?? 0));
         }
+        if (platform && bucket) perPlatform.set(platform, bucket);
+      }
+      for (const [platform, bucket] of perPlatform) {
+        followersByPlatform.push({
+          platform,
+          current: bucket.current,
+          series: [...bucket.series.entries()]
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([date, value]) => ({ date, followers: value })),
+        });
       }
     } catch {
       followers = 0;
@@ -521,6 +672,7 @@ export async function loadAnalyticsBoard(
       impressions: 0,
       reach: 0,
       clicks: 0,
+      rate: 0,
     };
     current.posts += 1;
     current.likes += row.likes;
@@ -533,11 +685,32 @@ export async function loadAnalyticsBoard(
     current.clicks += row.clicks;
     byPlatform.set(row.platform, current);
   }
+  for (const row of byPlatform.values()) {
+    row.rate = rateOf(row);
+  }
 
-  const formats = new Map<string, number>();
+  const formatStats = new Map<string, { posts: number; likes: number; comments: number; shares: number; saves: number; impressions: number; views: number; reach: number }>();
   for (const row of analytics.rows) {
     const type = (row.mediaType || "text").toLowerCase();
-    formats.set(type, (formats.get(type) ?? 0) + 1);
+    const current = formatStats.get(type) ?? {
+      posts: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      saves: 0,
+      impressions: 0,
+      views: 0,
+      reach: 0,
+    };
+    current.posts += 1;
+    current.likes += row.likes;
+    current.comments += row.comments;
+    current.shares += row.shares;
+    current.saves += row.saves;
+    current.impressions += row.impressions;
+    current.views += row.views;
+    current.reach += row.reach;
+    formatStats.set(type, current);
   }
 
   const heatmap = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
@@ -550,12 +723,13 @@ export async function loadAnalyticsBoard(
     if (!day) continue;
     day[date.getHours()] = (day[date.getHours()] ?? 0) + Math.max(weight, 1);
   }
+  const maxHeat = Math.max(1, ...heatmap.flat());
   const best = heatmap
     .flatMap((hours, day) => hours.map((score, hour) => ({ day, hour, score })))
     .filter((slot) => slot.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4)
-    .map(({ day, hour }) => ({ day, hour }));
+    .map(({ day, hour, score }) => ({ day, hour, score: Math.round((score / maxHeat) * 100) / 10 }));
 
   const totals = analytics.rows.reduce(
     (sum, row) => ({
@@ -570,6 +744,23 @@ export async function loadAnalyticsBoard(
     }),
     { likes: 0, comments: 0, shares: 0, saves: 0, views: 0, impressions: 0, reach: 0, clicks: 0 },
   );
+  const priorTotals = priorAnalytics.rows.reduce(
+    (sum, row) => ({
+      likes: sum.likes + row.likes,
+      comments: sum.comments + row.comments,
+      shares: sum.shares + row.shares,
+      saves: sum.saves + row.saves,
+      impressions: sum.impressions + row.impressions,
+      reach: sum.reach + row.reach,
+      views: sum.views + row.views,
+    }),
+    { likes: 0, comments: 0, shares: 0, saves: 0, impressions: 0, reach: 0, views: 0 },
+  );
+
+  const posts = Math.max(analytics.rows.length, [...weeks.values()].reduce((sum, week) => sum + week.posts, 0));
+  const priorPosts = priorAnalytics.rows.length;
+  const engagementRate = rateOf(totals);
+  const priorRate = rateOf(priorTotals);
 
   const top = [...analytics.rows]
     .sort((a, b) => b.likes + b.comments + b.views - (a.likes + a.comments + a.views))
@@ -586,25 +777,84 @@ export async function loadAnalyticsBoard(
       impressions: row.impressions,
       reach: row.reach,
       clicks: row.clicks,
+      follows: 0,
       rate: rateOf(row),
+      url: row.url,
+      thumbnailUrl: row.thumbnailUrl,
     }));
 
+  const avgRate = engagementRate;
+  const formats = [...formatStats.entries()]
+    .map(([type, stats]) => {
+      const rate = rateOf(stats);
+      return {
+        type,
+        posts: stats.posts,
+        rate,
+        vsAvg: avgRate ? Math.round(((rate - avgRate) / avgRate) * 100) : null,
+      };
+    })
+    .sort((a, b) => b.rate - a.rate);
+
+  const cadence: AnalyticsBoard["cadence"] = [];
+  for (const [platform, weeksMap] of platformWeekMap) {
+    const buckets = new Map<"1-2" | "3-5" | "6-10", number[]>();
+    for (const week of weeksMap.values()) {
+      const bucket = cadenceBucket(week.posts);
+      const list = buckets.get(bucket) ?? [];
+      list.push(rateOf({ ...week, shares: 0, saves: 0, reach: 0 }));
+      buckets.set(bucket, list);
+    }
+    const points = (["1-2", "3-5", "6-10"] as const)
+      .filter((bucket) => buckets.has(bucket))
+      .map((bucket) => {
+        const list = buckets.get(bucket) ?? [];
+        const rate = list.reduce((sum, value) => sum + value, 0) / Math.max(1, list.length);
+        return { bucket, rate: Math.round(rate * 10) / 10 };
+      });
+    const optimal = [...points].sort((a, b) => b.rate - a.rate)[0] ?? null;
+    cadence.push({ platform, points, optimal });
+  }
+
+  const bestRow = top[0];
   return {
     error: analytics.error,
     board: {
-      engagementRate: rateOf(totals),
+      engagementRate,
       followers,
-      posts: Math.max(analytics.rows.length, [...weeks.values()].reduce((sum, week) => sum + week.posts, 0)),
+      followerGrowth,
+      posts,
       ...totals,
+      deltas: {
+        engagementRate: {
+          current: engagementRate,
+          previous: priorRate,
+          percent: percentDelta(engagementRate, priorRate),
+        },
+        reach: { current: totals.reach, previous: priorTotals.reach, percent: percentDelta(totals.reach, priorTotals.reach) },
+        posts: { current: posts, previous: priorPosts, percent: percentDelta(posts, priorPosts) },
+      },
+      bestPost: bestRow
+        ? {
+            platform: bestRow.platform,
+            content: bestRow.content,
+            publishedAt: bestRow.publishedAt,
+            likes: bestRow.likes,
+            url: bestRow.url,
+            thumbnailUrl: bestRow.thumbnailUrl,
+          }
+        : null,
       byPlatform: [...byPlatform.values()].sort((a, b) => b.posts - a.posts),
       weeks: [...weeks.values()].sort((a, b) => a.sort - b.sort).map(({ sort: _sort, ...week }) => week),
       followersSeries: [...followerDays.entries()]
         .sort((a, b) => a[0].localeCompare(b[0]))
         .map(([date, value]) => ({ date, followers: value })),
-      formats: [...formats.entries()].map(([type, posts]) => ({ type, posts })),
+      followersByPlatform,
+      formats,
       top,
       heatmap,
       best,
+      cadence,
     },
   };
 }
