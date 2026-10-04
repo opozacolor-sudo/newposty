@@ -164,11 +164,39 @@ export const chatPostTools: Anthropic.Tool[] = [
       required: ["brief"],
     },
   },
+  {
+    name: "generate_video",
+    description:
+      "Generate one short vertical social clip (about 5 seconds) from a website, a product page URL, attached photos, or a generated poster. Use when they want a video, reel, or to animate a still. Do NOT publish. After this tool, ask if they want an organic post or a paid ad.",
+    input_schema: {
+      type: "object",
+      properties: {
+        brief: {
+          type: "string",
+          description: "What the clip is for, in the user's words.",
+        },
+        site_url: {
+          type: "string",
+          description: "Public https website to take brand/name from, if they shared one.",
+        },
+        product_url: {
+          type: "string",
+          description: "Public product page URL. Prefer this over site_url when they pasted a product link.",
+        },
+        media_refs: {
+          type: "array",
+          items: { type: "string" },
+          description: "Still ids from this chat to animate (product photo or generated poster).",
+        },
+      },
+      required: ["brief"],
+    },
+  },
 ];
 
-export function toolsForChat(posterEnabled: boolean) {
-  if (posterEnabled) return chatPostTools;
-  return chatPostTools.filter((tool) => tool.name !== "generate_poster");
+export function toolsForChat(generationEnabled: boolean) {
+  if (generationEnabled) return chatPostTools;
+  return chatPostTools.filter((tool) => tool.name !== "generate_poster" && tool.name !== "generate_video");
 }
 
 export function chatPostSystemPrompt(input: {
@@ -220,11 +248,14 @@ export function chatPostSystemPrompt(input: {
     "Phrases like “toate rețelele”, “peste tot”, “all networks”, “everywhere” must become platforms: [\"__all_connected__\"]. Do not expand that list yourself from memory.",
     "For explicit exclusions (“everywhere except X”), send platforms: [\"__all_connected__\"] and excluded_platforms: [\"x\"].",
     input.posterEnabled === false
-      ? "Poster / AI image generation is not enabled yet. If they ask for a generated poster or graphic, say it is coming soon and offer a caption or to schedule photos they already have. Do not mention providers, keys, or billing."
+      ? "Poster / AI image / AI video generation is not enabled yet. If they ask for a generated poster, graphic, or clip, say it is coming soon and offer a caption or to schedule files they already have. Do not mention providers, keys, or billing."
       : "If they want a poster, graphic, or generated image from a site, a product link, and/or photos (“generează un poster”, “uite site-ul”, “uite produsul”, “make a poster”), call generate_poster. Put a product page in product_url (or site_url for a homepage). A URL in the message is enough — no photos required. Do NOT call create_social_post in the same turn. After the image exists, ask whether they want an organic post or a paid ad.",
     input.posterEnabled === false
       ? ""
-      : "If they later say post / programează / postează for that poster, call create_social_post with media_refs set to the generated media_id from generate_poster — not the reference photos.",
+      : "If they want a video, reel, short clip, or to animate a poster/photo (“generează un video”, “fă un reel”, “animă posterul”), call generate_video. Prefer media_refs of the latest generated poster or attached photo. A product URL alone is enough. Do NOT call generate_poster or create_social_post in the same turn. After the clip exists, ask organic post vs paid ad.",
+    input.posterEnabled === false
+      ? ""
+      : "If they later say post / programează / postează for that poster or clip, call create_social_post with media_refs set to the generated media_id — not the reference photos.",
     input.posterEnabled === false
       ? ""
       : "If they later say reclamă / ads / boost / paid, do not invent a spend. Reply that the creative is ready and ask network + budget; only call create_social_post if they also want the organic post.",

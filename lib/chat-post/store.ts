@@ -461,7 +461,7 @@ export async function loadLatestUserMediaBatch(input: {
     const payload = row.payload as
       | { type?: string; media?: ChatMedia | ChatMedia[] }
       | null;
-    if (payload?.type === "generated_poster") {
+    if (payload?.type === "generated_video" || payload?.type === "generated_poster") {
       const item = payload.media && !Array.isArray(payload.media) ? payload.media : null;
       if (item?.id && item.url) return [item];
     }

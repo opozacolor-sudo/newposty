@@ -697,7 +697,7 @@
   "Chat": {
     "title": "Posty Asistent",
     "subtitle": "Redactează texte, cere idei sau spune-mi să public.",
-    "empty": "Încearcă „Uite linkul produsului, fă un poster”, sau atașează până la 30 de fișiere și spune „începând de mâine, câte una pe zi, pe fiecare rețea, la cea mai bună oră”.",
+    "empty": "Încearcă „Uite linkul produsului, fă un poster” sau „fă un video”, sau atașează până la 30 de fișiere și spune „începând de mâine, câte una pe zi, pe fiecare rețea, la cea mai bună oră”.",
     "thinking": "Gândesc…",
     "connectToPublish": "Conectează conturi ca să publici din chat.",
     "placeholder": "Cere un text sau scrie „publică asta acum pe Instagram”. Până la 30 de poze sau video pentru o serie zilnică.",
@@ -751,6 +751,8 @@
     "posterAsPost": "Postare",
     "posterAsAd": "Reclamă",
     "posterWantPost": "Postează posterul ăsta pe toate rețelele conectate, la cea mai bună oră.",
-    "posterWantAd": "Vreau reclamă plătită cu posterul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă."
+    "posterWantAd": "Vreau reclamă plătită cu posterul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă.",
+    "videoWantPost": "Postează clipul ăsta pe toate rețelele conectate, la cea mai bună oră.",
+    "videoWantAd": "Vreau reclamă plătită cu clipul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă."
   }
 }

@@ -23,6 +23,12 @@ export type GeneratedPosterPayload = {
   headline?: string | null;
 };
 
+export type GeneratedVideoPayload = {
+  type: "generated_video";
+  media: ChatMedia;
+  site_url?: string | null;
+};
+
 export type ToolPostAction = {
   mode: PostMode;
   scheduled_at_iso?: string;

@@ -16,6 +16,7 @@ import type {
   ChatMedia,
   ConfirmationPayload,
   GeneratedPosterPayload,
+  GeneratedVideoPayload,
   ResultsPayload,
   UserMediaPayload,
 } from "@/lib/chat-post/types";
@@ -27,7 +28,7 @@ type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   kind?: string | null;
-  payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | GeneratedPosterPayload | null;
+  payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | GeneratedPosterPayload | GeneratedVideoPayload | null;
 };
 
 type Attachment = {
@@ -232,7 +233,7 @@ export default function ChatStudio() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversationId, message: text, media, locale }),
-        signal: AbortSignal.timeout(100_000),
+        signal: AbortSignal.timeout(115_000),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -512,22 +513,36 @@ export default function ChatStudio() {
               <PostResultsMessage payload={message.payload} />
             ) : null}
             {message.role === "assistant" &&
-            message.payload?.type === "generated_poster" &&
+            (message.payload?.type === "generated_poster" || message.payload?.type === "generated_video") &&
             message.payload.media.url ? (
               <div className="mt-3 space-y-3">
                 <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={message.payload.media.url}
-                    alt={message.payload.headline || t("posterAlt")}
-                    className="max-h-[28rem] w-full object-contain"
-                  />
+                  {message.payload.type === "generated_video" ? (
+                    <video
+                      src={message.payload.media.url}
+                      controls
+                      playsInline
+                      className="max-h-[28rem] w-full bg-black"
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={message.payload.media.url}
+                      alt={message.payload.headline || t("posterAlt")}
+                      className="max-h-[28rem] w-full object-contain"
+                    />
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     disabled={pending}
-                    onClick={() => void send(undefined, t("posterWantPost"))}
+                    onClick={() =>
+                      void send(
+                        undefined,
+                        message.payload?.type === "generated_video" ? t("videoWantPost") : t("posterWantPost"),
+                      )
+                    }
                     className="rounded-full bg-[#1A1A1A] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40"
                   >
                     {t("posterAsPost")}
@@ -535,7 +550,12 @@ export default function ChatStudio() {
                   <button
                     type="button"
                     disabled={pending}
-                    onClick={() => void send(undefined, t("posterWantAd"))}
+                    onClick={() =>
+                      void send(
+                        undefined,
+                        message.payload?.type === "generated_video" ? t("videoWantAd") : t("posterWantAd"),
+                      )
+                    }
                     className="rounded-full border border-[#E5E5E5] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] disabled:opacity-40"
                   >
                     {t("posterAsAd")}

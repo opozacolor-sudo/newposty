@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
+import { createGeneratedVideo } from "@/lib/chat-post/video";
 import { firstPublicUrlInText } from "@/lib/site-brief";
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
 import { applyCaptionOverrides, executeResolvedAction } from "@/lib/chat-post/execute";
@@ -24,6 +25,7 @@ import type {
   ChatMedia,
   ConfirmationPayload,
   GeneratedPosterPayload,
+  GeneratedVideoPayload,
   PendingIntent,
   PlatformExecResult,
   ResultsPayload,
@@ -379,6 +381,7 @@ async function postChat(request: Request) {
   let confirmation: ConfirmationPayload | null = null;
   let resultsPayload: ResultsPayload | null = null;
   let posterPayload: GeneratedPosterPayload | null = null;
+  let videoPayload: GeneratedVideoPayload | null = null;
   let skipConfirmation = Boolean(conversation.skip_confirmation);
 
   for (let round = 0; round < 4; round += 1) {
@@ -670,6 +673,63 @@ async function postChat(request: Request) {
               }),
             });
           }
+        } else if (tool.name === "generate_video") {
+          if (!posterEnabled) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              is_error: true,
+              content:
+                locale === "ro"
+                  ? "Generarea de video se activează în curând. Pot să-ți scriu un text sau să programăm fișierele pe care le ai deja."
+                  : "Video generation is coming soon. I can draft a caption or schedule files you already have.",
+            });
+            continue;
+          }
+          const input = asRecord(tool.input);
+          const refs = Array.isArray(input?.media_refs)
+            ? (input.media_refs as unknown[]).filter((id): id is string => typeof id === "string")
+            : [];
+          const fromRefs = refs
+            .map((id) => media.find((item) => item.id === id))
+            .filter((item): item is ChatMedia => Boolean(item));
+          const stills = (fromRefs.length > 0 ? fromRefs : thisTurnMedia).filter((item) => item.type === "image");
+          const made = await createGeneratedVideo({
+            supabase,
+            userId: user.id,
+            conversationId,
+            locale,
+            brief: String(input?.brief ?? text),
+            siteUrl:
+              (typeof input?.product_url === "string" && input.product_url) ||
+              (typeof input?.site_url === "string" && input.site_url) ||
+              firstPublicUrlInText(text) ||
+              undefined,
+            brandName: profile?.brand_name as string | null,
+            references: stills,
+          });
+          if (!made.ok) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              is_error: true,
+              content: made.error,
+            });
+          } else {
+            videoPayload = made.payload;
+            mediaById.set(made.payload.media.id, made.payload.media);
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              content: JSON.stringify({
+                generated: true,
+                media_id: made.payload.media.id,
+                url: made.payload.media.url,
+                site_url: made.payload.site_url,
+                next: "Ask organic post vs paid ad. Do not publish yet.",
+              }),
+            });
+          }
         } else {
           toolResults.push({
             type: "tool_result",
@@ -704,9 +764,13 @@ async function postChat(request: Request) {
           ? locale === "ro"
             ? "Am făcut posterul. Vrei postare organică sau reclamă?"
             : "Here’s the poster. Organic post or paid ad?"
-          : locale === "ro"
-            ? "Am notat, dar n-am avut ce adăuga."
-            : "I drafted that, but had nothing else to add.";
+          : videoPayload
+            ? locale === "ro"
+              ? "Am făcut clipul. Vrei postare organică sau reclamă?"
+              : "Here’s the clip. Organic post or paid ad?"
+            : locale === "ro"
+              ? "Am notat, dar n-am avut ce adăuga."
+              : "I drafted that, but had nothing else to add.";
   }
 
   const kind = confirmation
@@ -715,8 +779,10 @@ async function postChat(request: Request) {
       ? "results"
       : posterPayload
         ? "generated_poster"
-        : "text";
-  const payload = confirmation ?? resultsPayload ?? posterPayload ?? null;
+        : videoPayload
+          ? "generated_video"
+          : "text";
+  const payload = confirmation ?? resultsPayload ?? posterPayload ?? videoPayload ?? null;
 
   await supabase.from("messages").insert({
     conversation_id: conversationId,

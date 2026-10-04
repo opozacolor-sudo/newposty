@@ -24,7 +24,7 @@ function firstImageUrl(body: unknown) {
   return typeof url === "string" && url.startsWith("http") ? url : null;
 }
 
-function falDetail(payload: unknown) {
+export function falDetail(payload: unknown) {
   if (!payload || typeof payload !== "object") return "";
   const record = payload as Record<string, unknown>;
   const detail = record.detail ?? record.error ?? record.message;
@@ -46,7 +46,7 @@ function falDetail(payload: unknown) {
   return "";
 }
 
-function classifyFalError(status: number, detail: string) {
+export function classifyFalError(status: number, detail: string) {
   const text = detail.toLowerCase();
   if (status === 401 || status === 403 || text.includes("unauthor") || text.includes("forbidden")) {
     return "unauthorized" as const;
