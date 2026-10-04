@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getAnthropicApiKey, getSiteUrl } from "@/lib/env";
+import { wantsBookingLink } from "@/lib/leads/coach";
 import { htmlToExcerpt, matchKnowledgePage, type AgentKnowledge, type KnowledgePage } from "@/lib/leads/knowledge";
 import { publicHttpUrl } from "@/lib/site-brief";
 import type { LeadThread } from "@/lib/leads/types";
@@ -37,7 +38,9 @@ function fallbackReply(knowledge: AgentKnowledge, inbound: string, locale: "ro" 
   const product = knowledge.products?.find((item) =>
     inbound.toLocaleLowerCase("ro").includes((item.name || "").toLocaleLowerCase("ro").slice(0, 12)),
   ) ?? knowledge.products?.[0] ?? null;
-  const url = product?.url || page?.url || knowledge.booking?.url || null;
+  const url = wantsBookingLink(inbound)
+    ? knowledge.booking?.url || product?.url || page?.url || null
+    : product?.url || page?.url || knowledge.booking?.url || null;
   const price = product?.price || page?.price;
   const how = product?.howTo;
   const ro = locale === "ro";
@@ -82,9 +85,9 @@ export async function answerFromSite(input: {
       system: [
         "You are the trained posty.now sales agent for ONE client, answering a private DM.",
         `Language: ${input.locale === "ro" ? "Romanian" : "English"}.`,
-        "Use only the trained knowledge and the live page excerpt. Never invent prices, stock, or medical claims.",
-        "If they ask how to apply a cream, booking a table, or a price, answer from the site.",
-        "If they want to buy, include the product URL in productUrl. Keep reply under 450 characters.",
+        "Follow the owner's freeform instructions exactly. Use trained site knowledge plus those instructions.",
+        "If they ask price or whether there is a free slot on a date, do not invent hours. Send the booking/Mero/calendar URL in productUrl.",
+        "Never invent prices, stock, or medical claims. Keep reply under 450 characters.",
         "Return ONLY JSON: {reply, productUrl, askContact}.",
       ].join(" "),
       messages: [
@@ -95,6 +98,7 @@ export async function answerFromSite(input: {
             vertical: input.knowledge.vertical,
             summary: input.knowledge.summary,
             products: input.knowledge.products,
+            instructions: input.knowledge.instructions,
             booking: input.knowledge.booking,
             faqs: input.knowledge.faqs,
             livePage: live,

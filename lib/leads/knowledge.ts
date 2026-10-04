@@ -15,14 +15,22 @@ export type KnowledgeProduct = {
   notes?: string | null;
 };
 
+export type CoachTurn = {
+  role: "user" | "agent";
+  text: string;
+  at: string;
+};
+
 export type AgentKnowledge = {
   business?: string | null;
   vertical?: string | null;
   summary?: string | null;
+  instructions?: string | null;
   products?: KnowledgeProduct[];
   booking?: { available?: boolean; how?: string | null; url?: string | null };
   faqs?: Array<{ q: string; a: string }>;
   pages?: KnowledgePage[];
+  coach?: CoachTurn[];
 };
 
 export type LeadAgent = {

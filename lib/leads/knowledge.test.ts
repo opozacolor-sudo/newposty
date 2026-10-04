@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { absorbOwnerBrief, bookingUrlFromText, wantsBookingLink } from "./coach";
 import {
   canEnableLeadAgent,
   extractSameOriginLinks,
@@ -38,4 +39,14 @@ test("excerpt strips tags and matching prefers the product page", () => {
     "cum se aplica crema?",
   );
   assert.equal(page?.url, "https://shop.example/crema");
+});
+
+test("owner brief keeps a Mero calendar link for price and availability", () => {
+  const url = "https://mero.ro/salon/gene";
+  assert.equal(bookingUrlFromText(`îi dau ${url}`)?.replace(/\/$/, ""), url);
+  assert.equal(wantsBookingLink("ai liber joi?"), true);
+  assert.equal(wantsBookingLink("cât costă genele?"), true);
+  const knowledge = absorbOwnerBrief({}, `Fac gene. Dacă întreabă de preț sau liber, trimite ${url}`);
+  assert.equal(knowledge.booking?.url?.replace(/\/$/, ""), url);
+  assert.match(knowledge.instructions || "", /Fac gene/);
 });

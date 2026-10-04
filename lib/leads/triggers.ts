@@ -24,6 +24,10 @@ export const DEFAULT_LEAD_PHRASES = [
   "rezervare",
   "programare",
   "meniu",
+  "liber",
+  "programare",
+  "disponibil",
+  "gene",
 ];
 
 function compact(value: string) {

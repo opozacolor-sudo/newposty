@@ -42,6 +42,7 @@ export default async function LeadsPage({
         enabled={Boolean(agent?.enabled)}
         business={agent?.knowledge.business ?? ""}
         products={agent?.knowledge.products?.length ?? 0}
+        coach={agent?.knowledge.coach ?? []}
         labels={{
           site: t("leadAgentSite"),
           train: t("leadAgentTrain"),
@@ -53,6 +54,11 @@ export default async function LeadsPage({
           addon: t("leadAgentAddon"),
           products: t("leadAgentProducts"),
           failed: t("leadAgentFailed"),
+          chatTitle: t("leadAgentChatTitle"),
+          chatHint: t("leadAgentChatHint"),
+          chatPlaceholder: t("leadAgentChatPlaceholder"),
+          chatSend: t("leadAgentChatSend"),
+          sending: t("sending"),
         }}
       />
       <FilterForm submit={t("apply")}>

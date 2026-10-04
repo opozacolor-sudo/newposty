@@ -330,7 +330,21 @@ export async function saveTrainedAgent(input: {
     updated_at: new Date().toISOString(),
   };
   if (existing) {
-    const { error } = await input.supabase.from("lead_agents").update(payload).eq("id", existing.id).eq("user_id", input.userId);
+    const merged = {
+      ...payload,
+      knowledge: {
+        ...input.knowledge,
+        instructions: existing.knowledge.instructions ?? input.knowledge.instructions,
+        coach: existing.knowledge.coach ?? input.knowledge.coach,
+        booking: {
+          ...input.knowledge.booking,
+          url: existing.knowledge.booking?.url || input.knowledge.booking?.url || null,
+          how: existing.knowledge.booking?.how || input.knowledge.booking?.how || null,
+          available: Boolean(existing.knowledge.booking?.url || input.knowledge.booking?.url || input.knowledge.booking?.available),
+        },
+      },
+    };
+    const { error } = await input.supabase.from("lead_agents").update(merged).eq("id", existing.id).eq("user_id", input.userId);
     if (error) throw error;
     return loadLeadAgent(input.supabase, input.userId, input.clientId);
   }
@@ -364,6 +378,34 @@ export async function setLeadAgentEnabled(input: {
     .eq("user_id", input.userId);
   if (error) throw error;
   return { ...existing, enabled: input.enabled };
+}
+
+export async function saveAgentKnowledge(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  clientId: string | null;
+  knowledge: AgentKnowledge;
+  markTrained?: boolean;
+}) {
+  const existing = await loadLeadAgent(input.supabase, input.userId, input.clientId);
+  const payload = {
+    knowledge: input.knowledge,
+    trained_at: input.markTrained ? new Date().toISOString() : existing?.trained_at ?? new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  if (existing) {
+    const { error } = await input.supabase.from("lead_agents").update(payload).eq("id", existing.id).eq("user_id", input.userId);
+    if (error) throw error;
+    return loadLeadAgent(input.supabase, input.userId, input.clientId);
+  }
+  const { error } = await input.supabase.from("lead_agents").insert({
+    user_id: input.userId,
+    client_id: input.clientId,
+    ...payload,
+    enabled: false,
+  });
+  if (error) throw error;
+  return loadLeadAgent(input.supabase, input.userId, input.clientId);
 }
 
 export async function listEnabledLeadAgents(supabase: SupabaseClient, userId?: string) {
