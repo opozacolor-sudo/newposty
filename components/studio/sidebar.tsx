@@ -11,6 +11,7 @@ import {
   Megaphone,
   Menu,
   MessageCircle,
+  Users,
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -106,6 +107,10 @@ export function StudioSidebar({
             </div>
           ) : null}
         </div>
+        <Link href="/leads" className={itemClass(pathname.startsWith("/leads"))}>
+          <Users size={18} />
+          {t("leads")}
+        </Link>
         <Link href="/ads" className={itemClass(pathname === "/ads" || pathname.startsWith("/ads/") || pathname.startsWith("/dashboard/ads"))}>
           <Megaphone size={18} />
           {t("ads")}

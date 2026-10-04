@@ -13,6 +13,9 @@ import {
   loadStudioScopeWithProfile,
 } from "@/lib/studio-feed";
 import { ownsAccount } from "@/lib/studio-scope";
+import { loadWorkspace } from "@/lib/clients";
+import { loadInterestKeys } from "@/lib/leads/store";
+import { createServerSupabase } from "@/lib/supabase/server";
 
 export default async function InboxPage({
   searchParams,
@@ -21,7 +24,15 @@ export default async function InboxPage({
 }) {
   const t = await getTranslations("Studio");
   const { user } = await requireUser();
+  const supabase = await createServerSupabase();
+  const workspace = await loadWorkspace(supabase, user.id);
+  const interestKeys = await loadInterestKeys({
+    supabase,
+    userId: user.id,
+    clientId: workspace.clientId,
+  });
   const params = await searchParams;
+  const interestOnly = params.interest === "1";
   const scope = await loadStudioScopeWithProfile(user.id, await getZernioProfileId(user.id));
   const posting = scope.accounts.filter((account) => isPlatformId(account.platform));
   const tab = params.tab === "comments" ? "comments" : "messages";
@@ -103,6 +114,12 @@ export default async function InboxPage({
               </select>
             </FilterField>
           ) : null}
+          <FilterField label={t("interest")}>
+            <select name="interest" defaultValue={interestOnly ? "1" : ""} className={filterControl}>
+              <option value="">{t("all")}</option>
+              <option value="1">{t("interestOnly")}</option>
+            </select>
+          </FilterField>
         </FilterForm>
       )}
       </div>
@@ -115,6 +132,8 @@ export default async function InboxPage({
         {tab === "messages"
           ? conversations.rows.flatMap((row) => {
               if (!("id" in row) || !row.id || !row.accountId) return [];
+              const interested = interestKeys.has(`message:${row.id}`);
+              if (interestOnly && !interested) return [];
               const open = params.conversation === row.id;
               return [
                 <li key={row.id}>
@@ -124,7 +143,14 @@ export default async function InboxPage({
                   >
                     <Face src={row.participantPicture} name={row.participantName || "?"} />
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium">{row.participantName || "—"}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="block truncate text-sm font-medium">{row.participantName || "—"}</span>
+                        {interested ? (
+                          <span className="rounded-full bg-[#FF4713]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#FF4713]">
+                            {t("interest")}
+                          </span>
+                        ) : null}
+                      </span>
                       <span className="block truncate text-xs text-neutral-500">
                         {platformLabel(row.platform ?? "")}
                         {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
@@ -137,6 +163,8 @@ export default async function InboxPage({
             })
           : commentPosts.rows.flatMap((row) => {
               if (!("id" in row) || !row.id || !row.accountId) return [];
+              const interested = interestKeys.has(`post:${row.id}`);
+              if (interestOnly && !interested) return [];
               const open = params.post === row.id && params.threadAccount === row.accountId;
               return [
                 <li key={`${row.accountId}-${row.id}`}>
@@ -146,7 +174,14 @@ export default async function InboxPage({
                   >
                     <PostFace src={row.picture} />
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium">{row.content || platformLabel(row.platform ?? "")}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="block truncate text-sm font-medium">{row.content || platformLabel(row.platform ?? "")}</span>
+                        {interested ? (
+                          <span className="rounded-full bg-[#FF4713]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#FF4713]">
+                            {t("interest")}
+                          </span>
+                        ) : null}
+                      </span>
                       <span className="block truncate text-xs text-neutral-500">
                         {platformLabel(row.platform ?? "")}
                         {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}

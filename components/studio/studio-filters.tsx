@@ -8,7 +8,7 @@ export function FilterForm({
   submit: string;
 }) {
   return (
-    <form className="mt-4 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-end gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
+    <form method="get" className="mt-4 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-end gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
       {children}
       <button
         type="submit"
