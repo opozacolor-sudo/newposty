@@ -60,8 +60,8 @@ export async function createGeneratedPoster(input: {
     }
   }
 
-  const refs = input.references.filter((item) => item.type === "image" && item.url).slice(0, 3);
-  const imageUrls = [...refs.map((item) => item.url), site?.imageUrl ?? ""].filter(Boolean).slice(0, 3);
+  const refs = input.references.filter((item) => item.type === "image" && item.url).slice(0, 4);
+  const imageUrls = [...refs.map((item) => item.url), site?.imageUrl ?? ""].filter(Boolean).slice(0, 4);
   const imageSize: FalImageSize = input.aspect === "square" ? "square_hd" : "portrait_4_3";
   const prompt = buildPosterPrompt({
     locale: input.locale,
