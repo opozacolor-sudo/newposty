@@ -11,6 +11,7 @@ import {
   captionMatchesUserText,
   userRequestedCaption,
   validationReason,
+  detectGenerationKind,
 } from "./rules";
 import { isFutureDate, parseScheduledAt } from "./timezone";
 
@@ -187,4 +188,20 @@ test("dictated copy without spaces still counts as the user's caption", () => {
   const caption = "Folosește-le. Adaugă toată prezența ta online.";
   assert.equal(captionMatchesUserText(brief, caption), true);
   assert.equal(captionMatchesUserText("postează pe Instagram acum", "Un text inventat despre o mașină roșie"), false);
+});
+
+test("generation phrases cover photo, poster, ad, video, and pasted prompts", () => {
+  assert.equal(detectGenerationKind("fa-mi o poza"), "image");
+  assert.equal(detectGenerationKind("fă-mi un poster"), "image");
+  assert.equal(detectGenerationKind("creaza o reclama"), "image");
+  assert.equal(detectGenerationKind("generează un video"), "video");
+  assert.equal(detectGenerationKind("text to photo: a coffee cup on marble"), "image");
+  assert.equal(detectGenerationKind("text to video, camera pans across the shop"), "video");
+  assert.equal(detectGenerationKind("postează acest video pe Instagram"), null);
+  assert.equal(
+    detectGenerationKind(
+      "Create a cinematic product shot, 8k, soft lighting, marble counter, no watermark, commercial still",
+    ),
+    "image",
+  );
 });

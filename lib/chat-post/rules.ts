@@ -51,6 +51,33 @@ function compactCopy(value: string) {
     .replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
+export type GenerationKind = "image" | "video";
+
+const VIDEO_MARK =
+  /video|reel|clip|texttovideo|text2video|t2v|anima|animeaza|miscare|povestevideo/;
+const IMAGE_MARK =
+  /poster|poza|poze|imagine|imagini|foto|fotografie|texttophoto|texttoimage|text2image|t2i|grafica|graphic|banner|visual/;
+const MAKE_MARK = /fami|famio|genereaza|creaza|creeaza|generate|create|makea|draw|deseneaza|deseneaza/;
+const AD_MARK = /reclama|advert|adcreative|paidad|boost/;
+const VISUAL_PROMPT =
+  /photorealistic|cinematic|8k|4k|--ar|shot on|lighting|midjourney|text to image|text to video|text-to-image|text-to-video/;
+
+export function detectGenerationKind(text: string): GenerationKind | null {
+  const compact = compactCopy(text);
+  const lower = text.toLowerCase();
+  const wantsVideo = VIDEO_MARK.test(compact) || /text[\s-]*to[\s-]*video/.test(lower);
+  const wantsImage =
+    IMAGE_MARK.test(compact) || /text[\s-]*to[\s-]*(photo|image)/.test(lower) || AD_MARK.test(compact);
+  const wantsMake =
+    MAKE_MARK.test(compact) || /text[\s-]*to[\s-]*/.test(lower) || VISUAL_PROMPT.test(lower);
+  const wantsPost = /programeaza|posteaza|publica|schedule|publish/.test(compact);
+  if (wantsPost && !wantsMake && !AD_MARK.test(compact)) return null;
+  if (wantsVideo && (wantsMake || !wantsPost)) return "video";
+  if (wantsImage && (wantsMake || AD_MARK.test(compact) || !wantsPost)) return "image";
+  if (wantsMake && text.trim().length >= 80) return "image";
+  return null;
+}
+
 export function userRequestedCaption(text: string) {
   const lower = text.toLowerCase();
   if (/fără descriere|fara descriere|fără caption|fara caption|no caption|fără text|fara text/.test(lower)) {

@@ -1,7 +1,9 @@
 import { getFalKey } from "@/lib/env";
 import { FalImageError, classifyFalError, falDetail } from "@/lib/fal-image";
 
-/** H3 Max Turbo: ~$0.015–0.025/s at 480p. Default 5s ≈ $0.08–0.13. */
+/** Fixed cheap preset: 480p, 5 seconds. ~$0.08–0.13 / clip. */
+export const VIDEO_RESOLUTION = "480P";
+export const VIDEO_DURATION_SEC = 5;
 export const FAL_TEXT_VIDEO_MODEL = "minimax/h3-max-turbo/text-to-video";
 export const FAL_IMAGE_VIDEO_MODEL = "minimax/h3-max-turbo/image-to-video";
 
@@ -69,16 +71,14 @@ async function waitForFalVideo(model: string, requestId: string, key: string) {
 export async function generateFalVideo(input: {
   prompt: string;
   imageUrl?: string;
-  durationSec?: number;
 }) {
   const key = getFalKey();
   const imageUrl = input.imageUrl?.startsWith("http") ? input.imageUrl : "";
   const model = pickFalVideoModel(Boolean(imageUrl));
-  const duration = Math.min(8, Math.max(3, Math.round(input.durationSec ?? 5)));
   const body: Record<string, unknown> = {
     prompt: input.prompt,
-    duration,
-    resolution: "480P",
+    duration: VIDEO_DURATION_SEC,
+    resolution: VIDEO_RESOLUTION,
     enable_safety_checker: true,
     prompt_expansion_mode: "disabled",
   };

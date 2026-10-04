@@ -130,13 +130,14 @@ export const chatPostTools: Anthropic.Tool[] = [
   {
     name: "generate_poster",
     description:
-      "Generate one poster-style image from a website, a product page URL, and/or attached photos. Use when they want a graphic, poster, or ad creative first. Do NOT publish. After this tool, ask if they want an organic post or a paid ad.",
+      "Generate one poster-style image (text-to-image). Triggers: fă-mi / fa-mi / generează / creează / creaza / make / create / generate + poză / poza / poster / imagine / reclamă / reclama / graphic / text to photo / text to image. Also a pasted ChatGPT/Gemini/Claude image prompt. Site or product URL and attached model/reference photos are enough. Do NOT publish. After this tool, ask organic post vs paid ad.",
     input_schema: {
       type: "object",
       properties: {
         brief: {
           type: "string",
-          description: "What the poster is for, in the user's words.",
+          description:
+            "The user's full generation prompt, unchanged — including long pasted ChatGPT/Gemini/Claude prompts.",
         },
         site_url: {
           type: "string",
@@ -153,7 +154,7 @@ export const chatPostTools: Anthropic.Tool[] = [
         media_refs: {
           type: "array",
           items: { type: "string" },
-          description: "Reference photo ids from this chat (product, logo, existing shots).",
+          description: "Reference / model / product photo ids from this chat.",
         },
         aspect: {
           type: "string",
@@ -167,13 +168,14 @@ export const chatPostTools: Anthropic.Tool[] = [
   {
     name: "generate_video",
     description:
-      "Generate one short vertical social clip (about 5 seconds) from a website, a product page URL, attached photos, or a generated poster. Use when they want a video, reel, or to animate a still. Do NOT publish. After this tool, ask if they want an organic post or a paid ad.",
+      "Generate one vertical clip, always 480p and 5 seconds (text-to-video or image-to-video). Triggers: fă-mi / generează / creează / make + video / reel / clip / text to video, or animate a poster/photo. Site, product URL, or attached/model photos are enough. Do NOT publish. After this tool, ask organic post vs paid ad.",
     input_schema: {
       type: "object",
       properties: {
         brief: {
           type: "string",
-          description: "What the clip is for, in the user's words.",
+          description:
+            "The user's full generation prompt, unchanged — including long pasted ChatGPT/Gemini/Claude prompts.",
         },
         site_url: {
           type: "string",
@@ -212,6 +214,7 @@ export function chatPostSystemPrompt(input: {
   mediaLine?: string;
   pendingIntentLine?: string;
   posterEnabled?: boolean;
+  generationHint?: string;
 }) {
   const language = input.locale === "ro" ? "Romanian" : "English";
   return [
@@ -249,16 +252,21 @@ export function chatPostSystemPrompt(input: {
     "For explicit exclusions (“everywhere except X”), send platforms: [\"__all_connected__\"] and excluded_platforms: [\"x\"].",
     input.posterEnabled === false
       ? "Poster / AI image / AI video generation is not enabled yet. If they ask for a generated poster, graphic, or clip, say it is coming soon and offer a caption or to schedule files they already have. Do not mention providers, keys, or billing."
-      : "If they want a poster, graphic, or generated image from a site, a product link, and/or photos (“generează un poster”, “uite site-ul”, “uite produsul”, “make a poster”), call generate_poster. Put a product page in product_url (or site_url for a homepage). A URL in the message is enough — no photos required. Do NOT call create_social_post in the same turn. After the image exists, ask whether they want an organic post or a paid ad.",
-    input.posterEnabled === false
-      ? ""
-      : "If they want a video, reel, short clip, or to animate a poster/photo (“generează un video”, “fă un reel”, “animă posterul”), call generate_video. Prefer media_refs of the latest generated poster or attached photo. A product URL alone is enough. Do NOT call generate_poster or create_social_post in the same turn. After the clip exists, ask organic post vs paid ad.",
+      : [
+          "Generation verbs (even without spaces / from dictation): fă-mi, fa-mi, generează, genereaza, creează, creaza, make, create, generate, draw, desenează, text to photo, text to image, text to video.",
+          "Image nouns: poză, poza, poze, poster, imagine, foto, graphic, banner, reclamă, reclama. Video nouns: video, reel, clip. “Reclamă” without video = generate_poster first, then ask network + budget — do not invent spend.",
+          "A pasted ChatGPT / Gemini / Claude prompt is a generation brief. Put the FULL user text in brief, unchanged. Do not summarize it.",
+          "Read any public https site or product link (uite site-ul, uite produsul, link). Put a product page in product_url, a homepage in site_url. A URL alone is enough.",
+          "Attached model / reference / product photos go in media_refs. Keep the real product. Do not invent a different one.",
+          "If they want a photo/poster/ad still, call generate_poster. If they want a video/reel/clip or to animate a still, call generate_video (always 480p, 5 seconds). Do NOT call create_social_post in the same turn. After the file exists, ask organic post vs paid ad.",
+        ].join(" "),
+    input.generationHint ?? "",
     input.posterEnabled === false
       ? ""
       : "If they later say post / programează / postează for that poster or clip, call create_social_post with media_refs set to the generated media_id — not the reference photos.",
     input.posterEnabled === false
       ? ""
-      : "If they later say reclamă / ads / boost / paid, do not invent a spend. Reply that the creative is ready and ask network + budget; only call create_social_post if they also want the organic post.",
+      : "If they later say reclamă / ads / boost / paid about an existing creative, do not invent a spend. Reply that it is ready and ask network + budget; only call create_social_post if they also want the organic post.",
     "If the user only wants a caption or content idea, without intent to post now, do NOT call create_social_post. Reply in text.",
     "Attached files plus programează / postează / schedule / publish / aceste materiale means they want a post. Call create_social_post even if spaces are missing from dictation. Do not wait for a prettier sentence.",
     "If the user gives an explicit caption, pass it EXACTLY as caption with caption_source=user_provided. Do not paraphrase. Long captions are shortened to each platform’s limit.",

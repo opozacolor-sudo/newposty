@@ -17,7 +17,7 @@ import {
   resolveManageAction,
 } from "@/lib/chat-post/store";
 import { chatPostSystemPrompt, toolsForChat } from "@/lib/chat-post/tools";
-import { userRequestedCaption } from "@/lib/chat-post/rules";
+import { detectGenerationKind, userRequestedCaption } from "@/lib/chat-post/rules";
 import { CHAT_TURN_PHOTO_LIMIT, photoBlocksForClaude, withPhotos } from "@/lib/chat-post/vision";
 import { localizeCancelledContent } from "@/lib/chat-post/copy";
 import { userTimezone } from "@/lib/chat-post/timezone";
@@ -350,6 +350,13 @@ async function postChat(request: Request) {
   const timeZone = userTimezone(profile?.timezone as string | undefined);
 
   const posterEnabled = hasFalKey();
+  const generationKind = detectGenerationKind(text);
+  const generationHint =
+    posterEnabled && generationKind === "video"
+      ? "This message is VIDEO generation. Call generate_video now. Put the full user text in brief. Do not publish."
+      : posterEnabled && generationKind === "image"
+        ? "This message is IMAGE generation. Call generate_poster now. Put the full user text in brief. Do not publish."
+        : "";
   const anthropic = new Anthropic({ apiKey });
   const system = chatPostSystemPrompt({
     locale,
@@ -364,6 +371,7 @@ async function postChat(request: Request) {
     mediaLine,
     pendingIntentLine,
     posterEnabled,
+    generationHint,
   });
 
   const photoBlocks =
