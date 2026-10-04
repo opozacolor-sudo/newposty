@@ -15,7 +15,7 @@ import {
   savePendingIntent,
   resolveManageAction,
 } from "@/lib/chat-post/store";
-import { chatPostSystemPrompt, chatPostTools } from "@/lib/chat-post/tools";
+import { chatPostSystemPrompt, toolsForChat } from "@/lib/chat-post/tools";
 import { userRequestedCaption } from "@/lib/chat-post/rules";
 import { CHAT_TURN_PHOTO_LIMIT, photoBlocksForClaude, withPhotos } from "@/lib/chat-post/vision";
 import { localizeCancelledContent } from "@/lib/chat-post/copy";
@@ -29,7 +29,7 @@ import type {
   ResultsPayload,
   ToolPostAction,
 } from "@/lib/chat-post/types";
-import { getAnthropicApiKey } from "@/lib/env";
+import { getAnthropicApiKey, hasFalKey } from "@/lib/env";
 import { clockSnapshot, localeFromRequest } from "@/lib/locale-time";
 import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
@@ -347,6 +347,7 @@ async function postChat(request: Request) {
   const clock = clockSnapshot(locale);
   const timeZone = userTimezone(profile?.timezone as string | undefined);
 
+  const posterEnabled = hasFalKey();
   const anthropic = new Anthropic({ apiKey });
   const system = chatPostSystemPrompt({
     locale,
@@ -360,6 +361,7 @@ async function postChat(request: Request) {
     localIso: clock.localIso,
     mediaLine,
     pendingIntentLine,
+    posterEnabled,
   });
 
   const photoBlocks =
@@ -384,7 +386,7 @@ async function postChat(request: Request) {
       model: "claude-sonnet-4-5",
       max_tokens: 1400,
       system,
-      tools: chatPostTools,
+      tools: toolsForChat(posterEnabled),
       messages: anthropicMessages,
     });
 
@@ -610,6 +612,18 @@ async function postChat(request: Request) {
             });
           }
         } else if (tool.name === "generate_poster") {
+          if (!posterEnabled) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              is_error: true,
+              content:
+                locale === "ro"
+                  ? "Generarea de postere se activează în curând. Pot să-ți scriu un text sau să programăm pozele pe care le ai deja."
+                  : "Poster generation is coming soon. I can draft a caption or schedule photos you already have.",
+            });
+            continue;
+          }
           const input = asRecord(tool.input);
           const refs = Array.isArray(input?.media_refs)
             ? (input.media_refs as unknown[]).filter((id): id is string => typeof id === "string")

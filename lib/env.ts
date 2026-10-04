@@ -22,6 +22,10 @@ export function getAnthropicApiKey() {
   return required("ANTHROPIC_API_KEY");
 }
 
+export function hasFalKey() {
+  return Boolean(process.env.FAL_KEY?.trim());
+}
+
 export function getFalKey() {
   const value = process.env.FAL_KEY?.trim();
   if (!value) {
