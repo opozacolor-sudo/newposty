@@ -1,4 +1,4 @@
-import { generateFalImage, type FalImageSize } from "@/lib/fal-image";
+import { FalImageError, generateFalImage, type FalImageSize } from "@/lib/fal-image";
 import { loadSiteBrief } from "@/lib/site-brief";
 import type { ChatMedia, GeneratedPosterPayload } from "@/lib/chat-post/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -61,7 +61,7 @@ export async function createGeneratedPoster(input: {
   }
 
   const refs = input.references.filter((item) => item.type === "image" && item.url).slice(0, 4);
-  const imageUrls = [...refs.map((item) => item.url), site?.imageUrl ?? ""].filter(Boolean).slice(0, 4);
+  const imageUrls = refs.map((item) => item.url);
   const imageSize: FalImageSize = input.aspect === "square" ? "square_hd" : "portrait_4_3";
   const prompt = buildPosterPrompt({
     locale: input.locale,
@@ -80,15 +80,25 @@ export async function createGeneratedPoster(input: {
     remoteUrl = await generateFalImage({ prompt, imageUrls, imageSize });
   } catch (error) {
     const missing = error instanceof Error && error.message === "MISSING_FAL_KEY";
+    const code = error instanceof FalImageError ? error.code : null;
+    const ro = input.locale === "ro";
     return {
       ok: false,
       error: missing
-        ? input.locale === "ro"
+        ? ro
           ? "Generarea de poze nu e pornită pe server (lipsește cheia)."
           : "Image generation is not enabled on the server (missing key)."
-        : input.locale === "ro"
-          ? "Nu am putut genera posterul. Încearcă din nou peste un moment."
-          : "I could not generate the poster. Try again in a moment.",
+        : code === "unauthorized"
+          ? ro
+            ? "Cheia de generare e invalidă. Verific-o pe server."
+            : "The image key is invalid. Check it on the server."
+          : code === "credits"
+            ? ro
+              ? "Contul de generare n-are credit. Pune câțiva dolari pe el și reîncearcă."
+              : "The image account has no credit. Add a few dollars and try again."
+            : ro
+              ? "Nu am putut genera posterul. Încearcă din nou peste un moment."
+              : "I could not generate the poster. Try again in a moment.",
     };
   }
 

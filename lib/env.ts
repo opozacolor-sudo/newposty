@@ -22,12 +22,16 @@ export function getAnthropicApiKey() {
   return required("ANTHROPIC_API_KEY");
 }
 
+export function normalizeFalKey(raw: string) {
+  return raw.replace(/^(?:Key|Bearer)\s+/i, "").trim();
+}
+
 export function hasFalKey() {
-  return Boolean(process.env.FAL_KEY?.trim());
+  return Boolean(normalizeFalKey(process.env.FAL_KEY ?? ""));
 }
 
 export function getFalKey() {
-  const value = process.env.FAL_KEY?.trim();
+  const value = normalizeFalKey(process.env.FAL_KEY ?? "");
   if (!value) {
     throw new Error("MISSING_FAL_KEY");
   }

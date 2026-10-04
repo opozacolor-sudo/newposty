@@ -232,7 +232,7 @@ export default function ChatStudio() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversationId, message: text, media, locale }),
-        signal: AbortSignal.timeout(55_000),
+        signal: AbortSignal.timeout(100_000),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
