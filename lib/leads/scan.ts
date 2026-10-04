@@ -79,7 +79,7 @@ async function applyReply(input: {
   return next;
 }
 
-export async function scanLeadsInbox(): Promise<LeadScanStats> {
+export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats> {
   const supabase = createAdminSupabase();
   const stats: LeadScanStats = {
     scanned: 0,
@@ -90,7 +90,7 @@ export async function scanLeadsInbox(): Promise<LeadScanStats> {
     errors: 0,
   };
 
-  const enabledAgents = await listEnabledLeadAgents(supabase);
+  const enabledAgents = await listEnabledLeadAgents(supabase, onlyUserId);
   if (enabledAgents.length === 0) {
     const ads = await syncAdLeads();
     stats.adsImported = ads.imported;

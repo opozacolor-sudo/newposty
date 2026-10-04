@@ -366,13 +366,14 @@ export async function setLeadAgentEnabled(input: {
   return { ...existing, enabled: input.enabled };
 }
 
-export async function listEnabledLeadAgents(supabase: SupabaseClient) {
-  const { data } = await supabase
+export async function listEnabledLeadAgents(supabase: SupabaseClient, userId?: string) {
+  let query = supabase
     .from("lead_agents")
     .select("user_id, client_id, knowledge, site_url")
     .eq("enabled", true)
-    .not("trained_at", "is", null)
-    .limit(40);
+    .not("trained_at", "is", null);
+  if (userId) query = query.eq("user_id", userId);
+  const { data } = await query.limit(40);
   return (data ?? []) as Array<{
     user_id: string;
     client_id: string | null;

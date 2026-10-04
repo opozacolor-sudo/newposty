@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { loadWorkspace } from "@/lib/clients";
 import { canEnableLeadAgent } from "@/lib/leads/knowledge";
+import { scanLeadsInbox } from "@/lib/leads/scan";
 import { loadLeadAgent, setLeadAgentEnabled } from "@/lib/leads/store";
 import { createServerSupabase, getRequestAuth } from "@/lib/supabase/server";
+
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   const { user } = await getRequestAuth();
@@ -29,6 +32,9 @@ export async function POST(request: Request) {
       clientId: workspace.clientId,
       enabled: payload.enabled === true,
     });
+    if (next.enabled) {
+      await scanLeadsInbox(user.id).catch(() => null);
+    }
     return NextResponse.json({ ok: true, enabled: next.enabled });
   } catch {
     return NextResponse.json({ error: "Could not update" }, { status: 500 });
