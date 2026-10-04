@@ -19,6 +19,11 @@ export const DEFAULT_LEAD_PHRASES = [
   "still available",
   "i want",
   "interested",
+  "cum se aplica",
+  "cum se aplică",
+  "rezervare",
+  "programare",
+  "meniu",
 ];
 
 function compact(value: string) {

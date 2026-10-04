@@ -2,11 +2,12 @@ import { agentCopy } from "@/lib/leads/copy";
 import { nextAgentReply } from "@/lib/leads/qualify";
 import { looksLikePraiseOnly, textMatchesPhrases } from "@/lib/leads/triggers";
 import { syncAdLeads } from "@/lib/leads/ads";
+import type { AgentKnowledge } from "@/lib/leads/knowledge";
 import {
-  ensureLeadDefaults,
   findLeadThread,
   findThreadByConversation,
   insertQualifiedLead,
+  listEnabledLeadAgents,
   loadLeadPhrases,
   loadLeadPlaybook,
   saveLeadThread,
@@ -61,12 +62,14 @@ async function applyReply(input: {
   thread: LeadThread;
   inbound: string;
   playbook: LeadPlaybook;
+  knowledge?: AgentKnowledge;
   lastExternalId?: string | null;
 }) {
-  const next = nextAgentReply({
+  const next = await nextAgentReply({
     thread: input.thread,
     inbound: input.inbound,
     playbook: input.playbook,
+    knowledge: input.knowledge,
   });
   if (input.lastExternalId) next.thread.last_external_id = input.lastExternalId;
   await saveLeadThread(input.supabase, next.thread);
@@ -87,6 +90,19 @@ export async function scanLeadsInbox(): Promise<LeadScanStats> {
     errors: 0,
   };
 
+  const enabledAgents = await listEnabledLeadAgents(supabase);
+  if (enabledAgents.length === 0) {
+    const ads = await syncAdLeads();
+    stats.adsImported = ads.imported;
+    return stats;
+  }
+  const enabledKeys = new Set(
+    enabledAgents.map((row) => `${row.user_id}:${row.client_id ?? ""}`),
+  );
+  const knowledgeByKey = new Map(
+    enabledAgents.map((row) => [`${row.user_id}:${row.client_id ?? ""}`, row.knowledge]),
+  );
+
   const { data: accountRows } = await supabase
     .from("social_accounts")
     .select("user_id, client_id, platform, zernio_account_id")
@@ -94,7 +110,9 @@ export async function scanLeadsInbox(): Promise<LeadScanStats> {
     .not("zernio_account_id", "is", null)
     .limit(80);
 
-  const accounts = ((accountRows ?? []) as ScanAccount[]).filter((row) => row.zernio_account_id);
+  const accounts = ((accountRows ?? []) as ScanAccount[]).filter(
+    (row) => row.zernio_account_id && enabledKeys.has(`${row.user_id}:${row.client_id ?? ""}`),
+  );
   const userIds = [...new Set(accounts.map((row) => row.user_id))].slice(0, 20);
   if (userIds.length === 0) {
     const ads = await syncAdLeads();
@@ -117,25 +135,11 @@ export async function scanLeadsInbox(): Promise<LeadScanStats> {
     const profile = profileById.get(userId);
     if (!profile?.profileId) continue;
     const owned = accounts.filter((row) => row.user_id === userId);
-    const clientIds = [...new Set(owned.map((row) => row.client_id ?? null))];
-
-    for (const clientId of clientIds) {
-      try {
-        await ensureLeadDefaults({
-          supabase,
-          userId,
-          clientId,
-          brandName: profile.brandName,
-        });
-      } catch {
-        stats.errors += 1;
-      }
-    }
-
     for (const account of owned) {
       const clientId = account.client_id ?? null;
       let phrases: string[] = [];
       let playbook: LeadPlaybook;
+      const knowledge = knowledgeByKey.get(`${userId}:${clientId ?? ""}`) ?? {};
       try {
         phrases = await loadLeadPhrases(supabase, userId, clientId);
         playbook = await loadLeadPlaybook(supabase, userId, clientId);
@@ -161,6 +165,7 @@ export async function scanLeadsInbox(): Promise<LeadScanStats> {
             conversation,
             phrases,
             playbook,
+            knowledge,
           });
           stats.replied += result.replied;
           stats.qualified += result.qualified;
@@ -217,6 +222,7 @@ async function handleConversation(input: {
   conversation: ZernioConversation;
   phrases: string[];
   playbook: LeadPlaybook;
+  knowledge?: AgentKnowledge;
 }) {
   const result = { replied: 0, qualified: 0 };
   const conversationId = input.conversation.id;
@@ -285,6 +291,7 @@ async function handleConversation(input: {
       thread,
       inbound: text,
       playbook: input.playbook,
+      knowledge: input.knowledge,
       lastExternalId: messageKey(row),
     });
     thread = next.thread;

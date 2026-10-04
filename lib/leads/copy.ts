@@ -8,8 +8,8 @@ export function agentCopy(locale: "ro" | "en") {
       : "Hi! I saw your comment. Please message me privately so I can help.",
     intro: (topic: string, termsUrl: string) =>
       ro
-        ? `Bună ziua, sunt agentul posty.now. Am detectat interes din partea dumneavoastră pentru ${topic}. Ca experiența să fie rapidă, aș vrea să vă adresez câteva întrebări. Dacă sunteți de acord cu termenii (${termsUrl}), răspundeți DA.`
-        : `Hello, I am the posty.now agent. I noticed your interest in ${topic}. To keep this quick, I would like to ask a few questions. If you agree with the terms (${termsUrl}), reply YES.`,
+        ? `Bună ziua, sunt agentul posty.now pentru ${topic}. Am văzut mesajul. Dacă sunteți de acord cu termenii (${termsUrl}), răspundeți DA ca să vă ajut cu detalii de pe site.`
+        : `Hello, I am the posty.now agent for ${topic}. I saw your message. If you agree with the terms (${termsUrl}), reply YES and I will help with details from the site.`,
     askMethod: ro
       ? "Prin ce metodă doriți să achiziționați? Credit sau aveți dumneavoastră banii?"
       : "How would you like to buy — credit, or do you already have the funds?",

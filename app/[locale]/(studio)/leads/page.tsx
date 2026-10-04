@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import { LeadPlaybookForm, LeadStatusForm } from "@/components/studio/lead-actions";
+import { LeadAgentPanel } from "@/components/studio/lead-agent-panel";
+import { LeadStatusForm } from "@/components/studio/lead-actions";
 import { FilterField, FilterForm, filterControl } from "@/components/studio/studio-filters";
 import { loadWorkspace } from "@/lib/clients";
 import { requireUser } from "@/lib/data";
-import { ensureLeadDefaults, listLeads, loadLeadPlaybook } from "@/lib/leads/store";
+import { ensureLeadDefaults, listLeads, loadLeadAgent } from "@/lib/leads/store";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 const SOURCES = ["message", "comment", "ad"] as const;
@@ -19,7 +20,7 @@ export default async function LeadsPage({
   const supabase = await createServerSupabase();
   const workspace = await loadWorkspace(supabase, user.id);
   await ensureLeadDefaults({ supabase, userId: user.id, clientId: workspace.clientId });
-  const playbook = await loadLeadPlaybook(supabase, user.id, workspace.clientId);
+  const agent = await loadLeadAgent(supabase, user.id, workspace.clientId);
   const params = await searchParams;
   const source = SOURCES.includes(params.source as (typeof SOURCES)[number]) ? params.source : undefined;
   const status = STATUSES.includes(params.status as (typeof STATUSES)[number]) ? params.status : undefined;
@@ -35,10 +36,24 @@ export default async function LeadsPage({
     <main className="h-full overflow-y-auto px-6 py-8">
       <h1 className="text-2xl font-semibold tracking-tight">{t("leadsTitle")}</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("leadsLead")}</p>
-      <LeadPlaybookForm
-        productName={playbook.product_name ?? ""}
-        productPrice={playbook.product_price != null ? String(playbook.product_price) : ""}
-        labels={{ product: t("leadProduct"), price: t("leadPrice"), save: t("leadSavePlaybook") }}
+      <LeadAgentPanel
+        siteUrl={agent?.site_url ?? ""}
+        trained={Boolean(agent?.trained_at)}
+        enabled={Boolean(agent?.enabled)}
+        business={agent?.knowledge.business ?? ""}
+        products={agent?.knowledge.products?.length ?? 0}
+        labels={{
+          site: t("leadAgentSite"),
+          train: t("leadAgentTrain"),
+          training: t("leadAgentTraining"),
+          trained: t("leadAgentTrained"),
+          enable: t("leadAgentEnable"),
+          disable: t("leadAgentDisable"),
+          locked: t("leadAgentLocked"),
+          addon: t("leadAgentAddon"),
+          products: t("leadAgentProducts"),
+          failed: t("leadAgentFailed"),
+        }}
       />
       <FilterForm submit={t("apply")}>
         <FilterField label={t("source")}>
@@ -109,6 +124,8 @@ export default async function LeadsPage({
                     : qualification.eligible === false
                       ? ` · ${t("leadNotEligible")}`
                       : ""}
+                  {qualification.offeredUrl ? ` · ${qualification.offeredUrl}` : ""}
+                  {qualification.clickedUrl ? ` · ${t("leadClicked")}` : ""}
                 </p>
               ) : null}
             </li>

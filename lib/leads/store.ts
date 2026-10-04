@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_LEAD_PHRASES } from "@/lib/leads/triggers";
 import type { LeadPlaybook } from "@/lib/leads/playbook";
+import type { AgentKnowledge, LeadAgent } from "@/lib/leads/knowledge";
 import type { LeadAnswers, LeadRow, LeadSource, LeadStage, LeadStatus, LeadThread, LeadTranscriptItem } from "@/lib/leads/types";
 
 function clientFilter(query: any, clientId: string | null) {
@@ -257,7 +258,7 @@ export async function listOpenLeadThreads(supabase: SupabaseClient, userId: stri
     .from("lead_threads")
     .select("*")
     .eq("user_id", userId)
-    .in("stage", ["await_consent", "ask_method", "ask_income", "ask_contact"])
+    .in("stage", ["await_consent", "helping", "ask_method", "ask_income", "ask_contact"])
     .limit(40);
   return (data ?? []) as LeadThread[];
 }
@@ -289,4 +290,122 @@ export async function insertAdLead(input: {
     status: "new",
   });
   if (error) throw error;
+}
+
+export async function loadLeadAgent(
+  supabase: SupabaseClient,
+  userId: string,
+  clientId: string | null,
+): Promise<LeadAgent | null> {
+  let query = supabase.from("lead_agents").select("*").eq("user_id", userId);
+  query = clientFilter(query, clientId);
+  const { data } = await query.limit(1);
+  const row = data?.[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    user_id: row.user_id,
+    client_id: row.client_id ?? null,
+    site_url: row.site_url ?? null,
+    knowledge: (row.knowledge ?? {}) as AgentKnowledge,
+    trained_at: row.trained_at ?? null,
+    enabled: Boolean(row.enabled),
+    addon_status: row.addon_status ?? "unsubscribed",
+  };
+}
+
+export async function saveTrainedAgent(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  clientId: string | null;
+  siteUrl: string;
+  knowledge: AgentKnowledge;
+}) {
+  const existing = await loadLeadAgent(input.supabase, input.userId, input.clientId);
+  const payload = {
+    site_url: input.siteUrl,
+    knowledge: input.knowledge,
+    trained_at: new Date().toISOString(),
+    enabled: false,
+    updated_at: new Date().toISOString(),
+  };
+  if (existing) {
+    const { error } = await input.supabase.from("lead_agents").update(payload).eq("id", existing.id).eq("user_id", input.userId);
+    if (error) throw error;
+    return loadLeadAgent(input.supabase, input.userId, input.clientId);
+  }
+  const { error } = await input.supabase.from("lead_agents").insert({
+    user_id: input.userId,
+    client_id: input.clientId,
+    ...payload,
+  });
+  if (error) throw error;
+  return loadLeadAgent(input.supabase, input.userId, input.clientId);
+}
+
+export async function setLeadAgentEnabled(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  clientId: string | null;
+  enabled: boolean;
+}) {
+  const existing = await loadLeadAgent(input.supabase, input.userId, input.clientId);
+  if (!existing?.trained_at) {
+    throw new Error("not_trained");
+  }
+  const { error } = await input.supabase
+    .from("lead_agents")
+    .update({
+      enabled: input.enabled,
+      addon_status: input.enabled ? "active" : existing.addon_status,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", existing.id)
+    .eq("user_id", input.userId);
+  if (error) throw error;
+  return { ...existing, enabled: input.enabled };
+}
+
+export async function listEnabledLeadAgents(supabase: SupabaseClient) {
+  const { data } = await supabase
+    .from("lead_agents")
+    .select("user_id, client_id, knowledge, site_url")
+    .eq("enabled", true)
+    .not("trained_at", "is", null)
+    .limit(40);
+  return (data ?? []) as Array<{
+    user_id: string;
+    client_id: string | null;
+    knowledge: AgentKnowledge;
+    site_url: string | null;
+  }>;
+}
+
+export async function recordLeadClick(input: {
+  supabase: SupabaseClient;
+  threadId: string;
+  url: string;
+}) {
+  const { data: thread } = await input.supabase.from("lead_threads").select("*").eq("id", input.threadId).maybeSingle();
+  if (!thread) return null;
+  const answers = { ...(thread.answers ?? {}), clickedUrl: input.url, clickedAt: new Date().toISOString() };
+  await input.supabase.from("lead_threads").update({ answers, updated_at: new Date().toISOString() }).eq("id", thread.id);
+  const { data: lead } = await input.supabase.from("leads").select("id, qualification").eq("thread_id", thread.id).maybeSingle();
+  if (lead) {
+    await input.supabase
+      .from("leads")
+      .update({
+        qualification: { ...(lead.qualification ?? {}), clickedUrl: input.url, clickedAt: answers.clickedAt },
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", lead.id);
+  }
+  await input.supabase.from("lead_clicks").insert({
+    user_id: thread.user_id,
+    client_id: thread.client_id,
+    thread_id: thread.id,
+    lead_id: lead?.id ?? null,
+    url: input.url,
+  });
+  return thread as LeadThread;
 }

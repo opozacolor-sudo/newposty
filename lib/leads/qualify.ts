@@ -1,5 +1,7 @@
 import { getSiteUrl } from "@/lib/env";
+import { answerFromSite } from "@/lib/leads/brain";
 import { agentCopy, topicLabel } from "@/lib/leads/copy";
+import type { AgentKnowledge } from "@/lib/leads/knowledge";
 import {
   parseConsent,
   parseContact,
@@ -18,11 +20,12 @@ function push(thread: LeadThread, role: LeadTranscriptItem["role"], text: string
   thread.transcript = [...thread.transcript, { role, text, at: new Date().toISOString() }];
 }
 
-export function nextAgentReply(input: {
+export async function nextAgentReply(input: {
   thread: LeadThread;
   inbound: string;
   playbook: LeadPlaybook;
-}): { thread: LeadThread; reply: string | null } {
+  knowledge?: AgentKnowledge;
+}): Promise<{ thread: LeadThread; reply: string | null }> {
   const thread = { ...input.thread, answers: { ...input.thread.answers } };
   const inbound = input.inbound.trim();
   if (!inbound) return { thread, reply: null };
@@ -33,13 +36,24 @@ export function nextAgentReply(input: {
   const topic = topicLabel({
     triggerText: thread.trigger_text,
     postContext: thread.post_context,
-    productName: input.playbook.product_name,
+    productName: input.knowledge?.business || input.playbook.product_name,
   });
+  const knowledge = input.knowledge ?? {};
 
   const send = (stage: LeadStage, text: string) => {
     thread.stage = stage;
     push(thread, "agent", text);
     return { thread, reply: text };
+  };
+
+  const help = async (stage: LeadStage) => {
+    const brain = await answerFromSite({ thread, inbound, knowledge, locale });
+    if (brain.productUrl) thread.answers.offeredUrl = brain.productUrl;
+    if (brain.askContact) {
+      const withAsk = brain.reply.includes(copy.needContact) ? brain.reply : `${brain.reply} ${copy.needContact}`;
+      return send("ask_contact", withAsk);
+    }
+    return send(stage, brain.reply);
   };
 
   if (thread.stage === "invited") {
@@ -52,7 +66,22 @@ export function nextAgentReply(input: {
       return send("dismissed", copy.needConsent);
     }
     if (!ok) return send("await_consent", copy.needConsent);
-    return send("ask_method", copy.askMethod);
+    return help("helping");
+  }
+
+  if (thread.stage === "helping") {
+    const contact = parseContact(inbound);
+    if (contact.phone || contact.email) {
+      thread.answers.fullName = contact.fullName ?? thread.answers.fullName ?? thread.author_name;
+      thread.answers.phone = contact.phone;
+      thread.answers.email = contact.email;
+      return send("qualified", copy.done);
+    }
+    if (input.knowledge?.vertical === "auto" && parsePurchaseMethod(inbound) === "credit" && input.playbook.product_price) {
+      thread.answers.method = "credit";
+      return send("ask_income", copy.askIncome);
+    }
+    return help("helping");
   }
 
   if (thread.stage === "ask_method") {

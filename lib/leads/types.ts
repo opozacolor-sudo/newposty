@@ -3,6 +3,7 @@ export type LeadStatus = "new" | "contacted" | "dismissed";
 export type LeadStage =
   | "invited"
   | "await_consent"
+  | "helping"
   | "ask_method"
   | "ask_income"
   | "ask_contact"
@@ -18,6 +19,9 @@ export type LeadAnswers = {
   email?: string | null;
   eligible?: boolean | null;
   maxPrice?: number | null;
+  offeredUrl?: string | null;
+  clickedUrl?: string | null;
+  clickedAt?: string | null;
 };
 
 export type LeadTranscriptItem = {
