@@ -697,7 +697,7 @@
   "Chat": {
     "title": "Posty Assistant",
     "subtitle": "Draft captions, ask for ideas, or tell me to publish.",
-    "empty": "Try “Give me three Instagram captions for a rainy Monday coffee shop”, or attach up to 30 files and say “starting tomorrow, post one a day on every network at the best time”.",
+    "empty": "Try “Here’s the product link, make a poster”, or attach up to 30 files and say “starting tomorrow, post one a day on every network at the best time”.",
     "thinking": "Thinking…",
     "connectToPublish": "Connect accounts to publish from chat.",
     "placeholder": "Ask for a caption, or say “publish this on Instagram now”. Attach up to 30 photos or videos for a daily series.",
@@ -746,6 +746,11 @@
     "manageReschedule": "Reschedule",
     "manageEdit": "Edit caption",
     "cleanChat": "Clean chat",
-    "guideLink": "User guide"
+    "guideLink": "User guide",
+    "posterAlt": "Generated poster",
+    "posterAsPost": "Organic post",
+    "posterAsAd": "Paid ad",
+    "posterWantPost": "Post this poster on every connected network at the best time.",
+    "posterWantAd": "I want a paid ad with this poster. Ask me the network and budget — do not post yet."
   }
 }

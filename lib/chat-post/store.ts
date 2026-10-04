@@ -453,13 +453,18 @@ export async function loadLatestUserMediaBatch(input: {
 }) {
   const { data } = await input.supabase
     .from("messages")
-    .select("payload")
+    .select("role, payload")
     .eq("conversation_id", input.conversationId)
-    .eq("role", "user")
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(30);
   for (const row of data ?? []) {
-    const payload = row.payload as { type?: string; media?: ChatMedia[] } | null;
+    const payload = row.payload as
+      | { type?: string; media?: ChatMedia | ChatMedia[] }
+      | null;
+    if (payload?.type === "generated_poster") {
+      const item = payload.media && !Array.isArray(payload.media) ? payload.media : null;
+      if (item?.id && item.url) return [item];
+    }
     if (payload?.type === "user_media" && Array.isArray(payload.media) && payload.media.length > 0) {
       return payload.media.filter((item) => item.id && item.url);
     }

@@ -22,6 +22,14 @@ export function getAnthropicApiKey() {
   return required("ANTHROPIC_API_KEY");
 }
 
+export function getFalKey() {
+  const value = process.env.FAL_KEY?.trim();
+  if (!value) {
+    throw new Error("MISSING_FAL_KEY");
+  }
+  return value;
+}
+
 export function getZernioApiKey() {
   return required("ZERNIO_API_KEY");
 }

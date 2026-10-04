@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { createGeneratedPoster } from "@/lib/chat-post/poster";
+import { firstPublicUrlInText } from "@/lib/site-brief";
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
 import { applyCaptionOverrides, executeResolvedAction } from "@/lib/chat-post/execute";
 import {
@@ -21,6 +23,7 @@ import { userTimezone } from "@/lib/chat-post/timezone";
 import type {
   ChatMedia,
   ConfirmationPayload,
+  GeneratedPosterPayload,
   PendingIntent,
   PlatformExecResult,
   ResultsPayload,
@@ -33,7 +36,7 @@ import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -373,6 +376,7 @@ async function postChat(request: Request) {
   let finalText = "";
   let confirmation: ConfirmationPayload | null = null;
   let resultsPayload: ResultsPayload | null = null;
+  let posterPayload: GeneratedPosterPayload | null = null;
   let skipConfirmation = Boolean(conversation.skip_confirmation);
 
   for (let round = 0; round < 4; round += 1) {
@@ -605,6 +609,53 @@ async function postChat(request: Request) {
               content: JSON.stringify({ pending_confirmation: true, action_id: saved.action_id }),
             });
           }
+        } else if (tool.name === "generate_poster") {
+          const input = asRecord(tool.input);
+          const refs = Array.isArray(input?.media_refs)
+            ? (input.media_refs as unknown[]).filter((id): id is string => typeof id === "string")
+            : [];
+          const fromRefs = refs
+            .map((id) => media.find((item) => item.id === id))
+            .filter((item): item is ChatMedia => Boolean(item));
+          const references = fromRefs.length > 0 ? fromRefs : thisTurnMedia.filter((item) => item.type === "image");
+          const made = await createGeneratedPoster({
+            supabase,
+            userId: user.id,
+            conversationId,
+            locale,
+            brief: String(input?.brief ?? text),
+            siteUrl:
+              (typeof input?.product_url === "string" && input.product_url) ||
+              (typeof input?.site_url === "string" && input.site_url) ||
+              firstPublicUrlInText(text) ||
+              undefined,
+            headline: typeof input?.headline === "string" ? input.headline : undefined,
+            brandName: profile?.brand_name as string | null,
+            references,
+            aspect: input?.aspect === "square" ? "square" : "portrait",
+          });
+          if (!made.ok) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              is_error: true,
+              content: made.error,
+            });
+          } else {
+            posterPayload = made.payload;
+            mediaById.set(made.payload.media.id, made.payload.media);
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              content: JSON.stringify({
+                generated: true,
+                media_id: made.payload.media.id,
+                url: made.payload.media.url,
+                site_url: made.payload.site_url,
+                next: "Ask organic post vs paid ad. Do not publish yet.",
+              }),
+            });
+          }
         } else {
           toolResults.push({
             type: "tool_result",
@@ -635,13 +686,23 @@ async function postChat(request: Request) {
         ? locale === "ro"
           ? "Gata."
           : "Done."
-        : locale === "ro"
-          ? "Am notat, dar n-am avut ce adăuga."
-          : "I drafted that, but had nothing else to add.";
+        : posterPayload
+          ? locale === "ro"
+            ? "Am făcut posterul. Vrei postare organică sau reclamă?"
+            : "Here’s the poster. Organic post or paid ad?"
+          : locale === "ro"
+            ? "Am notat, dar n-am avut ce adăuga."
+            : "I drafted that, but had nothing else to add.";
   }
 
-  const kind = confirmation ? "confirmation" : resultsPayload ? "results" : "text";
-  const payload = confirmation ?? resultsPayload ?? null;
+  const kind = confirmation
+    ? "confirmation"
+    : resultsPayload
+      ? "results"
+      : posterPayload
+        ? "generated_poster"
+        : "text";
+  const payload = confirmation ?? resultsPayload ?? posterPayload ?? null;
 
   await supabase.from("messages").insert({
     conversation_id: conversationId,

@@ -127,6 +127,43 @@ export const chatPostTools: Anthropic.Tool[] = [
       },
     },
   },
+  {
+    name: "generate_poster",
+    description:
+      "Generate one poster-style image from a website, a product page URL, and/or attached photos. Use when they want a graphic, poster, or ad creative first. Do NOT publish. After this tool, ask if they want an organic post or a paid ad.",
+    input_schema: {
+      type: "object",
+      properties: {
+        brief: {
+          type: "string",
+          description: "What the poster is for, in the user's words.",
+        },
+        site_url: {
+          type: "string",
+          description: "Public https website to take brand/name from, if they shared one.",
+        },
+        product_url: {
+          type: "string",
+          description: "Public product page URL. Prefer this over site_url when they pasted a product link.",
+        },
+        headline: {
+          type: "string",
+          description: "Short text to paint on the poster. Keep their spelling.",
+        },
+        media_refs: {
+          type: "array",
+          items: { type: "string" },
+          description: "Reference photo ids from this chat (product, logo, existing shots).",
+        },
+        aspect: {
+          type: "string",
+          enum: ["portrait", "square"],
+          description: "portrait (default, 4:5 feed) or square.",
+        },
+      },
+      required: ["brief"],
+    },
+  },
 ];
 
 export function chatPostSystemPrompt(input: {
@@ -176,6 +213,9 @@ export function chatPostSystemPrompt(input: {
     "Use a separate actions[] item when platforms in the same message have different captions or times. Do not merge an immediate Story and a scheduled Reel into one action, or the reverse.",
     "Phrases like “toate rețelele”, “peste tot”, “all networks”, “everywhere” must become platforms: [\"__all_connected__\"]. Do not expand that list yourself from memory.",
     "For explicit exclusions (“everywhere except X”), send platforms: [\"__all_connected__\"] and excluded_platforms: [\"x\"].",
+    "If they want a poster, graphic, or generated image from a site, a product link, and/or photos (“generează un poster”, “uite site-ul”, “uite produsul”, “make a poster”), call generate_poster. Put a product page in product_url (or site_url for a homepage). A URL in the message is enough — no photos required. Do NOT call create_social_post in the same turn. After the image exists, ask whether they want an organic post or a paid ad.",
+    "If they later say post / programează / postează for that poster, call create_social_post with media_refs set to the generated media_id from generate_poster — not the reference photos.",
+    "If they later say reclamă / ads / boost / paid, do not invent a spend. Reply that the creative is ready and ask network + budget; only call create_social_post if they also want the organic post.",
     "If the user only wants a caption or content idea, without intent to post now, do NOT call create_social_post. Reply in text.",
     "Attached files plus programează / postează / schedule / publish / aceste materiale means they want a post. Call create_social_post even if spaces are missing from dictation. Do not wait for a prettier sentence.",
     "If the user gives an explicit caption, pass it EXACTLY as caption with caption_source=user_provided. Do not paraphrase. Long captions are shortened to each platform’s limit.",

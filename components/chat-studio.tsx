@@ -15,6 +15,7 @@ import { Link } from "@/i18n/navigation";
 import type {
   ChatMedia,
   ConfirmationPayload,
+  GeneratedPosterPayload,
   ResultsPayload,
   UserMediaPayload,
 } from "@/lib/chat-post/types";
@@ -26,7 +27,7 @@ type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   kind?: string | null;
-  payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | null;
+  payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | GeneratedPosterPayload | null;
 };
 
 type Attachment = {
@@ -210,9 +211,9 @@ export default function ChatStudio() {
     setInput("");
   }
 
-  async function send(event?: FormEvent) {
+  async function send(event?: FormEvent, preset?: string) {
     event?.preventDefault();
-    const text = input.trim();
+    const text = (preset ?? input).trim();
     if (!text || pending || uploading) return;
     setInput("");
     setError(null);
@@ -509,6 +510,38 @@ export default function ChatStudio() {
             message.kind === "results" &&
             message.payload?.type === "results" ? (
               <PostResultsMessage payload={message.payload} />
+            ) : null}
+            {message.role === "assistant" &&
+            message.payload?.type === "generated_poster" &&
+            message.payload.media.url ? (
+              <div className="mt-3 space-y-3">
+                <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={message.payload.media.url}
+                    alt={message.payload.headline || t("posterAlt")}
+                    className="max-h-[28rem] w-full object-contain"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => void send(undefined, t("posterWantPost"))}
+                    className="rounded-full bg-[#1A1A1A] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40"
+                  >
+                    {t("posterAsPost")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => void send(undefined, t("posterWantAd"))}
+                    className="rounded-full border border-[#E5E5E5] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] disabled:opacity-40"
+                  >
+                    {t("posterAsAd")}
+                  </button>
+                </div>
+              </div>
             ) : null}
           </article>
         ))}

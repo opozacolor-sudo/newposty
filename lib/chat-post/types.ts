@@ -16,6 +16,13 @@ export type UserMediaPayload = {
   media: ChatMedia[];
 };
 
+export type GeneratedPosterPayload = {
+  type: "generated_poster";
+  media: ChatMedia;
+  site_url?: string | null;
+  headline?: string | null;
+};
+
 export type ToolPostAction = {
   mode: PostMode;
   scheduled_at_iso?: string;
