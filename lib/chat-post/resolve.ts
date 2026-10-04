@@ -3,6 +3,7 @@ import { ALL_CONNECTED, getPlatformCapability } from "@/lib/platform-capabilitie
 import { isConnectDisabled, isPlatformId, platformLabel } from "@/lib/platforms";
 import {
   adaptContentType,
+  captionMatchesUserText,
   contentTypeForPlatform,
   inferMediaKind,
   resolvePlatformSelection,
@@ -34,7 +35,7 @@ import {
   parseScheduledAt,
   zonedLocalToUtc,
 } from "@/lib/chat-post/timezone";
-import { photoBlocksForClaude, photosOnly, withPhotos } from "@/lib/chat-post/vision";
+import { CAPTION_PHOTO_LIMIT, photoBlocksForClaude, photosOnly, withPhotos } from "@/lib/chat-post/vision";
 import type {
   CaptionSource,
   ChatMedia,
@@ -66,7 +67,7 @@ async function generateCaption(input: {
   maxChars: number;
   media?: ChatMedia[];
 }) {
-  const photos = await photoBlocksForClaude(input.media ?? []);
+  const photos = await photoBlocksForClaude(input.media ?? [], { limit: CAPTION_PHOTO_LIMIT });
   const anthropic = new Anthropic({ apiKey: input.apiKey });
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
@@ -207,7 +208,10 @@ export async function resolveCreateActions(input: {
 
     let caption = action.caption?.trim() ?? "";
     let caption_source: CaptionSource = action.caption_source ?? "user_provided";
-    const keepCaption = input.keepToolCaption ?? userRequestedCaption(input.fallbackBrief ?? "");
+    const brief = input.fallbackBrief ?? "";
+    const keepCaption =
+      (input.keepToolCaption ?? userRequestedCaption(brief)) ||
+      (Boolean(caption) && caption_source === "user_provided" && captionMatchesUserText(brief, caption));
     if (!keepCaption) {
       caption = "";
       caption_source = "user_provided";

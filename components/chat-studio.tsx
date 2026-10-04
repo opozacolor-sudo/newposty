@@ -226,28 +226,34 @@ export default function ChatStudio() {
         payload: media.length > 0 ? { type: "user_media", media } : null,
       },
     ]);
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conversationId, message: text, media, locale }),
-    });
-    const payload = await response.json();
-    setPending(false);
-    if (!response.ok) {
-      setError(payload.error ?? t("replyFailed"));
-      return;
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId, message: text, media, locale }),
+        signal: AbortSignal.timeout(55_000),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setError((payload as { error?: string }).error ?? t("replyFailed"));
+        return;
+      }
+      setConversationId((payload as { conversationId?: string }).conversationId ?? conversationId);
+      setAttachments([]);
+      setMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: (payload as { reply?: string }).reply as string,
+          kind: (payload as { kind?: string }).kind,
+          payload: (payload as { payload?: ChatMessage["payload"] }).payload,
+        },
+      ]);
+    } catch {
+      setError(t("replyFailed"));
+    } finally {
+      setPending(false);
     }
-    setConversationId(payload.conversationId);
-    setAttachments([]);
-    setMessages((current) => [
-      ...current,
-      {
-        role: "assistant",
-        content: payload.reply as string,
-        kind: payload.kind,
-        payload: payload.payload,
-      },
-    ]);
   }
 
   function onComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {

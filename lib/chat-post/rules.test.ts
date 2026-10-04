@@ -8,6 +8,7 @@ import {
   matchScheduledReference,
   resolvePlatformSelection,
   truncateCaption,
+  captionMatchesUserText,
   userRequestedCaption,
   validationReason,
 } from "./rules";
@@ -178,4 +179,12 @@ test("posting commands without asking for a caption do not keep old copy", () =>
   );
   assert.equal(userRequestedCaption("postează pe Instagram și fă-i o descriere"), true);
   assert.equal(userRequestedCaption("pune și pe tiktok cu aceeași descriere"), true);
+});
+
+test("dictated copy without spaces still counts as the user's caption", () => {
+  const brief =
+    "Programeazăacestematerialepe toateplatformeleîncepândde azi. Folosește-le. Adaugă toată prezența ta online.";
+  const caption = "Folosește-le. Adaugă toată prezența ta online.";
+  assert.equal(captionMatchesUserText(brief, caption), true);
+  assert.equal(captionMatchesUserText("postează pe Instagram acum", "Un text inventat despre o mașină roșie"), false);
 });

@@ -1,12 +1,18 @@
 import type { ImageBlockParam } from "@anthropic-ai/sdk/resources/messages/messages";
 import type { ChatMedia } from "@/lib/chat-post/types";
 
-const MAX_PHOTOS = 20;
+export const CHAT_TURN_PHOTO_LIMIT = 4;
+export const CAPTION_PHOTO_LIMIT = 2;
 const MAX_BYTES = 8 * 1024 * 1024;
+const FETCH_MS = 6_000;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
 
 export function photosOnly(media: ChatMedia[]) {
   return media.filter((item) => item.type === "image" && Boolean(item.url));
+}
+
+export function selectPhotosForClaude(media: ChatMedia[], limit: number) {
+  return photosOnly(media).slice(0, Math.max(0, limit));
 }
 
 function mediaTypeOf(contentType: string | null, url: string): "image/jpeg" | "image/png" | "image/gif" | "image/webp" | null {
@@ -22,7 +28,7 @@ function mediaTypeOf(contentType: string | null, url: string): "image/jpeg" | "i
 
 async function photoBlock(url: string): Promise<ImageBlockParam | null> {
   try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(12_000) });
+    const response = await fetch(url, { signal: AbortSignal.timeout(FETCH_MS) });
     if (!response.ok) return null;
     const buffer = Buffer.from(await response.arrayBuffer());
     if (buffer.length === 0 || buffer.length > MAX_BYTES) return null;
@@ -37,14 +43,14 @@ async function photoBlock(url: string): Promise<ImageBlockParam | null> {
   }
 }
 
-export async function photoBlocksForClaude(media: ChatMedia[]) {
-  const photos = photosOnly(media).slice(0, MAX_PHOTOS);
-  const blocks: ImageBlockParam[] = [];
-  for (const photo of photos) {
-    const block = await photoBlock(photo.url);
-    if (block) blocks.push(block);
-  }
-  return blocks;
+export async function photoBlocksForClaude(
+  media: ChatMedia[],
+  limitOrOptions: number | { limit?: number } = CHAT_TURN_PHOTO_LIMIT,
+) {
+  const limit = typeof limitOrOptions === "number" ? limitOrOptions : (limitOrOptions.limit ?? CHAT_TURN_PHOTO_LIMIT);
+  const photos = selectPhotosForClaude(media, limit);
+  const blocks = await Promise.all(photos.map((photo) => photoBlock(photo.url)));
+  return blocks.filter((block): block is ImageBlockParam => Boolean(block));
 }
 
 export function withPhotos(

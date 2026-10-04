@@ -16,6 +16,13 @@ test("daily series phrases require more than one file", () => {
     true,
   );
   assert.equal(wantsDailySeries({ brief: "publică toate acum", mediaCount: 8 }), false);
+  assert.equal(
+    wantsDailySeries({
+      brief: "Programeazăacestematerialepe toateplatformeleîncepândde azi",
+      mediaCount: 18,
+    }),
+    true,
+  );
 });
 
 test("orderedMedia follows the given id list, not object order", () => {

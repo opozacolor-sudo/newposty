@@ -4,6 +4,14 @@ import type { ChatMedia } from "@/lib/chat-post/types";
 
 export const MAX_CHAT_ATTACHMENTS = 30;
 
+function compactBrief(text: string) {
+  return text
+    .toLocaleLowerCase("ro")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/\s+/g, "");
+}
+
 export function wantsDailySeries(input: {
   cadence?: string | null;
   brief?: string;
@@ -12,8 +20,15 @@ export function wantsDailySeries(input: {
   if (input.mediaCount < 2) return false;
   if ((input.cadence ?? "").toLowerCase() === "daily") return true;
   const text = (input.brief ?? "").toLowerCase();
-  return /c[aâ]te una pe zi|cate una pe zi|una pe zi|one per day|one a day|one each day|every day|in fiecare zi|în fiecare zi|zilnic|pe lun[aă]|for a month|o lun[aă]|campanie|campaign|\bserie\b|starting tomorrow|începând de mâine|incepand de maine/.test(
-    text,
+  if (
+    /c[aâ]te una pe zi|cate una pe zi|una pe zi|one per day|one a day|one each day|every day|in fiecare zi|în fiecare zi|zilnic|pe lun[aă]|for a month|o lun[aă]|campanie|campaign|\bserie\b|starting tomorrow|starting today|începând de mâine|începând de azi|incepand de maine|incepand de azi|aceste materiale|these materials/.test(
+      text,
+    )
+  ) {
+    return true;
+  }
+  return /cateunapezi|unapezi|oneperday|oneaday|oneeachday|everyday|infiecarezi|zilnic|peluna|foramonth|oluna|campanie|campaign|serie|startingtomorrow|startingtoday|incepanddemaine|incepanddeazi|acestemateriale|thesematerials/.test(
+    compactBrief(input.brief ?? ""),
   );
 }
 
@@ -100,8 +115,10 @@ export function inferSeriesStartYmd(input: {
   const now = input.now ?? new Date();
   const today = ymdInZone(now, input.timeZone);
   const brief = (input.brief ?? "").toLowerCase();
-  const mentionsTomorrow = /mâine|maine|tomorrow/.test(brief);
-  const mentionsToday = /\b(azi|astăzi|astazi|today)\b/.test(brief);
+  const compact = compactBrief(brief);
+  const mentionsTomorrow = /mâine|maine|tomorrow/.test(brief) || /maine|tomorrow/.test(compact);
+  const mentionsToday =
+    /\b(azi|astăzi|astazi|today)\b/.test(brief) || /deazi|astazi|(?:^|[^a-z])azi(?:[^a-z]|$)|today/.test(compact);
   if (mentionsToday && !mentionsTomorrow) return today;
   return addCalendarDays(today, 1);
 }

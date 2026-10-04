@@ -43,6 +43,14 @@ export function resolvePlatformSelection(input: {
   };
 }
 
+function compactCopy(value: string) {
+  return value
+    .toLocaleLowerCase("ro")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
 export function userRequestedCaption(text: string) {
   const lower = text.toLowerCase();
   if (/fără descriere|fara descriere|fără caption|fara caption|no caption|fără text|fara text/.test(lower)) {
@@ -60,6 +68,15 @@ export function userRequestedCaption(text: string) {
     .map((part) => part.trim())
     .filter(Boolean);
   return parts.length > 1;
+}
+
+/** Keep a tool caption only when it is the user's own copy, even if dictation ate the spaces. */
+export function captionMatchesUserText(brief: string, caption: string) {
+  const hay = compactCopy(brief);
+  const needle = compactCopy(caption);
+  if (needle.length < 24 || hay.length < 24) return false;
+  const probe = needle.slice(0, Math.min(needle.length, 80));
+  return hay.includes(probe);
 }
 
 export function inferMediaKind(media: ChatMedia[]) {

@@ -15,7 +15,7 @@ import {
 } from "@/lib/chat-post/store";
 import { chatPostSystemPrompt, chatPostTools } from "@/lib/chat-post/tools";
 import { userRequestedCaption } from "@/lib/chat-post/rules";
-import { photoBlocksForClaude, withPhotos } from "@/lib/chat-post/vision";
+import { CHAT_TURN_PHOTO_LIMIT, photoBlocksForClaude, withPhotos } from "@/lib/chat-post/vision";
 import { localizeCancelledContent } from "@/lib/chat-post/copy";
 import { userTimezone } from "@/lib/chat-post/timezone";
 import type {
@@ -32,6 +32,8 @@ import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
+
+export const maxDuration = 60;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -151,6 +153,23 @@ export async function DELETE() {
 }
 
 export async function POST(request: Request) {
+  try {
+    return await postChat(request);
+  } catch {
+    const locale = localeFromRequest(request);
+    return NextResponse.json(
+      {
+        error:
+          locale === "ro"
+            ? "Asistentul nu a putut răspunde. Încearcă din nou — postarea nu a fost trimisă."
+            : "The assistant could not reply. Try again — nothing was posted.",
+      },
+      { status: 504 },
+    );
+  }
+}
+
+async function postChat(request: Request) {
   const supabase = await createServerSupabase();
   const {
     data: { user },
@@ -340,7 +359,8 @@ export async function POST(request: Request) {
     pendingIntentLine,
   });
 
-  const photoBlocks = incomingMedia.length > 0 ? await photoBlocksForClaude(incomingMedia) : [];
+  const photoBlocks =
+    incomingMedia.length > 0 ? await photoBlocksForClaude(incomingMedia, { limit: CHAT_TURN_PHOTO_LIMIT }) : [];
   const anthropicMessages: Anthropic.MessageParam[] = (history ?? []).map((message) => ({
     role: message.role as ChatMessage["role"],
     content: localizeCancelledContent(message.content as string, locale),
