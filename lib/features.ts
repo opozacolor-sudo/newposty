@@ -64,7 +64,7 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "One message, one clear job",
       batchBody:
-        "“Publish this reel now on Instagram and TikTok, and put it on an Instagram Story tomorrow at 9” fits in a single message. A Friday promo mixed with 20 monthly photos does not — split those, and the plan stays clean. Attach up to 30 photos or videos, 100 MB each. The order you pick is the order of the series.",
+        "“Publish this reel now on Instagram and TikTok, and put it on an Instagram Story tomorrow at 9” fits in a single message. A Friday promo mixed with 20 monthly photos does not — split those, and the plan stays clean. Attach up to 50 photos or videos, 100 MB each. The order you pick is the order of the series.",
       examplesTitle: "You can say",
       examples: [
         "Give me three Instagram captions for a café on a rainy Monday.",
@@ -118,7 +118,7 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "Un mesaj, o treabă clară",
       batchBody:
-        "„Publică reel-ul acum pe Instagram și TikTok, iar mâine la 9 pune-l story pe Instagram” încape într-un mesaj. O promoție de vineri amestecată cu 20 de poze de lună nu — le separi și planul rămâne curat. Atașezi până la 30 de poze sau video, 100 MB fiecare. Ordinea din picker e ordinea seriei.",
+        "„Publică reel-ul acum pe Instagram și TikTok, iar mâine la 9 pune-l story pe Instagram” încape într-un mesaj. O promoție de vineri amestecată cu 20 de poze de lună nu — le separi și planul rămâne curat. Atașezi până la 50 de poze sau video, 100 MB fiecare. Ordinea din picker e ordinea seriei.",
       examplesTitle: "Poți spune",
       examples: [
         "Dă-mi trei texte de Instagram pentru o cafenea într-o luni ploioasă.",
@@ -162,7 +162,7 @@ export const FEATURES: FeaturePage[] = [
       kicker: "Features",
       title: "Say the whole brief in one breath.",
       subtitle:
-        "The microphone next to attachments is how a long command should feel. Press, talk, watch the text appear, fix a word if you want, send. Useful on a phone, with 30 files selected, or when you would rather not type.",
+        "The microphone next to attachments is how a long command should feel. Press, talk, watch the text appear, fix a word if you want, send. Useful on a phone, with 50 files selected, or when you would rather not type.",
       features: [
         {
           title: "It keeps listening",
@@ -215,7 +215,7 @@ export const FEATURES: FeaturePage[] = [
       kicker: "Funcții",
       title: "Spui tot brief-ul dintr-o suflare.",
       subtitle:
-        "Microfonul de lângă atașamente e felul în care ar trebui să se simtă o comandă lungă. Apeși, vorbești, vezi textul, corectezi un cuvânt dacă vrei, trimiți. Pe telefon, cu 30 de fișiere selectate, sau când nu ai chef să tastezi.",
+        "Microfonul de lângă atașamente e felul în care ar trebui să se simtă o comandă lungă. Apeși, vorbești, vezi textul, corectezi un cuvânt dacă vrei, trimiți. Pe telefon, cu 50 de fișiere selectate, sau când nu ai chef să tastezi.",
       features: [
         {
           title: "Ascultă în continuare",
@@ -268,7 +268,7 @@ export const FEATURES: FeaturePage[] = [
     detail: "/features/publish-detail.png",
     en: {
       navTitle: "Publish",
-      navBody: "Go live now, or queue up to 30 days.",
+      navBody: "Go live now, or queue up to 50 days.",
       metaTitle: "Publish and schedule — posty.now",
       metaDescription:
         "Publish now or schedule a daily series. posty.now picks a peak hour per network, and an exact time always wins.",
@@ -316,13 +316,13 @@ export const FEATURES: FeaturePage[] = [
         },
         {
           q: "Can one command cover a month?",
-          a: "Yes. Up to 30 files, posted day by day, across the networks you named.",
+          a: "Yes. Up to 50 files, posted day by day, across the networks you named.",
         },
       ],
     },
     ro: {
       navTitle: "Publică",
-      navBody: "Live acum, sau până la 30 de zile în coadă.",
+      navBody: "Live acum, sau până la 50 de zile în coadă.",
       metaTitle: "Publicare și programare — posty.now",
       metaDescription:
         "Publici acum sau programezi o serie zilnică. posty.now alege o oră de vârf pe rețea, iar o oră exactă câștigă mereu.",
@@ -370,7 +370,7 @@ export const FEATURES: FeaturePage[] = [
         },
         {
           q: "O comandă poate acoperi o lună?",
-          a: "Da. Până la 30 de fișiere, zi de zi, pe rețelele pe care le-ai numit.",
+          a: "Da. Până la 50 de fișiere, zi de zi, pe rețelele pe care le-ai numit.",
         },
       ],
     },
@@ -628,7 +628,7 @@ export const FEATURES: FeaturePage[] = [
         },
         {
           title: "The month is theirs",
-          body: "Up to 30 files, day by day, on that client’s networks. Captions and times are proposed for them, not copied from the previous brand.",
+          body: "Up to 50 files, day by day, on that client’s networks. Captions and times are proposed for them, not copied from the previous brand.",
         },
         {
           title: "Ads stay on the same client",
@@ -682,7 +682,7 @@ export const FEATURES: FeaturePage[] = [
         },
         {
           title: "Luna e a lor",
-          body: "Până la 30 de fișiere, zi de zi, pe rețelele clientului ăluia. Caption-urile și orele sunt propuse pentru el, nu copiate de la brandul anterior.",
+          body: "Până la 50 de fișiere, zi de zi, pe rețelele clientului ăluia. Caption-urile și orele sunt propuse pentru el, nu copiate de la brandul anterior.",
         },
         {
           title: "Reclamele rămân la același client",

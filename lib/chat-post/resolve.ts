@@ -20,10 +20,14 @@ import {
   wantsBestTime,
 } from "@/lib/chat-post/best-time";
 import {
+  calendarDaysBetween,
   inferSeriesStartYmd,
   MAX_CHAT_ATTACHMENTS,
   mediaForThisTurn,
+  nextPackedSlot,
+  parseRemixRequest,
   planCrossAssignments,
+  planRemixSets,
   seriesDayYmd,
   wantsBroadcastSeries,
   wantsDailySeries,
@@ -33,6 +37,7 @@ import {
   isFutureDate,
   localIsoInZone,
   parseScheduledAt,
+  ymdInZone,
   zonedLocalToUtc,
 } from "@/lib/chat-post/timezone";
 import { CAPTION_PHOTO_LIMIT, photoBlocksForClaude, photosOnly, withPhotos } from "@/lib/chat-post/vision";
@@ -138,15 +143,25 @@ export async function resolveCreateActions(input: {
       thisMessage: input.thisMessageMedia ?? [],
       brief: input.fallbackBrief,
     });
-    const isSeries = wantsDailySeries({
+    const remix = parseRemixRequest({
       cadence: rawAction.cadence,
       brief: input.fallbackBrief,
-      mediaCount: items.length,
+      remix_count: rawAction.remix_count,
+      remix_size: rawAction.remix_size,
+      pack: rawAction.pack,
+      photoCount: photosOnly(items).length,
     });
+    const isSeries =
+      !remix &&
+      wantsDailySeries({
+        cadence: rawAction.cadence,
+        brief: input.fallbackBrief,
+        mediaCount: items.length,
+      });
     const action: ToolPostAction =
-      isSeries && (!rawAction.platforms || rawAction.platforms.length === 0)
+      (isSeries || remix) && (!rawAction.platforms || rawAction.platforms.length === 0)
         ? { ...rawAction, platforms: [ALL_CONNECTED], mode: "schedule" }
-        : isSeries
+        : isSeries || remix
           ? { ...rawAction, mode: "schedule" }
           : rawAction;
 
@@ -230,6 +245,156 @@ export async function resolveCreateActions(input: {
         maxChars: tightest,
         media: photosOnly(media),
       });
+    }
+
+    if (remix) {
+      const pool = photosOnly(media).slice(0, MAX_CHAT_ATTACHMENTS);
+      if (media.length > MAX_CHAT_ATTACHMENTS) {
+        warnings.push(
+          input.locale === "ro"
+            ? `Am luat primele ${MAX_CHAT_ATTACHMENTS} fișiere.`
+            : `I took the first ${MAX_CHAT_ATTACHMENTS} files.`,
+        );
+      }
+      if (media.some((item) => item.type === "video")) {
+        warnings.push(
+          input.locale === "ro"
+            ? "Carusele mixate folosesc doar pozele. Video-urile rămân în chat."
+            : "Mixed carousels use photos only. Videos stay in the chat.",
+        );
+      }
+      if (pool.length < remix.size) {
+        return {
+          ok: false,
+          error:
+            input.locale === "ro"
+              ? `Pentru carusele de ${remix.size} am nevoie de cel puțin ${remix.size} poze.`
+              : `A ${remix.size}-photo carousel needs at least ${remix.size} photos.`,
+          missing: ["media"],
+        };
+      }
+      const sets = planRemixSets(
+        pool.map((item) => item.id),
+        remix.size,
+        remix.count,
+      );
+      if (sets.length === 0) {
+        return {
+          ok: false,
+          error:
+            input.locale === "ro"
+              ? "Nu am putut amesteca pozele în carusele diferite."
+              : "I could not mix those photos into different carousels.",
+        };
+      }
+      if (sets.length < remix.count) {
+        warnings.push(
+          input.locale === "ro"
+            ? `Am făcut ${sets.length} mixuri diferite din ${pool.length} poze.`
+            : `I made ${sets.length} different mixes from ${pool.length} photos.`,
+        );
+      }
+      const byId = new Map(pool.map((item) => [item.id, item]));
+      const startOn = inferSeriesStartYmd({
+        brief: input.fallbackBrief,
+        scheduled_on: action.scheduled_on,
+        scheduled_at_iso: action.scheduled_at_iso,
+        timeZone: input.timezone,
+        now: input.now,
+      });
+      const clock = clockPartsFromIso(action.scheduled_at_iso);
+      const useResearchTime = !clock || wantsBestTime(action);
+      const startUtc =
+        (useResearchTime
+          ? nextBestTime({
+              platform: selection.platforms[0] ?? "instagram",
+              contentType: "carousel",
+              timeZone: input.timezone,
+              now: input.now,
+              onOrAfterYmd: startOn,
+            })
+          : zonedLocalToUtc(
+              `${startOn}T${String(clock?.hour ?? 9).padStart(2, "0")}:${String(clock?.minute ?? 0).padStart(2, "0")}:00`,
+              input.timezone,
+            )) ?? new Date((input.now ?? new Date()).getTime() + 120_000);
+      const used = new Map<string, number>();
+      const cursors = new Map<string, Date>();
+      const remixTypes = {
+        ...(action.content_types ?? {}),
+        instagram: action.content_types?.instagram ?? "carousel",
+        tiktok: action.content_types?.tiktok ?? "carousel",
+      };
+      const dayIndexes = new Set<number>();
+      let built = 0;
+      for (let index = 0; index < sets.length; index += 1) {
+        const combo = sets[index]
+          .map((id) => byId.get(id))
+          .filter((item): item is ChatMedia => Boolean(item));
+        if (combo.length < remix.size) continue;
+        const collected = collectTargets({
+          platformIds: selection.platforms,
+          postingAccounts,
+          media: combo,
+          caption,
+          locale: input.locale,
+          contentType: action.content_type,
+          contentTypes: remixTypes,
+        });
+        for (const warning of collected.truncatedWarnings) {
+          if (!warnings.includes(warning)) warnings.push(warning);
+        }
+        if (index === 0) excluded_by_validation.push(...collected.skipped);
+        const groups = new Map<string, { utc: Date; platforms: ResolvedPlatform[] }>();
+        for (const target of collected.platforms) {
+          const utc = nextPackedSlot({
+            platform: target.platform,
+            used,
+            cursor: cursors.get(target.platform) ?? startUtc,
+            timeZone: input.timezone,
+            pack: remix.pack,
+            postIndex: index,
+            startOn,
+          });
+          cursors.set(target.platform, new Date(utc.getTime() + 3 * 60 * 1000));
+          const key = utc.toISOString();
+          const group = groups.get(key);
+          if (group) group.platforms.push(cloneTarget(target));
+          else groups.set(key, { utc, platforms: [cloneTarget(target)] });
+        }
+        for (const group of groups.values()) {
+          const dayIndex = Math.max(0, calendarDaysBetween(startOn, ymdInZone(group.utc, input.timezone)));
+          resolvedActions.push(
+            scheduledAction({
+              mode: "schedule",
+              scheduledUtc: group.utc,
+              timezone: input.timezone,
+              locale: input.locale,
+              scheduleSource: useResearchTime ? "best_time_research" : "user",
+              platforms: group.platforms,
+              media: combo,
+              caption_source,
+              dayIndex,
+            }),
+          );
+          dayIndexes.add(dayIndex);
+          built += 1;
+        }
+      }
+      if (built > 0) {
+        seriesMeta = {
+          cadence: "remix",
+          distribution: "broadcast",
+          start_on: startOn,
+          total_days: dayIndexes.size,
+          remix_size: remix.size,
+          remix_count: sets.length,
+          pack: remix.pack,
+        };
+        if (useResearchTime && !warnings.includes(bestTimeResearchWarning(input.locale))) {
+          warnings.push(bestTimeResearchWarning(input.locale));
+        }
+      }
+      continue;
     }
 
     if (isSeries) {

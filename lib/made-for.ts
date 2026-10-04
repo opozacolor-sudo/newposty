@@ -44,7 +44,7 @@ export const MADE_FOR: MadeForPage[] = [
       navBody: "Stay consistent without living in five apps.",
       metaTitle: "posty.now for creators",
       metaDescription:
-        "Dictate or type what you made. posty.now writes the caption, picks the hour, and posts across your networks — up to 30 pieces in one go.",
+        "Dictate or type what you made. posty.now writes the caption, picks the hour, and posts across your networks — up to 50 pieces in one go.",
       kicker: "Made for creators",
       title: "Film it. Say it. Posty does the rest.",
       subtitle:
@@ -65,7 +65,7 @@ export const MADE_FOR: MadeForPage[] = [
       ],
       batchTitle: "A month of posts, while the idea is still warm",
       batchBody:
-        "Drop in up to 30 photos or videos at once. Posty lines them up day by day, cross-platform, with the right format: Instagram stills go to Feed, video can go to Reels, TikTok takes photos and video.",
+        "Drop in up to 50 photos or videos at once. Posty lines them up day by day, cross-platform, with the right format: Instagram stills go to Feed, video can go to Reels, TikTok takes photos and video.",
       adsTitle: "When a post should travel further",
       adsBody:
         "Say the goal — profile visits, a product link, a launch. Posty can build the paid campaign on Meta, TikTok, Google, LinkedIn, or Pinterest from the same conversation. X Ads is coming soon.",
@@ -98,7 +98,7 @@ export const MADE_FOR: MadeForPage[] = [
       navBody: "Rămâi constant, fără cinci aplicații deschise.",
       metaTitle: "posty.now pentru creatori",
       metaDescription:
-        "Dictezi sau scrii ce ai făcut. posty.now scrie caption-ul, alege ora și postează pe rețelele tale — până la 30 de materiale dintr-o dată.",
+        "Dictezi sau scrii ce ai făcut. posty.now scrie caption-ul, alege ora și postează pe rețelele tale — până la 50 de materiale dintr-o dată.",
       kicker: "Creat pentru creatori",
       title: "Filmezi. Spui. Posty face restul.",
       subtitle:
@@ -119,7 +119,7 @@ export const MADE_FOR: MadeForPage[] = [
       ],
       batchTitle: "O lună de postări, cât ideea e încă caldă",
       batchBody:
-        "Pui până la 30 de poze sau clipuri odată. Posty le așază zi de zi, cross-platform, cu formatul potrivit: pozele de Instagram merg în Feed, clipul poate merge în Reels, TikTok primește și poze, și video.",
+        "Pui până la 50 de poze sau clipuri odată. Posty le așază zi de zi, cross-platform, cu formatul potrivit: pozele de Instagram merg în Feed, clipul poate merge în Reels, TikTok primește și poze, și video.",
       adsTitle: "Când o postare trebuie să ajungă mai departe",
       adsBody:
         "Spui ținta — vizite pe profil, un link de produs, o lansare. Posty poate construi campania plătită pe Meta, TikTok, Google, LinkedIn sau Pinterest, din aceeași conversație. X Ads urmează.",
@@ -166,7 +166,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "A week planned between customers",
-          body: "Queue up to 30 pieces. Posty publishes one a day at a sensible hour, so the feed does not go quiet when you are on the floor.",
+          body: "Queue up to 50 pieces. Posty publishes one a day at a sensible hour, so the feed does not go quiet when you are on the floor.",
         },
         {
           title: "Numbers you can read",
@@ -217,7 +217,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "O săptămână planificată între clienți",
-          body: "Pui până la 30 de materiale. Posty publică câte unul pe zi, la o oră potrivită, ca feed-ul să nu amuțească când ești în magazin.",
+          body: "Pui până la 50 de materiale. Posty publică câte unul pe zi, la o oră potrivită, ca feed-ul să nu amuțească când ești în magazin.",
         },
         {
           title: "Cifre pe care le citești",
@@ -273,7 +273,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "A month queued in one sitting",
-          body: "Up to 30 assets, posted day by day, across that client’s networks. Captions and times are proposed, not copied blindly.",
+          body: "Up to 50 assets, posted day by day, across that client’s networks. Captions and times are proposed, not copied blindly.",
         },
         {
           title: "Ads live with the same client",
@@ -324,7 +324,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "O lună pusă în coadă dintr-o ședință",
-          body: "Până la 30 de materiale, zi de zi, pe rețelele clientului. Caption-urile și orele sunt propuse, nu copiate orb.",
+          body: "Până la 50 de materiale, zi de zi, pe rețelele clientului. Caption-urile și orele sunt propuse, nu copiate orb.",
         },
         {
           title: "Reclamele stau la același client",
@@ -380,7 +380,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "The campaign stays on the calendar",
-          body: "Queue the week or the month, up to 30 pieces. The feed keeps moving after the event night is over.",
+          body: "Queue the week or the month, up to 50 pieces. The feed keeps moving after the event night is over.",
         },
         {
           title: "Proof for the board",
@@ -431,7 +431,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "Campania rămâne în calendar",
-          body: "Pui săptămâna sau luna, până la 30 de materiale. Feed-ul continuă și după seara evenimentului.",
+          body: "Pui săptămâna sau luna, până la 50 de materiale. Feed-ul continuă și după seara evenimentului.",
         },
         {
           title: "Dovadă pentru board",
@@ -491,7 +491,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "A month of student life in one pass",
-          body: "Up to 30 photos or clips, one a day, so the feed is not only announcements.",
+          body: "Up to 50 photos or clips, one a day, so the feed is not only announcements.",
         },
       ],
       batchTitle: "Open day is a series, not a single story",
@@ -542,7 +542,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "O lună de viață de student dintr-o trecere",
-          body: "Până la 30 de poze sau clipuri, una pe zi, ca feed-ul să nu fie doar anunțuri.",
+          body: "Până la 50 de poze sau clipuri, una pe zi, ca feed-ul să nu fie doar anunțuri.",
         },
       ],
       batchTitle: "Ziua porților deschise e o serie, nu un story",
@@ -594,7 +594,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "Launch week, queued",
-          body: "Teaser, release day, a follow-up. Up to 30 pieces, one a day, on the networks you connected.",
+          body: "Teaser, release day, a follow-up. Up to 50 pieces, one a day, on the networks you connected.",
         },
         {
           title: "You stay in the product",
@@ -645,7 +645,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           title: "Săptămâna de lansare, în coadă",
-          body: "Teaser, ziua de release, un follow-up. Până la 30 de materiale, una pe zi, pe rețelele conectate.",
+          body: "Teaser, ziua de release, un follow-up. Până la 50 de materiale, una pe zi, pe rețelele conectate.",
         },
         {
           title: "Rămâi în produs",

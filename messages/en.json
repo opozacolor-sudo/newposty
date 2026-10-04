@@ -126,7 +126,7 @@
         "body": "Posty uses researched peak hours for each platform. You can still pick your own time."
       },
       "publish": {
-        "title": "One command for up to 30 days",
+        "title": "One command for up to 50 days",
         "body": "Schedule or publish instantly, across every connected platform."
       },
       "analytics": {
@@ -138,7 +138,7 @@
   "About": {
     "title": "About us",
     "p1": "posty.now exists to give you back the most precious resource you have: time. Instead of losing hours every week logging into Instagram, TikTok, Facebook, LinkedIn, or Pinterest, you do it all from one place — in a few minutes.",
-    "bulkTitle": "Add up to 30 pieces of content in one go",
+    "bulkTitle": "Add up to 50 pieces of content in one go",
     "bulkBody": "Upload a full month of content in a few seconds.",
     "timeTitle": "We know when to post",
     "timeBody": "You don’t have to guess peak hours. Our algorithm picks the best time for each network, so your content gets the most impact.",
@@ -738,10 +738,10 @@
   "Chat": {
     "title": "Posty Assistant",
     "subtitle": "Draft captions, ask for ideas, or tell me to publish.",
-    "empty": "Try “Here’s the product link, make a poster” or “make a video”, or attach up to 30 files and say “starting tomorrow, post one a day on every network at the best time”.",
+    "empty": "Try “Here’s the product link, make a poster” or “make a video”, or attach up to 50 photos and say “100 carousel posts with 5 mixed photos each”.",
     "thinking": "Thinking…",
     "connectToPublish": "Connect accounts to publish from chat.",
-    "placeholder": "Ask for a caption, or say “publish this on Instagram now”. Attach up to 30 photos or videos for a daily series.",
+    "placeholder": "Ask for a caption, or say “publish this on Instagram now”. Attach up to 50 photos — a daily series or mixed carousels.",
     "attach": "Attach",
     "attaching": "Uploading…",
     "attachedCount": "{count} attached",
@@ -767,6 +767,10 @@
     "seriesTitle": "{days} days across {networks} networks",
     "seriesHint": "Cross: each network gets a different file the same day. The same file never goes out on two networks that day.",
     "seriesHintBroadcast": "The same file goes to every connected network that accepts it that day.",
+    "remixTitle": "{count} carousels × {size} photos across {networks} networks",
+    "remixHint": "Each post is a different mix. If a day’s or hour’s cap is full, leftover posts roll to the next day.",
+    "remixDay": "{count} posts · {label}",
+    "remixMoreDays": "and {count} more days queued",
     "seriesDay": "Day {day}",
     "seriesSkipped": "skipped for this file",
     "schedulingSeries": "Scheduling…",

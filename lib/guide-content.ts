@@ -184,7 +184,7 @@ const RO: GuideDoc = {
       body: [
         "Asistentul e inima studio-ului. Aici ceri idei, texte, publicare, programare, o lună de conținut sau o promoție pe o dată anume.",
         "Scrie în română, natural, ca unui coleg. Nu trebuie comenzi speciale. Spune rețelele, când vrei să iasă și dacă vrei text sau nu. Dacă nu spui pe ce rețea (și nu e o serie pe toate), Posty te întreabă — nu ghicește.",
-        "Atașează până la 30 de poze sau video, maximum 100 MB fiecare. Ordinea în care le alegi e ordinea din serie. Așteaptă să se încarce (badge portocaliu), apoi trimite mesajul.",
+        "Atașează până la 50 de poze sau video, maximum 100 MB fiecare. Ordinea în care le alegi e ordinea din serie. Așteaptă să se încarce (badge portocaliu), apoi trimite mesajul.",
         "Chat nou golește firul. Folosește-l când schimbi subiectul sau vrei să nu mai țină minte „nu mai întreba”.",
       ],
       examples: [
@@ -205,7 +205,7 @@ const RO: GuideDoc = {
       featured: "voice",
       lead: "Vorbește. Posty scrie. E cel mai rapid mod să dai o comandă lungă fără să tastezi.",
       body: [
-        "Microfonul de lângă atașamente nu e un extra — e felul natural de a lucra în posty.now. Apeși, vorbești ca la un om, vezi textul cum apare, corectezi un cuvânt dacă vrei, și trimiți. Ideal când selectezi 30 de fișiere, când ești pe telefon, când descrii o campanie cu dată, rețele și ton, sau când pur și simplu nu ai chef să scrii.",
+        "Microfonul de lângă atașamente nu e un extra — e felul natural de a lucra în posty.now. Apeși, vorbești ca la un om, vezi textul cum apare, corectezi un cuvânt dacă vrei, și trimiți. Ideal când selectezi 50 de fișiere, când ești pe telefon, când descrii o campanie cu dată, rețele și ton, sau când pur și simplu nu ai chef să scrii.",
         "Funcționează cel mai bine în Chrome sau Edge. La prima folosire browserul cere microfonul: apasă Allow. Dacă ai apăsat greșit pe Block, deschide lacătul din bara de adresă, permite microfonul, reîncarcă pagina.",
         "Cât timp microfonul e portocaliu, Posty te ascultă continuu — poți face o pauză, poți relua. Placeholder-ul devine „Te ascult… vorbește acum”. Apeși din nou microfonul ca să oprești, apoi Trimite.",
         "Poți dicta în română. Dacă o frază iese ciudat, o editezi în casetă — nu trebuie să o iei de la capăt. Atașamentele rămân; vocea completează instrucțiunea.",
@@ -293,7 +293,7 @@ const RO: GuideDoc = {
       id: "series",
       title: "O lună de conținut: seria zilnică",
       body: [
-        "Atașează până la 30 de fișiere, în ordinea în care vrei să iasă. Spune „începând de mâine, câte una pe zi, pe fiecare rețea, la cea mai bună oră”. Poți amesteca poze și video.",
+        "Atașează până la 50 de fișiere, în ordinea în care vrei să iasă. Spune „începând de mâine, câte una pe zi, pe fiecare rețea, la cea mai bună oră” sau „100 de postări carusel cu câte 5 poze mixate”. Poți amesteca poze și video.",
         "Implicit e cross, nu copy-paste. În aceeași zi, fiecare rețea primește alt fișier. Facebook poate lua media 1, X media 2, TikTok media 3. Același material nu apare pe două rețele în aceeași zi. Pe parcursul lunii fișierele rotează, ca luna să rămână plină.",
         "Dacă vrei același fișier pe toate rețelele în ziua aia, trebuie să o spui: „același pe toate”. Altfel rămâne cross.",
         "TikTok ia și poze (mod foto / carusel), și video. YouTube sare pozele — nu primește foto. În cardul de confirmare vezi, pe zile, ce rețea ce fișier ia. Seriile mari cer confirmare; nu sar peste card.",
@@ -325,7 +325,7 @@ const RO: GuideDoc = {
       tips: [
         {
           title: "Două joburi, două mesaje",
-          body: "Întâi seria de 30 (conținutul lunii). Apoi un chat nou sau un mesaj nou, un singur fișier, promoția. Nu le lega în aceeași încărcare.",
+          body: "Întâi seria de 50 (conținutul lunii). Apoi un chat nou sau un mesaj nou, un singur fișier, promoția. Nu le lega în aceeași încărcare.",
         },
       ],
     },
@@ -348,7 +348,7 @@ const RO: GuideDoc = {
       title: "Cardul de confirmare",
       body: [
         "Înainte să iasă ceva, vezi un card: rețele, oră, preview, pentru serii câte un slot pe zi. Confirmă sau Anulează / modifică.",
-        "Poți bifa „Nu mai întreba în acest chat” dacă vrei viteză. Preferința e doar pe firul ăsta; Chat nou o resetează. Seriile mari tot cer ochi pe card — e prea ușor să programezi 30 de zile greșit.",
+        "Poți bifa „Nu mai întreba în acest chat” dacă vrei viteză. Preferința e doar pe firul ăsta; Chat nou o resetează. Seriile mari tot cer ochi pe card — e prea ușor să programezi 50 de zile greșit.",
         "Dacă anulezi, trimiți o comandă nouă. Cardul de confirmare expiră în câteva ore; dacă ai lăsat tab-ul deschis peste noapte, fă comanda din nou.",
       ],
     },
@@ -418,7 +418,7 @@ const RO: GuideDoc = {
         "Dictarea nu scrie nimic: Chrome sau Edge, Allow pe microfon, lacătul din bara de adresă. Reîncarcă. Apoi microfonul din chat — trebuie să rămână portocaliu cât vorbești.",
         "„Se publică acum” pe TikTok: așteaptă. Procesarea nu e eroare. Bifa verde e semnalul.",
         "Nu publică: Conturi → Postări, rețeaua e conectată? Instagram/TikTok/YouTube/Pinterest au fișier atașat?",
-        "Fișier respins: maximum 100 MB, maximum 30 odată. Pozele nu merg pe TikTok/YouTube în serie.",
+        "Fișier respins: maximum 100 MB, maximum 50 odată. YouTube sare pozele. TikTok acceptă poze (carusel).",
         "Confirmarea a dispărut: a expirat. Trimite comanda din nou.",
         "Statistici ads goale: Conturi → Promovări, conectează rețeaua, apoi Statistică → Promovări. Un Instagram de postări nu umple tabloul de ads.",
         "Limba greșită: comutatorul de limbă e jos în sidebar, lângă ceas.",
@@ -570,7 +570,7 @@ const EN: GuideDoc = {
       body: [
         "The assistant is the heart of the studio. Ask for ideas, captions, publish, schedule, a month of content, or a promotion on a specific date.",
         "Write naturally. No special commands. Name the networks, when it should go out, and whether you want a caption. If you do not name a network (and it is not a series for every network), Posty asks — it does not guess.",
-        "Attach up to 30 photos or videos, 100 MB each. Picker order is series order. Wait until uploads finish (orange badge), then send.",
+        "Attach up to 50 photos or videos, 100 MB each. Picker order is series order. Wait until uploads finish (orange badge), then send.",
         "Clean chat clears the thread. Use it when you change topic or want to reset “don’t ask again”.",
       ],
       examples: [
@@ -591,7 +591,7 @@ const EN: GuideDoc = {
       featured: "voice",
       lead: "Talk. Posty types. It is the fastest way to give a long instruction without a keyboard.",
       body: [
-        "The microphone next to attachments is not a gimmick — it is the natural way to work in posty.now. Tap, speak like you would to a colleague, watch the words appear, fix a word if you want, send. Perfect when you have just picked 30 files, when you are on your phone, when you are describing a dated campaign with networks and tone, or when you simply do not want to type.",
+        "The microphone next to attachments is not a gimmick — it is the natural way to work in posty.now. Tap, speak like you would to a colleague, watch the words appear, fix a word if you want, send. Perfect when you have just picked 50 files, when you are on your phone, when you are describing a dated campaign with networks and tone, or when you simply do not want to type.",
         "It works best in Chrome or Edge. The first time, the browser asks for the microphone: press Allow. If you hit Block by mistake, open the lock icon in the address bar, allow the microphone, reload.",
         "While the mic is orange, Posty keeps listening — you can pause and continue. The placeholder becomes “Listening… speak now”. Tap the mic again to stop, then Send.",
         "You can dictate in Romanian or English. If a phrase comes out wrong, edit it in the box — you do not start over. Attachments stay; voice fills in the instruction.",
@@ -679,7 +679,7 @@ const EN: GuideDoc = {
       id: "series",
       title: "A month of content: daily series",
       body: [
-        "Attach up to 30 files, in the order they should go out. Say “starting tomorrow, one a day, on every network, at the best time”. Photos and videos can mix.",
+        "Attach up to 50 files, in the order they should go out. Say “starting tomorrow, one a day, on every network, at the best time” or “100 carousel posts with 5 mixed photos each”. Photos and videos can mix.",
         "The default is cross, not copy-paste. On the same day, each network gets a different file. Facebook might get media 1, X media 2, TikTok media 3. The same file never goes out on two networks that day. Across the month the files rotate so the calendar stays full.",
         "If you want the same file on every network that day, say so: “the same on all of them”. Otherwise it stays cross.",
         "TikTok takes photos (photo mode / carousel) and video. YouTube skips photos — it will not get stills. The confirmation card shows, per day, which network gets which file. Large series always ask for confirmation; they will not skip the card.",
@@ -711,7 +711,7 @@ const EN: GuideDoc = {
       tips: [
         {
           title: "Two jobs, two messages",
-          body: "First the batch of 30 (the month’s content). Then a new chat or a new message, a single file, the promotion. Do not bind them in the same upload.",
+          body: "First the batch of 50 (the month’s content). Then a new chat or a new message, a single file, the promotion. Do not bind them in the same upload.",
         },
       ],
     },
@@ -734,7 +734,7 @@ const EN: GuideDoc = {
       title: "The confirmation card",
       body: [
         "Before anything goes out, you see a card: networks, time, preview, and for series a slot per day. Confirm or Cancel / edit.",
-        "You can tick “Don’t ask again in this chat” if you want speed. That preference is only for this thread; Clean chat resets it. Large series still want eyes on the card — it is too easy to schedule 30 days wrong.",
+        "You can tick “Don’t ask again in this chat” if you want speed. That preference is only for this thread; Clean chat resets it. Large series still want eyes on the card — it is too easy to schedule 50 days wrong.",
         "If you cancel, send a new instruction. Confirmation expires after a few hours; if you left the tab open overnight, send the command again.",
       ],
     },
@@ -804,7 +804,7 @@ const EN: GuideDoc = {
         "Dictation writes nothing: Chrome or Edge, Allow on the microphone, lock icon in the address bar. Reload. Then the mic in chat — it should stay orange while you speak.",
         "“Publishing now” on TikTok: wait. Processing is not an error. The green check is the signal.",
         "Nothing publishes: Accounts → Posts, is the network connected? Do Instagram/TikTok/YouTube/Pinterest have a file attached?",
-        "File rejected: 100 MB max, 30 files max. Photos are skipped on TikTok/YouTube in a series.",
+        "File rejected: 100 MB max, 50 files max. YouTube skips photos. TikTok accepts photos (carousel).",
         "Confirmation vanished: it expired. Send the command again.",
         "Empty ads stats: Accounts → Ads, connect the network, then Statistics → Ads. A posting Instagram does not fill the ads dashboard.",
         "Wrong language: the language switch is at the bottom of the sidebar, next to the clock.",

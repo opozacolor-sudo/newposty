@@ -1,8 +1,10 @@
 import { parseDateOnly } from "@/lib/chat-post/best-time";
-import { addCalendarDays, ymdInZone } from "@/lib/chat-post/timezone";
+import { addCalendarDays, localIsoInZone, ymdInZone, zonedLocalToUtc } from "@/lib/chat-post/timezone";
 import type { ChatMedia } from "@/lib/chat-post/types";
 
-export const MAX_CHAT_ATTACHMENTS = 30;
+export const MAX_CHAT_ATTACHMENTS = 50;
+export const MAX_REMIX_POSTS = 100;
+export const POSTING_HOUR_CAP = 25;
 
 function compactBrief(text: string) {
   return text
@@ -125,4 +127,129 @@ export function inferSeriesStartYmd(input: {
 
 export function seriesDayYmd(startOn: string, dayIndex: number) {
   return addCalendarDays(startOn, dayIndex);
+}
+
+export type RemixPlan = {
+  count: number;
+  size: number;
+  pack: "fill_day" | "daily";
+};
+
+export function parseRemixRequest(input: {
+  cadence?: string | null;
+  brief?: string;
+  remix_count?: number | null;
+  remix_size?: number | null;
+  pack?: string | null;
+  photoCount: number;
+}): RemixPlan | null {
+  const brief = input.brief ?? "";
+  const text = brief.toLowerCase();
+  const named =
+    input.cadence === "remix" ||
+    (typeof input.remix_count === "number" && input.remix_count > 1) ||
+    (/carusel|carousel/.test(text) &&
+      /mix|diferit|combin|c[aâ]te\s*\d|cu\s+c[aâ]te|fiecare postare/.test(text)) ||
+    (/\d+\s*(de\s+)?post/.test(text) && /carusel|carousel|mixate|mix/.test(text));
+  if (!named || input.photoCount < 2) return null;
+
+  const countMatch = brief.match(/(\d{1,3})\s*(de\s+)?post/i)?.[1];
+  const sizeMatch = brief.match(/c[aâ]te\s+(\d{1,2})|cu\s+c[aâ]te\s+(\d{1,2})|(\d{1,2})\s+poze/i);
+  const count = Math.min(
+    MAX_REMIX_POSTS,
+    Math.max(2, Number(input.remix_count || countMatch || 0) || 10),
+  );
+  const size = Math.min(10, Math.max(2, Number(input.remix_size || sizeMatch?.[1] || sizeMatch?.[2] || sizeMatch?.[3] || 5)));
+  const pack: RemixPlan["pack"] =
+    input.pack === "daily" || /c[aâ]te una pe zi|una pe zi|one per day|pe zile/.test(text)
+      ? "daily"
+      : "fill_day";
+  return { count, size, pack };
+}
+
+function shuffleIds(ids: string[], seed: number) {
+  const order = [...ids];
+  let state = (seed + 1) >>> 0;
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    const j = state % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+export function planRemixSets(ids: string[], size: number, count: number) {
+  const pool = ids.filter(Boolean);
+  const want = Math.min(MAX_REMIX_POSTS, Math.max(0, count));
+  if (pool.length < size || want < 1) return [] as string[][];
+  const sets: string[][] = [];
+  const seenCombo = new Set<string>();
+  const seenOrder = new Set<string>();
+  for (let phase = 0; phase < 2 && sets.length < want; phase += 1) {
+    for (let seed = 0; seed < want * 80 && sets.length < want; seed += 1) {
+      const combo = shuffleIds(pool, seed + phase * 10_000).slice(0, size);
+      const orderKey = combo.join("|");
+      const comboKey = [...combo].sort().join("|");
+      if (seenOrder.has(orderKey)) continue;
+      if (phase === 0 && seenCombo.has(comboKey)) continue;
+      seenOrder.add(orderKey);
+      seenCombo.add(comboKey);
+      sets.push(combo);
+    }
+  }
+  return sets;
+}
+
+export function dailyPostCap(platform: string) {
+  if (platform === "instagram" || platform === "facebook") return 100;
+  if (platform === "threads") return 250;
+  if (platform === "twitter") return 50;
+  if (platform === "pinterest") return 25;
+  if (platform === "tiktok") return 15;
+  return 50;
+}
+
+export function calendarDaysBetween(fromYmd: string, toYmd: string) {
+  const from = Date.parse(`${fromYmd}T00:00:00Z`);
+  const to = Date.parse(`${toYmd}T00:00:00Z`);
+  if (Number.isNaN(from) || Number.isNaN(to)) return 0;
+  return Math.round((to - from) / 86_400_000);
+}
+
+export function nextPackedSlot(input: {
+  platform: string;
+  used: Map<string, number>;
+  cursor: Date;
+  timeZone: string;
+  pack: "fill_day" | "daily";
+  postIndex: number;
+  startOn: string;
+}) {
+  let at = input.cursor;
+  if (input.pack === "daily") {
+    const day = seriesDayYmd(input.startOn, input.postIndex);
+    const clock = localIsoInZone(input.cursor, input.timeZone).slice(11, 19);
+    at = zonedLocalToUtc(`${day}T${clock}`, input.timeZone) ?? input.cursor;
+  }
+  for (let guard = 0; guard < 800; guard += 1) {
+    const local = localIsoInZone(at, input.timeZone);
+    const dayKey = `${input.platform}:${local.slice(0, 10)}`;
+    const hourKey = `${input.platform}:${local.slice(0, 13)}`;
+    const dayCount = input.used.get(dayKey) ?? 0;
+    const hourCount = input.used.get(hourKey) ?? 0;
+    if (dayCount < dailyPostCap(input.platform) && hourCount < POSTING_HOUR_CAP) {
+      input.used.set(dayKey, dayCount + 1);
+      input.used.set(hourKey, hourCount + 1);
+      return at;
+    }
+    if (hourCount >= POSTING_HOUR_CAP) {
+      at = new Date(at.getTime() + 60 * 60 * 1000);
+      continue;
+    }
+    const nextDay = addCalendarDays(local.slice(0, 10), 1);
+    at =
+      zonedLocalToUtc(`${nextDay}T${local.slice(11, 19)}`, input.timeZone) ??
+      new Date(at.getTime() + 24 * 60 * 60 * 1000);
+  }
+  return at;
 }

@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mediaForThisTurn, orderedMedia, planCrossAssignments, wantsDailySeries } from "./series";
+import {
+  dailyPostCap,
+  mediaForThisTurn,
+  nextPackedSlot,
+  orderedMedia,
+  parseRemixRequest,
+  planCrossAssignments,
+  planRemixSets,
+  wantsDailySeries,
+} from "./series";
 import type { ChatMedia } from "./types";
 
 const ZONE = "Europe/Bucharest";
@@ -169,6 +178,108 @@ test("resolve expands one photo per day including TikTok", async () => {
       .flatMap((action) => action.media.map((item) => item.id));
     assert.equal(new Set(ids).size, ids.length);
   }
+});
+
+test("remix brief asks for 100 unique 5-photo carousels packed in-day", () => {
+  const plan = parseRemixRequest({
+    brief: "fa-mi 100 de postari carusel cu cate 5 poze mixate ca fiecare postare sa fie diferita",
+    photoCount: 40,
+  });
+  assert.deepEqual(plan, { count: 100, size: 5, pack: "fill_day" });
+  assert.equal(
+    parseRemixRequest({
+      brief: "100 carusele mixate pe zile",
+      photoCount: 40,
+    })?.pack,
+    "daily",
+  );
+});
+
+test("remix sets are unique combinations first", () => {
+  const ids = Array.from({ length: 12 }, (_, index) => `p${index + 1}`);
+  const sets = planRemixSets(ids, 5, 20);
+  assert.equal(sets.length, 20);
+  assert.ok(sets.every((set) => set.length === 5));
+  const keys = sets.map((set) => [...set].sort().join("|"));
+  assert.equal(new Set(keys).size, 20);
+});
+
+test("TikTok daily cap rolls leftover remix posts to the next day", () => {
+  const used = new Map<string, number>();
+  const start = new Date("2026-08-26T06:00:00.000Z");
+  const days = new Set<string>();
+  for (let index = 0; index < 20; index += 1) {
+    const slot = nextPackedSlot({
+      platform: "tiktok",
+      used,
+      cursor: start,
+      timeZone: ZONE,
+      pack: "fill_day",
+      postIndex: index,
+      startOn: "2026-08-26",
+    });
+    days.add(slot.toISOString().slice(0, 10));
+  }
+  assert.equal(dailyPostCap("tiktok"), 15);
+  assert.ok(days.size >= 2);
+});
+
+test("resolve expands mixed carousels and stays on Instagram the same day", async () => {
+  const { resolveCreateActions } = await import("./resolve");
+  const now = new Date("2026-08-25T07:00:00.000Z");
+  const media: ChatMedia[] = Array.from({ length: 8 }, (_, index) => ({
+    id: `p${index + 1}`,
+    url: `https://example.com/${index + 1}.jpg`,
+    type: "image",
+    name: `${index + 1}.jpg`,
+  }));
+  const result = await resolveCreateActions({
+    actions: [
+      {
+        mode: "schedule",
+        cadence: "remix",
+        remix_count: 6,
+        remix_size: 5,
+        pack: "fill_day",
+        scheduled_at_iso: "2026-08-26T09:00:00",
+        platforms: ["instagram"],
+        media_refs: media.map((item) => item.id),
+        caption: "mix",
+        caption_source: "user_provided",
+      },
+    ],
+    accounts: [
+      { id: "1", platform: "instagram", username: "ig", display_name: null, zernio_account_id: "z1" },
+    ],
+    media,
+    locale: "ro",
+    timezone: ZONE,
+    apiKey: "test",
+    keepToolCaption: true,
+    fallbackBrief: "6 postari carusel cu cate 5 poze mixate toate in aceeasi zi",
+    now,
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.resolved.series?.cadence, "remix");
+  assert.equal(result.resolved.series?.remix_count, 6);
+  assert.equal(result.resolved.series?.remix_size, 5);
+  assert.equal(result.resolved.actions.length, 6);
+  assert.ok(result.resolved.actions.every((action) => action.media.length === 5));
+  const keys = result.resolved.actions.map((action) =>
+    action.media
+      .map((item) => item.id)
+      .slice()
+      .sort()
+      .join("|"),
+  );
+  assert.equal(new Set(keys).size, 6);
+  assert.ok(result.resolved.actions.every((action) => action.scheduled_at_iso?.startsWith("2026-08-26")));
+  assert.ok(
+    result.resolved.actions.every((action) =>
+      action.platforms.every((platform) => platform.contentType === "carousel"),
+    ),
+  );
 });
 
 test("a video day in a mixed series still reaches TikTok", async () => {

@@ -32,9 +32,23 @@ export const chatPostTools: Anthropic.Tool[] = [
               },
               cadence: {
                 type: "string",
-                enum: ["daily"],
+                enum: ["daily", "remix"],
                 description:
-                  "Set to daily when the user wants a multi-day series. The server expands this. Do NOT emit one action per day.",
+                  "daily = one file per day. remix = unique multi-photo carousels mixed from the attached photos. The server expands this. Do NOT emit one action per post.",
+              },
+              remix_count: {
+                type: "number",
+                description: "How many unique carousel posts to build. Max 100. Required when cadence=remix unless the brief already names the number.",
+              },
+              remix_size: {
+                type: "number",
+                description: "Photos per carousel, 2-10. Default 5.",
+              },
+              pack: {
+                type: "string",
+                enum: ["fill_day", "daily"],
+                description:
+                  "fill_day (default): schedule as many as the platform daily/hourly cap allows, then roll to the next day. daily: one remix post per day, still rolling if a cap is already full.",
               },
               distribution: {
                 type: "string",
@@ -234,7 +248,8 @@ export function chatPostSystemPrompt(input: {
     `If they name a day but not a clock time with that request (“mâine la cea mai bună oră”), also set scheduled_on to that YYYY-MM-DD (today=${input.today}, tomorrow=${input.tomorrow}).`,
     "If they give an explicit clock time, that time wins — do not set use_best_time.",
     "X (Twitter) is not available yet. Never put twitter or x in platforms.",
-    "Daily series: if they attach several files and want one per day / a month of posts / “câte una pe zi”, call create_social_post ONCE with cadence=daily, use_best_time=true (unless they named a clock time), media_refs=only the file ids from THIS message, in that order, and platforms [\"__all_connected__\"] unless they named specific networks. Do not add earlier files from this chat unless they ask for those too. Default distribution is cross: Facebook gets file 1, Instagram file 2, TikTok file 3 on the same day, then rotate so the same file never appears on two networks the same day. Only set distribution=broadcast if they explicitly want the same file on every network that day. Mix of photos and videos is allowed. YouTube skips photos. TikTok accepts photos (photo mode / carousel). Never tell the user TikTok cannot take stills. Do NOT create 30 separate actions.",
+    "Daily series: if they attach several files and want one per day / a month of posts / “câte una pe zi”, call create_social_post ONCE with cadence=daily, use_best_time=true (unless they named a clock time), media_refs=only the file ids from THIS message, in that order, and platforms [\"__all_connected__\"] unless they named specific networks. Do not add earlier files from this chat unless they ask for those too. Default distribution is cross: Facebook gets file 1, Instagram file 2, TikTok file 3 on the same day, then rotate so the same file never appears on two networks the same day. Only set distribution=broadcast if they explicitly want the same file on every network that day. Mix of photos and videos is allowed. YouTube skips photos. TikTok accepts photos (photo mode / carousel). Never tell the user TikTok cannot take stills. Do NOT create 50 separate actions.",
+    "Remix carousels: if they attach many photos and ask for N carousel posts with K mixed photos each (“100 de postări carusel cu câte 5 poze mixate”), call create_social_post ONCE with cadence=remix, remix_count=N, remix_size=K (default 5), pack=fill_day unless they said one per day / pe zile (then pack=daily), media_refs=the photo ids from THIS message, platforms [\"__all_connected__\"] unless they named networks. Same unique mix goes to every compatible network. The server packs toward each network’s daily and hourly cap and rolls leftover posts to the next day automatically. Do NOT emit 100 actions.",
     `Canonical platform ids: ${CANONICAL_PLATFORM_IDS.join(", ")}.`,
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
     "Never assume the platform if the user did not specify one — except a daily series with several files, which uses all connected networks. For a single post, ask in text. Do NOT guess a platform.",

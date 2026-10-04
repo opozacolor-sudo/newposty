@@ -36,6 +36,9 @@ export type ToolPostAction = {
   use_best_time?: boolean | string;
   cadence?: string;
   distribution?: string;
+  remix_count?: number;
+  remix_size?: number;
+  pack?: string;
   platforms: string[];
   excluded_platforms?: string[];
   caption?: string;
@@ -85,10 +88,13 @@ export type ResolvedCreateAction = {
 };
 
 export type ChatSeries = {
-  cadence: "daily";
+  cadence: "daily" | "remix";
   distribution: "cross" | "broadcast";
   start_on: string;
   total_days: number;
+  remix_size?: number;
+  remix_count?: number;
+  pack?: "fill_day" | "daily";
 };
 
 export type ResolvedAction = {

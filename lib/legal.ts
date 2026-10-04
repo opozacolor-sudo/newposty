@@ -141,7 +141,7 @@ const ro: LegalPage[] = [
         body: [
           "Lista de preînregistrare: emailul și limba (română sau engleză). Temei: pași înainte de contract și consimțământul dat când trimiți formularul. Scop: să te anunțăm la deschiderea din 15 octombrie 2026. Poți cere scoaterea de pe listă la adresa de contact.",
           "Cont: email, identificatorul de autentificare și hash-ul parolei, ținut de furnizorul de autentificare. Temei: contractul. Scop: să intri în studio.",
-          "Studio: mesajele din chat, fișierele încărcate (până la 30, maximum 100 MB fiecare), postările, programările, clienții Team (doar numele) și contul activ selectat. Temei: contractul. Scop: să publicăm, să programăm și să arătăm istoricul.",
+          "Studio: mesajele din chat, fișierele încărcate (până la 50, maximum 100 MB fiecare), postările, programările, clienții Team (doar numele) și contul activ selectat. Temei: contractul. Scop: să publicăm, să programăm și să arătăm istoricul.",
           "Rețele: identificatori și nume de conturi conectate, plus token-uri de acces necesare publicării. Temei: contractul. Scop: acțiunea pe care o ceri. Citim mesajele și comentariile de pe conturile conectate ca să detectăm interes, să răspundem (în privat la calificare, public doar ca să invităm conversația privată) și să salvăm lead-ul calificat, după acordul prin DA. Nu punem telefon, email sau salariu în comentarii publice.",
           "Voce: browserul transformă vorbirea în text. Noi stocăm textul din mesaj, dacă îl trimiți. Nu stocăm audio.",
           "Plăți: Stripe procesează cardul. Noi păstrăm identificatorul de client Stripe, statusul plății, suma și data, ca să știm dacă abonamentul e activ și ca să emitem factura. Nu stocăm numărul complet al cardului. Temei: contractul și obligația legală contabilă.",
@@ -423,7 +423,7 @@ const en: LegalPage[] = [
         body: [
           "Pre-registration list: email and language (Romanian or English). Basis: steps before a contract, and the consent you give by submitting the form. Purpose: to tell you when we open on 15 October 2026. You can ask to be removed via the contact address.",
           "Account: email, auth identifier, and password hash, held by the auth provider. Basis: contract. Purpose: signing in.",
-          "Studio: chat messages, uploaded files (up to 30, 100 MB each), posts, schedules, Team clients (name only), and the selected client. Basis: contract. Purpose: publishing, scheduling, and history.",
+          "Studio: chat messages, uploaded files (up to 50, 100 MB each), posts, schedules, Team clients (name only), and the selected client. Basis: contract. Purpose: publishing, scheduling, and history.",
           "Networks: identifiers and names of connected accounts, plus the access tokens needed to publish. We read connected-account messages and comments to detect interest, reply (qualification in private; a public comment only invites a private message), and store a qualified lead after a YES consent. We do not put phone, email, or salary in public comments. Basis: contract. Purpose: the action you asked for.",
           "Voice: the browser turns speech into text. We store the message text if you send it. We do not store audio.",
           "Payments: Stripe processes the card. We keep the Stripe customer id, payment status, amount, and date, so we know the subscription is active and so we can invoice. We do not store the full card number. Basis: contract and legal accounting duty.",

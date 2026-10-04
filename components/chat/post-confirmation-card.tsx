@@ -200,12 +200,15 @@ export function PostConfirmationCard({
 
 function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
   const t = useTranslations("Chat");
+  const remix = resolved.series?.cadence === "remix";
   const networks = new Set<string>();
   const rows = new Map<
     number,
     {
       dayIndex: number;
       label: string;
+      count: number;
+      thumbs: string[];
       slots: {
         media: { url: string; type: string; name?: string | null } | null;
         platform: string;
@@ -219,8 +222,14 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
     const current = rows.get(dayIndex) ?? {
       dayIndex,
       label: action.scheduled_label ?? "",
+      count: 0,
+      thumbs: [],
       slots: [],
     };
+    current.count += 1;
+    for (const item of action.media) {
+      if (item.type === "image" && current.thumbs.length < 6) current.thumbs.push(item.url);
+    }
     for (const platform of action.platforms) {
       networks.add(platform.platform);
       current.slots.push({
@@ -233,6 +242,8 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
     rows.set(dayIndex, current);
   }
   const days = [...rows.values()].sort((left, right) => left.dayIndex - right.dayIndex);
+  const preview = remix && days.length > 6 ? days.slice(0, 5) : days;
+  const hiddenDays = days.length - preview.length;
   const usesResearch = resolved.actions.some((action) => action.schedule_source === "best_time_research");
   const cross = resolved.series?.distribution !== "broadcast";
 
@@ -240,49 +251,71 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
     <div className="space-y-3">
       <div>
         <p className="text-sm font-medium text-[#1A1A1A]">
-          {t("seriesTitle", { days: resolved.series?.total_days ?? days.length, networks: networks.size })}
+          {remix
+            ? t("remixTitle", {
+                count: resolved.series?.remix_count ?? resolved.actions.length,
+                size: resolved.series?.remix_size ?? 5,
+                networks: networks.size,
+              })
+            : t("seriesTitle", { days: resolved.series?.total_days ?? days.length, networks: networks.size })}
         </p>
-        <p className="text-xs text-[#6B7280]">{cross ? t("seriesHint") : t("seriesHintBroadcast")}</p>
+        <p className="text-xs text-[#6B7280]">
+          {remix ? t("remixHint") : cross ? t("seriesHint") : t("seriesHintBroadcast")}
+        </p>
         {usesResearch ? <p className="mt-1 text-[11px] text-[#6B7280]">{t("bestTimeHint")}</p> : null}
       </div>
       <ul className="max-h-80 space-y-2 overflow-y-auto pr-1">
-        {days.map((day) => (
+        {preview.map((day) => (
           <li key={day.dayIndex} className="space-y-2 rounded-xl border border-[#F3F4F6] p-2">
             <p className="text-xs font-medium text-[#1A1A1A]">
-              {t("seriesDay", { day: day.dayIndex + 1 })} · {day.label}
+              {remix
+                ? t("remixDay", { count: day.count, label: day.label })
+                : `${t("seriesDay", { day: day.dayIndex + 1 })} · ${day.label}`}
             </p>
-            <div className="flex flex-wrap gap-2">
-              {day.slots.map((slot, index) => {
-                const visual = getPlatform(slot.platform);
-                return (
-                  <div
-                    key={`${slot.platform}-${slot.handle}-${index}`}
-                    className="flex items-center gap-2 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] p-1 pr-2"
-                  >
-                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-[#F5F5F5]">
-                      {slot.media?.type === "image" ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={slot.media.url} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <p className="flex h-full items-center justify-center px-1 text-center text-[9px] text-[#6B7280]">
-                          {slot.media?.name ?? "video"}
-                        </p>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="flex items-center gap-1 text-[11px] font-medium text-[#1A1A1A]">
-                        {visual ? <PlatformIcon platform={visual} connected size="sm" /> : null}
-                        {platformLabel(slot.platform)}
-                      </p>
-                      <p className="truncate text-[10px] text-[#6B7280]">{slot.handle}</p>
-                    </div>
+            {remix ? (
+              <div className="flex flex-wrap gap-1">
+                {day.thumbs.map((url) => (
+                  <div key={url} className="h-10 w-10 overflow-hidden rounded-md bg-[#F5F5F5]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt="" className="h-full w-full object-cover" />
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {day.slots.map((slot, index) => {
+                  const visual = getPlatform(slot.platform);
+                  return (
+                    <div
+                      key={`${slot.platform}-${slot.handle}-${index}`}
+                      className="flex items-center gap-2 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] p-1 pr-2"
+                    >
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-[#F5F5F5]">
+                        {slot.media?.type === "image" ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={slot.media.url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <p className="flex h-full items-center justify-center px-1 text-center text-[9px] text-[#6B7280]">
+                            {slot.media?.name ?? "video"}
+                          </p>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="flex items-center gap-1 text-[11px] font-medium text-[#1A1A1A]">
+                          {visual ? <PlatformIcon platform={visual} connected size="sm" /> : null}
+                          {platformLabel(slot.platform)}
+                        </p>
+                        <p className="truncate text-[10px] text-[#6B7280]">{slot.handle}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </li>
         ))}
       </ul>
+      {hiddenDays > 0 ? <p className="text-[11px] text-[#6B7280]">{t("remixMoreDays", { count: hiddenDays })}</p> : null}
     </div>
   );
 }
