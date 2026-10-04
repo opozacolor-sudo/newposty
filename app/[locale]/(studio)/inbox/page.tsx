@@ -6,6 +6,7 @@ import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
 import { isPlatformId, platformLabel } from "@/lib/platforms";
 import {
+  isOwnInboxMessage,
   loadOwnedCommentThread,
   loadOwnedMessages,
   loadScopedCommentPosts,
@@ -201,11 +202,27 @@ export default async function InboxPage({
               name={conversations.rows.find((row) => row.id === params.conversation)?.participantName || ""}
             />
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-              {thread.messages.map((message, index) => (
-                <p key={message.id || index} className="max-w-xl rounded-2xl bg-neutral-100 px-3 py-2 text-sm">
-                  {message.message || message.text || ""}
-                </p>
-              ))}
+              {[...thread.messages]
+                .sort((a, b) => String(a.createdTime ?? "").localeCompare(String(b.createdTime ?? "")))
+                .map((message, index) => {
+                const own = isOwnInboxMessage(message);
+                const text = message.message || message.text || "";
+                const who = conversations.rows.find((row) => row.id === params.conversation)?.participantName || t("them");
+                return (
+                  <div key={message.id || index} className={`flex ${own ? "justify-end" : "justify-start"}`}>
+                    <div
+                      className={`max-w-[min(36rem,85%)] rounded-2xl px-3 py-2 text-sm ${
+                        own ? "bg-[#FF4713] text-white" : "bg-neutral-100 text-neutral-900"
+                      }`}
+                    >
+                      <p className={`text-[11px] ${own ? "text-white/80" : "text-neutral-500"}`}>
+                        {own ? t("you") : who}
+                      </p>
+                      <p className="mt-0.5 whitespace-pre-wrap break-words">{text}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <div className="border-t border-neutral-100 px-4 py-3">
               <InboxReplyForm

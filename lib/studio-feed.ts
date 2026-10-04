@@ -300,14 +300,32 @@ export async function assertOwnedConversation(scope: StudioScope, conversationId
   return conversation;
 }
 
+export type InboxMessage = {
+  id?: string;
+  message?: string;
+  text?: string;
+  createdTime?: string;
+  direction?: string;
+  from?: string;
+};
+
+export function isOwnInboxMessage(message: { direction?: string; from?: string }) {
+  const direction = (message.direction || "").toLowerCase();
+  const from = String(message.from || "").toLowerCase();
+  if (/(^|[^a-z])(in|inbound|incoming|received|user|customer|participant)([^a-z]|$)/.test(direction)) {
+    return false;
+  }
+  return /(out|send|agent|page|business)/.test(direction) || /(page|business|self|owner)/.test(from);
+}
+
 export async function loadOwnedMessages(scope: StudioScope, conversationId: string, accountId: string) {
   const conversation = await assertOwnedConversation(scope, conversationId, accountId).catch(() => null);
-  if (!conversation) return { messages: [] as Array<{ id?: string; message?: string; text?: string }>, error: "unknown" as const };
+  if (!conversation) return { messages: [] as InboxMessage[], error: "unknown" as const };
   try {
     const data = await listConversationMessages(conversationId, accountId);
     return { messages: data.messages ?? data.data ?? [], error: null };
   } catch (error) {
-    return { messages: [] as Array<{ id?: string; message?: string; text?: string }>, error: feedErrorKind(error) };
+    return { messages: [] as InboxMessage[], error: feedErrorKind(error) };
   }
 }
 

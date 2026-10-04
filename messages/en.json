@@ -467,6 +467,8 @@
     "reply": "Reply",
     "sending": "Sending…",
     "replyFailed": "Could not send the reply.",
+    "you": "You",
+    "them": "Them",
     "replyPlaceholder": "Write a reply",
     "sort": "Sort",
     "newest": "Newest",
