@@ -69,7 +69,7 @@ export function WaitlistForm({
           dark
             ? "text-center text-[13px] leading-5 text-[#E4EEF0] sm:text-sm sm:leading-6"
             : sky
-              ? "mx-auto flex min-h-[2.4rem] max-w-xl items-center justify-center text-center text-[13px] leading-5 text-[#1d1d1f] sm:min-h-[3rem] sm:text-[15px] sm:leading-6 lg:text-base"
+              ? "mx-auto text-center text-[13px] leading-5 text-[#1d1d1f] sm:text-[15px] sm:leading-6 lg:flex lg:min-h-[3rem] lg:max-w-xl lg:items-center lg:justify-center lg:text-base"
               : compact
                 ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
                 : "text-sm leading-6 text-neutral-500"
@@ -79,7 +79,11 @@ export function WaitlistForm({
       </p>
       <form
         onSubmit={onSubmit}
-        className="mt-2 flex w-full flex-col gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
+        className={
+          sky
+            ? "mt-1.5 flex w-full flex-col items-center gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
+            : "mt-2 flex w-full flex-col gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
+        }
       >
         <label className="sr-only" htmlFor={emailId}>
           {t("emailPlaceholder")}
@@ -95,7 +99,7 @@ export function WaitlistForm({
             dark
               ? "h-10 min-w-0 flex-1 rounded-full border border-[#E4EEF0]/25 bg-[#3F000F] px-4 text-sm text-[#E4EEF0] outline-none placeholder:text-[#E4EEF0]/50 focus:border-[#FF5B04]"
               : sky
-                ? "h-10 min-w-0 flex-1 rounded-full border-0 bg-white px-4 text-sm text-[#1d1d1f] outline-none placeholder:text-[#6e6e73] focus:ring-2 focus:ring-[#0071e3]/30"
+                ? "h-9 w-full rounded-full border-0 bg-white px-4 text-sm text-[#1d1d1f] outline-none placeholder:text-[#6e6e73] focus:ring-2 focus:ring-[#0071e3]/30 sm:h-10 sm:min-w-0 sm:flex-1"
                 : compact
                   ? "h-9 min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-3 text-[12px] outline-none focus:border-[#FF4713] sm:h-auto sm:px-4 sm:py-3 sm:text-sm"
                   : "min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF4713]"
@@ -108,7 +112,7 @@ export function WaitlistForm({
             dark
               ? "h-10 shrink-0 rounded-full bg-[#FF5B04] px-5 text-sm font-medium text-[#E4EEF0] disabled:opacity-60"
               : sky
-                ? "h-10 shrink-0 rounded-full bg-[#0071e3] px-5 text-sm font-normal text-white transition hover:bg-[#0077ed] disabled:opacity-60"
+                ? "h-9 w-auto rounded-full bg-[#0071e3] px-5 text-[13px] font-normal text-white transition hover:bg-[#0077ed] disabled:opacity-60 sm:h-10 sm:px-5 sm:text-sm"
                 : compact
                   ? `${btnSolid} h-9 shrink-0 !px-3 !py-1.5 !text-[11px] sm:h-auto sm:!px-5 sm:!py-3 sm:!text-sm disabled:opacity-60`
                   : `${btnSolid} shrink-0 px-5 py-3 disabled:opacity-60`

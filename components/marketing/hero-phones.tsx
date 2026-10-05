@@ -74,7 +74,7 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-3 flex min-h-0 w-full flex-1 flex-col lg:mt-8 lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
+      <div className="mt-2 flex min-h-0 w-full flex-1 flex-col lg:mt-8 lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
         <ul
           ref={scroller}
           className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-full lg:w-auto lg:max-w-[82%] lg:flex-none lg:grid-cols-6 lg:gap-[6px] lg:overflow-visible lg:px-0 lg:[aspect-ratio:54/16]"

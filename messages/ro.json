@@ -56,17 +56,17 @@
     "screenLeads": "Agent AI de colectare și calificare leaduri.",
     "screenAnalyticsKicker": "Analize",
     "screenAnalytics": "Vezi ce a funcționat.",
-    "kicker": "Deschidere 15 octombrie",
+    "kicker": "Lansare 15 octombrie",
     "startFree": "Începe gratuit",
     "waitlistLead": "Lasă emailul. La lansare primești prima lună gratuită.",
     "waitlistCta": "Anunță-mă",
     "waitlistSending": "Salvăm…",
-    "waitlistSuccess": "Ești pe listă. Îți scriem când deschidem, pe 15 octombrie.",
+    "waitlistSuccess": "Ești pe listă. Îți scriem când lansăm, pe 15 octombrie.",
     "waitlistError": "Nu am putut salva emailul. Încearcă din nou.",
     "waitlistInvalid": "Introdu un email valid.",
     "emailPlaceholder": "tu@studio.ro",
     "waitlistPageTitle": "O lună gratuită la lansare",
-    "waitlistPageSubtitle": "posty.now se deschide pe 15 octombrie. Preînregistrează-te și te anunțăm pe email — prima lună e gratuită.",
+    "waitlistPageSubtitle": "posty.now se lansează pe 15 octombrie. Preînregistrează-te și te anunțăm pe email — prima lună e gratuită.",
     "seeHow": "Vezi cum funcționează",
     "toastPosted": "Postat pe Instagram",
     "toastScheduled": "Programat pentru mâine 18:00",
@@ -103,7 +103,7 @@
     "channels": "Canale",
     "ads": "Reclame",
     "comingSoon": "În curând",
-    "ctaTitle": "Deschidere 15 octombrie"
+    "ctaTitle": "Lansare 15 octombrie"
   },
   "MadeFor": {
     "howTitle": "Cum merge",
@@ -113,7 +113,7 @@
     "ads": "Reclame plătite",
     "soon": "În curând",
     "cta": "Preînregistrează-te pentru o lună gratuită",
-    "ctaTitle": "Deschidere 15 octombrie"
+    "ctaTitle": "Lansare 15 octombrie"
   },
   "Features": {
     "howTitle": "Cum merge",
@@ -123,7 +123,7 @@
     "ads": "Conturi de reclame",
     "soon": "În curând",
     "cta": "Preînregistrează-te pentru o lună gratuită",
-    "ctaTitle": "Deschidere 15 octombrie"
+    "ctaTitle": "Lansare 15 octombrie"
   },
   "Demo": {
     "metaTitle": "Cum funcționează posty.now",
@@ -131,7 +131,7 @@
     "title": "Cum funcționează posty.now",
     "subtitle": "Vezi fiecare pas în acțiune.",
     "videoSoon": "Video în curând",
-    "ctaTitle": "Deschidere 15 octombrie",
+    "ctaTitle": "Lansare 15 octombrie",
     "ctaButton": "Preînregistrează-te",
     "readGuide": "Citește manualul complet",
     "steps": {
@@ -343,7 +343,7 @@
     "upcoming": "Urmează",
     "whatItDoes": "Ce face posty.now",
     "waitlistTitle": "Nu cumperi acum?",
-    "waitlistBody": "Lasă emailul și te anunțăm când se deschide pentru toată lumea.",
+    "waitlistBody": "Lasă emailul și te anunțăm când lansăm pentru toată lumea.",
     "waitlistCta": "Anunță-mă",
     "waitlistSending": "Salvăm…",
     "waitlistSuccess": "Te anunțăm când e gata.",
@@ -377,7 +377,7 @@
     "signingIn": "Se autentifică…",
     "newHere": "Ești nou aici?",
     "createAccount": "Creează un cont",
-    "waitlistHint": "Conturile noi se deschid pe 15 octombrie.",
+    "waitlistHint": "Conturile noi pornesc la lansare, pe 15 octombrie.",
     "waitlistLink": "Lasă emailul",
     "signupTitle": "Deschide un studio",
     "signupSubtitle": "Beta — gratuit. Email și parolă.",
