@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
 const CARDS = [
-  { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-networks-hud.png", ink: "dark" },
+  { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-networks-hud.png" },
   { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-front-2.png" },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-front-3.png" },
   { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-front-4.png" },
@@ -43,59 +43,41 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-8 flex min-h-0 w-full flex-1 items-end justify-center overflow-hidden pb-3">
-        <ul className="mx-auto grid h-full w-auto max-w-[82%] grid-cols-6 gap-[6px] [aspect-ratio:54/16]">
-          {CARDS.map((card) => {
-            const darkInk = "ink" in card && card.ink === "dark";
-            return (
-            <li key={card.title} className="group min-h-0 min-w-0">
-              <div className="relative h-full overflow-hidden rounded-[1.4rem] bg-black">
-                <Image
-                  src={card.src}
-                  alt=""
-                  fill
-                  sizes="12vw"
-                  className="object-cover object-center transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.06]"
-                  priority
-                />
-                <div
-                  className={
-                    darkInk
-                      ? "pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-white/45 via-white/10 to-transparent p-3 sm:p-4"
-                      : "pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/55 via-black/20 to-transparent p-3 sm:p-4"
-                  }
-                >
-                  <p
-                    className={
-                      darkInk
-                        ? "text-[10px] font-medium tracking-wide text-[#1d1d1f]/75 sm:text-[12px]"
-                        : "text-[10px] font-normal text-white/90 sm:text-[12px]"
-                    }
-                  >
-                    {t(card.kicker)}
-                  </p>
-                  <p
-                    className={
-                      darkInk
-                        ? "mt-1.5 text-[12px] font-semibold leading-[1.15] tracking-tight text-[#1d1d1f] [text-shadow:0_1px_10px_rgba(255,255,255,0.55)] sm:text-[15px]"
-                        : "mt-1.5 text-[12px] font-semibold leading-[1.15] tracking-tight text-white sm:text-[15px]"
-                    }
-                  >
+      <div className="mt-6 min-h-0 w-full flex-1 lg:mt-8 lg:flex lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
+        <ul className="flex h-[min(68dvh,36rem)] snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-full lg:w-auto lg:max-w-[82%] lg:grid-cols-6 lg:gap-[6px] lg:overflow-visible lg:px-0 lg:pb-0 lg:[aspect-ratio:54/16]">
+          {CARDS.map((card) => (
+            <li
+              key={card.title}
+              className="h-full w-[min(22.5rem,calc(100vw-3.25rem))] shrink-0 snap-start lg:min-h-0 lg:w-auto lg:min-w-0"
+            >
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white lg:rounded-[1.4rem]">
+                <div className="px-6 pt-6 lg:px-3 lg:pt-3.5 xl:px-4 xl:pt-4">
+                  <p className="text-[15px] font-normal text-[#1d1d1f] lg:text-[10px] xl:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-1.5 max-w-[16rem] text-[24px] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-1 lg:max-w-none lg:text-[12px] xl:text-[15px]">
                     {t(card.title)}
                   </p>
+                </div>
+                <div className="relative mx-5 mb-14 mt-4 min-h-0 flex-1 overflow-hidden rounded-[1.35rem] lg:mx-2.5 lg:mb-11 lg:mt-2 lg:rounded-[1rem] xl:mx-3">
+                  <Image
+                    src={card.src}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 12vw, 85vw"
+                    className="object-cover object-center transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.06]"
+                    priority
+                  />
                 </div>
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-2 right-2 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f]"
+                  className="absolute bottom-4 right-4 z-[1] flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white lg:bottom-2.5 lg:right-2.5 lg:h-8 lg:w-8"
                   aria-label={t("screenOpen")}
                 >
-                  <Plus size={15} strokeWidth={2.5} />
+                  <Plus size={16} strokeWidth={2.5} />
                 </button>
               </div>
             </li>
-            );
-          })}
+          ))}
         </ul>
       </div>
       {mounted && open

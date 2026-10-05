@@ -84,15 +84,17 @@ body {
   background: #b4d7ff;
 }
 
-html.home-no-scroll,
-html.home-no-scroll body {
-  height: 100%;
-  overflow: hidden;
-}
+@media (min-width: 1024px) {
+  html.home-no-scroll,
+  html.home-no-scroll body {
+    height: 100%;
+    overflow: hidden;
+  }
 
-html.home-no-scroll .marketing {
-  height: 100dvh;
-  overflow: hidden;
+  html.home-no-scroll .marketing {
+    height: 100dvh;
+    overflow: hidden;
+  }
 }
 
 input,
