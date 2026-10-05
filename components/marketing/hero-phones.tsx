@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Plus, X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
@@ -22,9 +22,40 @@ export function HeroPhones() {
   const titleId = useId();
   const [open, setOpen] = useState<Card | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const scroller = useRef<HTMLUListElement>(null);
+
+  function syncArrows() {
+    const el = scroller.current;
+    if (!el) return;
+    setCanPrev(el.scrollLeft > 8);
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+  }
+
+  function scrollByCard(direction: -1 | 1) {
+    const el = scroller.current;
+    if (!el) return;
+    const card = el.querySelector("li");
+    const gap = 12;
+    const width = card ? card.getBoundingClientRect().width + gap : el.clientWidth * 0.85;
+    el.scrollBy({ left: direction * width, behavior: "smooth" });
+  }
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    syncArrows();
+    el.addEventListener("scroll", syncArrows, { passive: true });
+    window.addEventListener("resize", syncArrows);
+    return () => {
+      el.removeEventListener("scroll", syncArrows);
+      window.removeEventListener("resize", syncArrows);
+    };
   }, []);
 
   useEffect(() => {
@@ -43,8 +74,11 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-6 min-h-0 w-full flex-1 lg:mt-8 lg:flex lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
-        <ul className="flex h-[min(68dvh,36rem)] snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-full lg:w-auto lg:max-w-[82%] lg:grid-cols-6 lg:gap-[6px] lg:overflow-visible lg:px-0 lg:pb-0 lg:[aspect-ratio:54/16]">
+      <div className="mt-6 flex min-h-0 w-full flex-1 flex-col lg:mt-8 lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
+        <ul
+          ref={scroller}
+          className="flex h-[min(58dvh,31rem)] snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-full lg:w-auto lg:max-w-[82%] lg:grid-cols-6 lg:gap-[6px] lg:overflow-visible lg:px-0 lg:[aspect-ratio:54/16]"
+        >
           {CARDS.map((card) => (
             <li
               key={card.title}
@@ -79,6 +113,26 @@ export function HeroPhones() {
             </li>
           ))}
         </ul>
+        <div className="mt-4 flex shrink-0 justify-end gap-3 px-5 lg:hidden">
+          <button
+            type="button"
+            onClick={() => scrollByCard(-1)}
+            disabled={!canPrev}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e8e8ed] text-[#1d1d1f] transition disabled:opacity-35"
+            aria-label={t("screenPrev")}
+          >
+            <ChevronLeft size={18} strokeWidth={2} />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByCard(1)}
+            disabled={!canNext}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e8e8ed] text-[#1d1d1f] transition disabled:opacity-35"
+            aria-label={t("screenNext")}
+          >
+            <ChevronRight size={18} strokeWidth={2} />
+          </button>
+        </div>
       </div>
       {mounted && open
         ? createPortal(
