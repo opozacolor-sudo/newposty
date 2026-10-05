@@ -33,13 +33,21 @@ async function zernioFetch<T>(path: string, init: RequestInit = {}): Promise<T> 
   });
 
   const text = await response.text();
-  const body = text ? (JSON.parse(text) as unknown) : null;
+  let body: unknown = null;
+  if (text) {
+    try {
+      body = JSON.parse(text) as unknown;
+    } catch {
+      throw new ZernioError(`Invalid JSON (${response.status})`, response.status, text.slice(0, 180));
+    }
+  }
 
   if (!response.ok) {
     const message =
       typeof body === "object" && body && "error" in body
         ? String((body as { error: unknown }).error)
         : `Zernio request failed (${response.status})`;
+    console.error("[feed]", init.method ?? "GET", path.split("?")[0], response.status, message);
     throw new ZernioError(message, response.status, body);
   }
 
