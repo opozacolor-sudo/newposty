@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { HeroPhones } from "@/components/marketing/hero-phones";
 import { HomeViewportLock } from "@/components/marketing/home-viewport-lock";
 
@@ -14,7 +15,13 @@ export default async function HomePage() {
       <p className="mt-2 max-w-xl text-[13px] leading-5 text-neutral-600 sm:mt-3 sm:text-lg sm:leading-7">
         {t("heroLine")}
       </p>
-      <div className="mt-4 flex min-h-0 w-full flex-1 items-end justify-center sm:mt-6">
+      <Link
+        href="/guide"
+        className="mt-3 inline-flex h-8 items-center rounded-full bg-[#FF5B04] px-4 text-[13px] font-medium text-[#E4EEF0] transition hover:bg-[#e04e03] sm:mt-4 sm:h-9 sm:px-5 sm:text-sm"
+      >
+        {t("learnMore")}
+      </Link>
+      <div className="mt-3 flex min-h-0 w-full flex-1 items-end justify-center sm:mt-5">
         <HeroPhones />
       </div>
     </section>

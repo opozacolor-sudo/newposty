@@ -117,7 +117,6 @@ export function MarketingHeader() {
 
   const legalLinks = [
     { href: "/demo", label: t("demo") },
-    { href: "/guide", label: t("guide") },
     { href: "/privacy", label: t("privacy") },
     { href: "/terms", label: t("terms") },
     { href: "/legal", label: t("legal") },
@@ -130,22 +129,23 @@ export function MarketingHeader() {
           open ? "rounded-[1.4rem]" : "rounded-full"
         }`}
       >
-        <div className="flex h-9 items-center gap-2 px-3 sm:h-10 sm:gap-3 sm:px-4">
-          <button
-            type="button"
-            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#E4EEF0] lg:hidden"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-label={open ? t("closeMenu") : t("openMenu")}
-          >
-            {open ? <X size={16} /> : <Menu size={16} />}
-          </button>
+        <div className="grid h-9 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 sm:h-10 sm:px-4 lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#E4EEF0] lg:hidden"
+              onClick={() => setOpen((value) => !value)}
+              aria-expanded={open}
+              aria-label={open ? t("closeMenu") : t("openMenu")}
+            >
+              {open ? <X size={16} /> : <Menu size={16} />}
+            </button>
+            <Link href="/" className={`${navLink} shrink-0`} onClick={closeAll}>
+              <BrandLogo light className="text-[12px] font-medium leading-none" width={97} height={16} />
+            </Link>
+          </div>
 
-          <Link href="/" className={`${navLink} shrink-0`} onClick={closeAll}>
-            <BrandLogo light className="text-[12px] font-medium leading-none" width={97} height={16} />
-          </Link>
-
-          <nav className="hidden min-w-0 flex-1 items-center gap-2.5 overflow-x-auto lg:flex xl:gap-3">
+          <nav className="hidden items-center justify-center gap-2.5 lg:flex xl:gap-3.5">
             <DesktopMenu
               label={t("features")}
               open={desktop === "features"}
@@ -187,7 +187,7 @@ export function MarketingHeader() {
             ))}
           </nav>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
             <Link href="/login" className={`${navLink} hidden sm:inline`} onClick={closeAll}>
               {t("signIn")}
             </Link>
