@@ -9,7 +9,7 @@ export function HomeWaitlistBand() {
   const t = useTranslations("Landing");
   if (pathname !== "/") return null;
   return (
-    <div className="bg-[#c5e3f3] px-4 py-8 text-center sm:py-10">
+    <div className="bg-[#c5e3f3] px-4 py-6 text-center sm:py-8">
       <h2 className="text-[clamp(1.7rem,4vw,2.5rem)] font-semibold tracking-tight text-[#1d1d1f]">
         {t("kicker")}
       </h2>
