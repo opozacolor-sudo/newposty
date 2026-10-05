@@ -6,13 +6,15 @@ import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
+const TILE = "/marketing/phone-tile.png";
+
 const CARDS = [
-  { src: "/marketing/phone-card-1.png", kicker: "screenNetworksKicker", title: "screenNetworks" },
-  { src: "/marketing/phone-card-2.png", kicker: "screenContentKicker", title: "screenContent" },
-  { src: "/marketing/phone-card-3.png", kicker: "screenAdsKicker", title: "screenAds" },
-  { src: "/marketing/phone-card-4.png", kicker: "screenChatKicker", title: "screenChat" },
-  { src: "/marketing/phone-card-5.png", kicker: "screenLeadsKicker", title: "screenLeads" },
-  { src: "/marketing/phone-card-1.png", kicker: "screenAnalyticsKicker", title: "screenAnalytics" },
+  { kicker: "screenNetworksKicker", title: "screenNetworks" },
+  { kicker: "screenContentKicker", title: "screenContent" },
+  { kicker: "screenAdsKicker", title: "screenAds" },
+  { kicker: "screenChatKicker", title: "screenChat" },
+  { kicker: "screenLeadsKicker", title: "screenLeads" },
+  { kicker: "screenAnalyticsKicker", title: "screenAnalytics" },
 ] as const;
 
 type Card = (typeof CARDS)[number];
@@ -39,32 +41,31 @@ export function HeroPhones() {
   return (
     <>
       <div className="mt-5 flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
-        <ul className="grid h-full w-full max-w-[72rem] grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+        <ul className="grid w-full max-w-[70rem] grid-cols-6 gap-2 sm:gap-2.5">
           {CARDS.map((card) => (
-            <li key={card.title} className="group flex min-h-0 items-center justify-center">
-              <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[1.35rem] bg-[#1d1d1f]">
+            <li key={card.title} className="group min-w-0">
+              <div className="relative aspect-[9/16] overflow-hidden rounded-[1.4rem] bg-black">
                 <Image
-                  src={card.src}
+                  src={TILE}
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 11vw, 16vw"
-                  className="object-cover transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.07]"
+                  className="object-cover object-top transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.06]"
                   priority
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-black/30" />
-                <div className="pointer-events-none absolute inset-x-0 top-0 p-2.5 sm:p-3.5">
-                  <p className="text-[10px] font-normal text-white/80 sm:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-1 text-[11px] font-semibold leading-snug text-white sm:text-[14px]">
+                <div className="pointer-events-none absolute inset-x-0 top-0 p-3 sm:p-4">
+                  <p className="text-[10px] font-normal text-white/90 sm:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-1.5 text-[12px] font-semibold leading-[1.15] tracking-tight text-white sm:text-[15px]">
                     {t(card.title)}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-2.5 right-2.5 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-sm sm:h-9 sm:w-9"
+                  className="absolute bottom-1.5 right-1.5 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] sm:bottom-2 sm:right-2 sm:h-8 sm:w-8"
                   aria-label={t("screenOpen")}
                 >
-                  <Plus size={16} strokeWidth={2.4} />
+                  <Plus size={15} strokeWidth={2.5} />
                 </button>
               </div>
             </li>

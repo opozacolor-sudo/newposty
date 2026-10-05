@@ -3,7 +3,6 @@
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { SIGNUPS_OPEN } from "@/lib/flags";
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./brand-logo";
 import { FeaturesPanel } from "./features-menu";
@@ -181,12 +180,9 @@ export function MarketingHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-5 lg:ml-0">
-          <Link href="/login" className={`${navLink} hidden sm:inline`} onClick={closeAll}>
+        <div className="ml-auto flex items-center lg:ml-0">
+          <Link href="/login" className={navLink} onClick={closeAll}>
             {t("signIn")}
-          </Link>
-          <Link href={SIGNUPS_OPEN ? "/signup" : "/waitlist"} className={navLink} onClick={closeAll}>
-            {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
           </Link>
         </div>
       </div>
