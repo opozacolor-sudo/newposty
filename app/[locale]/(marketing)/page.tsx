@@ -13,7 +13,7 @@ export default async function HomePage() {
         <h1 className="font-semibold tracking-tight text-[#1d1d1f] text-[clamp(2.2rem,6vw,3.25rem)] leading-none">
           posty.now
         </h1>
-        <p className="mt-2 max-w-2xl text-[clamp(1rem,2vw,1.25rem)] leading-snug text-[#1d1d1f]">
+        <p className="mt-2 flex min-h-[2.6rem] max-w-2xl items-center justify-center text-[clamp(1rem,2vw,1.25rem)] leading-snug text-[#1d1d1f]">
           {t("heroLine")}
         </p>
         <Link
