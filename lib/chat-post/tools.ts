@@ -32,9 +32,17 @@ export const chatPostTools: Anthropic.Tool[] = [
               },
               cadence: {
                 type: "string",
-                enum: ["daily", "remix"],
+                enum: ["daily", "remix", "catalog"],
                 description:
-                  "daily = one file per day. remix = unique multi-photo carousels mixed from the attached photos. The server expands this. Do NOT emit one action per post.",
+                  "daily = one file per day. remix = unique multi-photo carousels. catalog = one generated product photo per day from a website. The server expands this. Do NOT emit one action per post.",
+              },
+              catalog_count: {
+                type: "number",
+                description: "How many products/photos for a catalog series. Max 30. Default 30.",
+              },
+              site_url: {
+                type: "string",
+                description: "Public shop or homepage URL when cadence=catalog.",
               },
               remix_count: {
                 type: "number",
@@ -250,6 +258,7 @@ export function chatPostSystemPrompt(input: {
     "X (Twitter) is not available yet. Never put twitter or x in platforms.",
     "Daily series: if they attach several files and want one per day / a month of posts / “câte una pe zi”, call create_social_post ONCE with cadence=daily, use_best_time=true (unless they named a clock time), media_refs=only the file ids from THIS message, in that order, and platforms [\"__all_connected__\"] unless they named specific networks. Do not add earlier files from this chat unless they ask for those too. Default distribution is cross: Facebook gets file 1, Instagram file 2, TikTok file 3 on the same day, then rotate so the same file never appears on two networks the same day. Only set distribution=broadcast if they explicitly want the same file on every network that day. Mix of photos and videos is allowed. YouTube skips photos. TikTok accepts photos (photo mode / carousel). Never tell the user TikTok cannot take stills. Do NOT create 50 separate actions.",
     "Remix carousels: if they attach many photos and ask for N carousel posts with K mixed photos each (“100 de postări carusel cu câte 5 poze mixate”), call create_social_post ONCE with cadence=remix, remix_count=N, remix_size=K (default 5), pack=fill_day unless they said one per day / pe zile (then pack=daily), media_refs=the photo ids from THIS message, platforms [\"__all_connected__\"] unless they named networks. Same unique mix goes to every compatible network. The server packs toward each network’s daily and hourly cap and rolls leftover posts to the next day automatically. Do NOT emit 100 actions.",
+    "Catalog from a website: if they say “uite site-ul, alege N produse, fă N poze, programează câte una pe zi” (optionally “pune link-ul în descriere”), call create_social_post ONCE with cadence=catalog, catalog_count=N (default 30), site_url=the https URL, use_best_time=true, platforms [\"__all_connected__\"] unless they named networks. Do NOT call generate_poster N times. Do NOT emit 30 actions. The server lists products first; photos generate when image credit is on, then the user confirms the daily schedule. Each caption includes the product or site link.",
     `Canonical platform ids: ${CANONICAL_PLATFORM_IDS.join(", ")}.`,
     "You may pass the user's platform wording; unknown names are canonicalized. Do not invent platform ids.",
     "Never assume the platform if the user did not specify one — except a daily series with several files, which uses all connected networks. For a single post, ask in text. Do NOT guess a platform.",

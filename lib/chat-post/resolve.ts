@@ -151,17 +151,20 @@ export async function resolveCreateActions(input: {
       pack: rawAction.pack,
       photoCount: photosOnly(items).length,
     });
+    const catalogItems = rawAction.cadence === "catalog" ? rawAction.catalog_items ?? [] : [];
+    const isCatalog = catalogItems.length > 0;
     const isSeries =
       !remix &&
+      !isCatalog &&
       wantsDailySeries({
         cadence: rawAction.cadence,
         brief: input.fallbackBrief,
         mediaCount: items.length,
       });
     const action: ToolPostAction =
-      (isSeries || remix) && (!rawAction.platforms || rawAction.platforms.length === 0)
+      (isSeries || remix || isCatalog) && (!rawAction.platforms || rawAction.platforms.length === 0)
         ? { ...rawAction, platforms: [ALL_CONNECTED], mode: "schedule" }
-        : isSeries || remix
+        : isSeries || remix || isCatalog
           ? { ...rawAction, mode: "schedule" }
           : rawAction;
 
@@ -245,6 +248,69 @@ export async function resolveCreateActions(input: {
         maxChars: tightest,
         media: photosOnly(media),
       });
+    }
+
+    if (isCatalog) {
+      const byId = new Map(media.map((item) => [item.id, item]));
+      const startOn = inferSeriesStartYmd({
+        brief: input.fallbackBrief,
+        scheduled_on: action.scheduled_on,
+        scheduled_at_iso: action.scheduled_at_iso,
+        timeZone: input.timezone,
+        now: input.now,
+      });
+      const clock = clockPartsFromIso(action.scheduled_at_iso);
+      const useResearchTime = !clock || wantsBestTime(action);
+      let daysBuilt = 0;
+      for (let dayIndex = 0; dayIndex < catalogItems.length; dayIndex += 1) {
+        const row = catalogItems[dayIndex];
+        const item = byId.get(row.media_id);
+        if (!item) continue;
+        const collected = collectTargets({
+          platformIds: selection.platforms,
+          postingAccounts,
+          media: [item],
+          caption: row.caption || caption,
+          locale: input.locale,
+          contentType: action.content_type,
+          contentTypes: action.content_types,
+        });
+        for (const warning of collected.truncatedWarnings) {
+          if (!warnings.includes(warning)) warnings.push(warning);
+        }
+        if (dayIndex === 0) excluded_by_validation.push(...collected.skipped);
+        if (collected.platforms.length === 0) continue;
+        const pushed = pushScheduledGroups({
+          resolvedActions,
+          excluded_by_validation,
+          warnings,
+          locale: input.locale,
+          timezone: input.timezone,
+          now: input.now,
+          mode: "schedule",
+          caption_source,
+          media: [item],
+          platforms: collected.platforms.map(cloneTarget),
+          skipped: collected.skipped,
+          dayIndex,
+          namedDay: seriesDayYmd(startOn, dayIndex),
+          useResearchTime,
+          clock,
+        });
+        if (pushed > 0) daysBuilt += 1;
+      }
+      if (daysBuilt > 0) {
+        seriesMeta = {
+          cadence: "catalog",
+          distribution: "broadcast",
+          start_on: startOn,
+          total_days: daysBuilt,
+        };
+        if (useResearchTime && !warnings.includes(bestTimeResearchWarning(input.locale))) {
+          warnings.push(bestTimeResearchWarning(input.locale));
+        }
+      }
+      continue;
     }
 
     if (remix) {

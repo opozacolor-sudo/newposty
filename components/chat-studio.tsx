@@ -9,10 +9,12 @@ import {
   useRef,
   useState,
 } from "react";
+import { CatalogPlanCard } from "@/components/chat/catalog-plan-card";
 import { PostConfirmationCard } from "@/components/chat/post-confirmation-card";
 import { PostResultsMessage } from "@/components/chat/post-results-message";
 import { Link } from "@/i18n/navigation";
 import type {
+  CatalogPlanPayload,
   ChatMedia,
   ConfirmationPayload,
   GeneratedPosterPayload,
@@ -28,7 +30,14 @@ type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   kind?: string | null;
-  payload?: ConfirmationPayload | ResultsPayload | UserMediaPayload | GeneratedPosterPayload | GeneratedVideoPayload | null;
+  payload?:
+    | ConfirmationPayload
+    | CatalogPlanPayload
+    | ResultsPayload
+    | UserMediaPayload
+    | GeneratedPosterPayload
+    | GeneratedVideoPayload
+    | null;
 };
 
 type Attachment = {
@@ -481,6 +490,27 @@ export default function ChatStudio() {
                   : localizeCancelledContent(message.content, locale),
               )}
             </div>
+            {message.role === "assistant" &&
+            message.payload?.type === "catalog_plan" ? (
+              <CatalogPlanCard
+                payload={message.payload}
+                conversationId={conversationId ?? ""}
+                onReady={(next) => {
+                  setMessages((current) =>
+                    current.map((item, itemIndex) =>
+                      itemIndex === index
+                        ? {
+                            ...item,
+                            kind: "confirmation",
+                            payload: next,
+                            content: t("catalogReady"),
+                          }
+                        : item,
+                    ),
+                  );
+                }}
+              />
+            ) : null}
             {message.role === "assistant" &&
             message.kind === "confirmation" &&
             message.payload?.type === "confirmation" ? (

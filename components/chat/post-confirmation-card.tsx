@@ -257,7 +257,12 @@ function SeriesBlock({ resolved }: { resolved: ResolvedAction }) {
                 size: resolved.series?.remix_size ?? 5,
                 networks: networks.size,
               })
-            : t("seriesTitle", { days: resolved.series?.total_days ?? days.length, networks: networks.size })}
+            : resolved.series?.cadence === "catalog"
+              ? t("catalogSeriesTitle", {
+                  days: resolved.series?.total_days ?? days.length,
+                  networks: networks.size,
+                })
+              : t("seriesTitle", { days: resolved.series?.total_days ?? days.length, networks: networks.size })}
         </p>
         <p className="text-xs text-[#6B7280]">
           {remix ? t("remixHint") : cross ? t("seriesHint") : t("seriesHintBroadcast")}

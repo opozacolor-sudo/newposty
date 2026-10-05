@@ -39,6 +39,9 @@ export type ToolPostAction = {
   remix_count?: number;
   remix_size?: number;
   pack?: string;
+  catalog_count?: number;
+  catalog_items?: Array<{ media_id: string; caption: string; product_url?: string }>;
+  site_url?: string;
   platforms: string[];
   excluded_platforms?: string[];
   caption?: string;
@@ -88,7 +91,7 @@ export type ResolvedCreateAction = {
 };
 
 export type ChatSeries = {
-  cadence: "daily" | "remix";
+  cadence: "daily" | "remix" | "catalog";
   distribution: "cross" | "broadcast";
   start_on: string;
   total_days: number;
@@ -139,6 +142,21 @@ export type PendingIntent = {
   actions: ToolPostAction[];
   media_refs: string[];
   saved_at: string;
+};
+
+export type CatalogPlanPayload = {
+  type: "catalog_plan";
+  site_url: string;
+  count: number;
+  products: Array<{
+    name: string;
+    url: string;
+    imageUrl: string | null;
+    price: string | null;
+    description: string;
+  }>;
+  generation_ready: boolean;
+  include_link: boolean;
 };
 
 export type ConfirmationPayload = {

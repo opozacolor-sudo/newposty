@@ -282,6 +282,46 @@ test("resolve expands mixed carousels and stays on Instagram the same day", asyn
   );
 });
 
+test("catalog series schedules one product photo per day with its own caption", async () => {
+  const { resolveCreateActions } = await import("./resolve");
+  const now = new Date("2026-08-25T07:00:00.000Z");
+  const result = await resolveCreateActions({
+    actions: [
+      {
+        mode: "schedule",
+        cadence: "catalog",
+        use_best_time: true,
+        platforms: ["instagram"],
+        catalog_items: [
+          { media_id: "a", caption: "Cremă\n\nhttps://shop.example/crema" },
+          { media_id: "b", caption: "Serum\n\nhttps://shop.example/serum" },
+        ],
+        caption_source: "user_provided",
+      },
+    ],
+    accounts: [
+      { id: "1", platform: "instagram", username: "ig", display_name: null, zernio_account_id: "z1" },
+    ],
+    media: [
+      { id: "a", url: "https://example.com/a.jpg", type: "image" },
+      { id: "b", url: "https://example.com/b.jpg", type: "image" },
+    ],
+    locale: "ro",
+    timezone: ZONE,
+    apiKey: "test",
+    keepToolCaption: true,
+    fallbackBrief: "câte una pe zi catalog",
+    now,
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.resolved.series?.cadence, "catalog");
+  assert.equal(result.resolved.actions.length, 2);
+  assert.equal(result.resolved.actions[0]?.media[0]?.id, "a");
+  assert.match(result.resolved.actions[0]?.platforms[0]?.caption ?? "", /shop.example\/crema/);
+  assert.match(result.resolved.actions[1]?.platforms[0]?.caption ?? "", /shop.example\/serum/);
+});
+
 test("a video day in a mixed series still reaches TikTok", async () => {
   const { resolveCreateActions } = await import("./resolve");
   const now = new Date("2026-08-25T07:00:00.000Z");

@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
 import { createGeneratedVideo } from "@/lib/chat-post/video";
+import { discoverCatalogProducts, parseCatalogRequest } from "@/lib/chat-post/catalog";
 import { firstPublicUrlInText } from "@/lib/site-brief";
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
 import { applyCaptionOverrides, executeResolvedAction } from "@/lib/chat-post/execute";
@@ -23,6 +24,7 @@ import { localizeCancelledContent } from "@/lib/chat-post/copy";
 import { userTimezone } from "@/lib/chat-post/timezone";
 import type {
   ChatMedia,
+  CatalogPlanPayload,
   ConfirmationPayload,
   GeneratedPosterPayload,
   GeneratedVideoPayload,
@@ -390,6 +392,7 @@ async function postChat(request: Request) {
   let resultsPayload: ResultsPayload | null = null;
   let posterPayload: GeneratedPosterPayload | null = null;
   let videoPayload: GeneratedVideoPayload | null = null;
+  let catalogPlan: CatalogPlanPayload | null = null;
   let skipConfirmation = Boolean(conversation.skip_confirmation);
 
   for (let round = 0; round < 4; round += 1) {
@@ -461,6 +464,62 @@ async function postChat(request: Request) {
         } else if (tool.name === "create_social_post") {
           const input = asRecord(tool.input);
           const actions = (Array.isArray(input?.actions) ? input.actions : []) as ToolPostAction[];
+          const catalogSpec = parseCatalogRequest({
+            cadence: actions.find((item) => item.cadence === "catalog")?.cadence ?? actions[0]?.cadence,
+            brief: text,
+            count: actions.find((item) => item.catalog_count)?.catalog_count ?? actions[0]?.catalog_count,
+            siteUrl: actions.find((item) => item.site_url)?.site_url ?? actions[0]?.site_url,
+          });
+          if (catalogSpec || actions.some((item) => item.cadence === "catalog")) {
+            const siteUrl = catalogSpec?.siteUrl || firstPublicUrlInText(text);
+            if (!siteUrl) {
+              toolResults.push({
+                type: "tool_result",
+                tool_use_id: tool.id,
+                is_error: true,
+                content:
+                  locale === "ro"
+                    ? "Am nevoie de linkul public al site-ului (https)."
+                    : "I need the public website URL (https).",
+              });
+              continue;
+            }
+            try {
+              const found = await discoverCatalogProducts(siteUrl, catalogSpec?.count ?? 30);
+              catalogPlan = {
+                type: "catalog_plan",
+                site_url: found.home,
+                count: found.products.length,
+                products: found.products,
+                generation_ready: posterEnabled,
+                include_link: catalogSpec?.includeLink ?? true,
+              };
+              toolResults.push({
+                type: "tool_result",
+                tool_use_id: tool.id,
+                content: JSON.stringify({
+                  catalog: true,
+                  found: found.products.length,
+                  site_url: found.home,
+                  generation_ready: posterEnabled,
+                  next: posterEnabled
+                    ? "Show the product list. The user confirms to generate photos and schedule one a day."
+                    : "Image credit is off. Show the product list. Do not claim photos were generated.",
+                }),
+              });
+            } catch {
+              toolResults.push({
+                type: "tool_result",
+                tool_use_id: tool.id,
+                is_error: true,
+                content:
+                  locale === "ro"
+                    ? "Nu am putut citi site-ul. Verifică linkul public."
+                    : "I could not read that site. Check the public URL.",
+              });
+            }
+            continue;
+          }
           const resolved = await resolveCreateActions({
             actions,
             accounts: posting,
@@ -768,7 +827,15 @@ async function postChat(request: Request) {
         ? locale === "ro"
           ? "Gata."
           : "Done."
-        : posterPayload
+        : catalogPlan
+          ? locale === "ro"
+            ? catalogPlan.generation_ready
+              ? `Am găsit ${catalogPlan.count} produse. Confirmă ca să fac pozele și să le programez câte una pe zi, cu link în descriere.`
+              : `Am găsit ${catalogPlan.count} produse. Generarea de poze e oprită până e credit pe cont. Lista e gata — reîncearcă după ce încarci contul.`
+            : catalogPlan.generation_ready
+              ? `I found ${catalogPlan.count} products. Confirm to generate photos and schedule one a day, with the link in the caption.`
+              : `I found ${catalogPlan.count} products. Photo generation stays off until image credit is loaded. The list is ready — try again after you add credit.`
+          : posterPayload
           ? locale === "ro"
             ? "Am făcut posterul. Vrei postare organică sau reclamă?"
             : "Here’s the poster. Organic post or paid ad?"
@@ -785,12 +852,14 @@ async function postChat(request: Request) {
     ? "confirmation"
     : resultsPayload
       ? "results"
-      : posterPayload
+      : catalogPlan
+        ? "catalog_plan"
+        : posterPayload
         ? "generated_poster"
         : videoPayload
           ? "generated_video"
           : "text";
-  const payload = confirmation ?? resultsPayload ?? posterPayload ?? videoPayload ?? null;
+  const payload = confirmation ?? resultsPayload ?? catalogPlan ?? posterPayload ?? videoPayload ?? null;
 
   await supabase.from("messages").insert({
     conversation_id: conversationId,
