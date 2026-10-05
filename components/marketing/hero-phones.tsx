@@ -10,7 +10,7 @@ const CARDS = [
   { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-networks-hud.png" },
   { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-content-hud.png" },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-ads-hud.png" },
-  { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-front-4.png" },
+  { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-chat-hud.png" },
   { kicker: "screenLeadsKicker", title: "screenLeads", src: "/marketing/phone-leads-hud.png" },
   { kicker: "screenAnalyticsKicker", title: "screenAnalytics", src: "/marketing/phone-analytics-hud.png" },
 ] as const;
