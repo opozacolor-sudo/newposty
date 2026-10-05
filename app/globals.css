@@ -107,3 +107,44 @@ button {
   font-weight: 400;
   line-height: 1;
 }
+
+@keyframes phone-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes phone-app-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.32);
+  }
+  72% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.phone-title-in {
+  animation: phone-title-in 0.45s ease-out both;
+}
+
+.phone-app-in {
+  animation: phone-app-in 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-title-in,
+  .phone-app-in {
+    animation: none;
+  }
+}
