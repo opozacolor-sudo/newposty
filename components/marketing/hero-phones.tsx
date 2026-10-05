@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
 const CARDS = [
-  { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-front-1.png" },
+  { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-front-1.png", ink: "dark" },
   { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-front-2.png" },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-front-3.png" },
   { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-front-4.png" },
@@ -45,7 +45,9 @@ export function HeroPhones() {
     <>
       <div className="mt-8 flex min-h-0 w-full flex-1 items-end justify-center overflow-hidden pb-3">
         <ul className="mx-auto grid h-full w-auto max-w-[82%] grid-cols-6 gap-[6px] [aspect-ratio:54/16]">
-          {CARDS.map((card) => (
+          {CARDS.map((card) => {
+            const darkInk = "ink" in card && card.ink === "dark";
+            return (
             <li key={card.title} className="group min-h-0 min-w-0">
               <div className="relative h-full overflow-hidden rounded-[1.4rem] bg-black">
                 <Image
@@ -56,9 +58,29 @@ export function HeroPhones() {
                   className="object-cover object-center transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.06]"
                   priority
                 />
-                <div className="pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/55 via-black/20 to-transparent p-3 sm:p-4">
-                  <p className="text-[10px] font-normal text-white/90 sm:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-1.5 text-[12px] font-semibold leading-[1.15] tracking-tight text-white sm:text-[15px]">
+                <div
+                  className={
+                    darkInk
+                      ? "pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-white/45 via-white/10 to-transparent p-3 sm:p-4"
+                      : "pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/55 via-black/20 to-transparent p-3 sm:p-4"
+                  }
+                >
+                  <p
+                    className={
+                      darkInk
+                        ? "text-[10px] font-medium tracking-wide text-[#1d1d1f]/75 sm:text-[12px]"
+                        : "text-[10px] font-normal text-white/90 sm:text-[12px]"
+                    }
+                  >
+                    {t(card.kicker)}
+                  </p>
+                  <p
+                    className={
+                      darkInk
+                        ? "mt-1.5 text-[12px] font-semibold leading-[1.15] tracking-tight text-[#1d1d1f] [text-shadow:0_1px_10px_rgba(255,255,255,0.55)] sm:text-[15px]"
+                        : "mt-1.5 text-[12px] font-semibold leading-[1.15] tracking-tight text-white sm:text-[15px]"
+                    }
+                  >
                     {t(card.title)}
                   </p>
                 </div>
@@ -72,7 +94,8 @@ export function HeroPhones() {
                 </button>
               </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
       {mounted && open
