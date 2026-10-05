@@ -9,12 +9,31 @@ export function LocaleSwitch({
   variant = "codes",
 }: {
   className?: string;
-  variant?: "codes" | "names" | "onDark";
+  variant?: "codes" | "names" | "onDark" | "fine";
 }) {
   const locale = useLocale();
   const t = useTranslations("Locale");
   const router = useRouter();
   const pathname = usePathname();
+
+  if (variant === "fine") {
+    return (
+      <div className={`flex items-center gap-2.5 ${className}`}>
+        {routing.locales.map((item) => (
+          <button
+            key={item}
+            type="button"
+            onClick={() => router.replace(pathname, { locale: item })}
+            className={`text-[11px] uppercase tracking-wide ${
+              locale === item ? "text-[#1d1d1f]" : "text-[#6e6e73] hover:text-[#1d1d1f]"
+            }`}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+    );
+  }
 
   if (variant === "names") {
     return (

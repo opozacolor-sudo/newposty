@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { StudioSidebar } from "@/components/studio/sidebar";
+import { StudioDock } from "@/components/studio/studio-dock";
+import { StudioTopNav } from "@/components/studio/studio-top-nav";
 import type { ClientRow } from "@/lib/clients";
 
 export function StudioChrome({
@@ -16,14 +17,15 @@ export function StudioChrome({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-white text-[#1A1A1A] lg:h-dvh lg:flex-row lg:overflow-hidden">
-      <StudioSidebar
+    <div className="flex h-dvh flex-col overflow-hidden bg-white text-[#1d1d1f]">
+      <StudioTopNav />
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</div>
+      <StudioDock
         email={email}
         accountKind={accountKind}
         clients={clients}
         selectedClientId={selectedClientId}
       />
-      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto lg:h-full lg:overflow-hidden">{children}</div>
     </div>
   );
 }

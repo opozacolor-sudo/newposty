@@ -458,23 +458,22 @@ export default function ChatStudio() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] flex-col bg-white lg:h-full">
-      <header className="flex items-center justify-between gap-3 border-b border-[#E5E5E5] px-6 py-4">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex shrink-0 justify-end px-4 pt-3">
         <button
           type="button"
           onClick={() => void clearChat()}
           disabled={clearing || pending}
           title={t("cleanChat")}
           aria-label={t("cleanChat")}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#E5E5E5] px-2.5 py-1 text-[11px] text-[#6B7280] hover:border-[#FF4713] hover:text-[#FF4713] disabled:opacity-40"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] text-[#6e6e73] hover:bg-white hover:text-[#1d1d1f] disabled:opacity-40"
         >
           <Eraser size={11} />
           {t("cleanChat")}
         </button>
-      </header>
+      </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-3 sm:px-6">
         {messages.map((message, index) => (
           <article
             key={`${message.role}-${index}`}
@@ -612,7 +611,7 @@ export default function ChatStudio() {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={(event) => void send(event)} className="border-t border-[#E5E5E5] bg-white px-4 py-4 sm:px-6">
+      <form onSubmit={(event) => void send(event)} className="shrink-0 px-4 pb-4 sm:px-6">
         {attachments.length > 0 ? (
           <div className="mb-3">
             <p className="mb-2 text-xs font-medium text-[#FF4713]">
@@ -665,7 +664,7 @@ export default function ChatStudio() {
           </div>
         ) : null}
 
-        <div className="relative rounded-2xl border border-[#E5E5E5] bg-[#FAFAFA] focus-within:border-[#FF4713]">
+        <div className="relative rounded-2xl border border-black/10 bg-white focus-within:border-[#0071e3]">
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}

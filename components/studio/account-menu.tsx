@@ -9,9 +9,11 @@ type DialogKind = "delete" | "upgrade" | null;
 export function AccountMenu({
   email,
   accountKind = "individual",
+  variant = "sidebar",
 }: {
   email: string;
   accountKind?: "individual" | "team";
+  variant?: "sidebar" | "dock";
 }) {
   const tNav = useTranslations("Nav");
   const t = useTranslations("Billing");
@@ -88,7 +90,11 @@ export function AccountMenu({
   return (
     <div className="relative" ref={rootRef}>
       {open ? (
-        <div className="absolute bottom-full left-0 right-0 z-20 mb-2 rounded-2xl border border-[#E5E5E5] bg-white p-2 shadow-lg">
+        <div
+          className={`absolute z-20 mb-2 rounded-2xl border border-[#E5E5E5] bg-white p-2 shadow-lg ${
+            variant === "dock" ? "bottom-full right-0 w-64" : "bottom-full left-0 right-0"
+          }`}
+        >
           <p className="truncate px-3 py-2 text-xs text-[#6B7280]">{email}</p>
           {accountKind === "individual" ? (
             <button
@@ -199,15 +205,28 @@ export function AccountMenu({
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-[#F5F5F5]"
+        className={
+          variant === "dock"
+            ? "flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-[11px] font-medium text-white"
+            : "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-[#F5F5F5]"
+        }
         aria-expanded={open}
+        aria-label={email}
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FF4713] text-sm font-medium text-white">
+        <span
+          className={
+            variant === "dock"
+              ? ""
+              : "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FF4713] text-sm font-medium text-white"
+          }
+        >
           {initial}
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm text-[#1A1A1A]">{email}</span>
-        </span>
+        {variant === "dock" ? null : (
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm text-[#1A1A1A]">{email}</span>
+          </span>
+        )}
       </button>
     </div>
   );

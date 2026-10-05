@@ -395,6 +395,7 @@
   },
   "Nav": {
     "assistant": "Assistente",
+    "yourAssistant": "Il tuo assistente posty.now",
     "chat": "Chat",
     "stats": "Statistiche",
     "accounts": "Account",
