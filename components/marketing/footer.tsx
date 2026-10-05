@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitch } from "@/components/locale-switch";
+import { HomeWaitlistBand } from "@/components/marketing/home-waitlist-band";
 import { MARKETING_SOCIAL } from "@/lib/marketing-social";
 
 export async function MarketingFooter() {
@@ -7,8 +8,8 @@ export async function MarketingFooter() {
 
   return (
     <footer className="shrink-0 bg-[#6D001A]">
-      <div className="h-8 sm:h-10" />
-      <div className="rounded-t-[1.75rem] bg-[#3F000F] px-4 py-3 sm:px-6 sm:py-4">
+      <HomeWaitlistBand />
+      <div className="rounded-t-[1.75rem] bg-[#3F000F] px-4 py-3 sm:px-6">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
           <ul className="flex items-center gap-3 sm:gap-4">
             {MARKETING_SOCIAL.map((item) => (

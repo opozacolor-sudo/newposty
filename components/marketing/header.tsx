@@ -11,7 +11,7 @@ import { MadeForPanel } from "./made-for-menu";
 import { PlatformsPanel } from "./platforms-menu";
 
 const navLink =
-  "whitespace-nowrap text-[12px] font-medium text-[#E4EEF0] transition hover:text-white xl:text-[13px]";
+  "whitespace-nowrap text-[11px] font-medium text-[#E4EEF0] transition hover:text-white xl:text-[12px]";
 
 function DesktopMenu({
   label,
@@ -51,16 +51,16 @@ function DesktopMenu({
     <div className="relative" ref={ref} onMouseEnter={onOpen} onMouseLeave={onClose}>
       <button
         type="button"
-        className={`${navLink} inline-flex items-center gap-1`}
+        className={`${navLink} inline-flex items-center gap-0.5`}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => (open ? onClose() : onOpen())}
       >
         {label}
-        <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
+        <ChevronDown size={12} className={open ? "rotate-180 transition" : "transition"} />
       </button>
       {open ? (
-        <div className="absolute left-0 top-full z-50 pt-3">
+        <div className="absolute left-0 top-full z-50 pt-2">
           <div
             className={`${
               narrow
@@ -124,148 +124,154 @@ export function MarketingHeader() {
   ] as const;
 
   return (
-    <header className="relative z-50 shrink-0 bg-[#FF5B04]">
-      <div className="flex h-12 items-center gap-3 px-3 sm:h-14 sm:px-5 lg:gap-4 lg:px-6">
-        <button
-          type="button"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#E4EEF0] lg:hidden"
-          onClick={() => setOpen((value) => !value)}
-          aria-expanded={open}
-          aria-label={open ? t("closeMenu") : t("openMenu")}
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
+      <header
+        className={`pointer-events-auto mx-auto max-w-6xl bg-[#FF5B04] shadow-[0_8px_28px_rgba(255,91,4,0.28)] ${
+          open ? "rounded-[1.4rem]" : "rounded-full"
+        }`}
+      >
+        <div className="flex h-9 items-center gap-2 px-3 sm:h-10 sm:gap-3 sm:px-4">
+          <button
+            type="button"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#E4EEF0] lg:hidden"
+            onClick={() => setOpen((value) => !value)}
+            aria-expanded={open}
+            aria-label={open ? t("closeMenu") : t("openMenu")}
+          >
+            {open ? <X size={16} /> : <Menu size={16} />}
+          </button>
 
-        <Link href="/" className="shrink-0 leading-none" onClick={closeAll}>
-          <BrandLogo light className="h-5 leading-none sm:h-6 sm:text-[22px]" width={97} height={20} />
-        </Link>
-
-        <nav className="hidden min-w-0 flex-1 items-center gap-3 overflow-x-auto lg:flex xl:gap-4">
-          <DesktopMenu
-            label={t("features")}
-            open={desktop === "features"}
-            onOpen={() => setDesktop("features")}
-            onClose={() => setDesktop((value) => (value === "features" ? null : value))}
-          >
-            <FeaturesPanel onNavigate={closeAll} />
-          </DesktopMenu>
-          <DesktopMenu
-            label={t("platforms")}
-            open={desktop === "platforms"}
-            onOpen={() => setDesktop("platforms")}
-            onClose={() => setDesktop((value) => (value === "platforms" ? null : value))}
-            wide
-          >
-            <PlatformsPanel onNavigate={closeAll} />
-          </DesktopMenu>
-          <DesktopMenu
-            label={t("madeFor")}
-            open={desktop === "madeFor"}
-            onOpen={() => setDesktop("madeFor")}
-            onClose={() => setDesktop((value) => (value === "madeFor" ? null : value))}
-          >
-            <MadeForPanel onNavigate={closeAll} />
-          </DesktopMenu>
-          <DesktopMenu
-            label={t("more")}
-            open={desktop === "more"}
-            onOpen={() => setDesktop("more")}
-            onClose={() => setDesktop((value) => (value === "more" ? null : value))}
-            narrow
-          >
-            <MoreLinks onNavigate={closeAll} />
-          </DesktopMenu>
-          {legalLinks.map((item) => (
-            <Link key={item.href} href={item.href} className={navLink} onClick={closeAll}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="ml-auto flex shrink-0 items-center gap-3">
-          <Link href="/login" className={`${navLink} hidden sm:inline`} onClick={closeAll}>
-            {t("signIn")}
+          <Link href="/" className="shrink-0 leading-none" onClick={closeAll}>
+            <BrandLogo light className="text-[15px] leading-none sm:text-[16px]" width={97} height={16} />
           </Link>
-          <Link
-            href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
-            className="inline-flex items-center rounded-full border border-[#E4EEF0]/80 px-3 py-1 text-[12px] font-medium text-[#E4EEF0] transition hover:bg-[#E4EEF0]/10 xl:text-[13px]"
-            onClick={closeAll}
-          >
-            {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
-          </Link>
-        </div>
-      </div>
 
-      {open ? (
-        <div className="border-t border-white/15 bg-[#FF5B04] px-4 py-4 lg:hidden">
-          <nav className="flex flex-col gap-3">
-            <button
-              type="button"
-              className={`${navLink} inline-flex items-center justify-between text-left`}
-              aria-expanded={mobile === "features"}
-              onClick={() => setMobile((value) => (value === "features" ? null : "features"))}
+          <nav className="hidden min-w-0 flex-1 items-center gap-2.5 overflow-x-auto lg:flex xl:gap-3">
+            <DesktopMenu
+              label={t("features")}
+              open={desktop === "features"}
+              onOpen={() => setDesktop("features")}
+              onClose={() => setDesktop((value) => (value === "features" ? null : value))}
             >
-              {t("features")}
-              <ChevronDown size={16} className={mobile === "features" ? "rotate-180 transition" : "transition"} />
-            </button>
-            {mobile === "features" ? (
-              <div className="rounded-2xl bg-white p-3 text-neutral-900">
-                <FeaturesPanel onNavigate={closeAll} />
-              </div>
-            ) : null}
-            <button
-              type="button"
-              className={`${navLink} inline-flex items-center justify-between text-left`}
-              aria-expanded={mobile === "platforms"}
-              onClick={() => setMobile((value) => (value === "platforms" ? null : "platforms"))}
+              <FeaturesPanel onNavigate={closeAll} />
+            </DesktopMenu>
+            <DesktopMenu
+              label={t("platforms")}
+              open={desktop === "platforms"}
+              onOpen={() => setDesktop("platforms")}
+              onClose={() => setDesktop((value) => (value === "platforms" ? null : value))}
+              wide
             >
-              {t("platforms")}
-              <ChevronDown size={16} className={mobile === "platforms" ? "rotate-180 transition" : "transition"} />
-            </button>
-            {mobile === "platforms" ? (
-              <div className="rounded-2xl bg-white p-3 text-neutral-900">
-                <PlatformsPanel onNavigate={closeAll} />
-              </div>
-            ) : null}
-            <button
-              type="button"
-              className={`${navLink} inline-flex items-center justify-between text-left`}
-              aria-expanded={mobile === "madeFor"}
-              onClick={() => setMobile((value) => (value === "madeFor" ? null : "madeFor"))}
+              <PlatformsPanel onNavigate={closeAll} />
+            </DesktopMenu>
+            <DesktopMenu
+              label={t("madeFor")}
+              open={desktop === "madeFor"}
+              onOpen={() => setDesktop("madeFor")}
+              onClose={() => setDesktop((value) => (value === "madeFor" ? null : value))}
             >
-              {t("madeFor")}
-              <ChevronDown size={16} className={mobile === "madeFor" ? "rotate-180 transition" : "transition"} />
-            </button>
-            {mobile === "madeFor" ? (
-              <div className="rounded-2xl bg-white p-3 text-neutral-900">
-                <MadeForPanel onNavigate={closeAll} />
-              </div>
-            ) : null}
-            <button
-              type="button"
-              className={`${navLink} inline-flex items-center justify-between text-left`}
-              aria-expanded={mobile === "more"}
-              onClick={() => setMobile((value) => (value === "more" ? null : "more"))}
+              <MadeForPanel onNavigate={closeAll} />
+            </DesktopMenu>
+            <DesktopMenu
+              label={t("more")}
+              open={desktop === "more"}
+              onOpen={() => setDesktop("more")}
+              onClose={() => setDesktop((value) => (value === "more" ? null : value))}
+              narrow
             >
-              {t("more")}
-              <ChevronDown size={16} className={mobile === "more" ? "rotate-180 transition" : "transition"} />
-            </button>
-            {mobile === "more" ? (
-              <div className="rounded-2xl bg-white p-2 text-neutral-900">
-                <MoreLinks onNavigate={closeAll} />
-              </div>
-            ) : null}
+              <MoreLinks onNavigate={closeAll} />
+            </DesktopMenu>
             {legalLinks.map((item) => (
               <Link key={item.href} href={item.href} className={navLink} onClick={closeAll}>
                 {item.label}
               </Link>
             ))}
-            <Link href="/login" className={navLink} onClick={closeAll}>
+          </nav>
+
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+            <Link href="/login" className={`${navLink} hidden sm:inline`} onClick={closeAll}>
               {t("signIn")}
             </Link>
-          </nav>
+            <Link
+              href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
+              className="inline-flex items-center rounded-full border border-[#E4EEF0]/70 px-2.5 py-0.5 text-[11px] font-medium text-[#E4EEF0] transition hover:bg-[#E4EEF0]/10"
+              onClick={closeAll}
+            >
+              {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
+            </Link>
+          </div>
         </div>
-      ) : null}
-    </header>
+
+        {open ? (
+          <div className="border-t border-white/15 px-4 py-3 lg:hidden">
+            <nav className="flex flex-col gap-2.5">
+              <button
+                type="button"
+                className={`${navLink} inline-flex items-center justify-between text-left`}
+                aria-expanded={mobile === "features"}
+                onClick={() => setMobile((value) => (value === "features" ? null : "features"))}
+              >
+                {t("features")}
+                <ChevronDown size={14} className={mobile === "features" ? "rotate-180 transition" : "transition"} />
+              </button>
+              {mobile === "features" ? (
+                <div className="rounded-2xl bg-white p-3 text-neutral-900">
+                  <FeaturesPanel onNavigate={closeAll} />
+                </div>
+              ) : null}
+              <button
+                type="button"
+                className={`${navLink} inline-flex items-center justify-between text-left`}
+                aria-expanded={mobile === "platforms"}
+                onClick={() => setMobile((value) => (value === "platforms" ? null : "platforms"))}
+              >
+                {t("platforms")}
+                <ChevronDown size={14} className={mobile === "platforms" ? "rotate-180 transition" : "transition"} />
+              </button>
+              {mobile === "platforms" ? (
+                <div className="rounded-2xl bg-white p-3 text-neutral-900">
+                  <PlatformsPanel onNavigate={closeAll} />
+                </div>
+              ) : null}
+              <button
+                type="button"
+                className={`${navLink} inline-flex items-center justify-between text-left`}
+                aria-expanded={mobile === "madeFor"}
+                onClick={() => setMobile((value) => (value === "madeFor" ? null : "madeFor"))}
+              >
+                {t("madeFor")}
+                <ChevronDown size={14} className={mobile === "madeFor" ? "rotate-180 transition" : "transition"} />
+              </button>
+              {mobile === "madeFor" ? (
+                <div className="rounded-2xl bg-white p-3 text-neutral-900">
+                  <MadeForPanel onNavigate={closeAll} />
+                </div>
+              ) : null}
+              <button
+                type="button"
+                className={`${navLink} inline-flex items-center justify-between text-left`}
+                aria-expanded={mobile === "more"}
+                onClick={() => setMobile((value) => (value === "more" ? null : "more"))}
+              >
+                {t("more")}
+                <ChevronDown size={14} className={mobile === "more" ? "rotate-180 transition" : "transition"} />
+              </button>
+              {mobile === "more" ? (
+                <div className="rounded-2xl bg-white p-2 text-neutral-900">
+                  <MoreLinks onNavigate={closeAll} />
+                </div>
+              ) : null}
+              {legalLinks.map((item) => (
+                <Link key={item.href} href={item.href} className={navLink} onClick={closeAll}>
+                  {item.label}
+                </Link>
+              ))}
+              <Link href="/login" className={navLink} onClick={closeAll}>
+                {t("signIn")}
+              </Link>
+            </nav>
+          </div>
+        ) : null}
+      </header>
+    </div>
   );
 }

@@ -1,26 +1,21 @@
 import { getTranslations } from "next-intl/server";
-import { HeroVisual } from "@/components/marketing/hero-visual";
-import { WaitlistForm } from "@/components/marketing/waitlist-form";
+import { HeroPhones } from "@/components/marketing/hero-phones";
+import { HomeViewportLock } from "@/components/marketing/home-viewport-lock";
 
 export default async function HomePage() {
   const t = await getTranslations("Landing");
 
   return (
-    <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center px-4 py-10 text-center sm:px-6 sm:py-16">
-      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#FF5B04] sm:text-xs">
-        {t("kicker")}
-      </p>
-      <h1 className="mt-3 max-w-3xl text-[1.75rem] font-semibold leading-tight tracking-tight text-neutral-950 sm:text-5xl sm:leading-[1.08] lg:text-[3.4rem]">
-        {t("title")}
+    <section className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col items-center px-4 pb-2 pt-2 text-center sm:px-6">
+      <HomeViewportLock />
+      <h1 className="font-semibold tracking-tight text-neutral-950 text-[clamp(2.1rem,6vw,4.4rem)] leading-none">
+        posty.now
       </h1>
-      <p className="mt-4 max-w-2xl text-[15px] leading-6 text-neutral-600 sm:mt-5 sm:text-lg sm:leading-8">
-        {t("subtitle")}
+      <p className="mt-2 max-w-xl text-[13px] leading-5 text-neutral-600 sm:mt-3 sm:text-lg sm:leading-7">
+        {t("heroLine")}
       </p>
-      <div className="w-full max-w-xl">
-        <WaitlistForm compact />
-      </div>
-      <div className="mt-10 w-full sm:mt-14">
-        <HeroVisual />
+      <div className="mt-4 flex min-h-0 w-full flex-1 items-end justify-center sm:mt-6">
+        <HeroPhones />
       </div>
     </section>
   );

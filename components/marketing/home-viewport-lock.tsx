@@ -10,16 +10,8 @@ export function HomeViewportLock() {
     if (pathname !== "/") return;
 
     const root = document.documentElement;
-    const media = window.matchMedia("(min-width: 1024px)");
-
-    const apply = () => {
-      root.classList.toggle("home-no-scroll", media.matches);
-    };
-
-    apply();
-    media.addEventListener("change", apply);
+    root.classList.add("home-no-scroll");
     return () => {
-      media.removeEventListener("change", apply);
       root.classList.remove("home-no-scroll");
     };
   }, [pathname]);

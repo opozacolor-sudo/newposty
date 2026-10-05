@@ -90,6 +90,11 @@ html.home-no-scroll body {
   overflow: hidden;
 }
 
+html.home-no-scroll .marketing {
+  height: 100dvh;
+  overflow: hidden;
+}
+
 input,
 textarea,
 button {
