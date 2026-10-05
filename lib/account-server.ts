@@ -22,7 +22,7 @@ export async function requireAccountUser() {
 }
 
 export async function countActiveSocialAccounts(userId: string) {
-  const supabase = createAdminSupabase();
+  const supabase = await createServerSupabase();
   const { count, error } = await supabase
     .from("social_accounts")
     .select("id", { count: "exact", head: true })
@@ -43,9 +43,8 @@ export type ActiveSocialAccount = {
 export async function listActiveSocialAccounts(userId: string): Promise<ActiveSocialAccount[]> {
   const supabase = await createServerSupabase();
   const workspace = await loadWorkspace(supabase, userId);
-  const admin = createAdminSupabase();
   const { data, error } = await applyClientScope(
-    admin
+    supabase
       .from("social_accounts")
       .select("id, platform, username, display_name, zernio_account_id")
       .eq("user_id", userId)
@@ -59,9 +58,8 @@ export async function listActiveSocialAccounts(userId: string): Promise<ActiveSo
 export async function getOwnedSocialAccount(userId: string, accountId: string) {
   const supabase = await createServerSupabase();
   const workspace = await loadWorkspace(supabase, userId);
-  const admin = createAdminSupabase();
   const { data } = await applyClientScope(
-    admin
+    supabase
       .from("social_accounts")
       .select("id, platform, username, display_name, zernio_account_id")
       .eq("user_id", userId)
@@ -73,8 +71,8 @@ export async function getOwnedSocialAccount(userId: string, accountId: string) {
 }
 
 export async function getZernioProfileId(userId: string) {
-  const admin = createAdminSupabase();
-  const { data } = await admin
+  const supabase = await createServerSupabase();
+  const { data } = await supabase
     .from("profiles")
     .select("zernio_profile_id")
     .eq("id", userId)
