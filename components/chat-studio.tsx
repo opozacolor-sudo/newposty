@@ -459,7 +459,7 @@ export default function ChatStudio() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 justify-end px-4 pt-3">
+      <div className="flex shrink-0 justify-end px-4 pt-2">
         <button
           type="button"
           onClick={() => void clearChat()}
@@ -473,14 +473,23 @@ export default function ChatStudio() {
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-3 sm:px-6">
-        {messages.map((message, index) => (
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-2 sm:px-5">
+        {messages.map((message, index) => {
+          const wide =
+            message.payload?.type === "catalog_plan" ||
+            message.payload?.type === "confirmation" ||
+            message.payload?.type === "results" ||
+            message.payload?.type === "generated_poster" ||
+            message.payload?.type === "generated_video";
+          return (
           <article
             key={`${message.role}-${index}`}
-            className={`max-w-2xl rounded-2xl px-4 py-3 text-sm leading-6 ${
+            className={`rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
               message.role === "user"
-                ? "ml-auto whitespace-pre-wrap bg-[#1A1A1A] text-white"
-                : "border border-[#E5E5E5] bg-[#FAFAFA] text-[#1A1A1A]"
+                ? "ml-auto max-w-[min(78%,24rem)] whitespace-pre-wrap bg-[#1A1A1A] text-white"
+                : `mr-auto border border-[#E5E5E5] bg-white text-[#1A1A1A] ${
+                    wide ? "max-w-[min(88%,32rem)]" : "max-w-[min(78%,26rem)]"
+                  }`
             }`}
           >
             {message.role === "user" && message.payload?.type === "user_media" ? (
@@ -597,9 +606,10 @@ export default function ChatStudio() {
               </div>
             ) : null}
           </article>
-        ))}
+          );
+        })}
         {messages.length === 0 && !pending ? (
-          <div className="max-w-xl space-y-2">
+          <div className="max-w-[min(78%,26rem)] space-y-2">
             <p className="text-sm text-[#6B7280]">{t("empty")}</p>
             <p className="text-xs leading-5 text-[#6B7280]">{t("campaignTip")}</p>
             <Link href="/help" className="inline-block text-xs font-medium text-[#FF4713] hover:underline">
@@ -611,7 +621,7 @@ export default function ChatStudio() {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={(event) => void send(event)} className="shrink-0 px-4 pb-4 sm:px-6">
+      <form onSubmit={(event) => void send(event)} className="shrink-0 px-4 pb-3 sm:px-5">
         {attachments.length > 0 ? (
           <div className="mb-3">
             <p className="mb-2 text-xs font-medium text-[#FF4713]">
@@ -669,24 +679,24 @@ export default function ChatStudio() {
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={onComposerKeyDown}
-            rows={3}
+            rows={2}
             placeholder={listening ? t("speechListening") : t("placeholder")}
-            className="w-full resize-none bg-transparent px-4 pb-12 pt-3 text-sm text-[#1A1A1A] outline-none placeholder:text-[#6B7280]"
+            className="w-full resize-none bg-transparent px-3.5 pb-10 pt-2.5 text-sm text-[#1A1A1A] outline-none placeholder:text-[#6B7280]"
           />
-          <div className="absolute inset-x-2 bottom-2 flex items-center justify-between">
-            <div className="flex items-center gap-1">
+          <div className="absolute inset-x-2 bottom-1.5 flex items-center justify-between">
+            <div className="flex items-center gap-0.5">
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className={`relative inline-flex h-9 w-9 items-center justify-center rounded-full ${
+                className={`relative inline-flex h-8 w-8 items-center justify-center rounded-full ${
                   media.length > 0 || uploading
                     ? "bg-[#FF4713] text-white"
-                    : "text-[#6B7280] hover:bg-white hover:text-[#FF4713]"
+                    : "text-[#6B7280] hover:bg-[#f5f5f7] hover:text-[#FF4713]"
                 }`}
                 aria-label={t("attach")}
                 title={t("attach")}
               >
-                <Paperclip size={18} />
+                <Paperclip size={16} />
                 {attachments.length > 0 ? (
                   <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-semibold text-[#FF4713]">
                     {attachments.length}
@@ -696,26 +706,26 @@ export default function ChatStudio() {
               <button
                 type="button"
                 onClick={() => void toggleDictation()}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${
+                className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
                   listening
                     ? "bg-[#FF4713] text-white"
-                    : "text-[#6B7280] hover:bg-white hover:text-[#FF4713]"
+                    : "text-[#6B7280] hover:bg-[#f5f5f7] hover:text-[#FF4713]"
                 }`}
                 style={listening ? { animation: "mic-pulse 1.4s ease-out infinite" } : undefined}
                 aria-label={listening ? t("stopDictation") : t("dictate")}
                 title={speechSupported ? (listening ? t("stopDictation") : t("dictate")) : t("speechUnavailable")}
               >
-                <Mic size={18} />
+                <Mic size={16} />
               </button>
             </div>
             <button
               type="submit"
               disabled={pending || uploading || !input.trim()}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#FF4713] text-white hover:bg-[#e03d0f] disabled:opacity-40"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#FF4713] text-white hover:bg-[#e03d0f] disabled:opacity-40"
               aria-label={t("send")}
               title={t("send")}
             >
-              <ArrowUp size={18} />
+              <ArrowUp size={16} />
             </button>
           </div>
           <input
