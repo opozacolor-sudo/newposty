@@ -7,7 +7,7 @@ export default async function HomePage() {
   const t = await getTranslations("Landing");
 
   return (
-    <section className="mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col px-5 pt-6 sm:px-8 sm:pt-8">
+    <section className="mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col px-5 pt-5 sm:px-8 sm:pt-6">
       <HomeViewportLock />
       <div className="flex flex-col items-center text-center">
         <h1 className="font-semibold tracking-tight text-[#1d1d1f] text-[clamp(2.4rem,6.5vw,3.5rem)] leading-none">
