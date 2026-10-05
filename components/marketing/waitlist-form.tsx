@@ -58,7 +58,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
       <p
         className={
           compact
-            ? "text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
+            ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
             : "text-sm leading-6 text-neutral-500"
         }
       >
@@ -68,7 +68,7 @@ export function WaitlistForm({ compact = false }: { compact?: boolean }) {
         onSubmit={onSubmit}
         className={
           compact
-            ? "mt-2.5 flex w-full flex-col gap-1.5 sm:mt-3 sm:flex-row sm:items-stretch"
+            ? "mt-2.5 flex w-full flex-col gap-1.5 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
             : "mt-4 flex w-full flex-col gap-2 sm:flex-row sm:items-stretch"
         }
       >

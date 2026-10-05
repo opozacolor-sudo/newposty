@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { hasLocale } from "next-intl";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Fraunces, Geist } from "next/font/google";
+import { Fraunces, Geist, Poppins } from "next/font/google";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 
@@ -15,6 +15,12 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin", "latin-ext"],
   style: ["normal", "italic"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const viewport: Viewport = {
@@ -58,7 +64,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${fraunces.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-paper text-ink">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>

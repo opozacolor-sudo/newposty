@@ -9,7 +9,7 @@ export function LocaleSwitch({
   variant = "codes",
 }: {
   className?: string;
-  variant?: "codes" | "names";
+  variant?: "codes" | "names" | "onDark";
 }) {
   const locale = useLocale();
   const t = useTranslations("Locale");
@@ -43,7 +43,11 @@ export function LocaleSwitch({
       <select
         value={locale}
         onChange={(event) => router.replace(pathname, { locale: event.target.value })}
-        className="rounded-full border border-line bg-card px-2 py-1 text-[10px] uppercase text-ink sm:px-2.5 sm:text-xs"
+        className={
+          variant === "onDark"
+            ? "rounded-full border border-[#E4EEF0]/30 bg-transparent px-2 py-1 text-[10px] uppercase text-[#E4EEF0] sm:px-2.5 sm:text-xs"
+            : "rounded-full border border-line bg-card px-2 py-1 text-[10px] uppercase text-ink sm:px-2.5 sm:text-xs"
+        }
       >
         {routing.locales.map((item) => (
           <option key={item} value={item}>

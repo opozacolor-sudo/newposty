@@ -9,7 +9,9 @@ import { BrandLogo } from "./brand-logo";
 import { FeaturesPanel } from "./features-menu";
 import { MadeForPanel } from "./made-for-menu";
 import { PlatformsPanel } from "./platforms-menu";
-import { btnGhost, btnSolid } from "./styles";
+
+const navLink =
+  "whitespace-nowrap text-[12px] font-medium text-[#E4EEF0] transition hover:text-white xl:text-[13px]";
 
 function DesktopMenu({
   label,
@@ -49,7 +51,7 @@ function DesktopMenu({
     <div className="relative" ref={ref} onMouseEnter={onOpen} onMouseLeave={onClose}>
       <button
         type="button"
-        className={`${btnGhost} inline-flex items-center gap-1 whitespace-nowrap`}
+        className={`${navLink} inline-flex items-center gap-1`}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => (open ? onClose() : onOpen())}
@@ -66,7 +68,7 @@ function DesktopMenu({
                 : wide
                   ? "w-[min(36rem,calc(100vw-2rem))] p-4 sm:p-5"
                   : "w-[min(32rem,calc(100vw-2rem))] p-4 sm:p-5"
-            } rounded-2xl border border-neutral-100 bg-white shadow-[0_18px_50px_rgba(0,0,0,0.12)]`}
+            } rounded-2xl border border-neutral-100 bg-white text-neutral-900 shadow-[0_18px_50px_rgba(0,0,0,0.12)]`}
           >
             {children}
           </div>
@@ -113,68 +115,80 @@ export function MarketingHeader() {
     setMobile(null);
   };
 
-  return (
-    <header className="relative z-50 shrink-0 border-b border-neutral-100 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-6">
-        <div className="flex min-w-0 items-center justify-start gap-4 lg:gap-5">
-          <button
-            type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 lg:hidden"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-label={open ? t("closeMenu") : t("openMenu")}
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-          <nav className="hidden min-w-0 items-center gap-4 lg:flex xl:gap-5">
-            <DesktopMenu
-              label={t("features")}
-              open={desktop === "features"}
-              onOpen={() => setDesktop("features")}
-              onClose={() => setDesktop((value) => (value === "features" ? null : value))}
-            >
-              <FeaturesPanel onNavigate={closeAll} />
-            </DesktopMenu>
-            <DesktopMenu
-              label={t("platforms")}
-              open={desktop === "platforms"}
-              onOpen={() => setDesktop("platforms")}
-              onClose={() => setDesktop((value) => (value === "platforms" ? null : value))}
-              wide
-            >
-              <PlatformsPanel onNavigate={closeAll} />
-            </DesktopMenu>
-            <DesktopMenu
-              label={t("madeFor")}
-              open={desktop === "madeFor"}
-              onOpen={() => setDesktop("madeFor")}
-              onClose={() => setDesktop((value) => (value === "madeFor" ? null : value))}
-            >
-              <MadeForPanel onNavigate={closeAll} />
-            </DesktopMenu>
-            <DesktopMenu
-              label={t("more")}
-              open={desktop === "more"}
-              onOpen={() => setDesktop("more")}
-              onClose={() => setDesktop((value) => (value === "more" ? null : value))}
-              narrow
-            >
-              <MoreLinks onNavigate={closeAll} />
-            </DesktopMenu>
-          </nav>
-        </div>
+  const legalLinks = [
+    { href: "/demo", label: t("demo") },
+    { href: "/guide", label: t("guide") },
+    { href: "/privacy", label: t("privacy") },
+    { href: "/terms", label: t("terms") },
+    { href: "/legal", label: t("legal") },
+  ] as const;
 
-        <Link href="/" className="justify-self-center" onClick={closeAll}>
-          <BrandLogo className="h-5 w-auto sm:h-8" width={97} height={20} />
+  return (
+    <header className="relative z-50 shrink-0 bg-[#FF5B04]">
+      <div className="flex h-12 items-center gap-3 px-3 sm:h-14 sm:px-5 lg:gap-4 lg:px-6">
+        <button
+          type="button"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#E4EEF0] lg:hidden"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-label={open ? t("closeMenu") : t("openMenu")}
+        >
+          {open ? <X size={20} /> : <Menu size={20} />}
+        </button>
+
+        <Link href="/" className="shrink-0 leading-none" onClick={closeAll}>
+          <BrandLogo light className="h-5 leading-none sm:h-6 sm:text-[22px]" width={97} height={20} />
         </Link>
 
-        <div className="flex items-center justify-end gap-2 sm:gap-3">
-          <Link href="/login" className={`${btnGhost} hidden sm:inline`} onClick={closeAll}>
+        <nav className="hidden min-w-0 flex-1 items-center gap-3 overflow-x-auto lg:flex xl:gap-4">
+          <DesktopMenu
+            label={t("features")}
+            open={desktop === "features"}
+            onOpen={() => setDesktop("features")}
+            onClose={() => setDesktop((value) => (value === "features" ? null : value))}
+          >
+            <FeaturesPanel onNavigate={closeAll} />
+          </DesktopMenu>
+          <DesktopMenu
+            label={t("platforms")}
+            open={desktop === "platforms"}
+            onOpen={() => setDesktop("platforms")}
+            onClose={() => setDesktop((value) => (value === "platforms" ? null : value))}
+            wide
+          >
+            <PlatformsPanel onNavigate={closeAll} />
+          </DesktopMenu>
+          <DesktopMenu
+            label={t("madeFor")}
+            open={desktop === "madeFor"}
+            onOpen={() => setDesktop("madeFor")}
+            onClose={() => setDesktop((value) => (value === "madeFor" ? null : value))}
+          >
+            <MadeForPanel onNavigate={closeAll} />
+          </DesktopMenu>
+          <DesktopMenu
+            label={t("more")}
+            open={desktop === "more"}
+            onOpen={() => setDesktop("more")}
+            onClose={() => setDesktop((value) => (value === "more" ? null : value))}
+            narrow
+          >
+            <MoreLinks onNavigate={closeAll} />
+          </DesktopMenu>
+          {legalLinks.map((item) => (
+            <Link key={item.href} href={item.href} className={navLink} onClick={closeAll}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="ml-auto flex shrink-0 items-center gap-3">
+          <Link href="/login" className={`${navLink} hidden sm:inline`} onClick={closeAll}>
             {t("signIn")}
           </Link>
           <Link
             href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
-            className={`${btnSolid} !px-2.5 !py-1.5 !text-xs sm:!px-4 sm:!py-2.5 sm:!text-sm`}
+            className="inline-flex items-center rounded-full border border-[#E4EEF0]/80 px-3 py-1 text-[12px] font-medium text-[#E4EEF0] transition hover:bg-[#E4EEF0]/10 xl:text-[13px]"
             onClick={closeAll}
           >
             {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
@@ -183,11 +197,11 @@ export function MarketingHeader() {
       </div>
 
       {open ? (
-        <div className="border-t border-neutral-100 bg-white px-4 py-4 lg:hidden">
+        <div className="border-t border-white/15 bg-[#FF5B04] px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-3">
             <button
               type="button"
-              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              className={`${navLink} inline-flex items-center justify-between text-left`}
               aria-expanded={mobile === "features"}
               onClick={() => setMobile((value) => (value === "features" ? null : "features"))}
             >
@@ -195,13 +209,13 @@ export function MarketingHeader() {
               <ChevronDown size={16} className={mobile === "features" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "features" ? (
-              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-3">
+              <div className="rounded-2xl bg-white p-3 text-neutral-900">
                 <FeaturesPanel onNavigate={closeAll} />
               </div>
             ) : null}
             <button
               type="button"
-              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              className={`${navLink} inline-flex items-center justify-between text-left`}
               aria-expanded={mobile === "platforms"}
               onClick={() => setMobile((value) => (value === "platforms" ? null : "platforms"))}
             >
@@ -209,13 +223,13 @@ export function MarketingHeader() {
               <ChevronDown size={16} className={mobile === "platforms" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "platforms" ? (
-              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-3">
+              <div className="rounded-2xl bg-white p-3 text-neutral-900">
                 <PlatformsPanel onNavigate={closeAll} />
               </div>
             ) : null}
             <button
               type="button"
-              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              className={`${navLink} inline-flex items-center justify-between text-left`}
               aria-expanded={mobile === "madeFor"}
               onClick={() => setMobile((value) => (value === "madeFor" ? null : "madeFor"))}
             >
@@ -223,13 +237,13 @@ export function MarketingHeader() {
               <ChevronDown size={16} className={mobile === "madeFor" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "madeFor" ? (
-              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-3">
+              <div className="rounded-2xl bg-white p-3 text-neutral-900">
                 <MadeForPanel onNavigate={closeAll} />
               </div>
             ) : null}
             <button
               type="button"
-              className={`${btnGhost} inline-flex items-center justify-between text-left`}
+              className={`${navLink} inline-flex items-center justify-between text-left`}
               aria-expanded={mobile === "more"}
               onClick={() => setMobile((value) => (value === "more" ? null : "more"))}
             >
@@ -237,19 +251,17 @@ export function MarketingHeader() {
               <ChevronDown size={16} className={mobile === "more" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "more" ? (
-              <div className="rounded-2xl border border-neutral-100 bg-neutral-50/80 p-2">
+              <div className="rounded-2xl bg-white p-2 text-neutral-900">
                 <MoreLinks onNavigate={closeAll} />
               </div>
             ) : null}
-            <Link href="/login" className={btnGhost} onClick={closeAll}>
+            {legalLinks.map((item) => (
+              <Link key={item.href} href={item.href} className={navLink} onClick={closeAll}>
+                {item.label}
+              </Link>
+            ))}
+            <Link href="/login" className={navLink} onClick={closeAll}>
               {t("signIn")}
-            </Link>
-            <Link
-              href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
-              className={btnSolid}
-              onClick={closeAll}
-            >
-              {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}
             </Link>
           </nav>
         </div>

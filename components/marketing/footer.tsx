@@ -1,57 +1,37 @@
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitch } from "@/components/locale-switch";
-import { Link } from "@/i18n/navigation";
-import { BrandLogo } from "./brand-logo";
+import { MARKETING_SOCIAL } from "@/lib/marketing-social";
 
 export async function MarketingFooter() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="shrink-0 border-t border-neutral-100 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-1 overflow-hidden px-2 py-1.5 sm:justify-between sm:gap-4 sm:px-6 sm:py-4">
-        <div className="flex min-w-0 items-center gap-1 sm:gap-3">
-          <BrandLogo
-            className="h-3 w-auto max-w-[3.4rem] shrink-0 sm:h-6 sm:max-w-none"
-            width={54}
-            height={12}
-          />
-          <span className="whitespace-nowrap text-[9px] text-neutral-500 sm:text-sm">
-            {t("copyright")}
-          </span>
+    <footer className="shrink-0 bg-[#6D001A]">
+      <div className="h-8 sm:h-10" />
+      <div className="rounded-t-[1.75rem] bg-[#3F000F] px-4 py-3 sm:px-6 sm:py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+          <ul className="flex items-center gap-3 sm:gap-4">
+            {MARKETING_SOCIAL.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center text-[#E4EEF0] transition hover:text-white"
+                  aria-label={item.label}
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
+                    <path d={item.path} />
+                  </svg>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <LocaleSwitch variant="onDark" className="shrink-0" />
+            <span className="whitespace-nowrap text-[11px] text-[#E4EEF0]/80 sm:text-sm">{t("copyright")}</span>
+          </div>
         </div>
-        <nav className="ml-auto flex shrink-0 flex-nowrap items-center gap-1 sm:gap-5">
-          <Link
-            href="/demo"
-            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
-          >
-            {t("demo")}
-          </Link>
-          <Link
-            href="/guide"
-            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
-          >
-            {t("guide")}
-          </Link>
-          <Link
-            href="/privacy"
-            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
-          >
-            {t("privacy")}
-          </Link>
-          <Link
-            href="/terms"
-            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
-          >
-            {t("terms")}
-          </Link>
-          <Link
-            href="/legal"
-            className="whitespace-nowrap text-[9px] font-medium text-neutral-600 hover:text-neutral-900 sm:text-sm"
-          >
-            {t("legal")}
-          </Link>
-          <LocaleSwitch className="shrink-0 scale-90 sm:scale-100" />
-        </nav>
       </div>
     </footer>
   );
