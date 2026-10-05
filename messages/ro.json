@@ -25,7 +25,11 @@
   },
   "Locale": {
     "en": "Engleză",
-    "ro": "Română"
+    "ro": "Română",
+    "de": "Germană",
+    "it": "Italiană",
+    "fr": "Franceză",
+    "es": "Spaniolă"
   },
   "Landing": {
     "title": "Postează inteligent. Din prima secundă.",

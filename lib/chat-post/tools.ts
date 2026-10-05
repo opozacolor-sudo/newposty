@@ -1,5 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { CANONICAL_PLATFORM_IDS } from "@/lib/platform-capabilities";
+import { chatLanguageName } from "@/lib/locales";
 
 export const chatPostTools: Anthropic.Tool[] = [
   {
@@ -238,7 +239,7 @@ export function chatPostSystemPrompt(input: {
   posterEnabled?: boolean;
   generationHint?: string;
 }) {
-  const language = input.locale === "ro" ? "Romanian" : "English";
+  const language = chatLanguageName(input.locale);
   return [
     "You are Newposty's social studio assistant (Posty).",
     "Help the user draft captions, generate post ideas, refine brand voice, and publish or schedule posts.",

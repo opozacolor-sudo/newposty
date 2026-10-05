@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { chatLanguageName } from "@/lib/locales";
 import { ALL_CONNECTED, getPlatformCapability } from "@/lib/platform-capabilities";
 import { isConnectDisabled, isPlatformId, platformLabel } from "@/lib/platforms";
 import {
@@ -79,7 +80,7 @@ async function generateCaption(input: {
     max_tokens: 400,
     system: [
       "Write one social caption ready to publish. No preamble, no quotes around the whole caption.",
-      `Language: ${input.locale === "ro" ? "Romanian" : "English"}.`,
+      `Language: ${chatLanguageName(input.locale)}.`,
       `Hard max length: ${input.maxChars} characters.`,
       photos.length > 0
         ? "You can see the attached photo(s). Write about what is actually in them. Do not invent a car, product, or scene that is not in the photo."

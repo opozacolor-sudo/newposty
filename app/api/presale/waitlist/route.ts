@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAppLocale } from "@/lib/locales";
 import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 import { createServerSupabase } from "@/lib/supabase/server";
 
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   const email = String(payload.email ?? "").trim();
-  const locale = payload.locale === "en" ? "en" : "ro";
+  const locale = isAppLocale(payload.locale) ? payload.locale : "ro";
   if (!emailPattern.test(email) || email.length > 320) {
     return NextResponse.json({ error: "INVALID_EMAIL" }, { status: 400 });
   }

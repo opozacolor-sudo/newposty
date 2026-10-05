@@ -1,3 +1,5 @@
+import { intlLocale } from "@/lib/locales";
+
 const DEFAULT_TIMEZONE = "Europe/Bucharest";
 
 export function userTimezone(profileTimezone?: string | null) {
@@ -38,7 +40,7 @@ export function addCalendarDays(ymd: string, days: number) {
 }
 
 export function formatInZone(date: Date, timeZone: string, locale: string) {
-  return new Intl.DateTimeFormat(locale === "ro" ? "ro-RO" : "en-GB", {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     timeZone,
     weekday: "short",
     day: "numeric",

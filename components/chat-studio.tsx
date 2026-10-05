@@ -138,6 +138,10 @@ function createSpeechRecognition(): SpeechRecognitionLike | null {
 
 function speechLang(locale: string) {
   if (locale.toLowerCase().startsWith("ro")) return "ro-RO";
+  if (locale.toLowerCase().startsWith("de")) return "de-DE";
+  if (locale.toLowerCase().startsWith("it")) return "it-IT";
+  if (locale.toLowerCase().startsWith("fr")) return "fr-FR";
+  if (locale.toLowerCase().startsWith("es")) return "es-ES";
   return "en-US";
 }
 

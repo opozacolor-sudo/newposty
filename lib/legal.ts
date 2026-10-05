@@ -139,7 +139,7 @@ const ro: LegalPage[] = [
         id: "what",
         heading: "1. Ce date și de ce",
         body: [
-          "Lista de preînregistrare: emailul și limba (română sau engleză). Temei: pași înainte de contract și consimțământul dat când trimiți formularul. Scop: să te anunțăm la deschiderea din 15 octombrie 2026. Poți cere scoaterea de pe listă la adresa de contact.",
+          "Lista de preînregistrare: emailul și limba (română, engleză, germană, italiană, franceză sau spaniolă). Temei: pași înainte de contract și consimțământul dat când trimiți formularul. Scop: să te anunțăm la deschiderea din 15 octombrie 2026. Poți cere scoaterea de pe listă la adresa de contact.",
           "Cont: email, identificatorul de autentificare și hash-ul parolei, ținut de furnizorul de autentificare. Temei: contractul. Scop: să intri în studio.",
           "Studio: mesajele din chat, fișierele încărcate (până la 50, maximum 100 MB fiecare), postările, programările, clienții Team (doar numele) și contul activ selectat. Temei: contractul. Scop: să publicăm, să programăm și să arătăm istoricul.",
           "Rețele: identificatori și nume de conturi conectate, plus token-uri de acces necesare publicării. Temei: contractul. Scop: acțiunea pe care o ceri. Citim mesajele și comentariile de pe conturile conectate ca să detectăm interes, să răspundem (în privat la calificare, public doar ca să invităm conversația privată) și să salvăm lead-ul calificat, după acordul prin DA. Nu punem telefon, email sau salariu în comentarii publice.",
@@ -203,7 +203,7 @@ const ro: LegalPage[] = [
         heading: "1. Ce cookie-uri",
         body: [
           "Sesiunea de autentificare, pusă de furnizorul de autentificare, ca să rămâi logat în studio. Durată: sesiunea și reînnoirea ei.",
-          "NEXT_LOCALE: limba aleasă, română sau engleză.",
+          "NEXT_LOCALE: limba aleasă (română, engleză, germană, italiană, franceză sau spaniolă).",
           "posty_client: clientul Team selectat în studio, ca postările să nu sară la alt client. Este httpOnly. Durată: până la 400 de zile, sau până schimbi clientul ori ștergi contul.",
           "Cookie-uri scurte de conectare OAuth, doar pe durata legării unei rețele, ca revenirea din fereastra rețelei să fie a ta.",
         ],
@@ -421,7 +421,7 @@ const en: LegalPage[] = [
         id: "what",
         heading: "1. What we process, and why",
         body: [
-          "Pre-registration list: email and language (Romanian or English). Basis: steps before a contract, and the consent you give by submitting the form. Purpose: to tell you when we open on 15 October 2026. You can ask to be removed via the contact address.",
+          "Pre-registration list: email and language (Romanian, English, German, Italian, French or Spanish). Basis: steps before a contract, and the consent you give by submitting the form. Purpose: to tell you when we open on 15 October 2026. You can ask to be removed via the contact address.",
           "Account: email, auth identifier, and password hash, held by the auth provider. Basis: contract. Purpose: signing in.",
           "Studio: chat messages, uploaded files (up to 50, 100 MB each), posts, schedules, Team clients (name only), and the selected client. Basis: contract. Purpose: publishing, scheduling, and history.",
           "Networks: identifiers and names of connected accounts, plus the access tokens needed to publish. We read connected-account messages and comments to detect interest, reply (qualification in private; a public comment only invites a private message), and store a qualified lead after a YES consent. We do not put phone, email, or salary in public comments. Basis: contract. Purpose: the action you asked for.",
@@ -485,7 +485,7 @@ const en: LegalPage[] = [
         heading: "1. Which cookies",
         body: [
           "The sign-in session, set by the auth provider, so you stay logged in. Duration: the session and its refresh.",
-          "NEXT_LOCALE: the language you picked, Romanian or English.",
+          "NEXT_LOCALE: the language you picked (Romanian, English, German, Italian, French or Spanish).",
           "posty_client: the Team client selected in the studio, so posts do not jump to another client. It is httpOnly. Duration: up to 400 days, or until you switch client or delete the account.",
           "Short OAuth cookies, only while you connect a network, so the return from that network’s window is yours.",
         ],

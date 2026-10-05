@@ -38,21 +38,19 @@ export function LocaleSwitch({
   }
 
   return (
-    <div
-      className={`flex items-center gap-px rounded-full border border-line bg-card p-px text-[9px] sm:gap-1 sm:p-0.5 sm:text-xs ${className}`}
-    >
-      {routing.locales.map((item) => (
-        <button
-          key={item}
-          type="button"
-          onClick={() => router.replace(pathname, { locale: item })}
-          className={`rounded-full px-1 py-px sm:px-2.5 sm:py-1 ${
-            locale === item ? "bg-[#FF4713] text-white" : "text-muted hover:text-ink"
-          }`}
-        >
-          {item.toUpperCase()}
-        </button>
-      ))}
-    </div>
+    <label className={`inline-flex items-center ${className}`}>
+      <span className="sr-only">{t(locale)}</span>
+      <select
+        value={locale}
+        onChange={(event) => router.replace(pathname, { locale: event.target.value })}
+        className="rounded-full border border-line bg-card px-2 py-1 text-[10px] uppercase text-ink sm:px-2.5 sm:text-xs"
+      >
+        {routing.locales.map((item) => (
+          <option key={item} value={item}>
+            {item.toUpperCase()}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

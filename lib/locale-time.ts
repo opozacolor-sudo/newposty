@@ -1,15 +1,14 @@
 import { routing } from "@/i18n/routing";
+import {
+  isAppLocale,
+  intlLocale,
+  timezoneForAppLocale,
+  uses24HourClock,
+  type AppLocale,
+} from "@/lib/locales";
 
-const TIMEZONES = {
-  ro: "Europe/Bucharest",
-  en: "Europe/London",
-} as const;
-
-export type AppLocale = (typeof routing.locales)[number];
-
-export function isAppLocale(value: unknown): value is AppLocale {
-  return value === "ro" || value === "en";
-}
+export type { AppLocale };
+export { isAppLocale };
 
 export function localeFromRequest(request: Request, explicit?: string | null) {
   if (isAppLocale(explicit)) return explicit;
@@ -27,7 +26,7 @@ export function localeFromRequest(request: Request, explicit?: string | null) {
 }
 
 export function timezoneForLocale(locale: string) {
-  return TIMEZONES[isAppLocale(locale) ? locale : routing.defaultLocale];
+  return timezoneForAppLocale(isAppLocale(locale) ? locale : routing.defaultLocale);
 }
 
 function numericParts(date: Date, timeZone: string) {
@@ -48,12 +47,12 @@ function numericParts(date: Date, timeZone: string) {
 
 export function clockSnapshot(locale: string, at = new Date()) {
   const timeZone = timezoneForLocale(locale);
-  const intlLocale = locale === "ro" ? "ro-RO" : "en-GB";
+  const displayLocale = intlLocale(locale);
   const parts = numericParts(at, timeZone);
   const ymd = `${parts.year}-${parts.month}-${parts.day}`;
   const localIso = `${ymd}T${parts.hour}:${parts.minute}:${parts.second ?? "00"}`;
 
-  const dateLabel = new Intl.DateTimeFormat(intlLocale, {
+  const dateLabel = new Intl.DateTimeFormat(displayLocale, {
     timeZone,
     weekday: "long",
     day: "numeric",
@@ -61,12 +60,12 @@ export function clockSnapshot(locale: string, at = new Date()) {
     year: "numeric",
   }).format(at);
 
-  const timeLabel = new Intl.DateTimeFormat(intlLocale, {
+  const timeLabel = new Intl.DateTimeFormat(displayLocale, {
     timeZone,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    hourCycle: locale === "ro" ? "h23" : "h12",
+    hourCycle: uses24HourClock(locale) ? "h23" : "h12",
   }).format(at);
 
   const tomorrow = new Date(`${ymd}T12:00:00Z`);
