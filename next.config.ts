@@ -3,6 +3,11 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+const scriptSrc =
+  process.env.NODE_ENV === "production"
+    ? "script-src 'self' 'unsafe-inline' https://js.stripe.com"
+    : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com";
+
 const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Frame-Options", value: "DENY" },
@@ -16,7 +21,7 @@ const securityHeaders = [
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com",
+      scriptSrc,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob: https://*.supabase.co https://media.zernio.com",
