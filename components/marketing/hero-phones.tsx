@@ -34,8 +34,13 @@ export function HeroPhones() {
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(null);
     }
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   return (
@@ -74,25 +79,44 @@ export function HeroPhones() {
       </div>
       {mounted && open
         ? createPortal(
-            <div className="fixed inset-0 z-[80] overflow-y-auto bg-white" role="dialog" aria-modal aria-labelledby={titleId}>
-              <button
-                type="button"
-                onClick={() => setOpen(null)}
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white sm:right-6 sm:top-6"
-                aria-label={t("screenClose")}
-              >
-                <X size={18} />
-              </button>
-              <div className="mx-auto max-w-3xl px-6 pb-16 pt-16 sm:px-8 sm:pt-20">
-                <p className="text-[15px] text-[#1d1d1f]">{t(open.kicker)}</p>
-                <h2
-                  id={titleId}
-                  className="mt-3 text-[clamp(1.8rem,4vw,2.75rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f]"
+            <div
+              className="fixed inset-0 z-[80] overflow-y-auto bg-black/45"
+              onClick={() => setOpen(null)}
+            >
+              <div className="flex min-h-full items-start justify-center px-4 py-8 sm:px-8 sm:py-12">
+                <div
+                  role="dialog"
+                  aria-modal
+                  aria-labelledby={titleId}
+                  className="relative w-full max-w-[52rem] overflow-hidden rounded-[1.75rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                  onClick={(event) => event.stopPropagation()}
                 >
-                  {t(open.title)}
-                </h2>
-                <div className="mt-8 overflow-hidden rounded-[1.8rem] bg-[#f5f5f7] px-6 py-8 sm:px-12 sm:py-12">
-                  <p className="text-[17px] leading-7 text-[#6e6e73] sm:text-[21px] sm:leading-8">{t("screenBodySoon")}</p>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(null)}
+                    className="absolute right-4 top-4 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white sm:right-5 sm:top-5"
+                    aria-label={t("screenClose")}
+                  >
+                    <X size={16} />
+                  </button>
+                  <div className="px-8 pt-10 sm:px-14 sm:pt-12">
+                    <p className="text-[13px] text-[#1d1d1f] sm:text-[15px]">{t(open.kicker)}</p>
+                    <h2
+                      id={titleId}
+                      className="mt-2 max-w-[36rem] text-[clamp(1.65rem,3.4vw,2.35rem)] font-semibold leading-[1.15] tracking-tight text-[#1d1d1f]"
+                    >
+                      {t(open.title)}
+                    </h2>
+                  </div>
+                  <div className="mx-6 mt-6 overflow-hidden rounded-[1.5rem] bg-[#f5f5f7] sm:mx-10 sm:mt-8">
+                    <p className="mx-auto max-w-[34rem] px-6 pt-10 text-center text-[16px] leading-7 text-[#6e6e73] sm:px-10 sm:pt-12 sm:text-[19px] sm:leading-8">
+                      {t("screenBodySoon")}
+                    </p>
+                    <div className="relative mx-auto mt-8 h-[min(42vw,20rem)] w-full max-w-[36rem]">
+                      <Image src={TILE} alt="" fill className="object-contain object-bottom" />
+                    </div>
+                  </div>
+                  <div className="h-6 sm:h-8" />
                 </div>
               </div>
             </div>,
