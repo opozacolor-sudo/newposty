@@ -40,11 +40,11 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-3 flex min-h-0 w-full flex-1 items-end justify-center pb-3">
-        <ul className="grid w-[82%] grid-cols-6 gap-[6px]">
+      <div className="mt-8 flex min-h-0 w-full flex-1 items-end justify-center overflow-hidden pb-3">
+        <ul className="mx-auto grid h-full w-auto max-w-[82%] grid-cols-6 gap-[6px] [aspect-ratio:54/16]">
           {CARDS.map((card) => (
-            <li key={card.title} className="group min-w-0">
-              <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[1.4rem] bg-black">
+            <li key={card.title} className="group min-h-0 min-w-0">
+              <div className="relative h-full overflow-hidden rounded-[1.4rem] bg-black">
                 <Image
                   src={TILE}
                   alt=""
