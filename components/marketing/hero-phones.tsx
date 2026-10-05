@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 
 const CARDS = [
   { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-networks-hud.png" },
-  { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-front-2.png" },
+  { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-content-hud.png" },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-front-3.png" },
   { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-front-4.png" },
   { kicker: "screenLeadsKicker", title: "screenLeads", src: "/marketing/phone-front-5.png" },
