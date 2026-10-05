@@ -100,3 +100,10 @@ textarea,
 button {
   font: inherit;
 }
+
+.marketing header a,
+.marketing header button {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+}

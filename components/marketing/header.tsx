@@ -11,7 +11,7 @@ import { MadeForPanel } from "./made-for-menu";
 import { PlatformsPanel } from "./platforms-menu";
 
 const navLink =
-  "whitespace-nowrap text-[11px] font-medium text-[#E4EEF0] transition hover:text-white xl:text-[12px]";
+  "whitespace-nowrap text-[12px] font-medium leading-none text-[#E4EEF0] transition hover:text-white";
 
 function DesktopMenu({
   label,
@@ -141,8 +141,8 @@ export function MarketingHeader() {
             {open ? <X size={16} /> : <Menu size={16} />}
           </button>
 
-          <Link href="/" className="shrink-0 leading-none" onClick={closeAll}>
-            <BrandLogo light className="text-[15px] leading-none sm:text-[16px]" width={97} height={16} />
+          <Link href="/" className={`${navLink} shrink-0`} onClick={closeAll}>
+            <BrandLogo light className="text-[12px] font-medium leading-none" width={97} height={16} />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center gap-2.5 overflow-x-auto lg:flex xl:gap-3">
@@ -193,7 +193,7 @@ export function MarketingHeader() {
             </Link>
             <Link
               href={SIGNUPS_OPEN ? "/signup" : "/waitlist"}
-              className="inline-flex items-center rounded-full border border-[#E4EEF0]/70 px-2.5 py-0.5 text-[11px] font-medium text-[#E4EEF0] transition hover:bg-[#E4EEF0]/10"
+              className="inline-flex items-center rounded-full border border-[#E4EEF0]/70 px-2.5 py-1 text-[12px] font-medium leading-none text-[#E4EEF0] transition hover:bg-[#E4EEF0]/10"
               onClick={closeAll}
             >
               {SIGNUPS_OPEN ? t("signUp") : t("notifyMe")}

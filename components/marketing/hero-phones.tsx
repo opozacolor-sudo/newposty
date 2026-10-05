@@ -12,7 +12,7 @@ export function HeroPhones() {
 
 function PhoneFront() {
   return (
-    <div className="relative h-[min(42vh,22rem)] aspect-[9/19] overflow-hidden rounded-[1.6rem] bg-neutral-950 shadow-[0_18px_40px_rgba(0,0,0,0.22)] ring-1 ring-black/20">
+    <div className="relative h-[min(36vh,19rem)] aspect-[9/19] overflow-hidden rounded-[1.6rem] bg-neutral-950 shadow-[0_18px_40px_rgba(0,0,0,0.22)] ring-1 ring-black/20">
       <div className="absolute inset-[5px] overflow-hidden rounded-[1.3rem] bg-[#111]">
         <div className="absolute left-1/2 top-1.5 h-3.5 w-16 -translate-x-1/2 rounded-full bg-black" />
         <div className="flex h-full flex-col bg-gradient-to-b from-[#1a1a1a] to-[#0c0c0c] px-2.5 pb-3 pt-6">
@@ -32,7 +32,7 @@ function PhoneFront() {
 function PhoneEdge({ color, highlight }: { color: string; highlight: string }) {
   return (
     <div
-      className="relative h-[min(42vh,22rem)] w-[13px] overflow-hidden rounded-full shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[15px]"
+      className="relative h-[min(36vh,19rem)] w-[13px] overflow-hidden rounded-full shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[15px]"
       style={{
         background: `linear-gradient(90deg, #0a0a0a 0%, ${color} 22%, ${highlight} 50%, ${color} 78%, #0a0a0a 100%)`,
       }}

@@ -11,7 +11,7 @@ export function BrandLogo({
 }) {
   if (light) {
     return (
-      <span className={`inline-block font-extrabold tracking-tight text-[#E4EEF0] ${className ?? ""}`}>
+      <span className={`inline-block tracking-tight text-[#E4EEF0] ${className ?? "font-medium"}`}>
         posty.now
       </span>
     );
