@@ -40,16 +40,16 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-5 flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
-        <ul className="grid w-full max-w-[70rem] grid-cols-6 gap-2 sm:gap-2.5">
+      <div className="mt-3 flex min-h-0 w-full flex-1 items-end justify-center pb-3">
+        <ul className="grid w-[82%] grid-cols-6 gap-[6px]">
           {CARDS.map((card) => (
             <li key={card.title} className="group min-w-0">
-              <div className="relative aspect-[9/16] overflow-hidden rounded-[1.4rem] bg-black">
+              <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[1.4rem] bg-black">
                 <Image
                   src={TILE}
                   alt=""
                   fill
-                  sizes="(min-width: 1024px) 11vw, 16vw"
+                  sizes="12vw"
                   className="object-cover object-top transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.06]"
                   priority
                 />
@@ -62,7 +62,7 @@ export function HeroPhones() {
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-1.5 right-1.5 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] sm:bottom-2 sm:right-2 sm:h-8 sm:w-8"
+                  className="absolute bottom-2 right-2 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f]"
                   aria-label={t("screenOpen")}
                 >
                   <Plus size={15} strokeWidth={2.5} />
@@ -85,13 +85,14 @@ export function HeroPhones() {
               </button>
               <div className="mx-auto max-w-3xl px-6 pb-16 pt-16 sm:px-8 sm:pt-20">
                 <p className="text-[15px] text-[#1d1d1f]">{t(open.kicker)}</p>
-                <h2 id={titleId} className="mt-3 text-[clamp(1.8rem,4vw,2.75rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f]">
+                <h2
+                  id={titleId}
+                  className="mt-3 text-[clamp(1.8rem,4vw,2.75rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f]"
+                >
                   {t(open.title)}
                 </h2>
                 <div className="mt-8 overflow-hidden rounded-[1.8rem] bg-[#f5f5f7] px-6 py-8 sm:px-12 sm:py-12">
-                  <p className="text-[17px] leading-7 text-[#6e6e73] sm:text-[21px] sm:leading-8">
-                    {t("screenBodySoon")}
-                  </p>
+                  <p className="text-[17px] leading-7 text-[#6e6e73] sm:text-[21px] sm:leading-8">{t("screenBodySoon")}</p>
                 </div>
               </div>
             </div>,
