@@ -9,7 +9,7 @@ export function WaitlistForm({
   tone = "light",
 }: {
   compact?: boolean;
-  tone?: "light" | "onDark";
+  tone?: "light" | "onDark" | "onSky";
 }) {
   const t = useTranslations("Landing");
   const locale = useLocale();
@@ -46,6 +46,7 @@ export function WaitlistForm({
   }
 
   const dark = tone === "onDark";
+  const sky = tone === "onSky";
 
   if (status === "success") {
     return (
@@ -53,9 +54,7 @@ export function WaitlistForm({
         className={
           dark
             ? "text-sm font-medium text-emerald-200"
-            : compact
-              ? "mt-4 text-[13px] font-medium leading-5 text-emerald-700 sm:text-sm"
-              : "mt-6 text-sm font-medium text-emerald-700"
+            : "mt-4 text-[13px] font-medium leading-5 text-emerald-800 sm:text-sm"
         }
       >
         {t("waitlistSuccess")}
@@ -64,14 +63,16 @@ export function WaitlistForm({
   }
 
   return (
-    <div id="waitlist" className={compact || dark ? "mt-0" : "mt-8"}>
+    <div id="waitlist" className={compact || dark || sky ? "mt-0" : "mt-8"}>
       <p
         className={
           dark
             ? "text-center text-[13px] leading-5 text-[#E4EEF0] sm:text-sm sm:leading-6"
-            : compact
-              ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
-              : "text-sm leading-6 text-neutral-500"
+            : sky
+              ? "text-center text-[15px] leading-6 text-[#1d1d1f] sm:text-base"
+              : compact
+                ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
+                : "text-sm leading-6 text-neutral-500"
         }
       >
         {t("waitlistLead")}
@@ -93,9 +94,11 @@ export function WaitlistForm({
           className={
             dark
               ? "h-10 min-w-0 flex-1 rounded-full border border-[#E4EEF0]/25 bg-[#3F000F] px-4 text-sm text-[#E4EEF0] outline-none placeholder:text-[#E4EEF0]/50 focus:border-[#FF5B04]"
-              : compact
-                ? "h-9 min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-3 text-[12px] outline-none focus:border-[#FF4713] sm:h-auto sm:px-4 sm:py-3 sm:text-sm"
-                : "min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF4713]"
+              : sky
+                ? "h-10 min-w-0 flex-1 rounded-full border-0 bg-white px-4 text-sm text-[#1d1d1f] outline-none placeholder:text-[#6e6e73] focus:ring-2 focus:ring-[#0071e3]/30"
+                : compact
+                  ? "h-9 min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-3 text-[12px] outline-none focus:border-[#FF4713] sm:h-auto sm:px-4 sm:py-3 sm:text-sm"
+                  : "min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF4713]"
           }
         />
         <button
@@ -104,9 +107,11 @@ export function WaitlistForm({
           className={
             dark
               ? "h-10 shrink-0 rounded-full bg-[#FF5B04] px-5 text-sm font-medium text-[#E4EEF0] disabled:opacity-60"
-              : compact
-                ? `${btnSolid} h-9 shrink-0 !px-3 !py-1.5 !text-[11px] sm:h-auto sm:!px-5 sm:!py-3 sm:!text-sm disabled:opacity-60`
-                : `${btnSolid} shrink-0 px-5 py-3 disabled:opacity-60`
+              : sky
+                ? "h-10 shrink-0 rounded-full bg-[#0071e3] px-5 text-sm font-normal text-white transition hover:bg-[#0077ed] disabled:opacity-60"
+                : compact
+                  ? `${btnSolid} h-9 shrink-0 !px-3 !py-1.5 !text-[11px] sm:h-auto sm:!px-5 sm:!py-3 sm:!text-sm disabled:opacity-60`
+                  : `${btnSolid} shrink-0 px-5 py-3 disabled:opacity-60`
           }
         >
           {pending ? t("waitlistSending") : t("waitlistCta")}
