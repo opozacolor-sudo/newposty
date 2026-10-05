@@ -38,37 +38,39 @@ export function HeroPhones() {
 
   return (
     <>
-      <ul className="mt-6 grid min-h-0 w-full flex-1 grid-cols-6 content-end gap-3 sm:gap-4 lg:gap-5">
-        {CARDS.map((card) => (
-          <li key={card.title} className="group min-w-0">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-[1.35rem] bg-[#1d1d1f] transition-transform duration-200 ease-out motion-safe:group-hover:scale-[1.03]">
-              <Image
-                src={card.src}
-                alt=""
-                fill
-                sizes="(min-width: 1024px) 14vw, 16vw"
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/25" />
-              <div className="absolute inset-x-0 top-0 p-2.5 sm:p-3.5">
-                <p className="text-[10px] font-normal text-white/80 sm:text-[12px]">{t(card.kicker)}</p>
-                <p className="mt-1 text-[11px] font-semibold leading-snug text-white sm:text-[14px]">
-                  {t(card.title)}
-                </p>
+      <div className="mt-5 flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
+        <ul className="grid h-full w-full max-w-[72rem] grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+          {CARDS.map((card) => (
+            <li key={card.title} className="group flex min-h-0 items-center justify-center">
+              <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[1.35rem] bg-[#1d1d1f]">
+                <Image
+                  src={card.src}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 11vw, 16vw"
+                  className="object-cover transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:scale-[1.07]"
+                  priority
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-black/30" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 p-2.5 sm:p-3.5">
+                  <p className="text-[10px] font-normal text-white/80 sm:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-1 text-[11px] font-semibold leading-snug text-white sm:text-[14px]">
+                    {t(card.title)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen(card)}
+                  className="absolute bottom-2.5 right-2.5 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-sm sm:h-9 sm:w-9"
+                  aria-label={t("screenOpen")}
+                >
+                  <Plus size={16} strokeWidth={2.4} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setOpen(card)}
-                className="absolute bottom-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-sm transition hover:scale-105 sm:h-9 sm:w-9"
-                aria-label={t("screenOpen")}
-              >
-                <Plus size={16} strokeWidth={2.4} />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
       {mounted && open
         ? createPortal(
             <div className="fixed inset-0 z-[80] overflow-y-auto bg-white" role="dialog" aria-modal aria-labelledby={titleId}>
