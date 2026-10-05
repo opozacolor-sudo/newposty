@@ -9,7 +9,7 @@ export async function MarketingFooter() {
   return (
     <footer className="shrink-0">
       <HomeWaitlistBand />
-      <div className="bg-[#f5f5f7] px-4 py-3 sm:px-6">
+      <div className="bg-[#f5f5f7] px-4 py-2 sm:px-6 sm:py-3">
         <div className="mx-auto flex max-w-[980px] items-center justify-between gap-3">
           <ul className="flex items-center gap-3 sm:gap-4">
             {MARKETING_SOCIAL.map((item) => (

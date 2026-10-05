@@ -69,7 +69,7 @@ export function WaitlistForm({
           dark
             ? "text-center text-[13px] leading-5 text-[#E4EEF0] sm:text-sm sm:leading-6"
             : sky
-              ? "mx-auto flex min-h-[3rem] max-w-xl items-center justify-center text-center text-[15px] leading-6 text-[#1d1d1f] sm:text-base"
+              ? "mx-auto flex min-h-[2.4rem] max-w-xl items-center justify-center text-center text-[13px] leading-5 text-[#1d1d1f] sm:min-h-[3rem] sm:text-[15px] sm:leading-6 lg:text-base"
               : compact
                 ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
                 : "text-sm leading-6 text-neutral-500"
@@ -79,7 +79,7 @@ export function WaitlistForm({
       </p>
       <form
         onSubmit={onSubmit}
-        className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:items-stretch sm:justify-center"
+        className="mt-2 flex w-full flex-col gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
       >
         <label className="sr-only" htmlFor={emailId}>
           {t("emailPlaceholder")}

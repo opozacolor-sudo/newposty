@@ -74,10 +74,10 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-6 flex min-h-0 w-full flex-1 flex-col lg:mt-8 lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
+      <div className="mt-3 flex min-h-0 w-full flex-1 flex-col lg:mt-8 lg:items-end lg:justify-center lg:overflow-hidden lg:pb-3">
         <ul
           ref={scroller}
-          className="flex h-[min(58dvh,31rem)] snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-full lg:w-auto lg:max-w-[82%] lg:grid-cols-6 lg:gap-[6px] lg:overflow-visible lg:px-0 lg:[aspect-ratio:54/16]"
+          className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-full lg:w-auto lg:max-w-[82%] lg:flex-none lg:grid-cols-6 lg:gap-[6px] lg:overflow-visible lg:px-0 lg:[aspect-ratio:54/16]"
         >
           {CARDS.map((card) => (
             <li
@@ -85,13 +85,13 @@ export function HeroPhones() {
               className="h-full w-[min(22.5rem,calc(100vw-3.25rem))] shrink-0 snap-start lg:min-h-0 lg:w-auto lg:min-w-0"
             >
               <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white lg:rounded-[1.4rem]">
-                <div className="px-6 pt-6 lg:px-3 lg:pt-3.5 xl:px-4 xl:pt-4">
-                  <p className="text-[15px] font-normal text-[#1d1d1f] lg:text-[10px] xl:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-1.5 max-w-[16rem] text-[24px] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-1 lg:max-w-none lg:text-[12px] xl:text-[15px]">
+                <div className="px-5 pt-5 lg:px-3 lg:pt-3.5 xl:px-4 xl:pt-4">
+                  <p className="text-[13px] font-normal text-[#1d1d1f] lg:text-[10px] xl:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-1 max-w-[16rem] text-[21px] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-1 lg:max-w-none lg:text-[12px] xl:text-[15px]">
                     {t(card.title)}
                   </p>
                 </div>
-                <div className="relative mx-5 mb-14 mt-4 min-h-0 flex-1 overflow-hidden rounded-[1.35rem] lg:mx-2.5 lg:mb-11 lg:mt-2 lg:rounded-[1rem] xl:mx-3">
+                <div className="relative mx-4 mb-12 mt-3 min-h-0 flex-1 overflow-hidden rounded-[1.2rem] lg:mx-2.5 lg:mb-11 lg:mt-2 lg:rounded-[1rem] xl:mx-3">
                   <Image
                     src={card.src}
                     alt=""
@@ -113,7 +113,7 @@ export function HeroPhones() {
             </li>
           ))}
         </ul>
-        <div className="mt-4 flex shrink-0 justify-end gap-3 px-5 lg:hidden">
+        <div className="mt-2.5 flex shrink-0 justify-end gap-3 px-5 pb-2 lg:hidden">
           <button
             type="button"
             onClick={() => scrollByCard(-1)}
