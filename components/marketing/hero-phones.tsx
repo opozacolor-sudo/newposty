@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { AdsScene } from "@/components/marketing/ads-scene";
+import { AnalyticsScene } from "@/components/marketing/analytics-scene";
 import { ChatScene } from "@/components/marketing/chat-scene";
 import { ContentScene } from "@/components/marketing/content-scene";
 import { LeadsScene } from "@/components/marketing/leads-scene";
@@ -74,7 +75,20 @@ const CARDS = [
     ],
     closer: "screenLeadsCloser",
   },
-  { kicker: "screenAnalyticsKicker", title: "screenAnalytics", src: "/marketing/phone-analytics-hud.png" },
+  {
+    kicker: "screenAnalyticsKicker",
+    title: "screenAnalytics",
+    src: "/marketing/phone-analytics-hud.png",
+    popupTitle: "screenAnalyticsPopupTitle",
+    sections: [
+      { body: "screenAnalyticsPulse", scene: "pulse", label: "screenAnalyticsPulseLabel" },
+      { body: "screenAnalyticsWhen", scene: "when", label: "screenAnalyticsWhenLabel" },
+      { body: "screenAnalyticsFormats", scene: "formats", label: "screenAnalyticsFormatsLabel" },
+      { body: "screenAnalyticsSplit", scene: "split", label: "screenAnalyticsSplitLabel" },
+      { body: "screenAnalyticsMoney", scene: "spend", label: "screenAnalyticsMoneyLabel" },
+    ],
+    closer: "screenAnalyticsCloser",
+  },
 ] as const;
 
 type Card = (typeof CARDS)[number];
@@ -259,6 +273,12 @@ export function HeroPhones() {
                             section.scene === "inbox" ||
                             section.scene === "paid" ? (
                             <LeadsScene kind={section.scene} label={t(section.label)} />
+                          ) : section.scene === "pulse" ||
+                            section.scene === "when" ||
+                            section.scene === "formats" ||
+                            section.scene === "split" ||
+                            section.scene === "spend" ? (
+                            <AnalyticsScene kind={section.scene} label={t(section.label)} />
                           ) : (
                             <AdsScene kind={section.scene} label={t(section.label)} />
                           )
