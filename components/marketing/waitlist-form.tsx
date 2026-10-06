@@ -69,7 +69,7 @@ export function WaitlistForm({
           dark
             ? "text-center text-[13px] leading-5 text-[#E4EEF0] sm:text-sm sm:leading-6"
             : sky
-              ? "mx-auto text-center text-[clamp(0.65rem,1.55dvh,0.78rem)] leading-4 text-[#1d1d1f] sm:text-[15px] sm:leading-6 lg:flex lg:min-h-[3rem] lg:max-w-xl lg:items-center lg:justify-center lg:text-base"
+              ? "mx-auto text-center text-[clamp(0.65rem,1.55dvh,0.78rem)] leading-4 text-[#1d1d1f] sm:text-[14px] sm:leading-5 lg:flex lg:max-w-xl lg:items-center lg:justify-center lg:text-[15px] [@media(min-height:1100px)]:lg:min-h-[3rem] [@media(min-height:1100px)]:lg:text-base"
               : compact
                 ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
                 : "text-sm leading-6 text-neutral-500"
@@ -81,7 +81,7 @@ export function WaitlistForm({
         onSubmit={onSubmit}
         className={
           sky
-            ? "mt-1 flex w-full flex-row items-stretch justify-center gap-1.5 sm:mt-3 sm:gap-2"
+            ? "mt-1 flex w-full flex-row items-stretch justify-center gap-1.5 sm:mt-2 sm:gap-2"
             : "mt-2 flex w-full flex-col gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
         }
       >

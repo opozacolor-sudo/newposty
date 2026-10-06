@@ -156,7 +156,7 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-1 flex min-h-0 w-full flex-1 flex-col [container-type:size] lg:mt-5 lg:items-center lg:justify-center lg:overflow-visible lg:pb-3 lg:[container-type:normal] [@media(max-height:920px)]:lg:mt-3">
+      <div className="mt-1 flex min-h-0 w-full flex-1 flex-col [container-type:size] lg:mt-2 lg:items-center lg:justify-center lg:overflow-visible lg:pb-0 lg:[container-type:normal]">
         <ul
           ref={scroller}
           className="flex h-auto max-h-full shrink-0 snap-x snap-mandatory items-start gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(88vw,90rem)] lg:flex-none lg:grid-cols-6 lg:items-stretch lg:gap-2.5 lg:overflow-visible lg:px-0"
