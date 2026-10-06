@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { AdsScene } from "@/components/marketing/ads-scene";
+import { ChatScene } from "@/components/marketing/chat-scene";
 import { ContentScene } from "@/components/marketing/content-scene";
 import { NetworkScene } from "@/components/marketing/network-scene";
 
@@ -44,7 +45,20 @@ const CARDS = [
     ],
     closer: "screenAdsCloser",
   },
-  { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-chat-hud.png" },
+  {
+    kicker: "screenChatKicker",
+    title: "screenChat",
+    src: "/marketing/phone-chat-hud.png",
+    popupTitle: "screenChatPopupTitle",
+    sections: [
+      { body: "screenChatVoice", scene: "voice", label: "screenChatVoiceLabel" },
+      { body: "screenChatPublish", scene: "publish", label: "screenChatPublishLabel" },
+      { body: "screenChatMonth", scene: "month", label: "screenChatMonthLabel" },
+      { body: "screenChatCreate", scene: "create", label: "screenChatCreateLabel" },
+      { body: "screenChatManage", scene: "manage", label: "screenChatManageLabel" },
+    ],
+    closer: "screenChatCloser",
+  },
   { kicker: "screenLeadsKicker", title: "screenLeads", src: "/marketing/phone-leads-hud.png" },
   { kicker: "screenAnalyticsKicker", title: "screenAnalytics", src: "/marketing/phone-analytics-hud.png" },
 ] as const;
@@ -219,6 +233,12 @@ export function HeroPhones() {
                             <NetworkScene kind={section.scene} label={t(section.label)} />
                           ) : section.scene === "make" || section.scene === "plan" ? (
                             <ContentScene kind={section.scene} label={t(section.label)} />
+                          ) : section.scene === "voice" ||
+                            section.scene === "publish" ||
+                            section.scene === "month" ||
+                            section.scene === "create" ||
+                            section.scene === "manage" ? (
+                            <ChatScene kind={section.scene} label={t(section.label)} />
                           ) : (
                             <AdsScene kind={section.scene} label={t(section.label)} />
                           )
