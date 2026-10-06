@@ -17,6 +17,7 @@ const CARDS = [
       { body: "screenNetworksSocial", scene: "social", label: "screenNetworksSocialLabel" },
       { body: "screenNetworksAds", scene: "ads", label: "screenNetworksAdsLabel" },
     ],
+    closer: "screenNetworksCloser",
   },
   { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-content-hud.png" },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-ads-hud.png" },
@@ -29,7 +30,7 @@ type Card = (typeof CARDS)[number];
 
 function popupOf(card: Card) {
   if ("popupTitle" in card) {
-    return { title: card.popupTitle, sections: card.sections };
+    return { title: card.popupTitle, sections: card.sections, closer: card.closer };
   }
   return { title: card.title, sections: [{ body: "screenBodySoon" as const, src: card.src }] };
 }
@@ -88,6 +89,8 @@ export function HeroPhones() {
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
+  const popup = open ? popupOf(open) : null;
 
   return (
     <>
@@ -179,11 +182,11 @@ export function HeroPhones() {
                       id={titleId}
                       className="mt-3 max-w-[34rem] text-[clamp(1.85rem,4vw,2.75rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f]"
                     >
-                      {t(popupOf(open).title)}
+                      {t(popup!.title)}
                     </h2>
                   </div>
                   <div className="mt-8 flex flex-col gap-4 px-4 pb-4 sm:mt-10 sm:gap-5 sm:px-6 sm:pb-6">
-                    {popupOf(open).sections.map((section) => (
+                    {popup!.sections.map((section) => (
                       <div key={section.body} className="overflow-hidden rounded-[1.75rem] bg-[#f5f5f7] sm:rounded-[2rem]">
                         <p className="mx-auto max-w-[38rem] px-7 pt-10 text-[16px] leading-7 tracking-normal text-[#6e6e73] sm:px-16 sm:pt-14 sm:text-[19px] sm:leading-[1.47]">
                           {t(section.body)}
@@ -197,6 +200,11 @@ export function HeroPhones() {
                         )}
                       </div>
                     ))}
+                    {"closer" in popup! && popup!.closer ? (
+                      <p className="mx-auto max-w-[38rem] px-7 py-6 text-center text-[16px] leading-7 text-[#1d1d1f] sm:px-16 sm:py-8 sm:text-[19px] sm:leading-[1.47]">
+                        {t(popup!.closer)}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               </div>
