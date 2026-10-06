@@ -7,7 +7,13 @@ import {
   htmlToExcerpt,
   matchKnowledgePage,
   pickCrawlTargets,
+  publicAgentBrand,
 } from "./knowledge";
+
+test("public brand is posty.now, never the legal company", () => {
+  assert.equal(publicAgentBrand({ business: "VLN MOTORS SRL", siteUrl: "https://posty.now/ro" }), "posty.now");
+  assert.equal(publicAgentBrand({ business: "Salon Ana", siteUrl: "https://salon.example" }), "Salon Ana");
+});
 
 test("enable stays locked until the agent is trained", () => {
   assert.equal(canEnableLeadAgent(null), false);

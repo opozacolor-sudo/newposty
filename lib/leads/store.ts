@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_LEAD_PHRASES } from "@/lib/leads/triggers";
 import type { LeadPlaybook } from "@/lib/leads/playbook";
-import type { AgentKnowledge, LeadAgent } from "@/lib/leads/knowledge";
+import { publicAgentBrand, type AgentKnowledge, type LeadAgent } from "@/lib/leads/knowledge";
 import type { LeadAnswers, LeadRow, LeadSource, LeadStage, LeadStatus, LeadThread, LeadTranscriptItem } from "@/lib/leads/types";
 
 function clientFilter(query: any, clientId: string | null) {
@@ -322,9 +322,13 @@ export async function saveTrainedAgent(input: {
   knowledge: AgentKnowledge;
 }) {
   const existing = await loadLeadAgent(input.supabase, input.userId, input.clientId);
+  const knowledge = {
+    ...input.knowledge,
+    business: publicAgentBrand({ business: input.knowledge.business, siteUrl: input.siteUrl }),
+  };
   const payload = {
     site_url: input.siteUrl,
-    knowledge: input.knowledge,
+    knowledge,
     trained_at: new Date().toISOString(),
     enabled: false,
     updated_at: new Date().toISOString(),
@@ -333,14 +337,14 @@ export async function saveTrainedAgent(input: {
     const merged = {
       ...payload,
       knowledge: {
-        ...input.knowledge,
-        instructions: existing.knowledge.instructions ?? input.knowledge.instructions,
-        coach: existing.knowledge.coach ?? input.knowledge.coach,
+        ...knowledge,
+        instructions: existing.knowledge.instructions ?? knowledge.instructions,
+        coach: existing.knowledge.coach ?? knowledge.coach,
         booking: {
-          ...input.knowledge.booking,
-          url: existing.knowledge.booking?.url || input.knowledge.booking?.url || null,
-          how: existing.knowledge.booking?.how || input.knowledge.booking?.how || null,
-          available: Boolean(existing.knowledge.booking?.url || input.knowledge.booking?.url || input.knowledge.booking?.available),
+          ...knowledge.booking,
+          url: existing.knowledge.booking?.url || knowledge.booking?.url || null,
+          how: existing.knowledge.booking?.how || knowledge.booking?.how || null,
+          available: Boolean(existing.knowledge.booking?.url || knowledge.booking?.url || knowledge.booking?.available),
         },
       },
     };

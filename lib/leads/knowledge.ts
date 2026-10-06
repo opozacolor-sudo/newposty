@@ -51,6 +51,34 @@ export function canEnableLeadAgent(agent: Pick<LeadAgent, "trained_at"> | null |
   return Boolean(agent?.trained_at);
 }
 
+const LEGAL_COMPANY =
+  /\b(srl|s\.r\.l|s\.a\.|sa|pfa|cui|cif|euid|vln\s*motors)\b/i;
+
+function hostnameBrand(siteUrl?: string | null) {
+  if (!siteUrl) return null;
+  try {
+    const host = new URL(siteUrl).hostname.replace(/^www\./, "");
+    return host || null;
+  } catch {
+    return null;
+  }
+}
+
+/** Public brand the DM agent speaks as — never the legal operator. */
+export function publicAgentBrand(input: {
+  business?: string | null;
+  siteUrl?: string | null;
+  brandName?: string | null;
+}) {
+  const candidates = [input.brandName, input.business, hostnameBrand(input.siteUrl), "posty.now"];
+  for (const value of candidates) {
+    const clean = String(value || "").replace(/\s+/g, " ").trim();
+    if (!clean || LEGAL_COMPANY.test(clean)) continue;
+    return clean;
+  }
+  return "posty.now";
+}
+
 export function htmlToExcerpt(html: string, max = 1600) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")

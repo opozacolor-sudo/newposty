@@ -1,7 +1,7 @@
-import { getSiteUrl } from "@/lib/env";
+import { COMPANY } from "@/lib/legal";
 import { answerFromSite } from "@/lib/leads/brain";
-import { agentCopy, topicLabel } from "@/lib/leads/copy";
-import type { AgentKnowledge } from "@/lib/leads/knowledge";
+import { agentCopy } from "@/lib/leads/copy";
+import { publicAgentBrand, type AgentKnowledge } from "@/lib/leads/knowledge";
 import {
   parseConsent,
   parseContact,
@@ -32,13 +32,14 @@ export async function nextAgentReply(input: {
   push(thread, "user", inbound);
   const locale = localeFromText(thread.trigger_text || inbound);
   const copy = agentCopy(locale);
-  const termsUrl = `${getSiteUrl()}/privacy`;
-  const topic = topicLabel({
-    triggerText: thread.trigger_text,
-    postContext: thread.post_context,
-    productName: input.knowledge?.business || input.playbook.product_name,
-  });
-  const knowledge = input.knowledge ?? {};
+  const termsUrl = `${COMPANY.site}/privacy`;
+  const knowledge = {
+    ...(input.knowledge ?? {}),
+    business: publicAgentBrand({
+      business: input.knowledge?.business,
+      brandName: input.playbook.product_name,
+    }),
+  };
 
   const send = (stage: LeadStage, text: string) => {
     thread.stage = stage;
@@ -57,7 +58,7 @@ export async function nextAgentReply(input: {
   };
 
   if (thread.stage === "invited") {
-    return send("await_consent", copy.intro(topic, termsUrl));
+    return send("await_consent", copy.intro(termsUrl));
   }
 
   if (thread.stage === "await_consent") {

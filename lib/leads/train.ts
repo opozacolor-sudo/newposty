@@ -4,6 +4,7 @@ import {
   extractSameOriginLinks,
   pageFromHtml,
   pickCrawlTargets,
+  publicAgentBrand,
   type AgentKnowledge,
   type KnowledgePage,
 } from "@/lib/leads/knowledge";
@@ -37,7 +38,7 @@ export async function crawlClientSite(rawUrl: string) {
 
 function knowledgeFromPages(pages: KnowledgePage[], home: string): AgentKnowledge {
   return {
-    business: pages[0]?.title || home,
+    business: publicAgentBrand({ business: pages[0]?.title, siteUrl: home }),
     vertical: "other",
     summary: pages[0]?.excerpt?.slice(0, 400) || null,
     products: pages
@@ -75,14 +76,15 @@ export async function summarizeKnowledge(pages: KnowledgePage[], home: string): 
       model: "claude-sonnet-4-5",
       max_tokens: 1200,
       system:
-        "You train a per-client sales agent from crawled website pages. Return ONLY JSON: {business, vertical, summary, products:[{name,price,url,howTo,notes}], booking:{available,how,url}, faqs:[{q,a}]}. vertical is nails|cosmetics|restaurant|auto|other. Do not invent prices, products, or booking rules that are not in the pages.",
+        "You train a per-client sales agent from crawled website pages. Return ONLY JSON: {business, vertical, summary, products:[{name,price,url,howTo,notes}], booking:{available,how,url}, faqs:[{q,a}]}. business is the public brand people know (e.g. posty.now), never the legal company, SRL, CUI, or VLN MOTORS. vertical is nails|cosmetics|restaurant|auto|other. Do not invent prices, products, or booking rules that are not in the pages.",
       messages: [{ role: "user", content: `Site: ${home}\n\n${packed}` }],
     });
     const text = response.content.find((block) => block.type === "text")?.text ?? "";
     const json = text.match(/\{[\s\S]*\}/)?.[0];
     if (!json) return fallback;
     const parsed = JSON.parse(json) as AgentKnowledge;
-    return { ...fallback, ...parsed, pages };
+    const merged = { ...fallback, ...parsed, pages };
+    return { ...merged, business: publicAgentBrand({ business: merged.business, siteUrl: home }) };
   } catch {
     return fallback;
   }

@@ -1,7 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getAnthropicApiKey, getSiteUrl } from "@/lib/env";
 import { wantsBookingLink } from "@/lib/leads/coach";
-import { htmlToExcerpt, matchKnowledgePage, type AgentKnowledge, type KnowledgePage } from "@/lib/leads/knowledge";
+import {
+  htmlToExcerpt,
+  matchKnowledgePage,
+  publicAgentBrand,
+  type AgentKnowledge,
+  type KnowledgePage,
+} from "@/lib/leads/knowledge";
 import { publicHttpUrl } from "@/lib/site-brief";
 import type { LeadThread } from "@/lib/leads/types";
 
@@ -83,8 +89,9 @@ export async function answerFromSite(input: {
       model: "claude-sonnet-4-5",
       max_tokens: 350,
       system: [
-        "You are the trained posty.now sales agent for ONE client, answering a private DM.",
+        "You are the posty.now agent, answering a private DM.",
         `Language: ${input.locale === "ro" ? "Romanian" : "English"}.`,
+        "Speak as posty.now. Never name the legal company, CUI, or VLN MOTORS.",
         "Follow the owner's freeform instructions exactly. Use trained site knowledge plus those instructions.",
         "If they ask price or whether there is a free slot on a date, do not invent hours. Send the booking/Mero/calendar URL in productUrl.",
         "Never invent prices, stock, or medical claims. Keep reply under 450 characters.",
@@ -94,7 +101,7 @@ export async function answerFromSite(input: {
         {
           role: "user",
           content: JSON.stringify({
-            business: input.knowledge.business,
+            business: publicAgentBrand({ business: input.knowledge.business }),
             vertical: input.knowledge.vertical,
             summary: input.knowledge.summary,
             products: input.knowledge.products,

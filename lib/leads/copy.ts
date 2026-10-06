@@ -6,10 +6,10 @@ export function agentCopy(locale: "ro" | "en") {
     commentInvite: ro
       ? "Salut! Am văzut mesajul. Scrie-mi te rog în privat ca să te pot ajuta."
       : "Hi! I saw your comment. Please message me privately so I can help.",
-    intro: (topic: string, termsUrl: string) =>
+    intro: (termsUrl: string) =>
       ro
-        ? `Bună ziua, sunt agentul posty.now pentru ${topic}. Am văzut mesajul. Dacă sunteți de acord cu termenii (${termsUrl}), răspundeți DA ca să vă ajut cu detalii de pe site.`
-        : `Hello, I am the posty.now agent for ${topic}. I saw your message. If you agree with the terms (${termsUrl}), reply YES and I will help with details from the site.`,
+        ? `Bună ziua, sunt agentul posty.now. Am văzut mesajul. Dacă sunteți de acord cu termenii (${termsUrl}), răspundeți DA ca să vă ajut cu detalii de pe site.`
+        : `Hello, I am the posty.now agent. I saw your message. If you agree with the terms (${termsUrl}), reply YES and I will help with details from the site.`,
     askMethod: ro
       ? "Prin ce metodă doriți să achiziționați? Credit sau aveți dumneavoastră banii?"
       : "How would you like to buy — credit, or do you already have the funds?",
