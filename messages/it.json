@@ -558,6 +558,7 @@
     "leadAgentSite": "Client website",
     "leadAgentTrain": "Train the agent",
     "leadAgentTraining": "Training…",
+    "leadAgentAlready": "Già addestrato",
     "leadAgentTrained": "Agent trained",
     "leadAgentEnable": "AI lead generation",
     "leadAgentDisable": "Turn off AI generation",

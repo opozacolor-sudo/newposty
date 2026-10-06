@@ -47,6 +47,7 @@ export default async function LeadsPage({
           site: t("leadAgentSite"),
           train: t("leadAgentTrain"),
           training: t("leadAgentTraining"),
+          already: t("leadAgentAlready"),
           trained: t("leadAgentTrained"),
           enable: t("leadAgentEnable"),
           disable: t("leadAgentDisable"),

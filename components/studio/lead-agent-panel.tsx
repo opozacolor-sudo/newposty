@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type CoachTurn = { role: "user" | "agent"; text: string };
 
@@ -24,6 +24,7 @@ export function LeadAgentPanel({
     site: string;
     train: string;
     training: string;
+    already: string;
     trained: string;
     enable: string;
     disable: string;
@@ -42,6 +43,15 @@ export function LeadAgentPanel({
   const [busy, setBusy] = useState<"train" | "enable" | "chat" | null>(null);
   const [error, setError] = useState("");
   const [turns, setTurns] = useState(coach);
+  const [isTrained, setIsTrained] = useState(trained);
+
+  useEffect(() => {
+    setIsTrained(trained);
+  }, [trained]);
+
+  useEffect(() => {
+    setTurns(coach);
+  }, [coach]);
 
   return (
     <section className="mt-6 rounded-2xl border border-neutral-200 p-4">
@@ -62,6 +72,7 @@ export function LeadAgentPanel({
             setError(labels.failed);
             return;
           }
+          setIsTrained(true);
           router.refresh();
         }}
       >
@@ -81,7 +92,7 @@ export function LeadAgentPanel({
           disabled={busy !== null}
           className="rounded-lg bg-[#1A1A1A] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
         >
-          {busy === "train" ? labels.training : labels.train}
+          {busy === "train" ? labels.training : isTrained ? labels.already : labels.train}
         </button>
       </form>
 
@@ -149,7 +160,7 @@ export function LeadAgentPanel({
       </div>
 
       <p className="mt-3 text-sm text-neutral-600">{labels.addon}</p>
-      {trained ? (
+      {isTrained ? (
         <p className="mt-2 text-sm text-neutral-700">
           {labels.trained}
           {business ? ` · ${business}` : ""}
@@ -160,12 +171,12 @@ export function LeadAgentPanel({
       )}
       <button
         type="button"
-        disabled={!trained || busy !== null}
+        disabled={!isTrained || busy !== null}
         className={`mt-3 rounded-lg px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 ${
           enabled ? "bg-neutral-200 text-neutral-800" : "bg-[#FF4713] text-white"
         }`}
         onClick={async () => {
-          if (!trained) return;
+          if (!isTrained) return;
           setBusy("enable");
           setError("");
           const response = await fetch("/api/leads/enable", {
