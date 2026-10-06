@@ -1,4 +1,4 @@
-import { COMPANY } from "@/lib/legal";
+import { leadConsentTermsUrl } from "@/lib/legal";
 import { answerFromSite } from "@/lib/leads/brain";
 import { agentCopy } from "@/lib/leads/copy";
 import { publicAgentBrand, type AgentKnowledge } from "@/lib/leads/knowledge";
@@ -32,7 +32,7 @@ export async function nextAgentReply(input: {
   push(thread, "user", inbound);
   const locale = localeFromText(thread.trigger_text || inbound);
   const copy = agentCopy(locale);
-  const termsUrl = `${COMPANY.site}/privacy`;
+  const termsUrl = leadConsentTermsUrl(locale);
   const knowledge = {
     ...(input.knowledge ?? {}),
     business: publicAgentBrand({

@@ -48,7 +48,7 @@ const ro: LegalPage[] = [
     label: "Termeni",
     title: "Termeni și condiții",
     description: "Contractul de utilizare a posty.now, încheiat cu VLN MOTORS SRL.",
-    updated: "Ultima actualizare: 22 septembrie 2026",
+    updated: "Ultima actualizare: 6 octombrie 2026",
     intro: [
       operatorRo(),
       "Acești termeni se aplică site-ului, listei de preînregistrare și studio-ului posty.now. Plățile, abonamentul și rambursările sunt detaliate în Condițiile de abonament și în Politica de anulare și rambursare. Prelucrarea datelor este în Politica de confidențialitate.",
@@ -58,7 +58,7 @@ const ro: LegalPage[] = [
         id: "service",
         heading: "1. Ce este serviciul",
         body: [
-          "posty.now este un studio în care conectezi rețele sociale și conturi de reclame, scrii sau dictezi ce vrei publicat, iar asistentul pregătește textul, ora și publicarea sau programarea. Poți vedea statistici și poți cere campanii plătite pe conturile de ads pe care le conectezi tu.",
+          "posty.now este un studio în care conectezi rețele sociale și conturi de reclame, scrii sau dictezi ce vrei publicat, iar asistentul pregătește textul, ora și publicarea sau programarea. Poți vedea statistici, mesaje și comentarii, poți antrena un agent de lead-uri pe un site public și poți cere campanii plătite pe conturile de ads pe care le conectezi tu.",
           "Conturile noi sunt închise până la 15 octombrie 2026. Până atunci poți lăsa un email pe lista de preînregistrare. Emailul de pe listă nu este un abonament și nu se plătește.",
         ],
       },
@@ -74,7 +74,7 @@ const ro: LegalPage[] = [
         id: "networks",
         heading: "3. Rețelele conectate",
         body: [
-          "Când conectezi Instagram, Facebook, TikTok, YouTube, LinkedIn, Pinterest, Google Business, Bluesky, Reddit sau un cont de ads, ne autorizezi să folosim conexiunea doar ca să facem ce ceri în studio: publicare, programare, statistici sau o campanie.",
+          "Când conectezi Instagram, Facebook, TikTok, YouTube, LinkedIn, Pinterest, Google Business, Bluesky, Reddit sau un cont de ads, ne autorizezi să folosim conexiunea doar ca să facem ce ceri în studio: publicare, programare, statistici, citirea mesajelor și a comentariilor, agentul de lead-uri de la punctul 5, sau o campanie.",
           "Tu respecți regulile fiecărei rețele. posty.now nu este Meta, Google, TikTok, LinkedIn, Pinterest sau celelalte rețele. Banii de reclamă îi plătești acelor rețele, din contul lor de ads. Nu sunt incluși în abonamentul către VLN MOTORS SRL.",
         ],
       },
@@ -88,15 +88,25 @@ const ro: LegalPage[] = [
         ],
       },
       {
+        id: "leads",
+        heading: "5. Agentul de lead-uri și acordul din chat",
+        body: [
+          "Poți antrena un agent pe paginile publice ale unui site (URL-ul pe care îl dai tu) și poți aprinde Generare lead-uri AI. Când e pornit, agentul citește mesajele și comentariile noi, primite după ce l-ai aprins, pe conturile de postări conectate. Nu scrie în conversațiile vechi și nu trimite mesaje la oameni care nu ți-au scris după pornire.",
+          "Agentul se prezintă ca agentul posty.now. Înainte să continue, trimite un link către acești termeni și cere acordul expres: răspunsul DA (sau YES). Fără DA nu cere telefon, email sau alte date de contact și nu trece persoana ca lead calificat.",
+          "Dacă persoana răspunde DA, este de acord ca VLN MOTORS SRL, prin posty.now, în numele paginii sau al contului către care a scris, să continue conversația, să folosească mesajul ei, să răspundă din paginile publice ale site-ului antrenat și să culeagă numele, telefonul și emailul pe care le lasă (și, dacă le scrie ea, date pentru un calcul preliminar, de exemplu metodă de plată sau venit), ca un om de la pagina aceea să o contacteze. Prelucrarea datelor este în Politica de confidențialitate. Poate refuza: nu răspunde DA, sau scrie NU.",
+          "Lead-ul (mesajul, datele de contact, transcrierea, statusul) rămâne în lista din studio, la clientul căruia îi e conectat contul. Tu ești responsabil să folosești această funcție conform regulilor rețelei și legii, inclusiv GDPR, față de oamenii care ți-au scris. Oprești generarea din același control din studio. Nu promitem vânzări, programări sau că persoana va răspunde.",
+        ],
+      },
+      {
         id: "use",
-        heading: "5. Utilizare interzisă",
+        heading: "6. Utilizare interzisă",
         body: [
           "Nu folosești serviciul pentru spam, fraudă, hărțuire sau alte fapte ilegale, pentru a ocoli limitele rețelelor, pentru conținut care încalcă drepturi de autor sau viața privată, ori ca să vinzi sau să împarți contul.",
         ],
       },
       {
         id: "pay",
-        heading: "6. Ce plătești și cui",
+        heading: "7. Ce plătești și cui",
         body: [
           `Contractul de plată este între tine și ${COMPANY.name}. Stripe este doar procesatorul: banii intra prin Stripe, apoi în contul firmei. Stripe nu este vânzătorul serviciului.`,
           `Abonamentul este pentru accesul la studio, ${price} EUR pe lună, după luna gratuită descrisă în Condițiile de abonament. Nu plătești ca să te pui pe lista de așteptare. Nu plătești către noi bugetul de reclame.`,
@@ -105,15 +115,15 @@ const ro: LegalPage[] = [
       },
       {
         id: "delete",
-        heading: "7. Ștergerea contului",
+        heading: "8. Ștergerea contului",
         body: [
-          "Din studio, în meniul contului, alegi Șterge cont și confirmi. Se deconectează rețelele, se șterge utilizatorul și datele live ale studio-ului (conversații, postări, fișiere încărcate). Dacă nu te poți autentifica, scrii de pe pagina de contact, de pe același email, că vrei ștergerea.",
+          "Din studio, în meniul contului, alegi Șterge cont și confirmi. Se deconectează rețelele, se șterge utilizatorul și datele live ale studio-ului (conversații, postări, fișiere încărcate, lead-uri). Dacă nu te poți autentifica, scrii de pe pagina de contact, de pe același email, că vrei ștergerea.",
           "Ștergerea contului nu șterge singură o plată deja făcută. Pentru bani, se aplică Politica de anulare și rambursare. Facturile emise se păstrează cât cere legea fiscală, chiar după ce contul de studio a dispărut.",
         ],
       },
       {
         id: "end",
-        heading: "8. Suspendare, lege, contact",
+        heading: "9. Suspendare, lege, contact",
         body: [
           "Poți opri utilizarea oricând. Putem suspenda accesul dacă încalci termenii sau dacă legea o cere.",
           "Nu excludem răspunderea pentru dol, culpă gravă sau pentru drepturile pe care legea nu permite să le limitezi, inclusiv drepturile consumatorului. În rest, răspunderea pentru o pretenție legată de serviciu este limitată la suma plătită către noi în ultimele 12 luni.",
@@ -129,7 +139,7 @@ const ro: LegalPage[] = [
     label: "Confidențialitate",
     title: "Politică de confidențialitate și GDPR",
     description: "Ce date prelucrează VLN MOTORS SRL pentru posty.now, de ce, și cum le ștergi.",
-    updated: "Ultima actualizare: 4 octombrie 2026",
+    updated: "Ultima actualizare: 6 octombrie 2026",
     intro: [
       `${operatorRo()} ${COMPANY.name} este operatorul datelor pentru posty.now.`,
       "Nu vindem date personale. Nu folosim datele tale ca să antrenăm un model de inteligență artificială.",
@@ -141,8 +151,9 @@ const ro: LegalPage[] = [
         body: [
           "Lista de preînregistrare: emailul și limba (română, engleză, germană, italiană, franceză sau spaniolă). Temei: pași înainte de contract și consimțământul dat când trimiți formularul. Scop: să te anunțăm la deschiderea din 15 octombrie 2026. Poți cere scoaterea de pe listă la adresa de contact.",
           "Cont: email, identificatorul de autentificare și hash-ul parolei, ținut de furnizorul de autentificare. Temei: contractul. Scop: să intri în studio.",
-          "Studio: mesajele din chat, fișierele încărcate (până la 50, maximum 100 MB fiecare), postările, programările, clienții Team (doar numele) și contul activ selectat. Temei: contractul. Scop: să publicăm, să programăm și să arătăm istoricul.",
-          "Rețele: identificatori și nume de conturi conectate, plus token-uri de acces necesare publicării. Temei: contractul. Scop: acțiunea pe care o ceri. Citim mesajele și comentariile de pe conturile conectate ca să detectăm interes, să răspundem (în privat la calificare, public doar ca să invităm conversația privată) și să salvăm lead-ul calificat, după acordul prin DA. Nu punem telefon, email sau salariu în comentarii publice.",
+          "Studio: mesajele din chat, fișierele încărcate (până la 50, maximum 100 MB fiecare), postările, programările, clienții Team (doar numele), contul activ selectat și lead-urile (mesaj, transcriere, nume, telefon, email, status). Temei: contractul. Scop: să publicăm, să programăm, să arătăm istoricul și lista de lead-uri.",
+          "Rețele: identificatori și nume de conturi conectate, plus token-uri de acces necesare publicării și citirii inbox-ului. Temei: contractul. Scop: acțiunea pe care o ceri. Citim mesajele și comentariile de pe conturile conectate ca să detectăm interes, să răspundem (în privat la calificare, public doar ca să invităm conversația privată) și să salvăm lead-ul calificat, după acordul expres prin DA / YES la Termenii și condițiile, trimis în chat. Nu punem telefon, email sau salariu în comentarii publice.",
+          "Persoana care scrie paginii: dacă răspunde DA, prelucrăm mesajul, numele, telefonul și emailul pe care le lasă, ca titularul contului din studio să o contacteze. Temei: consimțământul dat prin DA. Poate cere ștergerea la adresa de contact. Fără DA nu culegem datele de contact.",
           "Voce: browserul transformă vorbirea în text. Noi stocăm textul din mesaj, dacă îl trimiți. Nu stocăm audio.",
           "Plăți: Stripe procesează cardul. Noi păstrăm identificatorul de client Stripe, statusul plății, suma și data, ca să știm dacă abonamentul e activ și ca să emitem factura. Nu stocăm numărul complet al cardului. Temei: contractul și obligația legală contabilă.",
           "Contact: numele, emailul și mesajul trimis din formular. Temei: interes legitim / pași precontractuali, ca să răspundem.",
@@ -154,6 +165,7 @@ const ro: LegalPage[] = [
         body: [
           "Furnizor de hosting (Vercel), bază de date și autentificare (Supabase), plăți (Stripe), email tranzacțional (Resend), un furnizor de modele AI căruia îi trimitem mesajul ca să genereze textul, și un furnizor de publicare prin care pleacă postarea către rețeaua pe care ai conectat-o.",
           "Rețelele pe care le conectezi primesc conținutul pe care îl confirmi. Ele au propriile reguli.",
+          "Lead-ul calificat (nume, telefon, email, transcriere) este vizibil în studio titularului contului, la clientul selectat. Nu îl vindem.",
           "Putem divulga date dacă legea o cere (de exemplu o factură sau o solicitare a unei autorități).",
         ],
       },
@@ -162,7 +174,7 @@ const ro: LegalPage[] = [
         heading: "3. Cât timp",
         body: [
           "Emailul de pe listă stă până la lansare și anunț, sau până ceri ștergerea, oricare vine primul.",
-          "Datele de studio se șterg când ștergi contul: utilizatorul, conversațiile, postările din baza live și fișierele din stocare. Backup-urile criptate ale bazei se rotesc automat și nu sunt folosite ca prelucrare curentă.",
+          "Datele de studio se șterg când ștergi contul: utilizatorul, conversațiile, postările din baza live, fișierele din stocare și lead-urile. Backup-urile criptate ale bazei se rotesc automat și nu sunt folosite ca prelucrare curentă.",
           "Documentele contabile și de facturare se păstrează pe termenul prevăzut de legea fiscală din România, chiar dacă studio-ul a fost șters.",
         ],
       },
@@ -170,7 +182,7 @@ const ro: LegalPage[] = [
         id: "rights",
         heading: "4. Drepturile tale",
         body: [
-          "Poți cere acces, rectificare, ștergere, restricționare, opoziție și portabilitate, și poți retrage consimțământul pentru lista de preînregistrare. Ștergerea contului din studio este modul direct de a cere ștergerea datelor de studio.",
+          "Poți cere acces, rectificare, ștergere, restricționare, opoziție și portabilitate, și poți retrage consimțământul pentru lista de preînregistrare. Dacă ești persoana care a scris unei pagini și ai răspuns DA în chat, poți retrage acel acord și cere ștergerea lead-ului. Ștergerea contului din studio este modul direct de a cere ștergerea datelor de studio.",
           "Poți depune plângere la ANSPDCP (Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal).",
           `Cererile se trimit la ${COMPANY.email} sau din pagina de contact, de pe emailul contului. Răspundem în termenul din GDPR, de regulă o lună.`,
         ],
@@ -289,7 +301,7 @@ const ro: LegalPage[] = [
         id: "what",
         heading: "1. Ce cumperi",
         body: [
-          `Cumperi acces lunar la studio-ul posty.now, operat de ${COMPANY.name}: asistent (text și dictare), publicare și programare pe rețelele conectate, statistici, conectarea conturilor de reclame și, la Team, clienți pe același login.`,
+          `Cumperi acces lunar la studio-ul posty.now, operat de ${COMPANY.name}: asistent (text și dictare), publicare și programare pe rețelele conectate, statistici, inbox (mesaje și comentarii), agent de lead-uri antrenat pe un site, conectarea conturilor de reclame și, la Team, clienți pe același login.`,
           "Nu cumperi buget de reclamă, reach garantat sau un loc pe o rețea socială. Alea se plătesc, dacă vrei, direct rețelei, din contul ei de ads.",
           "Nu există, în acest abonament, tarif separat per client. Un cont, un abonament. Dacă vom introduce un preț per client, îl vei vedea pe pagina de plată înainte de orice sumă nouă, și abonamentul vechi nu se schimbă fără să ți se spună.",
         ],
@@ -330,7 +342,7 @@ const en: LegalPage[] = [
     label: "Terms",
     title: "Terms and conditions",
     description: "The contract for using posty.now, with VLN MOTORS SRL.",
-    updated: "Last updated: 22 September 2026",
+    updated: "Last updated: 6 October 2026",
     intro: [
       operatorEn(),
       "These terms cover the site, the pre-registration list, and the posty.now studio. Payment, the subscription, and refunds are in the Subscription terms and the Cancellation and refund policy. Personal data is in the Privacy policy.",
@@ -340,7 +352,7 @@ const en: LegalPage[] = [
         id: "service",
         heading: "1. The service",
         body: [
-          "posty.now is a studio where you connect social networks and ad accounts, type or dictate what you want published, and the assistant prepares the caption, the time, and the publish or schedule. You can read stats and ask for paid campaigns on ad accounts you connect yourself.",
+          "posty.now is a studio where you connect social networks and ad accounts, type or dictate what you want published, and the assistant prepares the caption, the time, and the publish or schedule. You can read stats, messages and comments, train a lead agent on a public website, and ask for paid campaigns on ad accounts you connect yourself.",
           "New accounts stay closed until 15 October 2026. Until then you can leave an email on the pre-registration list. That email is not a subscription and it is not paid.",
         ],
       },
@@ -356,7 +368,7 @@ const en: LegalPage[] = [
         id: "networks",
         heading: "3. Connected networks",
         body: [
-          "When you connect Instagram, Facebook, TikTok, YouTube, LinkedIn, Pinterest, Google Business, Bluesky, Reddit, or an ad account, you authorize us to use that connection only for what you ask in the studio: publishing, scheduling, stats, or a campaign.",
+          "When you connect Instagram, Facebook, TikTok, YouTube, LinkedIn, Pinterest, Google Business, Bluesky, Reddit, or an ad account, you authorize us to use that connection only for what you ask in the studio: publishing, scheduling, stats, reading messages and comments, the lead agent in section 5, or a campaign.",
           "You follow each network’s rules. posty.now is not Meta, Google, TikTok, LinkedIn, Pinterest, or the other networks. Ad spend is paid to those networks, from their ad account. It is not part of the subscription you pay VLN MOTORS SRL.",
         ],
       },
@@ -370,15 +382,25 @@ const en: LegalPage[] = [
         ],
       },
       {
+        id: "leads",
+        heading: "5. The lead agent and chat consent",
+        body: [
+          "You can train an agent on the public pages of a website (the URL you supply) and turn on AI lead generation. When it is on, the agent reads new messages and comments received after you turned it on, on the connected posting accounts. It does not write into old threads and it does not message people who did not write to you after it was turned on.",
+          "The agent introduces itself as the posty.now agent. Before it continues, it sends a link to these terms and asks for express consent: the reply YES (or DA). Without YES it does not ask for a phone number, email, or other contact details, and it does not mark the person as a qualified lead.",
+          "If the person replies YES, they agree that VLN MOTORS SRL, through posty.now, on behalf of the page or account they wrote to, may continue the conversation, use their message, answer from the public pages of the trained site, and collect the name, phone, and email they leave (and, if they write them, details for a preliminary check, for example payment method or income), so a person from that page can contact them. Personal data is described in the Privacy policy. They can refuse: they do not reply YES, or they write NO.",
+          "The lead (the message, contact details, transcript, status) stays in the studio list, on the client the account is connected to. You are responsible for using this feature in line with the network’s rules and the law, including GDPR, towards people who wrote to you. You turn generation off from the same control in the studio. We do not promise sales, bookings, or that the person will reply.",
+        ],
+      },
+      {
         id: "use",
-        heading: "5. Prohibited use",
+        heading: "6. Prohibited use",
         body: [
           "You do not use the service for spam, fraud, harassment, or other illegal acts, to bypass a network’s limits, for content that infringes copyright or privacy, or to sell or share the account.",
         ],
       },
       {
         id: "pay",
-        heading: "6. What you pay, and to whom",
+        heading: "7. What you pay, and to whom",
         body: [
           `The paid contract is between you and ${COMPANY.name}. Stripe only processes the payment: money moves through Stripe into the company’s account. Stripe is not the seller.`,
           `The subscription is access to the studio, EUR ${price} per month, after the free month described in the Subscription terms. The waitlist is free. You do not pay us your ad budget.`,
@@ -387,15 +409,15 @@ const en: LegalPage[] = [
       },
       {
         id: "delete",
-        heading: "7. Deleting the account",
+        heading: "8. Deleting the account",
         body: [
-          "In the studio, open the account menu, choose Delete account, and confirm. Networks are disconnected, and the user and live studio data are deleted (conversations, posts, uploaded files). If you cannot sign in, use the contact page from the same email and ask for deletion.",
+          "In the studio, open the account menu, choose Delete account, and confirm. Networks are disconnected, and the user and live studio data are deleted (conversations, posts, uploaded files, leads). If you cannot sign in, use the contact page from the same email and ask for deletion.",
           "Deleting the account does not by itself undo a payment already taken. Money follows the Cancellation and refund policy. Invoices are kept for as long as tax law requires, even after the studio account is gone.",
         ],
       },
       {
         id: "end",
-        heading: "8. Suspension, law, contact",
+        heading: "9. Suspension, law, contact",
         body: [
           "You can stop using the service at any time. We can suspend access if you break these terms or if the law requires it.",
           "We do not exclude liability for fraud, gross negligence, or rights the law does not allow us to limit, including consumer rights. Otherwise, liability for a claim about the service is limited to the amount you paid us in the last 12 months.",
@@ -411,7 +433,7 @@ const en: LegalPage[] = [
     label: "Privacy",
     title: "Privacy and GDPR policy",
     description: "What VLN MOTORS SRL processes for posty.now, why, and how you delete it.",
-    updated: "Last updated: 4 October 2026",
+    updated: "Last updated: 6 October 2026",
     intro: [
       `${operatorEn()} ${COMPANY.name} is the controller for posty.now.`,
       "We do not sell personal data. We do not use your data to train an AI model.",
@@ -423,8 +445,9 @@ const en: LegalPage[] = [
         body: [
           "Pre-registration list: email and language (Romanian, English, German, Italian, French or Spanish). Basis: steps before a contract, and the consent you give by submitting the form. Purpose: to tell you when we open on 15 October 2026. You can ask to be removed via the contact address.",
           "Account: email, auth identifier, and password hash, held by the auth provider. Basis: contract. Purpose: signing in.",
-          "Studio: chat messages, uploaded files (up to 50, 100 MB each), posts, schedules, Team clients (name only), and the selected client. Basis: contract. Purpose: publishing, scheduling, and history.",
-          "Networks: identifiers and names of connected accounts, plus the access tokens needed to publish. We read connected-account messages and comments to detect interest, reply (qualification in private; a public comment only invites a private message), and store a qualified lead after a YES consent. We do not put phone, email, or salary in public comments. Basis: contract. Purpose: the action you asked for.",
+          "Studio: chat messages, uploaded files (up to 50, 100 MB each), posts, schedules, Team clients (name only), the selected client, and leads (message, transcript, name, phone, email, status). Basis: contract. Purpose: publishing, scheduling, history, and the lead list.",
+          "Networks: identifiers and names of connected accounts, plus the access tokens needed to publish and to read the inbox. We read connected-account messages and comments to detect interest, reply (qualification in private; a public comment only invites a private message), and store a qualified lead after express YES / DA consent to the Terms and conditions, sent in chat. We do not put phone, email, or salary in public comments. Basis: contract. Purpose: the action you asked for.",
+          "The person who writes to the page: if they reply YES, we process the message and the name, phone, and email they leave, so the studio account holder can contact them. Basis: the consent given by YES. They can ask us to erase it via the contact address. Without YES we do not collect contact details.",
           "Voice: the browser turns speech into text. We store the message text if you send it. We do not store audio.",
           "Payments: Stripe processes the card. We keep the Stripe customer id, payment status, amount, and date, so we know the subscription is active and so we can invoice. We do not store the full card number. Basis: contract and legal accounting duty.",
           "Contact form: name, email, and message. Basis: legitimate interest or pre-contract steps, so we can reply.",
@@ -436,6 +459,7 @@ const en: LegalPage[] = [
         body: [
           "Hosting (Vercel), database and authentication (Supabase), payments (Stripe), transactional email (Resend), an AI-model provider that receives the chat message in order to draft text, and a publishing provider that sends the confirmed post to the network you connected.",
           "Networks you connect receive the content you confirm. They have their own rules.",
+          "A qualified lead (name, phone, email, transcript) is visible in the studio to the account holder, on the selected client. We do not sell it.",
           "We disclose data when the law requires it, for example an invoice or an authority request.",
         ],
       },
@@ -444,7 +468,7 @@ const en: LegalPage[] = [
         heading: "3. How long",
         body: [
           "A waitlist email stays until launch and the announcement, or until you ask us to delete it, whichever comes first.",
-          "Studio data is deleted when you delete the account: the user, conversations, live posts, and stored files. Encrypted database backups rotate on their own and are not used for day-to-day processing.",
+          "Studio data is deleted when you delete the account: the user, conversations, live posts, stored files, and leads. Encrypted database backups rotate on their own and are not used for day-to-day processing.",
           "Accounting and invoice records are kept for the period required by Romanian tax law, even if the studio was deleted.",
         ],
       },
@@ -452,7 +476,7 @@ const en: LegalPage[] = [
         id: "rights",
         heading: "4. Your rights",
         body: [
-          "You can ask for access, rectification, erasure, restriction, objection, and portability, and you can withdraw consent for the pre-registration list. Deleting the account in the studio is the direct way to erase studio data.",
+          "You can ask for access, rectification, erasure, restriction, objection, and portability, and you can withdraw consent for the pre-registration list. If you wrote to a page and replied YES in chat, you can withdraw that consent and ask us to erase the lead. Deleting the account in the studio is the direct way to erase studio data.",
           "You can complain to the ANSPDCP, the Romanian data-protection authority.",
           `Send requests to ${COMPANY.email} or through the contact page, from the account email. We reply within the GDPR period, usually one month.`,
         ],
@@ -571,7 +595,7 @@ const en: LegalPage[] = [
         id: "what",
         heading: "1. What you buy",
         body: [
-          `You buy monthly access to the posty.now studio, operated by ${COMPANY.name}: the assistant (text and dictation), publishing and scheduling on connected networks, stats, connecting ad accounts, and, on Team, clients on the same login.`,
+          `You buy monthly access to the posty.now studio, operated by ${COMPANY.name}: the assistant (text and dictation), publishing and scheduling on connected networks, stats, inbox (messages and comments), a lead agent trained on a website, connecting ad accounts, and, on Team, clients on the same login.`,
           "You are not buying ad budget, guaranteed reach, or a place on a social network. Those are paid, if you want them, directly to the network, from its ad account.",
           "This subscription has no separate per-client fee. One account, one subscription. If we introduce a per-client price, you will see it on the payment page before any new amount, and the old subscription does not change without notice.",
         ],
@@ -604,6 +628,11 @@ const en: LegalPage[] = [
     ],
   },
 ];
+
+export function leadConsentTermsUrl(locale: "ro" | "en") {
+  const path = locale === "ro" ? "/ro/terms#leads" : "/en/terms#leads";
+  return `${COMPANY.site}${path}`;
+}
 
 export function legalPages(locale: string) {
   return locale === "ro" ? ro : en;
