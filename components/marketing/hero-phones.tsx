@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
+import { AdsScene } from "@/components/marketing/ads-scene";
 import { ContentScene } from "@/components/marketing/content-scene";
 import { NetworkScene } from "@/components/marketing/network-scene";
 
@@ -31,7 +32,18 @@ const CARDS = [
     ],
     closer: "screenContentCloser",
   },
-  { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-ads-hud.png" },
+  {
+    kicker: "screenAdsKicker",
+    title: "screenAds",
+    src: "/marketing/phone-ads-hud.png",
+    popupTitle: "screenAdsPopupTitle",
+    sections: [
+      { body: "screenAdsViews", scene: "views", label: "screenAdsViewsLabel" },
+      { body: "screenAdsTraffic", scene: "traffic", label: "screenAdsTrafficLabel" },
+      { body: "screenAdsLeads", scene: "leads", label: "screenAdsLeadsLabel" },
+    ],
+    closer: "screenAdsCloser",
+  },
   { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-chat-hud.png" },
   { kicker: "screenLeadsKicker", title: "screenLeads", src: "/marketing/phone-leads-hud.png" },
   { kicker: "screenAnalyticsKicker", title: "screenAnalytics", src: "/marketing/phone-analytics-hud.png" },
@@ -205,8 +217,10 @@ export function HeroPhones() {
                         {"scene" in section ? (
                           section.scene === "social" || section.scene === "ads" ? (
                             <NetworkScene kind={section.scene} label={t(section.label)} />
-                          ) : (
+                          ) : section.scene === "make" || section.scene === "plan" ? (
                             <ContentScene kind={section.scene} label={t(section.label)} />
+                          ) : (
+                            <AdsScene kind={section.scene} label={t(section.label)} />
                           )
                         ) : (
                           <div className="relative mx-auto mt-10 h-[min(58vw,26rem)] w-full max-w-[28rem]">
