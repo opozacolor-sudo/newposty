@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
+import { NetworkScene } from "@/components/marketing/network-scene";
 
 const CARDS = [
   {
@@ -13,8 +14,8 @@ const CARDS = [
     src: "/marketing/phone-networks-hud.png",
     popupTitle: "screenNetworksPopupTitle",
     sections: [
-      { body: "screenNetworksSocial", src: "/marketing/phone-networks-hud.png" },
-      { body: "screenNetworksAds", src: "/marketing/phone-ads-hud.png" },
+      { body: "screenNetworksSocial", scene: "social", label: "screenNetworksSocialLabel" },
+      { body: "screenNetworksAds", scene: "ads", label: "screenNetworksAdsLabel" },
     ],
   },
   { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-content-hud.png" },
@@ -187,9 +188,13 @@ export function HeroPhones() {
                         <p className="mx-auto max-w-[38rem] px-7 pt-10 text-[16px] leading-7 tracking-normal text-[#6e6e73] sm:px-16 sm:pt-14 sm:text-[19px] sm:leading-[1.47]">
                           {t(section.body)}
                         </p>
-                        <div className="relative mx-auto mt-10 h-[min(58vw,26rem)] w-full max-w-[28rem]">
-                          <Image src={section.src} alt="" fill className="object-contain object-bottom" sizes="28rem" />
-                        </div>
+                        {"scene" in section ? (
+                          <NetworkScene kind={section.scene} label={t(section.label)} />
+                        ) : (
+                          <div className="relative mx-auto mt-10 h-[min(58vw,26rem)] w-full max-w-[28rem]">
+                            <Image src={section.src} alt="" fill className="object-contain object-bottom" sizes="28rem" />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
