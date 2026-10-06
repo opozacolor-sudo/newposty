@@ -1,0 +1,10 @@
+---
+description: User-facing copy always ships in all six app locales.
+alwaysApply: true
+---
+
+# All six locales
+
+posty.now locales are `en`, `ro`, `de`, `it`, `fr`, `es`. Any user-facing change — UI strings, legal pages, the user guide, emails, assistant/lead-agent copy, errors — must be written in all six. Do not ship Romanian and English and leave the rest on an English fallback.
+
+Match existing nav labels in that locale. Do not mention Zernio in the UI.

@@ -1,4 +1,12 @@
 import { REFUND_MONTHLY_REFERENCE_EUR, WITHDRAWAL_DAYS } from "@/lib/billing";
+import { legalPagesDe } from "@/lib/legal/de";
+import { legalPagesEs } from "@/lib/legal/es";
+import { legalPagesFr } from "@/lib/legal/fr";
+import { legalPagesIt } from "@/lib/legal/it";
+import type { LegalPage } from "@/lib/legal-types";
+import { isAppLocale } from "@/lib/locales";
+
+export type { LegalCompany, LegalPage, LegalPageId, LegalSection } from "@/lib/legal-types";
 
 export const COMPANY = {
   name: "VLN MOTORS SRL",
@@ -17,18 +25,6 @@ export const LEGAL_LINKS = [
   { href: "/refunds", id: "refunds" },
   { href: "/subscription", id: "subscription" },
 ] as const;
-
-export type LegalSection = { id: string; heading: string; body: string[] };
-export type LegalPage = {
-  id: (typeof LEGAL_LINKS)[number]["id"];
-  href: string;
-  label: string;
-  title: string;
-  description: string;
-  updated: string;
-  intro: string[];
-  sections: LegalSection[];
-};
 
 const price = REFUND_MONTHLY_REFERENCE_EUR;
 const days = WITHDRAWAL_DAYS;
@@ -629,13 +625,23 @@ const en: LegalPage[] = [
   },
 ];
 
-export function leadConsentTermsUrl(locale: "ro" | "en") {
-  const path = locale === "ro" ? "/ro/terms#leads" : "/en/terms#leads";
-  return `${COMPANY.site}${path}`;
+const de = legalPagesDe(COMPANY);
+const fr = legalPagesFr(COMPANY);
+const it = legalPagesIt(COMPANY);
+const es = legalPagesEs(COMPANY);
+
+export function leadConsentTermsUrl(locale: string) {
+  const loc = isAppLocale(locale) ? locale : "en";
+  return `${COMPANY.site}/${loc}/terms#leads`;
 }
 
 export function legalPages(locale: string) {
-  return locale === "ro" ? ro : en;
+  if (locale === "ro") return ro;
+  if (locale === "de") return de;
+  if (locale === "fr") return fr;
+  if (locale === "it") return it;
+  if (locale === "es") return es;
+  return en;
 }
 
 export function legalPage(locale: string, id: LegalPage["id"]) {

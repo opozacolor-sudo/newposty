@@ -10,6 +10,9 @@ import {
 } from "@/lib/leads/knowledge";
 import { publicHttpUrl } from "@/lib/site-brief";
 import type { LeadThread } from "@/lib/leads/types";
+import { chatLanguageName } from "@/lib/locales";
+import type { AppLocale } from "@/lib/locales";
+import { isAppLocale } from "@/lib/locales";
 
 export type BrainResult = {
   reply: string;
@@ -39,7 +42,7 @@ async function livePage(url: string | null): Promise<KnowledgePage | null> {
   }
 }
 
-function fallbackReply(knowledge: AgentKnowledge, inbound: string, locale: "ro" | "en"): BrainResult {
+function fallbackReply(knowledge: AgentKnowledge, inbound: string, locale: AppLocale): BrainResult {
   const page = matchKnowledgePage(knowledge, inbound);
   const product = knowledge.products?.find((item) =>
     inbound.toLocaleLowerCase("ro").includes((item.name || "").toLocaleLowerCase("ro").slice(0, 12)),
@@ -49,20 +52,49 @@ function fallbackReply(knowledge: AgentKnowledge, inbound: string, locale: "ro" 
     : product?.url || page?.url || knowledge.booking?.url || null;
   const price = product?.price || page?.price;
   const how = product?.howTo;
-  const ro = locale === "ro";
+  const priceLine = {
+    ro: `Preț: ${price}.`,
+    en: `Price: ${price}.`,
+    de: `Preis: ${price}.`,
+    fr: `Prix : ${price}.`,
+    it: `Prezzo: ${price}.`,
+    es: `Precio: ${price}.`,
+  }[locale];
+  const howLine = {
+    ro: `Aplicare: ${how}`,
+    en: `How to use: ${how}`,
+    de: `Anwendung: ${how}`,
+    fr: `Utilisation : ${how}`,
+    it: `Come si usa: ${how}`,
+    es: `Cómo usarlo: ${how}`,
+  }[locale];
+  const urlLine = {
+    ro: `Dacă vrei să cumperi sau să rezervi: ${url}`,
+    en: `If you want to buy or book: ${url}`,
+    de: `Wenn Sie kaufen oder buchen möchten: ${url}`,
+    fr: `Si vous voulez acheter ou réserver : ${url}`,
+    it: `Se volete comprare o prenotare: ${url}`,
+    es: `Si queréis comprar o reservar: ${url}`,
+  }[locale];
+  const contactLine = {
+    ro: "Dacă vrei, lasă numele, telefonul și emailul ca un coleg să te contacteze.",
+    en: "If you want, leave your name, phone, and email so a colleague can contact you.",
+    de: "Wenn Sie möchten, hinterlassen Sie Name, Telefon und E-Mail, damit ein Kollege Sie kontaktiert.",
+    fr: "Si vous voulez, laissez nom, téléphone et e-mail pour qu’un collègue vous contacte.",
+    it: "Se volete, lasciate nome, telefono ed email così un collega vi contatta.",
+    es: "Si queréis, dejad nombre, teléfono y correo para que un compañero os contacte.",
+  }[locale];
   const parts = [
     knowledge.summary ? knowledge.summary.slice(0, 180) : null,
-    price ? (ro ? `Preț: ${price}.` : `Price: ${price}.`) : null,
-    how ? (ro ? `Aplicare: ${how}` : `How to use: ${how}`) : null,
-    url ? (ro ? `Dacă vrei să cumperi sau să rezervi: ${url}` : `If you want to buy or book: ${url}`) : null,
-    ro
-      ? "Dacă vrei, lasă numele, telefonul și emailul ca un coleg să te contacteze."
-      : "If you want, leave your name, phone, and email so a colleague can contact you.",
+    price ? priceLine : null,
+    how ? howLine : null,
+    url ? urlLine : null,
+    contactLine,
   ].filter(Boolean);
   return {
     reply: parts.join(" ").slice(0, 700),
     productUrl: url,
-    askContact: /cumpar|cumpăr|rezerv|vreau|buy|book|order/i.test(inbound),
+    askContact: /cumpar|cumpăr|rezerv|vreau|buy|book|order|kaufen|acheter|comprar|prenot/i.test(inbound),
   };
 }
 
@@ -70,11 +102,12 @@ export async function answerFromSite(input: {
   thread: LeadThread;
   inbound: string;
   knowledge: AgentKnowledge;
-  locale: "ro" | "en";
+  locale: string;
 }): Promise<BrainResult> {
+  const locale = isAppLocale(input.locale) ? input.locale : "en";
   const matched = matchKnowledgePage(input.knowledge, input.inbound);
   const live = await livePage(matched?.url ?? input.knowledge.pages?.[0]?.url ?? null);
-  const fallback = fallbackReply(input.knowledge, input.inbound, input.locale);
+  const fallback = fallbackReply(input.knowledge, input.inbound, locale);
   let apiKey = "";
   try {
     apiKey = getAnthropicApiKey();
@@ -90,7 +123,7 @@ export async function answerFromSite(input: {
       max_tokens: 350,
       system: [
         "You are the posty.now agent, answering a private DM.",
-        `Language: ${input.locale === "ro" ? "Romanian" : "English"}.`,
+        `Language: ${chatLanguageName(locale)}.`,
         "Speak as posty.now. Never name the legal company, CUI, or VLN MOTORS.",
         "Follow the owner's freeform instructions exactly. Use trained site knowledge plus those instructions.",
         "If they ask price or whether there is a free slot on a date, do not invent hours. Send the booking/Mero/calendar URL in productUrl.",

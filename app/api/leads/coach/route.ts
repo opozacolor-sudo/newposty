@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadWorkspace } from "@/lib/clients";
 import { absorbOwnerBrief, coachReply } from "@/lib/leads/coach";
+import { localeFromLeadText } from "@/lib/leads/locale";
 import { loadLeadAgent, saveAgentKnowledge } from "@/lib/leads/store";
 import { createServerSupabase, getRequestAuth } from "@/lib/supabase/server";
 
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
   const supabase = await createServerSupabase();
   const workspace = await loadWorkspace(supabase, user.id);
   const existing = await loadLeadAgent(supabase, user.id, workspace.clientId);
-  const locale = /[ăâîșț]|dumneavoastră|pret|preț|liber|program/i.test(message) ? "ro" : "en";
+  const locale = localeFromLeadText(message);
   const nextKnowledge = absorbOwnerBrief(existing?.knowledge ?? {}, message);
   const reply = await coachReply(nextKnowledge, message, locale);
   nextKnowledge.coach = [

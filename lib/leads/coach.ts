@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getAnthropicApiKey } from "@/lib/env";
 import { firstPublicUrlInText, publicHttpUrl } from "@/lib/site-brief";
 import type { AgentKnowledge, CoachTurn } from "@/lib/leads/knowledge";
+import { chatLanguageName, isAppLocale } from "@/lib/locales";
 
 const BOOKING_HOST = /mero|calend|book|rezerv|program|appoint/i;
 
@@ -42,16 +43,29 @@ export function absorbOwnerBrief(knowledge: AgentKnowledge, message: string): Ag
   };
 }
 
-export async function coachReply(knowledge: AgentKnowledge, message: string, locale: "ro" | "en") {
+export async function coachReply(knowledge: AgentKnowledge, message: string, locale: string) {
+  const loc = isAppLocale(locale) ? locale : "en";
   const booking = knowledge.booking?.url;
-  const fallback =
-    locale === "ro"
-      ? booking
-        ? `Am notat. Când întreabă de preț sau dacă ai liber pe o dată, îi dau link-ul de programare și notăm click-ul.`
-        : `Am notat cum vrei să decurgă. Dacă ai un link de calendar (Mero sau altul), pune-l aici ca să-l dau la programare.`
-      : booking
-        ? `Noted. When they ask about price or a free slot, I will send the booking link and we will record the click.`
-        : `Noted. If you have a calendar link (Mero or similar), send it here so I can use it for bookings.`;
+  const fallback = {
+    ro: booking
+      ? `Am notat. Când întreabă de preț sau dacă ai liber pe o dată, îi dau link-ul de programare și notăm click-ul.`
+      : `Am notat cum vrei să decurgă. Dacă ai un link de calendar (Mero sau altul), pune-l aici ca să-l dau la programare.`,
+    en: booking
+      ? `Noted. When they ask about price or a free slot, I will send the booking link and we will record the click.`
+      : `Noted. If you have a calendar link (Mero or similar), send it here so I can use it for bookings.`,
+    de: booking
+      ? `Notiert. Wenn sie nach Preis oder einem freien Termin fragen, sende ich den Buchungslink und wir erfassen den Klick.`
+      : `Notiert. Wenn du einen Kalenderlink hast (Mero oder ähnlich), schick ihn hier, damit ich ihn für Buchungen nutze.`,
+    fr: booking
+      ? `Noté. Quand ils demandent le prix ou un créneau libre, j’envoie le lien de réservation et on enregistre le clic.`
+      : `Noté. Si tu as un lien de calendrier (Mero ou autre), envoie-le ici pour que je l’utilise pour les réservations.`,
+    it: booking
+      ? `Segnato. Quando chiedono il prezzo o uno slot libero, invio il link di prenotazione e registriamo il clic.`
+      : `Segnato. Se hai un link di calendario (Mero o simile), mettilo qui così lo uso per le prenotazioni.`,
+    es: booking
+      ? `Anotado. Cuando pregunten el precio o un hueco libre, envío el enlace de reserva y registramos el clic.`
+      : `Anotado. Si tienes un enlace de calendario (Mero u otro), ponlo aquí para usarlo en las reservas.`,
+  }[loc];
 
   let apiKey = "";
   try {
@@ -69,7 +83,7 @@ export async function coachReply(knowledge: AgentKnowledge, message: string, loc
       messages: [
         {
           role: "user",
-          content: `Language: ${locale === "ro" ? "Romanian" : "English"}.\nOwner: ${message}\nBooking link: ${booking || "none"}\nPrior instructions: ${knowledge.instructions || ""}`,
+          content: `Language: ${chatLanguageName(loc)}.\nOwner: ${message}\nBooking link: ${booking || "none"}\nPrior instructions: ${knowledge.instructions || ""}`,
         },
       ],
     });

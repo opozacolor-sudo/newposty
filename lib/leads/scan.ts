@@ -1,4 +1,5 @@
 import { agentCopy } from "@/lib/leads/copy";
+import { localeFromLeadText } from "@/lib/leads/locale";
 import { nextAgentReply } from "@/lib/leads/qualify";
 import { isAfterListenFrom, isInboundLeadMessage, isNewLeadInbound } from "@/lib/leads/scan-rules";
 import { syncAdLeads } from "@/lib/leads/ads";
@@ -334,7 +335,7 @@ async function handleComment(input: {
   });
   if (existing) return 0;
 
-  const locale = /[ăâîșț]|pret|preț|valabil|vreau|cât/i.test(text) ? "ro" : "ro";
+  const locale = localeFromLeadText(text);
   const invite = agentCopy(locale).commentInvite;
   await replyToComment({
     postId: input.postId,

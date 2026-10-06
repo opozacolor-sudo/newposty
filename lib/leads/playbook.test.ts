@@ -35,7 +35,14 @@ test("below product price is not eligible", () => {
 test("parses consent, method, income, and contact", () => {
   assert.equal(parseConsent("DA"), true);
   assert.equal(parseConsent("yes"), true);
+  assert.equal(parseConsent("ja"), true);
+  assert.equal(parseConsent("oui"), true);
+  assert.equal(parseConsent("sì"), true);
+  assert.equal(parseConsent("sí"), true);
   assert.equal(parseConsent("nu"), false);
+  assert.equal(parseConsent("nein"), false);
+  assert.equal(parseConsent("non"), false);
+  assert.equal(parseConsent("maybe later"), null);
   assert.equal(parsePurchaseMethod("pe credit"), "credit");
   assert.equal(parsePurchaseMethod("am banii"), "cash");
   assert.deepEqual(parseMoneyAndMonths("lucrez de 12 luni, salariu 8000"), {

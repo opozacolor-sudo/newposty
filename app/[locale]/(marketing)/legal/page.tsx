@@ -9,8 +9,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const title = locale === "ro" ? "Documente legale" : "Legal";
-  return { title, description: COMPANY.name };
+  const t = await getTranslations({ locale, namespace: "LegalIndex" });
+  return { title: t("title"), description: COMPANY.name };
 }
 
 export default async function LegalIndexPage({ params }: { params: Promise<{ locale: string }> }) {

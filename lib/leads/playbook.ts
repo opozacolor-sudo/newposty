@@ -33,10 +33,14 @@ export function qualifyAutoCredit(input: {
   };
 }
 
-export function parseConsent(text: string) {
-  const lower = text.toLocaleLowerCase("ro");
-  if (/\b(nu|no|refuz)\b/.test(lower)) return false;
-  return /\b(da|yes|ok|okay|acord|sunt de acord|agree)\b/.test(lower);
+export function parseConsent(text: string): boolean | null {
+  const lower = text.toLocaleLowerCase("en");
+  const trimmed = lower.replace(/[!.?,-]/g, " ").replace(/\s+/g, " ").trim();
+  if (/^(nu|no|nein|non|refuz|refuse)$/.test(trimmed)) return false;
+  if (/^(da|yes|ja|oui|s[iìí]|ok|okay|acord|agree)$/.test(trimmed)) return true;
+  if (/\b(nu|no|nein|non|refuz|refuse)\b/.test(lower)) return false;
+  if (/\b(da|yes|ja|oui|s[ìí]|ok|okay|acord|agree)\b/.test(lower)) return true;
+  return null;
 }
 
 export function parsePurchaseMethod(text: string): "credit" | "cash" | null {

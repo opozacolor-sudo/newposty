@@ -2,6 +2,7 @@ import { leadConsentTermsUrl } from "@/lib/legal";
 import { answerFromSite } from "@/lib/leads/brain";
 import { agentCopy } from "@/lib/leads/copy";
 import { publicAgentBrand, type AgentKnowledge } from "@/lib/leads/knowledge";
+import { localeFromLeadText } from "@/lib/leads/locale";
 import {
   parseConsent,
   parseContact,
@@ -11,10 +12,6 @@ import {
   type LeadPlaybook,
 } from "@/lib/leads/playbook";
 import type { LeadStage, LeadThread, LeadTranscriptItem } from "@/lib/leads/types";
-
-function localeFromText(text: string): "ro" | "en" {
-  return /[ăâîșț]|dumneavoastra|dumneavoastră|pret|preț|valabil/i.test(text) ? "ro" : /[a-z]/i.test(text) && !/[ăâîșț]/i.test(text) ? "en" : "ro";
-}
 
 function push(thread: LeadThread, role: LeadTranscriptItem["role"], text: string) {
   thread.transcript = [...thread.transcript, { role, text, at: new Date().toISOString() }];
@@ -30,7 +27,7 @@ export async function nextAgentReply(input: {
   const inbound = input.inbound.trim();
   if (!inbound) return { thread, reply: null };
   push(thread, "user", inbound);
-  const locale = localeFromText(thread.trigger_text || inbound);
+  const locale = localeFromLeadText(thread.trigger_text || inbound);
   const copy = agentCopy(locale);
   const termsUrl = leadConsentTermsUrl(locale);
   const knowledge = {
@@ -63,9 +60,7 @@ export async function nextAgentReply(input: {
 
   if (thread.stage === "await_consent") {
     const ok = parseConsent(inbound);
-    if (ok === false && /\b(nu|no)\b/i.test(inbound)) {
-      return send("dismissed", copy.needConsent);
-    }
+    if (ok === false) return send("dismissed", copy.needConsent);
     if (!ok) return send("await_consent", copy.needConsent);
     return help("helping");
   }
