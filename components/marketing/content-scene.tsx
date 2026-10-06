@@ -63,18 +63,19 @@ function Chip({ icon, text }: { icon: ReactNode; text: string }) {
 }
 
 function ResultTile({ kind, caption }: { kind: "image" | "video"; caption: string }) {
+  const src = kind === "image" ? "/marketing/content-result-image.jpg" : "/marketing/content-result-video.jpg";
   return (
     <div className="overflow-hidden rounded-[1.1rem] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
       <div className="relative aspect-[4/3] bg-[#ececef]">
-        {kind === "image" ? (
-          <div className="absolute inset-4 rounded-[0.85rem] bg-[linear-gradient(135deg,#f4d0b5_0%,#e8a07a_45%,#c56b4a_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]" />
-        ) : (
-          <>
-            <div className="absolute inset-4 rounded-[0.85rem] bg-[#1d1d1f]" />
-            <span className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/95 shadow-sm" />
-            <span className="absolute left-[calc(50%+1px)] top-1/2 -translate-y-1/2 border-y-[6px] border-l-[10px] border-y-transparent border-l-[#1d1d1f]" />
-          </>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        {kind === "video" ? (
+          <span className="absolute inset-0 flex items-center justify-center bg-black/20">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-sm">
+              <span className="ml-0.5 border-y-[6px] border-l-[10px] border-y-transparent border-l-[#1d1d1f]" />
+            </span>
+          </span>
+        ) : null}
       </div>
       <p className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium text-[#1d1d1f]">
         <ImageIcon size={13} strokeWidth={2} className="text-[#86868b]" />
