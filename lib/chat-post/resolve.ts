@@ -173,14 +173,15 @@ export async function resolveCreateActions(input: {
       requested: action.platforms ?? [],
       excluded: action.excluded_platforms ?? [],
       connectedPlatforms,
-      disabledPlatforms: ["twitter"],
+      disabledPlatforms: connectedPlatforms.filter((platform) => isConnectDisabled(platform)),
     });
     excluded_platforms.push(...selection.excludedIds);
     if (selection.disabledRequested.length > 0) {
+      const names = selection.disabledRequested.map((id) => platformLabel(id)).join(", ");
       warnings.push(
         input.locale === "ro"
-          ? "X (Twitter) nu e disponibil momentan."
-          : "X (Twitter) is not available yet.",
+          ? `${names} nu e disponibil momentan.`
+          : `${names} is not available yet.`,
       );
     }
 
@@ -194,12 +195,13 @@ export async function resolveCreateActions(input: {
 
     if (!selection.wantsAll && selection.platforms.length === 0) {
       if (selection.disabledRequested.length > 0) {
+        const names = selection.disabledRequested.map((id) => platformLabel(id)).join(", ");
         return {
           ok: false,
           error:
             input.locale === "ro"
-              ? "X (Twitter) nu e disponibil momentan."
-              : "X (Twitter) is not available yet.",
+              ? `${names} nu e disponibil momentan.`
+              : `${names} is not available yet.`,
         };
       }
       missing.add("platform");

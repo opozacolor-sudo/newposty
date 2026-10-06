@@ -501,11 +501,11 @@ export const FEATURES: FeaturePage[] = [
       navBody: "Describe the campaign. Posty sets it up on the ad account.",
       metaTitle: "Ads — posty.now",
       metaDescription:
-        "Connect Meta, Google, LinkedIn, TikTok, Pinterest, or OpenAI ads and brief the campaign in chat. X Ads is coming soon.",
+        "Connect Meta, Google, LinkedIn, TikTok, Pinterest, X, or OpenAI ads and brief the campaign in chat.",
       kicker: "Features",
       title: "Say the offer. The ad account does the reach.",
       subtitle:
-        "Posts are organic. Ads pay to be seen. They connect separately, under Accounts → Ads: Meta, Google, LinkedIn, TikTok, Pinterest, and OpenAI. X Ads is coming soon. An ad account does not publish into the feed.",
+        "Posts are organic. Ads pay to be seen. They connect separately, under Accounts → Ads: Meta, Google, LinkedIn, TikTok, Pinterest, X, and OpenAI. An ad account does not publish into the feed.",
       features: [
         {
           title: "Boost, or a new campaign",
@@ -522,7 +522,7 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "What each network is actually for",
       batchBody:
-        "Meta runs full campaigns and can boost an existing post, with custom and lookalike audiences. Google is Search and Display, not a boosted social post. LinkedIn covers image, video, carousel, and more, and can boost. TikTok is video campaigns and Spark Ads. Pinterest promotes Pins. OpenAI ads are static cards inside ChatGPT, image only, for eligible businesses in the US, Canada, Australia, and New Zealand.",
+        "Meta runs full campaigns and can boost an existing post, with custom and lookalike audiences. Google is Search and Display, not a boosted social post. LinkedIn covers image, video, carousel, and more, and can boost. TikTok is video campaigns and Spark Ads. Pinterest promotes Pins. X Ads runs awareness and traffic. OpenAI ads are static cards inside ChatGPT, image only, for eligible businesses in the US, Canada, Australia, and New Zealand.",
       examplesTitle: "You can say",
       examples: [
         "Promote this Instagram post for the weekend, people nearby, a small budget.",
@@ -555,11 +555,11 @@ export const FEATURES: FeaturePage[] = [
       navBody: "Descrii campania. Posty o pune pe contul de ads.",
       metaTitle: "Reclame — posty.now",
       metaDescription:
-        "Conectezi Meta, Google, LinkedIn, TikTok, Pinterest sau OpenAI Ads și dai brief-ul în chat. X Ads e în curând.",
+        "Conectezi Meta, Google, LinkedIn, TikTok, Pinterest, X sau OpenAI Ads și dai brief-ul în chat.",
       kicker: "Funcții",
       title: "Spui oferta. Contul de ads face reach-ul.",
       subtitle:
-        "Postările sunt organice. Reclamele plătesc ca să fie văzute. Se conectează separat, la Conturi → Promovări: Meta, Google, LinkedIn, TikTok, Pinterest și OpenAI. X Ads e în curând. Un cont de ads nu publică în feed.",
+        "Postările sunt organice. Reclamele plătesc ca să fie văzute. Se conectează separat, la Conturi → Promovări: Meta, Google, LinkedIn, TikTok, Pinterest, X și OpenAI. Un cont de ads nu publică în feed.",
       features: [
         {
           title: "Boost, sau o campanie nouă",
@@ -576,7 +576,7 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "La ce e fiecare rețea, de fapt",
       batchBody:
-        "Meta face campanii complete și poate da boost unei postări existente, cu audiențe custom și lookalike. Google e Search și Display, nu un boost de postare socială. LinkedIn acoperă imagine, video, carusel și altele, și poate da boost. TikTok e campanii video și Spark Ads. Pinterest promovează Pinuri. Reclamele OpenAI sunt carduri statice în ChatGPT, doar imagine, pentru business-uri eligibile din SUA, Canada, Australia și Noua Zeelandă.",
+        "Meta face campanii complete și poate da boost unei postări existente, cu audiențe custom și lookalike. Google e Search și Display, nu un boost de postare socială. LinkedIn acoperă imagine, video, carusel și altele, și poate da boost. TikTok e campanii video și Spark Ads. Pinterest promovează Pinuri. X Ads face awareness și traffic. Reclamele OpenAI sunt carduri statice în ChatGPT, doar imagine, pentru business-uri eligibile din SUA, Canada, Australia și Noua Zeelandă.",
       examplesTitle: "Poți spune",
       examples: [
         "Promovează postarea asta de Instagram pentru weekend, oameni din zonă, buget mic.",

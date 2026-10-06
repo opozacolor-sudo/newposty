@@ -4,11 +4,11 @@ import { getAdsPlatform, type AdsPlatformId } from "@/lib/platforms";
 export const AD_OBJECTIVES = [
   {
     id: "views",
-    platforms: ["metaads", "tiktokads", "linkedinads", "pinterestads"],
+    platforms: ["metaads", "tiktokads", "linkedinads", "pinterestads", "xads"],
   },
   {
     id: "traffic",
-    platforms: ["googleads", "metaads", "linkedinads", "pinterestads", "openaiads"],
+    platforms: ["googleads", "metaads", "linkedinads", "pinterestads", "openaiads", "xads"],
   },
   {
     id: "leads",

@@ -259,9 +259,9 @@ export function isConnectPlatformId(value: string): value is ConnectPlatformId {
   return isPlatformId(value) || isAdsPlatformId(value);
 }
 
-/** X/Twitter posting and X Ads are paused (extra provider cost). */
-export function isConnectDisabled(platform: string) {
-  return platform === "twitter" || platform === "xads";
+/** Reserved for pausing a network in the connect UI without deleting it. */
+export function isConnectDisabled(_platform: string) {
+  return false;
 }
 
 export function getAdsPlatform(id: string) {

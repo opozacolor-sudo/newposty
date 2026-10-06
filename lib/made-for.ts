@@ -68,11 +68,11 @@ export const MADE_FOR: MadeForPage[] = [
         "Drop in up to 50 photos or videos at once. Posty lines them up day by day, cross-platform, with the right format: Instagram stills go to Feed, video can go to Reels, TikTok takes photos and video.",
       adsTitle: "When a post should travel further",
       adsBody:
-        "Say the goal — profile visits, a product link, a launch. Posty can build the paid campaign on Meta, TikTok, Google, LinkedIn, or Pinterest from the same conversation. X Ads is coming soon.",
+        "Say the goal — profile visits, a product link, a launch. Posty can build the paid campaign on Meta, TikTok, Google, LinkedIn, Pinterest, or X from the same conversation.",
       steps: [
         {
           title: "Connect once",
-          body: "Instagram, TikTok, Facebook, LinkedIn, YouTube and the rest, in one authorization flow. X is coming soon.",
+          body: "Instagram, TikTok, Facebook, LinkedIn, YouTube, X and the rest, in one authorization flow.",
         },
         { title: "Send the work", body: "Text, photo, or video. Or dictate it. You do not rebuild the post for every app." },
         { title: "Check the plan", body: "Caption, networks, and time are in front of you before anything goes live." },
@@ -122,9 +122,9 @@ export const MADE_FOR: MadeForPage[] = [
         "Pui până la 50 de poze sau clipuri odată. Posty le așază zi de zi, cross-platform, cu formatul potrivit: pozele de Instagram merg în Feed, clipul poate merge în Reels, TikTok primește și poze, și video.",
       adsTitle: "Când o postare trebuie să ajungă mai departe",
       adsBody:
-        "Spui ținta — vizite pe profil, un link de produs, o lansare. Posty poate construi campania plătită pe Meta, TikTok, Google, LinkedIn sau Pinterest, din aceeași conversație. X Ads urmează.",
+        "Spui ținta — vizite pe profil, un link de produs, o lansare. Posty poate construi campania plătită pe Meta, TikTok, Google, LinkedIn, Pinterest sau X, din aceeași conversație.",
       steps: [
-        { title: "Conectezi o dată", body: "Instagram, TikTok, Facebook, LinkedIn, YouTube și restul, dintr-un flux. X e în curând." },
+        { title: "Conectezi o dată", body: "Instagram, TikTok, Facebook, LinkedIn, YouTube, X și restul, dintr-un flux." },
         { title: "Trimiți lucrul", body: "Text, poză sau video. Sau dictezi. Nu reconstruiești postarea pentru fiecare aplicație." },
         { title: "Verifici planul", body: "Caption, rețele și oră sunt în fața ta înainte să plece ceva live." },
         { title: "Publici sau pui în coadă", body: "O comandă publică acum sau programează seria. Apoi te întorci la făcut." },
@@ -196,7 +196,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           q: "Does it post to Google Business?",
-          a: "Yes, alongside Instagram, Facebook, TikTok, LinkedIn, YouTube, Pinterest, Bluesky, and Reddit. X is coming soon.",
+          a: "Yes, alongside Instagram, Facebook, TikTok, LinkedIn, YouTube, Pinterest, X, Bluesky, and Reddit.",
         },
       ],
     },
@@ -247,7 +247,7 @@ export const MADE_FOR: MadeForPage[] = [
         },
         {
           q: "Postează și pe Google Business?",
-          a: "Da, lângă Instagram, Facebook, TikTok, LinkedIn, YouTube, Pinterest, Bluesky și Reddit. X e în curând.",
+          a: "Da, lângă Instagram, Facebook, TikTok, LinkedIn, YouTube, Pinterest, X, Bluesky și Reddit.",
         },
       ],
     },
@@ -608,7 +608,7 @@ export const MADE_FOR: MadeForPage[] = [
       adsBody:
         "If the release needs people who do not follow you yet, say so. Posty prepares the campaign on Meta, Google, LinkedIn, TikTok, or Pinterest. You confirm before it spends. There is no public developer API in this phase.",
       steps: [
-        { title: "Connect the product’s accounts", body: "Wherever you already talk to users. X is coming soon." },
+        { title: "Connect the product’s accounts", body: "Wherever you already talk to users — including X." },
         { title: "Describe the change", body: "What it does, who it is for, the link. Voice notes work if your hands are on the keyboard." },
         { title: "Read the caption", body: "Cut the jargon if you want. Nothing publishes until you say so." },
         { title: "Schedule the week", body: "The series goes out while you are on the next bug." },
@@ -659,7 +659,7 @@ export const MADE_FOR: MadeForPage[] = [
       adsBody:
         "Dacă release-ul are nevoie de oameni care nu te urmăresc încă, spui asta. Posty pregătește campania pe Meta, Google, LinkedIn, TikTok sau Pinterest. Confirmi înainte să cheltuiască. Nu există API public pentru developeri în faza asta.",
       steps: [
-        { title: "Conectezi conturile produsului", body: "Unde vorbești deja cu utilizatorii. X e în curând." },
+        { title: "Conectezi conturile produsului", body: "Unde vorbești deja cu utilizatorii — inclusiv X." },
         { title: "Descrii schimbarea", body: "Ce face, pentru cine, linkul. Nota vocală merge dacă ai mâinile pe tastatură." },
         { title: "Citești caption-ul", body: "Tai jargonul dacă vrei. Nu se publică nimic până spui tu." },
         { title: "Programezi săptămâna", body: "Seria iese cât ești pe următorul bug." },
