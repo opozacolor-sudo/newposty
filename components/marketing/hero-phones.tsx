@@ -156,15 +156,15 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-2 flex min-h-0 w-full flex-1 flex-col lg:mt-5 lg:items-center lg:justify-center lg:overflow-visible lg:pb-3 [@media(max-height:920px)]:lg:mt-3">
+      <div className="mt-2 flex w-full shrink-0 flex-col lg:mt-5 lg:min-h-0 lg:flex-1 lg:items-center lg:justify-center lg:overflow-visible lg:pb-3 [@media(max-height:920px)]:lg:mt-3">
         <ul
           ref={scroller}
-          className="flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(88vw,90rem)] lg:flex-none lg:grid-cols-6 lg:gap-2.5 lg:overflow-visible lg:px-0"
+          className="flex h-auto shrink-0 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(88vw,90rem)] lg:flex-none lg:grid-cols-6 lg:gap-2.5 lg:overflow-visible lg:px-0"
         >
           {CARDS.map((card) => (
             <li
               key={card.title}
-              className="h-full w-[min(22.5rem,calc(100vw-3.25rem))] shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:min-h-[15.5rem] lg:w-auto lg:min-w-0"
+              className="aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem))] shrink-0 snap-start lg:aspect-[3/4] lg:min-h-[15.5rem] lg:w-auto lg:min-w-0"
             >
               <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white lg:rounded-[1.4rem]">
                 <div className="shrink-0 px-5 pt-5 lg:px-3 lg:pt-3 xl:px-3.5 xl:pt-3.5">
@@ -173,7 +173,7 @@ export function HeroPhones() {
                     {t(card.title)}
                   </p>
                 </div>
-                <div className="relative mx-2 mb-2 mt-1.5 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.25rem] lg:mx-1.5 lg:mb-1.5 lg:mt-1 lg:min-h-[8.5rem] lg:rounded-[1.05rem]">
+                <div className="relative mx-2 mb-2 mt-1.5 min-h-[14rem] flex-1 basis-0 overflow-hidden rounded-[1.25rem] lg:mx-1.5 lg:mb-1.5 lg:mt-1 lg:min-h-[8.5rem] lg:rounded-[1.05rem]">
                   <Image
                     src={card.src}
                     alt=""
