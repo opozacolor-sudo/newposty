@@ -12,11 +12,25 @@ function esc(value: string) {
     .replaceAll('"', "&quot;");
 }
 
+function dateLabel(locale: string) {
+  switch (locale) {
+    case "ro":
+      return "6 octombrie 2026 · posty.now";
+    case "de":
+      return "6. Oktober 2026 · posty.now";
+    case "fr":
+      return "6 octobre 2026 · posty.now";
+    case "it":
+      return "6 ottobre 2026 · posty.now";
+    case "es":
+      return "6 de octubre de 2026 · posty.now";
+    default:
+      return "6 October 2026 · posty.now";
+  }
+}
+
 function render(guide: GuideDoc, locale: string) {
-  const dateLabel =
-    locale === "ro"
-      ? "6 octombrie 2026 · posty.now"
-      : "6 October 2026 · posty.now";
+  const coverDate = dateLabel(locale);
 
   const toc = guide.sections
     .map(
@@ -113,7 +127,7 @@ function render(guide: GuideDoc, locale: string) {
     <div class="brand">posty.now</div>
     <h1>${esc(guide.title)}</h1>
     <p class="sub">${esc(guide.subtitle)}</p>
-    <p class="meta">${esc(dateLabel)}</p>
+    <p class="meta">${esc(coverDate)}</p>
   </div>
   <div class="toc">
     <h2>${esc(guide.toc)}</h2>
@@ -130,7 +144,7 @@ function chromePath() {
     : "chrome";
 }
 
-function exportPdf(locale: "ro" | "en", outName: string) {
+function exportPdf(locale: string, outName: string) {
   const guide = getGuide(locale);
   const htmlPath = path.join(tmpdir(), `posty-guide-${locale}.html`);
   const outPath = path.resolve("public", outName);
@@ -153,7 +167,6 @@ function exportPdf(locale: "ro" | "en", outName: string) {
   return outPath;
 }
 
-const ro = exportPdf("ro", "manual-posty-now-ro.pdf");
-const en = exportPdf("en", "manual-posty-now-en.pdf");
-console.log(ro);
-console.log(en);
+for (const locale of ["ro", "en", "de", "fr", "it", "es"] as const) {
+  console.log(exportPdf(locale, `manual-posty-now-${locale}.pdf`));
+}

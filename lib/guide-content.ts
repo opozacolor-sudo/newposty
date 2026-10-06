@@ -1,45 +1,16 @@
-export type GuideTip = { title: string; body: string };
-export type GuideExample = string;
-export type GuideNetwork = {
-  name: string;
-  can: string;
-  boost: string;
-  audiences: string;
-  stats: string;
-  note?: string;
-};
+import { DE } from "./guide/de";
+import { ES } from "./guide/es";
+import { FR } from "./guide/fr";
+import { IT } from "./guide/it";
+import type { GuideDoc } from "./guide/types";
 
-export type GuideSection = {
-  id: string;
-  title: string;
-  lead?: string;
-  body: string[];
-  tips?: GuideTip[];
-  examples?: GuideExample[];
-  networks?: GuideNetwork[];
-  featured?: "voice";
-};
-
-export type GuideDoc = {
-  title: string;
-  subtitle: string;
-  toc: string;
-  tipLabel: string;
-  tryLabel: string;
-  ctaTitle: string;
-  ctaButton: string;
-  downloadLabel: string;
-  pdfHref: string;
-  quoteStart: string;
-  quoteEnd: string;
-  networkLabels: {
-    can: string;
-    boost: string;
-    audiences: string;
-    stats: string;
-  };
-  sections: GuideSection[];
-};
+export type {
+  GuideDoc,
+  GuideExample,
+  GuideNetwork,
+  GuideSection,
+  GuideTip,
+} from "./guide/types";
 
 const RO: GuideDoc = {
   title: "Manual de utilizare",
@@ -896,5 +867,18 @@ const EN: GuideDoc = {
 };
 
 export function getGuide(locale: string): GuideDoc {
-  return locale === "ro" ? RO : EN;
+  switch (locale) {
+    case "ro":
+      return RO;
+    case "de":
+      return DE;
+    case "fr":
+      return FR;
+    case "it":
+      return IT;
+    case "es":
+      return ES;
+    default:
+      return EN;
+  }
 }
