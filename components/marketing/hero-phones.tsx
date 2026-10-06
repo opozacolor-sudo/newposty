@@ -94,10 +94,7 @@ const CARDS = [
 type Card = (typeof CARDS)[number];
 
 function popupOf(card: Card) {
-  if ("popupTitle" in card) {
-    return { title: card.popupTitle, sections: card.sections, closer: card.closer };
-  }
-  return { title: card.title, sections: [{ body: "screenBodySoon" as const, src: card.src }] };
+  return { title: card.popupTitle, sections: card.sections, closer: card.closer };
 }
 
 export function HeroPhones() {
@@ -256,40 +253,34 @@ export function HeroPhones() {
                         <p className="mx-auto max-w-[38rem] px-7 pt-10 text-[16px] leading-7 tracking-normal text-[#6e6e73] sm:px-16 sm:pt-14 sm:text-[19px] sm:leading-[1.47]">
                           {t(section.body)}
                         </p>
-                        {"scene" in section ? (
-                          section.scene === "social" || section.scene === "ads" ? (
-                            <NetworkScene kind={section.scene} label={t(section.label)} />
-                          ) : section.scene === "make" || section.scene === "plan" ? (
-                            <ContentScene kind={section.scene} label={t(section.label)} />
-                          ) : section.scene === "voice" ||
-                            section.scene === "publish" ||
-                            section.scene === "month" ||
-                            section.scene === "create" ||
-                            section.scene === "manage" ? (
-                            <ChatScene kind={section.scene} label={t(section.label)} />
-                          ) : section.scene === "intent" ||
-                            section.scene === "train" ||
-                            section.scene === "qualify" ||
-                            section.scene === "inbox" ||
-                            section.scene === "paid" ? (
-                            <LeadsScene kind={section.scene} label={t(section.label)} />
-                          ) : section.scene === "pulse" ||
-                            section.scene === "when" ||
-                            section.scene === "formats" ||
-                            section.scene === "split" ||
-                            section.scene === "spend" ? (
-                            <AnalyticsScene kind={section.scene} label={t(section.label)} />
-                          ) : (
-                            <AdsScene kind={section.scene} label={t(section.label)} />
-                          )
+                        {section.scene === "social" || section.scene === "ads" ? (
+                          <NetworkScene kind={section.scene} label={t(section.label)} />
+                        ) : section.scene === "make" || section.scene === "plan" ? (
+                          <ContentScene kind={section.scene} label={t(section.label)} />
+                        ) : section.scene === "voice" ||
+                          section.scene === "publish" ||
+                          section.scene === "month" ||
+                          section.scene === "create" ||
+                          section.scene === "manage" ? (
+                          <ChatScene kind={section.scene} label={t(section.label)} />
+                        ) : section.scene === "intent" ||
+                          section.scene === "train" ||
+                          section.scene === "qualify" ||
+                          section.scene === "inbox" ||
+                          section.scene === "paid" ? (
+                          <LeadsScene kind={section.scene} label={t(section.label)} />
+                        ) : section.scene === "pulse" ||
+                          section.scene === "when" ||
+                          section.scene === "formats" ||
+                          section.scene === "split" ||
+                          section.scene === "spend" ? (
+                          <AnalyticsScene kind={section.scene} label={t(section.label)} />
                         ) : (
-                          <div className="relative mx-auto mt-10 h-[min(58vw,26rem)] w-full max-w-[28rem]">
-                            <Image src={section.src} alt="" fill className="object-contain object-bottom" sizes="28rem" />
-                          </div>
+                          <AdsScene kind={section.scene} label={t(section.label)} />
                         )}
                       </div>
                     ))}
-                    {"closer" in popup! && popup!.closer ? (
+                    {popup!.closer ? (
                       <p className="mx-auto max-w-[38rem] px-7 py-6 text-center text-[16px] leading-7 text-[#1d1d1f] sm:px-16 sm:py-8 sm:text-[19px] sm:leading-[1.47]">
                         {t(popup!.closer)}
                       </p>
