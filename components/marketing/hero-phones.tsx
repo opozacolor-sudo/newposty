@@ -7,7 +7,16 @@ import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
 const CARDS = [
-  { kicker: "screenNetworksKicker", title: "screenNetworks", src: "/marketing/phone-networks-hud.png" },
+  {
+    kicker: "screenNetworksKicker",
+    title: "screenNetworks",
+    src: "/marketing/phone-networks-hud.png",
+    popupTitle: "screenNetworksPopupTitle",
+    sections: [
+      { body: "screenNetworksSocial", src: "/marketing/phone-networks-hud.png" },
+      { body: "screenNetworksAds", src: "/marketing/phone-ads-hud.png" },
+    ],
+  },
   { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-content-hud.png" },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-ads-hud.png" },
   { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-chat-hud.png" },
@@ -16,6 +25,13 @@ const CARDS = [
 ] as const;
 
 type Card = (typeof CARDS)[number];
+
+function popupOf(card: Card) {
+  if ("popupTitle" in card) {
+    return { title: card.popupTitle, sections: card.sections };
+  }
+  return { title: card.title, sections: [{ body: "screenBodySoon" as const, src: card.src }] };
+}
 
 export function HeroPhones() {
   const t = useTranslations("Landing");
@@ -145,35 +161,38 @@ export function HeroPhones() {
                   role="dialog"
                   aria-modal
                   aria-labelledby={titleId}
-                  className="relative w-full max-w-[52rem] overflow-hidden rounded-[1.75rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                  className="relative w-full max-w-[56rem] overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
                   onClick={(event) => event.stopPropagation()}
                 >
                   <button
                     type="button"
                     onClick={() => setOpen(null)}
-                    className="absolute right-4 top-4 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white sm:right-5 sm:top-5"
+                    className="absolute right-4 top-4 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white sm:right-6 sm:top-6"
                     aria-label={t("screenClose")}
                   >
                     <X size={16} />
                   </button>
-                  <div className="px-8 pt-10 sm:px-14 sm:pt-12">
+                  <div className="px-8 pt-12 sm:px-16 sm:pt-16">
                     <p className="text-[13px] text-[#1d1d1f] sm:text-[15px]">{t(open.kicker)}</p>
                     <h2
                       id={titleId}
-                      className="mt-2 max-w-[36rem] text-[clamp(1.65rem,3.4vw,2.35rem)] font-semibold leading-[1.15] tracking-tight text-[#1d1d1f]"
+                      className="mt-3 max-w-[34rem] text-[clamp(1.85rem,4vw,2.75rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f]"
                     >
-                      {t(open.title)}
+                      {t(popupOf(open).title)}
                     </h2>
                   </div>
-                  <div className="mx-6 mt-6 overflow-hidden rounded-[1.5rem] bg-[#f5f5f7] sm:mx-10 sm:mt-8">
-                    <p className="mx-auto max-w-[34rem] px-6 pt-10 text-center text-[16px] leading-7 text-[#6e6e73] sm:px-10 sm:pt-12 sm:text-[19px] sm:leading-8">
-                      {t("screenBodySoon")}
-                    </p>
-                    <div className="relative mx-auto mt-8 h-[min(42vw,20rem)] w-full max-w-[36rem]">
-                      <Image src={open.src} alt="" fill className="object-contain object-bottom" />
-                    </div>
+                  <div className="mt-8 flex flex-col gap-4 px-4 pb-4 sm:mt-10 sm:gap-5 sm:px-6 sm:pb-6">
+                    {popupOf(open).sections.map((section) => (
+                      <div key={section.body} className="overflow-hidden rounded-[1.75rem] bg-[#f5f5f7] sm:rounded-[2rem]">
+                        <p className="mx-auto max-w-[38rem] px-7 pt-10 text-[16px] leading-7 tracking-normal text-[#6e6e73] sm:px-16 sm:pt-14 sm:text-[19px] sm:leading-[1.47]">
+                          {t(section.body)}
+                        </p>
+                        <div className="relative mx-auto mt-10 h-[min(58vw,26rem)] w-full max-w-[28rem]">
+                          <Image src={section.src} alt="" fill className="object-contain object-bottom" sizes="28rem" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="h-6 sm:h-8" />
                 </div>
               </div>
             </div>,
