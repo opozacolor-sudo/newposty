@@ -12,16 +12,16 @@ export const MARKETING_SOCIAL = [
   {
     id: "facebook",
     label: "Facebook",
-    href: "https://www.facebook.com/posty.now",
+    href: "https://www.facebook.com/posty.now.ro/",
   },
   {
     id: "linkedin",
     label: "LinkedIn",
-    href: "https://www.linkedin.com/company/posty-now",
+    href: "https://www.linkedin.com/company/posty.now/",
   },
   {
     id: "youtube",
     label: "YouTube",
-    href: "https://www.youtube.com/@posty.now",
+    href: "https://www.youtube.com/@postynow",
   },
 ] as const;
