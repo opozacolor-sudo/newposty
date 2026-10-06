@@ -122,8 +122,8 @@ export function MarketingHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#f5f5f7]/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-10 max-w-[980px] items-center px-4 lg:h-11">
-        <div className="flex min-w-0 items-center gap-2 lg:contents">
+      <div className="mx-auto flex h-10 w-full max-w-[1400px] items-center px-4 lg:grid lg:h-11 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
+        <div className="flex min-w-0 items-center gap-2 justify-self-start">
           <button
             type="button"
             className="inline-flex h-8 w-8 shrink-0 items-center justify-center text-[#1d1d1f] lg:hidden"
@@ -138,7 +138,7 @@ export function MarketingHeader() {
           </Link>
         </div>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-evenly px-3 lg:flex">
+        <nav className="hidden items-center gap-x-5 lg:flex">
           <DesktopMenu
             label={t("features")}
             open={desktop === "features"}
@@ -180,7 +180,7 @@ export function MarketingHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center lg:ml-0">
+        <div className="ml-auto flex items-center justify-self-end lg:ml-0">
           <Link href="/login" className={navLink} onClick={closeAll}>
             {t("signIn")}
           </Link>
