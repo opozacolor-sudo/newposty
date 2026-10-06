@@ -12,7 +12,7 @@ export const AD_OBJECTIVES = [
   },
   {
     id: "leads",
-    platforms: ["metaads", "linkedinads", "googleads"],
+    platforms: ["metaads", "linkedinads", "tiktokads", "googleads"],
   },
 ] as const;
 
