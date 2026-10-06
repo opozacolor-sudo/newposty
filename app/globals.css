@@ -95,6 +95,16 @@ html.home-no-scroll .marketing {
   overflow: hidden;
 }
 
+@media (min-width: 1024px) and (max-height: 860px) {
+  html.home-no-scroll,
+  html.home-no-scroll body,
+  html.home-no-scroll .marketing {
+    height: auto;
+    min-height: 100dvh;
+    overflow: auto;
+  }
+}
+
 input,
 textarea,
 button {
