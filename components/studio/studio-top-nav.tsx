@@ -6,11 +6,15 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 
-const navLink =
-  "whitespace-nowrap text-[12px] font-normal leading-none text-[#1d1d1f] transition hover:text-black";
+const navLink = "whitespace-nowrap text-[#1d1d1f] transition hover:text-black";
+const desktopLink = `${navLink} studio-nav-link`;
 
-function linkClass(active: boolean, extra = "") {
-  return `${navLink} ${active ? "font-medium text-black" : ""} ${extra}`.trim();
+function desktopClass(active: boolean) {
+  return `${desktopLink} ${active ? "font-medium text-black" : ""}`.trim();
+}
+
+function mobileClass(active: boolean) {
+  return `${navLink} text-[15px] ${active ? "font-medium text-black" : ""}`.trim();
 }
 
 export function StudioTopNav() {
@@ -72,20 +76,20 @@ export function StudioTopNav() {
         >
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
-        <Link href="/chat" className={`${navLink} shrink-0`}>
+        <Link href="/chat" className={`${desktopLink} shrink-0`}>
           posty.now
         </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-evenly lg:flex">
           {items.slice(0, 4).map((item) => (
-            <Link key={item.href} href={item.href} className={linkClass(item.active)}>
+            <Link key={item.href} href={item.href} className={desktopClass(item.active)}>
               {item.label}
             </Link>
           ))}
           <div className="relative" ref={inboxRef}>
             <button
               type="button"
-              className={`${linkClass(inInbox)} inline-flex items-center gap-1`}
+              className={`${desktopClass(inInbox)} inline-flex items-center gap-0.5 bg-transparent p-0`}
               aria-expanded={inboxOpen}
               onClick={() => setInboxOpen((value) => !value)}
             >
@@ -110,7 +114,7 @@ export function StudioTopNav() {
             ) : null}
           </div>
           {items.slice(4).map((item) => (
-            <Link key={item.href} href={item.href} className={linkClass(item.active)}>
+            <Link key={item.href} href={item.href} className={desktopClass(item.active)}>
               {item.label}
             </Link>
           ))}
@@ -121,14 +125,14 @@ export function StudioTopNav() {
         <div className="border-t border-black/5 px-4 py-3 lg:hidden">
           <nav className="flex flex-col gap-3">
             {items.map((item) => (
-              <Link key={item.href} href={item.href} className={linkClass(item.active, "text-[15px]")}>
+              <Link key={item.href} href={item.href} className={mobileClass(item.active)}>
                 {item.label}
               </Link>
             ))}
-            <Link href="/inbox?tab=messages" className={linkClass(inInbox && !commentsOpen, "text-[15px]")}>
+            <Link href="/inbox?tab=messages" className={mobileClass(inInbox && !commentsOpen)}>
               {t("messages")}
             </Link>
-            <Link href="/inbox?tab=comments" className={linkClass(!!commentsOpen, "text-[15px]")}>
+            <Link href="/inbox?tab=comments" className={mobileClass(!!commentsOpen)}>
               {t("commentsNav")}
             </Link>
           </nav>
