@@ -15,8 +15,8 @@ function esc(value: string) {
 function render(guide: GuideDoc, locale: string) {
   const dateLabel =
     locale === "ro"
-      ? "24 august 2026 · posty.now"
-      : "24 August 2026 · posty.now";
+      ? "6 octombrie 2026 · posty.now"
+      : "6 October 2026 · posty.now";
 
   const toc = guide.sections
     .map(

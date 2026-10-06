@@ -44,7 +44,7 @@ export type GuideDoc = {
 const RO: GuideDoc = {
   title: "Manual de utilizare",
   subtitle:
-    "Tot ce poți face în posty.now: postări, promovări, statistici, programări și voce — pas cu pas, cu exemple și sfaturi.",
+    "Tot ce poți face în posty.now: asistent, conexiuni, postări, statistici, mesaje, lead-uri, promovări și voce — pas cu pas, cu exemple.",
   toc: "Cuprins",
   tipLabel: "Sfat",
   tryLabel: "Spune-i asistentului",
@@ -66,45 +66,45 @@ const RO: GuideDoc = {
       title: "Ce este posty.now",
       body: [
         "posty.now este un studio cu asistent AI. Tu spui ce vrei — cu text sau cu voce — iar Posty redactează, programează și publică pe rețelele conectate. Nu sari între aplicații ca să pui aceeași poză pe Instagram, TikTok și Facebook.",
-        "Alături de postări organice stau și promovările plătite. Conectezi conturile de ads, vezi campaniile, cheltuielile, impresiile, clickurile și conversiile într-un singur loc. Postările și reclamele sunt două lucruri diferite; studio-ul le ține pe amândouă, dar nu le amestecă.",
-        "În stânga ai Asistentul, Statistică (Postări / Promovări) și Conturi (tot Postări / Promovări). Limba și ora locală sunt jos. Toate programările folosesc ceasul ăsta, nu ora din altă țară.",
+        "Alături de postări organice stau promovările plătite, inbox-ul (mesaje și comentarii) și un agent de lead-uri pe care îl antrenezi pe site-ul tău. Postările și reclamele sunt două lucruri diferite; studio-ul le ține pe amândouă, dar nu le amestecă.",
+        "Sus în bară: Asistent, Conexiuni, Postări, Statistici, Mesaje, Lead-uri, Promovări și Manual. Mesaje se deschide în două tab-uri: mesaje directe și comentarii. Jos, în bară: ora locală, limba și contul. Dacă ești pe Team, jos alegi și clientul — conexiunile, postările și lead-urile sunt ale clientului selectat. Toate programările folosesc ceasul ăsta, nu ora din altă țară.",
       ],
       tips: [
         {
-          title: "Începe cu conturile",
-          body: "Asistentul poate scrie texte imediat. Ca să publice sau să-ți arate statistici, conectează întâi rețelele — postări și, dacă faci ads, promovări.",
+          title: "Începe cu conexiunile",
+          body: "Asistentul poate scrie texte imediat. Ca să publice, să-ți arate statistici sau să răspundă în inbox, conectează întâi rețelele la Conexiuni — Social pentru postări și, dacă faci ads, Reclame.",
         },
       ],
     },
     {
       id: "accounts-posts",
-      title: "Conturi de postări",
+      title: "Conexiuni: postări",
       body: [
-        "Mergi la Conturi → Postări. Aici leagă Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, X, Bluesky și Reddit.",
+        "Mergi la Conexiuni. În secțiunea Social leagă Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, X, Bluesky și Reddit.",
         "Apasă Conectează, autorizează-ți contul, gata. Pe Facebook alegi pagina, pe LinkedIn poți alege profil sau pagină de companie, pe Pinterest board-ul, pe Google Business locația.",
         "Bluesky nu are login clasic: folosește un App Password (parolă de aplicație), nu parola obișnuită a contului. Dacă nu știi de unde o iei, butonul de ajutor de pe card te duce la instrucțiuni.",
-        "Poți conecta mai multe conturi pe aceeași rețea. Ce e conectat aici e ce asistentul poate publica.",
+        "Poți conecta mai multe conturi pe aceeași rețea. Ce e conectat aici e ce asistentul poate publica, ce apare la Postări, Statistici și Mesaje.",
       ],
       tips: [
         {
           title: "Nu e același lucru cu ads",
-          body: "Instagram-ul de postări nu deschide automat Meta Ads. Promovările se conectează separat, la Conturi → Promovări.",
+          body: "Instagram-ul de postări nu deschide automat Meta Ads. Promovările se conectează separat, tot în Conexiuni, jos, la Reclame.",
         },
       ],
     },
     {
       id: "accounts-ads",
-      title: "Conturi de promovări (ads)",
+      title: "Conexiuni: promovări (ads)",
       lead: "Postările aduc reach organic. Ads-urile plătesc ca să fie văzute. În posty.now ambele își au locul — dar se conectează separat.",
       body: [
-        "Mergi la Conturi → Promovări. Aici leagă Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads și OpenAI Ads.",
-        "Un cont de promovare nu publică poze în feed. El îți dă acces la campaniile plătite: ce rulează, cât cheltui, ce rezultate ai. Statisticile le vezi la Statistică → Promovări.",
+        "Tot în Conexiuni, mai jos, la Reclame, leagă Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads și OpenAI Ads.",
+        "Un cont de promovare nu publică poze în feed. El îți dă acces la campaniile plătite: ce rulează, cât cheltui, ce rezultate ai. Lista de campanii e la Promovări. Campaniile noi le ceri din Asistent.",
         "OpenAI Ads nu are fereastră de login: lipești o cheie API din ChatGPT Ads Manager. Reclamele OpenAI sunt carduri în ChatGPT (titlu, text, imagine, link), doar imagini statice, buget pe toată durata campaniei (minim 1 $), și eligibilitate de business — momentan SUA, Canada, Australia, Noua Zeelandă.",
       ],
       tips: [
         {
           title: "Organic + plătit pe Meta",
-          body: "Dacă postezi pe Instagram/Facebook și vrei și campanii plătite, conectează ambele: Postări (Instagram, Facebook) și Promovări (Meta Ads). Unul fără celălalt îți taie jumătate din tablou.",
+          body: "Dacă postezi pe Instagram/Facebook și vrei și campanii plătite, conectează ambele: Social (Instagram, Facebook) și Reclame (Meta Ads). Unul fără celălalt îți taie jumătate din tablou.",
         },
         {
           title: "Creativul de campanie nu e un fișier din serie",
@@ -116,7 +116,7 @@ const RO: GuideDoc = {
       id: "ads-networks",
       title: "Ce suportă fiecare rețea de ads",
       body: [
-        "Fiecare platformă de promovare lucrează altfel. Cardul din Conturi → Promovări îți arată ce poți crea, dacă poți da boost unei postări existente, ce audiențe ai și cât de complete sunt statisticile.",
+        "Fiecare platformă de promovare lucrează altfel. Cardul din Conexiuni → Reclame îți arată ce poți crea, dacă poți da boost unei postări existente, ce audiențe ai și cât de complete sunt statisticile.",
         "Boost înseamnă să pui bani în spatele unui conținut care deja există (o postare, un Pin, un tweet). Campanie standalone înseamnă o reclamă nouă, gândită ca ads. Nu toate rețelele fac ambele.",
       ],
       networks: [
@@ -174,7 +174,7 @@ const RO: GuideDoc = {
       tips: [
         {
           title: "Unde lucrezi ads-urile",
-          body: "Conectarea și citirea rezultatelor sunt în posty.now (Conturi → Promovări, Statistică → Promovări). Conținutul organic — poze, video, serii, promoții datate — îl lansezi din Asistent. Nu cere asistentului „cât am cheltuit pe Meta”; deschide Statistică → Promovări.",
+          body: "Conectarea e la Conexiuni → Reclame. Lista de campanii și cheltuieli e la Promovări. Conținutul organic — poze, video, serii, promoții datate — îl lansezi din Asistent. Nu cere asistentului „cât am cheltuit pe Meta”; deschide Promovări.",
         },
       ],
     },
@@ -262,7 +262,7 @@ const RO: GuideDoc = {
       id: "schedule",
       title: "Programează la o oră anume",
       body: [
-        "Spune ziua și ora. Posty folosește ceasul din sidebar (ora ta locală), nu un fuso ascuns. „Mâine la 18:00” e 18:00 pe ceasul ăla.",
+        "Spune ziua și ora. Posty folosește ceasul din bara de jos (ora ta locală), nu un fuso ascuns. „Mâine la 18:00” e 18:00 pe ceasul ăla.",
         "Poți combina: publică story acum pe Instagram și TikTok, și programează reel-ul mâine la 12:00 tot pe Instagram.",
       ],
       examples: [
@@ -272,7 +272,7 @@ const RO: GuideDoc = {
       tips: [
         {
           title: "Verifică ceasul",
-          body: "Dacă călătorești sau ai VPN, uită-te la Ora locală din stânga. Programările urmează ceasul din studio.",
+          body: "Dacă călătorești sau ai VPN, uită-te la Ora locală jos, în bara studio-ului. Programările urmează ceasul ăsta.",
         },
       ],
     },
@@ -366,27 +366,66 @@ const RO: GuideDoc = {
       ],
     },
     {
-      id: "stats-posts",
-      title: "Statistică: postări",
+      id: "posts-list",
+      title: "Postări (istoric)",
       body: [
-        "Statistică → Postări. Fiecare rețea e un card: postări pe 30 de zile, engagement, urmăritori. Deschizi cardul pentru grafice, interval custom, top postări, comentarii unde există.",
+        "Postări din bară e calendarul tău: ciorne, programate și publicate, doar pentru conturile conectate. Filtrezi pe rețea, cont, status, sursă și interval.",
+        "De aici verifici dacă o serie a ieșit, dacă o programare e încă în așteptare, sau deschizi postarea pe rețea. Publicarea și programarea se fac tot din Asistent; pagina asta e istoricul.",
+      ],
+    },
+    {
+      id: "messages",
+      title: "Mesaje și comentarii",
+      body: [
+        "Mesaje din bară are două tab-uri: mesaje directe și comentarii. Vezi conversațiile de pe conturile conectate și poți răspunde din pagina asta, fără să deschizi aplicația rețelei.",
+        "Filtrezi pe platformă, cont și status. Ca să apară ceva, trebuie un cont de postări conectat la Conexiuni → Social.",
+        "Aici vorbești tu. Agentul de lead-uri, dacă e pornit, răspunde separat pe mesajele noi care arată intenție — nu înlocuiește inbox-ul ăsta.",
+      ],
+    },
+    {
+      id: "leads",
+      title: "Lead-uri",
+      lead: "Fiecare client are agentul lui. Pui link-ul site-ului, antrenezi, îi spui cum să vorbească, apoi aprinzi generarea.",
+      body: [
+        "La Lead-uri lipești URL-ul site-ului și apeși Antrenează. Agentul citește paginile publice și produsele. Dacă e deja antrenat, butonul scrie Deja antrenat.",
+        "În caseta de jos îi spui cum vrei să decurgă conversația: prețuri, ce să identifice („cât costă”, „am liber pe o dată”), și link-ul de programare dacă ai unul. Asta e briefing-ul tău, nu înlocuiește crawl-ul.",
+        "După antrenare apeși Generare lead-uri AI. De-acolo răspunde doar la mesaje noi, primite după ce ai aprins generarea — nu la conversațiile vechi și nu la mesajele trimise de tine. Inbox-ul e verificat o dată pe zi.",
+        "Se prezintă ca agentul posty.now, cere acordul (DA) și trimite termenii, apoi răspunde din ce a citit pe site. Lead-urile apar în listă (mesaj, comentariu sau reclamă) cu status nou / contactat / respins. Oprește generarea din același buton când vrei să tacă.",
+      ],
+      tips: [
+        {
+          title: "Instagram conectat",
+          body: "Pentru DM-uri trebuie un Instagram (sau alt canal cu inbox) conectat la Conexiuni. Antrenarea pe site nu publică și nu scrie singură pe rețele.",
+        },
+        {
+          title: "Nu e un blast",
+          body: "Generarea nu trimite mesaje la conversații vechi. Un DM de test trebuie să vină după ce ai aprins butonul, și răspunsul poate aștepta următoarea rulare zilnică.",
+        },
+      ],
+    },
+    {
+      id: "stats-posts",
+      title: "Statistici",
+      body: [
+        "Statistici e tabloul postărilor organice: rata de interacțiune, acoperirea, urmăritorii, câte postări în interval, cea mai bună postare, grafice pe platformă și în timp, heatmap cu ora bună.",
+        "Filtrezi pe platformă, cont, sursă (scrise de tine sau din afară) și ultimele 7 / 30 / 90 de zile. Deschizi link-ul de la cea mai bună postare ca să o vezi pe rețea. Thumbnail-ul e poza postării; la video apare iconița rețelei dacă nu există preview.",
         "Bluesky și Reddit dau statistici limitate (aprecieri, comentarii, distribuiri — fără afișări). Restul rețelelor conectate dau tabloul complet, în limita a ceea ce oferă fiecare.",
-        "Aici vezi dacă conținutul organic prinde. Nu e locul pentru cheltuieli de ads.",
+        "Aici vezi dacă conținutul organic prinde. Cheltuielile de ads nu sunt aici — alea sunt la Promovări.",
       ],
     },
     {
       id: "stats-ads",
-      title: "Statistică: promovări",
-      lead: "Aici se văd banii. Dacă nu e conectat un cont de ads, cardul e gol — nu e un bug.",
+      title: "Promovări",
+      lead: "Aici se văd campaniile și banii. Dacă nu e conectat un cont de ads, pagina e goală — nu e un bug.",
       body: [
-        "Statistică → Promovări. Pe fiecare rețea de ads: număr de campanii (30 de zile), cheltuieli, impresii. În detaliu: clickuri, CTR, conversii, top campanii, interval de date (7 / 30 / custom).",
+        "Promovări din bară: campaniile active și cele încheiate, pe rețelele de ads conectate. Filtrezi pe platformă, cont, status și interval. Campaniile noi se cer din Asistent.",
         "Folosește-l ca să vezi dacă o campanie merită continuată, nu ca să o confunzi cu o postare care a mers bine organic. Un reel cu multe like-uri și o campanie cu CTR bun sunt victorii diferite.",
-        "Schimbă perioada din detaliu dacă vrei să compari o lună de sale cu luna precedentă. Dacă nu apar campanii, verifică Conturi → Promovări: contul e conectat și activ în perioada aleasă?",
+        "Dacă nu apar campanii, verifică Conexiuni → Reclame: contul e conectat și activ în perioada aleasă?",
       ],
       tips: [
         {
           title: "O rutină scurtă",
-          body: "O dată pe săptămână: Statistică → Postări (ce a prins organic) și Statistică → Promovări (ce a costat și ce a adus). Apoi, în asistent, ajustezi seria sau pregătești un creativ nou — separat, cu dată, dacă e promoție.",
+          body: "O dată pe săptămână: Statistici (ce a prins organic) și Promovări (ce a costat și ce a adus). Apoi, în asistent, ajustezi seria sau pregătești un creativ nou — separat, cu dată, dacă e promoție. Lead-urile le treci din listă în contactat când ai vorbit cu omul.",
         },
       ],
     },
@@ -409,6 +448,7 @@ const RO: GuideDoc = {
         "Mută postarea de vineri la cea mai bună oră.",
         "Fă-i o descriere, ton cald, fără emoji.",
         "Nu mai întreba confirmarea în chat-ul ăsta.",
+        "Creează o campanie de ads pe Meta, trafic către site, buget 10 € pe zi.",
       ],
     },
     {
@@ -417,11 +457,12 @@ const RO: GuideDoc = {
       body: [
         "Dictarea nu scrie nimic: Chrome sau Edge, Allow pe microfon, lacătul din bara de adresă. Reîncarcă. Apoi microfonul din chat — trebuie să rămână portocaliu cât vorbești.",
         "„Se publică acum” pe TikTok: așteaptă. Procesarea nu e eroare. Bifa verde e semnalul.",
-        "Nu publică: Conturi → Postări, rețeaua e conectată? Instagram/TikTok/YouTube/Pinterest au fișier atașat?",
+        "Nu publică: Conexiuni → Social, rețeaua e conectată? Instagram/TikTok/YouTube/Pinterest au fișier atașat?",
         "Fișier respins: maximum 100 MB, maximum 50 odată. YouTube sare pozele. TikTok acceptă poze (carusel).",
         "Confirmarea a dispărut: a expirat. Trimite comanda din nou.",
-        "Statistici ads goale: Conturi → Promovări, conectează rețeaua, apoi Statistică → Promovări. Un Instagram de postări nu umple tabloul de ads.",
-        "Limba greșită: comutatorul de limbă e jos în sidebar, lângă ceas.",
+        "Statistici goale: conectează un cont de postări la Conexiuni. Campaniile ads goale: Conexiuni → Reclame, apoi Promovări. Un Instagram de postări nu umple tabloul de ads.",
+        "Agentul de lead-uri nu răspunde: e antrenat? E aprins Generare lead-uri AI? Mesajul trebuie să fie nou, primit după ce ai aprins generarea. Inbox-ul se scanează o dată pe zi.",
+        "Limba greșită: comutatorul de limbă e jos în bara studio-ului, lângă ceas.",
       ],
     },
   ],
@@ -430,7 +471,7 @@ const RO: GuideDoc = {
 const EN: GuideDoc = {
   title: "User guide",
   subtitle:
-    "Everything you can do in posty.now: posts, ads, analytics, scheduling, and voice — step by step, with examples and tips.",
+    "Everything you can do in posty.now: assistant, connections, posts, analytics, messages, leads, ads, and voice — step by step, with examples.",
   toc: "Contents",
   tipLabel: "Tip",
   tryLabel: "Try saying",
@@ -452,45 +493,45 @@ const EN: GuideDoc = {
       title: "What posty.now is",
       body: [
         "posty.now is a studio with an AI assistant. You say what you want — by typing or by speaking — and Posty drafts, schedules, and publishes on your connected networks. You do not bounce between apps to put the same photo on Instagram, TikTok, and Facebook.",
-        "Paid ads sit next to organic posts. You connect ads accounts and see campaigns, spend, impressions, clicks, and conversions in one place. Posts and ads are different jobs; the studio holds both, and does not mix them up.",
-        "On the left: Assistant, Statistics (Posts / Ads), and Accounts (Posts / Ads again). Language and local time are at the bottom. Every schedule follows that clock, not some other timezone.",
+        "Paid ads sit next to organic posts, plus an inbox (messages and comments) and a lead agent you train on your website. Posts and ads are different jobs; the studio holds both, and does not mix them up.",
+        "Top bar: Assistant, Connections, Posts, Analytics, Messages, Leads, Ads, and Guide. Messages opens in two tabs: direct messages and comments. Bottom bar: local time, language, and your account. On Team, you also pick the client there — connections, posts, and leads belong to the selected client. Every schedule follows that clock, not some other timezone.",
       ],
       tips: [
         {
-          title: "Start with accounts",
-          body: "The assistant can write captions immediately. To publish or to show analytics, connect networks first — posting accounts, and ads accounts if you run paid campaigns.",
+          title: "Start with connections",
+          body: "The assistant can write captions immediately. To publish, show analytics, or reply in the inbox, connect networks first at Connections — Social for posting, and Ads if you run paid campaigns.",
         },
       ],
     },
     {
       id: "accounts-posts",
-      title: "Posting accounts",
+      title: "Connections: posting",
       body: [
-        "Go to Accounts → Posts. Connect Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, X, Bluesky, and Reddit.",
+        "Go to Connections. Under Social, connect Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, Pinterest, Google Business, X, Bluesky, and Reddit.",
         "Hit Connect, authorize, done. Facebook asks for a Page, LinkedIn can be a profile or a company page, Pinterest a board, Google Business a location.",
         "Bluesky does not use a normal login: it needs an App Password, not your regular account password. The help link on the card explains how to create one.",
-        "You can connect more than one account on the same network. Whatever is connected here is what the assistant can publish to.",
+        "You can connect more than one account on the same network. Whatever is connected here is what the assistant can publish to, and what shows up under Posts, Analytics, and Messages.",
       ],
       tips: [
         {
           title: "This is not ads",
-          body: "Connecting Instagram for posting does not open Meta Ads. Paid accounts live under Accounts → Ads.",
+          body: "Connecting Instagram for posting does not open Meta Ads. Paid accounts live under Connections, further down, in Ads.",
         },
       ],
     },
     {
       id: "accounts-ads",
-      title: "Ads accounts",
+      title: "Connections: ads",
       lead: "Posts earn organic reach. Ads pay to be seen. In posty.now both belong — they just connect separately.",
       body: [
-        "Go to Accounts → Ads. Connect Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads, and OpenAI Ads.",
-        "An ads account does not publish to the feed. It unlocks paid campaigns: what is running, what you spend, what you get back. You read that under Statistics → Ads.",
+        "Still on Connections, further down under Ads, connect Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Pinterest Ads, X Ads, and OpenAI Ads.",
+        "An ads account does not publish to the feed. It unlocks paid campaigns: what is running, what you spend, what you get back. The campaign list is under Ads in the top bar. New campaigns are created from the Assistant.",
         "OpenAI Ads has no login popup: you paste an API key from ChatGPT Ads Manager. Those ads are cards inside ChatGPT (title, text, image, link), static images only, a fixed campaign budget (minimum $1), and business eligibility — currently the United States, Canada, Australia, and New Zealand.",
       ],
       tips: [
         {
           title: "Organic + paid on Meta",
-          body: "If you post to Instagram/Facebook and also run paid campaigns, connect both: Posts (Instagram, Facebook) and Ads (Meta Ads). One without the other is half the picture.",
+          body: "If you post to Instagram/Facebook and also run paid campaigns, connect both: Social (Instagram, Facebook) and Ads (Meta Ads). One without the other is half the picture.",
         },
         {
           title: "Campaign creative is not a series file",
@@ -502,7 +543,7 @@ const EN: GuideDoc = {
       id: "ads-networks",
       title: "What each ads network supports",
       body: [
-        "Each ads platform works differently. The card on Accounts → Ads shows what you can create, whether you can boost existing content, what audiences you get, and how complete the stats are.",
+        "Each ads platform works differently. The card on Connections → Ads shows what you can create, whether you can boost existing content, what audiences you get, and how complete the stats are.",
         "Boost means putting money behind something that already exists (a post, a Pin, a tweet). A standalone campaign is a new ad. Not every network does both.",
       ],
       networks: [
@@ -560,7 +601,7 @@ const EN: GuideDoc = {
       tips: [
         {
           title: "Where ads work happens",
-          body: "Connecting accounts and reading results live in posty.now (Accounts → Ads, Statistics → Ads). Organic content — photos, video, series, dated promotions — you launch from the Assistant. Do not ask the assistant “how much did I spend on Meta”; open Statistics → Ads.",
+          body: "Connecting is at Connections → Ads. The campaign list and spend are under Ads in the top bar. Organic content — photos, video, series, dated promotions — you launch from the Assistant. Do not ask the assistant “how much did I spend on Meta”; open Ads.",
         },
       ],
     },
@@ -648,7 +689,7 @@ const EN: GuideDoc = {
       id: "schedule",
       title: "Schedule at a specific time",
       body: [
-        "Name the day and the clock time. Posty uses the sidebar clock (your local time), not a hidden timezone. “Tomorrow at 18:00” is 18:00 on that clock.",
+        "Name the day and the clock time. Posty uses the clock in the bottom bar (your local time), not a hidden timezone. “Tomorrow at 18:00” is 18:00 on that clock.",
         "You can combine: publish a story now on Instagram and TikTok, and schedule the reel tomorrow at 12:00 on Instagram.",
       ],
       examples: [
@@ -658,7 +699,7 @@ const EN: GuideDoc = {
       tips: [
         {
           title: "Check the clock",
-          body: "If you are travelling or on a VPN, look at Local time on the left. Schedules follow the studio clock.",
+          body: "If you are travelling or on a VPN, look at Local time in the studio’s bottom bar. Schedules follow that clock.",
         },
       ],
     },
@@ -752,27 +793,66 @@ const EN: GuideDoc = {
       ],
     },
     {
-      id: "stats-posts",
-      title: "Statistics: posts",
+      id: "posts-list",
+      title: "Posts (history)",
       body: [
-        "Statistics → Posts. Each network is a card: posts over 30 days, engagement, followers. Open a card for charts, a custom range, top posts, and comments where they exist.",
+        "Posts in the top bar is your calendar: drafts, scheduled, and published, only for the accounts connected here. Filter by network, account, status, source, and date range.",
+        "Use it to check whether a series went out, whether a schedule is still pending, or to open the post on the network. Publishing and scheduling still happen in the Assistant; this page is the history.",
+      ],
+    },
+    {
+      id: "messages",
+      title: "Messages and comments",
+      body: [
+        "Messages in the top bar has two tabs: direct messages and comments. You see threads from the connected accounts and can reply from this page, without opening the network’s app.",
+        "Filter by platform, account, and status. Something only appears if a posting account is connected at Connections → Social.",
+        "This inbox is you talking. The lead agent, if it is on, answers separately on new inbound messages that show intent — it does not replace this inbox.",
+      ],
+    },
+    {
+      id: "leads",
+      title: "Leads",
+      lead: "Each client has their own agent. Add the site link, train it, tell it how to talk, then turn generation on.",
+      body: [
+        "On Leads, paste the website URL and press Train the agent. It reads public pages and products. If it is already trained, the button says Already trained.",
+        "In the box below, tell it how you want the conversation to go: prices, what to spot (“how much is it”, “am I free on a date”), and your booking link if you have one. That is your briefing; it does not replace the crawl.",
+        "After training, press AI lead generation. From then on it only answers new inbound messages received after you turned generation on — not old threads and not messages you sent. The inbox is scanned once a day.",
+        "It introduces itself as the posty.now agent, asks for consent (YES) and sends the terms, then answers from what it read on the site. Leads show in the list (message, comment, or ad) as new / contacted / dismissed. Turn generation off with the same control when you want it quiet.",
+      ],
+      tips: [
+        {
+          title: "Instagram connected",
+          body: "DMs need an Instagram (or another inbox channel) connected at Connections. Training on the site does not publish and does not write to networks on its own.",
+        },
+        {
+          title: "Not a blast",
+          body: "Generation does not message old threads. A test DM has to arrive after you turned the button on, and the reply may wait for the next daily scan.",
+        },
+      ],
+    },
+    {
+      id: "stats-posts",
+      title: "Analytics",
+      body: [
+        "Analytics is the organic-posts board: engagement rate, reach, followers, posts in the range, best post, charts by platform and over time, and a heatmap for a good hour.",
+        "Filter by platform, account, source (created here or from the platform) and the last 7 / 30 / 90 days. Open the best-post link to see it on the network. The thumbnail is the post image; for video you get the network icon if there is no preview.",
         "Bluesky and Reddit give limited stats (likes, comments, shares — no impressions). Other connected networks give the full picture, within what each API provides.",
-        "This is where you see whether organic content landed. It is not the place for ad spend.",
+        "This is where you see whether organic content landed. Ad spend is not here — that is under Ads.",
       ],
     },
     {
       id: "stats-ads",
-      title: "Statistics: ads",
-      lead: "This is where the money shows. If no ads account is connected, the card is empty — that is not a bug.",
+      title: "Ads",
+      lead: "This is where campaigns and money show. If no ads account is connected, the page is empty — that is not a bug.",
       body: [
-        "Statistics → Ads. Per ads network: campaign count (30 days), spend, impressions. In detail: clicks, CTR, conversions, top campaigns, date range (7 / 30 / custom).",
+        "Ads in the top bar: active campaigns and past ones, on the connected ads networks. Filter by platform, account, status, and date range. New campaigns are created from the Assistant.",
         "Use it to decide whether a campaign is worth continuing, not to confuse it with a post that did well organically. A reel with many likes and a campaign with a strong CTR are different wins.",
-        "Change the range in the detail view if you want to compare a sale month with the previous one. If no campaigns appear, check Accounts → Ads: is the account connected and active in the range you picked?",
+        "If no campaigns appear, check Connections → Ads: is the account connected and active in the range you picked?",
       ],
       tips: [
         {
           title: "A short weekly loop",
-          body: "Once a week: Statistics → Posts (what landed organically) and Statistics → Ads (what cost money and what it returned). Then, in the assistant, adjust the series — or prepare a new dated creative if it is a promotion.",
+          body: "Once a week: Analytics (what landed organically) and Ads (what cost money and what it returned). Then, in the assistant, adjust the series — or prepare a new dated creative if it is a promotion. Move leads in the list to contacted once you have spoken to the person.",
         },
       ],
     },
@@ -795,6 +875,7 @@ const EN: GuideDoc = {
         "Move Friday’s post to the best time.",
         "Write a caption, warm tone, no emoji.",
         "Don’t ask for confirmation again in this chat.",
+        "Create a Meta ads campaign, traffic to the site, €10 a day.",
       ],
     },
     {
@@ -803,11 +884,12 @@ const EN: GuideDoc = {
       body: [
         "Dictation writes nothing: Chrome or Edge, Allow on the microphone, lock icon in the address bar. Reload. Then the mic in chat — it should stay orange while you speak.",
         "“Publishing now” on TikTok: wait. Processing is not an error. The green check is the signal.",
-        "Nothing publishes: Accounts → Posts, is the network connected? Do Instagram/TikTok/YouTube/Pinterest have a file attached?",
+        "Nothing publishes: Connections → Social, is the network connected? Do Instagram/TikTok/YouTube/Pinterest have a file attached?",
         "File rejected: 100 MB max, 50 files max. YouTube skips photos. TikTok accepts photos (carousel).",
         "Confirmation vanished: it expired. Send the command again.",
-        "Empty ads stats: Accounts → Ads, connect the network, then Statistics → Ads. A posting Instagram does not fill the ads dashboard.",
-        "Wrong language: the language switch is at the bottom of the sidebar, next to the clock.",
+        "Empty analytics: connect a posting account at Connections. Empty ads campaigns: Connections → Ads, then Ads in the top bar. A posting Instagram does not fill the ads dashboard.",
+        "Lead agent not answering: is it trained? Is AI lead generation on? The message must be new inbound after you turned generation on. The inbox is scanned once a day.",
+        "Wrong language: the language switch is in the studio’s bottom bar, next to the clock.",
       ],
     },
   ],
