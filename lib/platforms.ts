@@ -115,6 +115,10 @@ export const PLATFORMS = [
 export type PlatformId = (typeof PLATFORMS)[number]["id"];
 export type Platform = (typeof PLATFORMS)[number];
 
+export function platformIconSrc(id: string) {
+  return `/brand-icons/${id}.jpg`;
+}
+
 export function isPlatformId(value: string): value is PlatformId {
   return PLATFORMS.some((platform) => platform.id === value);
 }

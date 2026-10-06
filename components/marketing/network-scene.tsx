@@ -1,3 +1,4 @@
+import { PlatformIcon } from "@/components/studio/platform-icon";
 import { ADS_PLATFORMS, PLATFORMS } from "@/lib/platforms";
 
 const SOCIAL_IDS = [
@@ -27,15 +28,8 @@ export function NetworkScene({ kind, label }: { kind: "social" | "ads"; label: s
       <p className="text-center text-[12px] font-medium tracking-wide text-[#1d1d1f] sm:text-[13px]">{label}</p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:mt-6 sm:gap-3.5">
         {platforms.map((platform) => (
-          <span
-            key={platform.id}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[0.9rem] shadow-[0_1px_2px_rgba(0,0,0,0.08)] sm:h-14 sm:w-14 sm:rounded-[1.1rem]"
-            style={{ background: platform.iconBg }}
-            title={platform.label}
-          >
-            <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white sm:h-6 sm:w-6" aria-hidden>
-              <path d={platform.icon.path} />
-            </svg>
+          <span key={platform.id} title={platform.label}>
+            <PlatformIcon platform={platform} connected size="lg" />
             <span className="sr-only">{platform.label}</span>
           </span>
         ))}

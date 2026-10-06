@@ -28,6 +28,7 @@ import {
   Users,
   Video,
 } from "lucide-react";
+import { PlatformIcon } from "@/components/studio/platform-icon";
 import { getPlatform, platformLabel } from "@/lib/platforms";
 import type { AnalyticsBoard } from "@/lib/studio-feed";
 
@@ -61,14 +62,7 @@ function PlatformMark({ id }: { id: string }) {
   if (!platform) return <span className="text-xs">{platformLabel(id)}</span>;
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span
-        className="inline-flex h-5 w-5 items-center justify-center rounded-[5px]"
-        style={{ background: platform.iconBg }}
-      >
-        <svg viewBox="0 0 24 24" className="h-3 w-3 fill-white">
-          <path d={platform.icon.path} />
-        </svg>
-      </span>
+      <PlatformIcon platform={platform} connected size="xs" />
       <span>{platform.label}</span>
     </span>
   );

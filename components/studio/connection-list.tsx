@@ -55,7 +55,7 @@ export function ConnectionList({
                 <PlatformIcon
                   size="sm"
                   connected={connected}
-                  platform={{ label: item.label, iconBg: item.iconBg, icon: { path: item.iconPath } }}
+                  platform={{ id: item.id, label: item.label, iconBg: item.iconBg, icon: { path: item.iconPath } }}
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{item.label}</span>

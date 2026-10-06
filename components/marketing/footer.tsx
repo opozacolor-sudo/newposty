@@ -18,12 +18,11 @@ export async function MarketingFooter() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-8 w-8 items-center justify-center text-[#6e6e73] transition hover:text-[#1d1d1f]"
+                  className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-[0.55rem] transition hover:opacity-80"
                   aria-label={item.label}
                 >
-                  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
-                    <path d={item.path} />
-                  </svg>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/brand-icons/${item.id}.jpg`} alt="" className="h-full w-full object-cover" />
                 </a>
               </li>
             ))}
