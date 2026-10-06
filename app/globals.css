@@ -95,7 +95,14 @@ html.home-no-scroll .marketing {
   overflow: hidden;
 }
 
-@media (max-width: 1023px), (min-width: 1024px) and (max-height: 860px) {
+@media (max-width: 1023px) {
+  html.home-no-scroll .marketing {
+    height: 100svh;
+    max-height: 100svh;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 860px) {
   html.home-no-scroll,
   html.home-no-scroll body,
   html.home-no-scroll .marketing {

@@ -122,7 +122,7 @@ export function MarketingHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#f5f5f7]/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-11 max-w-[980px] items-center px-4">
+      <div className="mx-auto flex h-10 max-w-[980px] items-center px-4 lg:h-11">
         <div className="flex min-w-0 items-center gap-2 lg:contents">
           <button
             type="button"

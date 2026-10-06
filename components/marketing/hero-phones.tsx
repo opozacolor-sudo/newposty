@@ -156,24 +156,24 @@ export function HeroPhones() {
 
   return (
     <>
-      <div className="mt-2 flex w-full shrink-0 flex-col lg:mt-5 lg:min-h-0 lg:flex-1 lg:items-center lg:justify-center lg:overflow-visible lg:pb-3 [@media(max-height:920px)]:lg:mt-3">
+      <div className="mt-1 flex min-h-0 w-full flex-1 flex-col [container-type:size] lg:mt-5 lg:items-center lg:justify-center lg:overflow-visible lg:pb-3 lg:[container-type:normal] [@media(max-height:920px)]:lg:mt-3">
         <ul
           ref={scroller}
-          className="flex h-auto shrink-0 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(88vw,90rem)] lg:flex-none lg:grid-cols-6 lg:gap-2.5 lg:overflow-visible lg:px-0"
+          className="flex h-auto max-h-full shrink-0 snap-x snap-mandatory items-start gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(88vw,90rem)] lg:flex-none lg:grid-cols-6 lg:items-stretch lg:gap-2.5 lg:overflow-visible lg:px-0"
         >
           {CARDS.map((card) => (
             <li
               key={card.title}
-              className="aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem))] shrink-0 snap-start lg:aspect-[3/4] lg:min-h-[15.5rem] lg:w-auto lg:min-w-0"
+              className="aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem),calc(80cqh-1.75rem))] max-h-full shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:min-h-[15.5rem] lg:w-auto lg:min-w-0 lg:max-h-none"
             >
-              <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white lg:rounded-[1.4rem]">
-                <div className="shrink-0 px-5 pt-5 lg:px-3 lg:pt-3 xl:px-3.5 xl:pt-3.5">
-                  <p className="text-[13px] font-normal text-[#1d1d1f] lg:text-[11px] xl:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-1 line-clamp-2 max-w-[16rem] text-[21px] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-0.5 lg:max-w-none lg:min-h-[2.1em] lg:text-[13px] xl:text-[15px]">
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-white lg:rounded-[1.4rem]">
+                <div className="shrink-0 px-3.5 pt-3 lg:px-3 lg:pt-3 xl:px-3.5 xl:pt-3.5">
+                  <p className="text-[11px] font-normal text-[#1d1d1f] lg:text-[11px] xl:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-0.5 line-clamp-2 max-w-[16rem] text-[clamp(1rem,2.7dvh,1.25rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-0.5 lg:max-w-none lg:min-h-[2.1em] lg:text-[13px] xl:text-[15px]">
                     {t(card.title)}
                   </p>
                 </div>
-                <div className="relative mx-2 mb-2 mt-1.5 min-h-[14rem] flex-1 basis-0 overflow-hidden rounded-[1.25rem] lg:mx-1.5 lg:mb-1.5 lg:mt-1 lg:min-h-[8.5rem] lg:rounded-[1.05rem]">
+                <div className="relative mx-2 mb-2 mt-1 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.15rem] lg:mx-1.5 lg:mb-1.5 lg:mt-1 lg:min-h-[8.5rem] lg:rounded-[1.05rem]">
                   <Image
                     src={card.src}
                     alt=""
@@ -186,7 +186,7 @@ export function HeroPhones() {
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-5 right-5 z-[1] flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_2px_10px_rgba(0,0,0,0.22)] lg:bottom-3 lg:right-3 lg:h-8 lg:w-8"
+                  className="absolute bottom-3 right-3 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_2px_10px_rgba(0,0,0,0.22)] lg:bottom-3 lg:right-3 lg:h-8 lg:w-8"
                   aria-label={t("screenOpen")}
                 >
                   <Plus size={16} strokeWidth={2.5} />
@@ -195,24 +195,24 @@ export function HeroPhones() {
             </li>
           ))}
         </ul>
-        <div className="mt-2.5 flex shrink-0 justify-end gap-3 px-5 pb-2 lg:hidden">
+        <div className="mt-1.5 flex shrink-0 justify-end gap-2 px-5 lg:hidden">
           <button
             type="button"
             onClick={() => scrollByCard(-1)}
             disabled={!canPrev}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e8e8ed] text-[#1d1d1f] transition disabled:opacity-35"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#e8e8ed] text-[#1d1d1f] transition disabled:opacity-35"
             aria-label={t("screenPrev")}
           >
-            <ChevronLeft size={18} strokeWidth={2} />
+            <ChevronLeft size={16} strokeWidth={2} />
           </button>
           <button
             type="button"
             onClick={() => scrollByCard(1)}
             disabled={!canNext}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e8e8ed] text-[#1d1d1f] transition disabled:opacity-35"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#e8e8ed] text-[#1d1d1f] transition disabled:opacity-35"
             aria-label={t("screenNext")}
           >
-            <ChevronRight size={18} strokeWidth={2} />
+            <ChevronRight size={16} strokeWidth={2} />
           </button>
         </div>
       </div>
