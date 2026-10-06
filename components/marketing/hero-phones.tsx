@@ -170,13 +170,13 @@ export function HeroPhones() {
               className="h-full w-[min(22.5rem,calc(100vw-3.25rem))] shrink-0 snap-start lg:min-h-0 lg:w-auto lg:min-w-0"
             >
               <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white lg:rounded-[1.4rem]">
-                <div className="h-[5.25rem] shrink-0 px-5 pt-5 lg:h-[3.4rem] lg:px-3 lg:pt-3.5 xl:h-[4.1rem] xl:px-4 xl:pt-4">
+                <div className="shrink-0 px-5 pt-5 lg:px-3 lg:pt-3 xl:px-3.5 xl:pt-3.5">
                   <p className="text-[13px] font-normal text-[#1d1d1f] lg:text-[10px] xl:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-1 line-clamp-2 max-w-[16rem] text-[21px] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-1 lg:max-w-none lg:text-[12px] xl:text-[15px]">
+                  <p className="mt-1 line-clamp-2 max-w-[16rem] text-[21px] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-0.5 lg:max-w-none lg:text-[12px] xl:text-[15px]">
                     {t(card.title)}
                   </p>
                 </div>
-                <div className="relative mx-2 mb-2 mt-2 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.25rem] lg:mx-1 lg:mb-1 lg:mt-0.5 lg:rounded-[1.05rem] xl:mx-1.5 xl:mb-1.5">
+                <div className="relative mx-2 mb-2 mt-1.5 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.25rem] lg:mx-1 lg:mb-1 lg:mt-1 lg:rounded-[1.05rem] xl:mx-1.5 xl:mb-1.5">
                   <Image
                     src={card.src}
                     alt=""
