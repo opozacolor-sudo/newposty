@@ -6,6 +6,7 @@ import {
   flattenAnalyticsPost,
   heatmapFromBestTime,
   jsDayFromApiMonday,
+  pickMediaThumb,
   sumDailyMetrics,
 } from "./analytics-parse";
 
@@ -97,4 +98,24 @@ test("sumDailyMetrics prefers platformBreakdown", () => {
   assert.equal(totals.posts, 35);
   assert.equal(totals.likes, 43);
   assert.equal(totals.reach, 4324);
+});
+
+test("pickMediaThumb ignores video files and keeps image thumbnails", () => {
+  assert.equal(
+    pickMediaThumb({
+      mediaType: "video",
+      mediaItems: [{ url: "https://cdn.example/clip.mp4", type: "video" }],
+    }),
+    null,
+  );
+  assert.equal(
+    pickMediaThumb({
+      mediaType: "video",
+      mediaItems: [
+        { url: "https://cdn.example/clip.mp4", type: "video", thumbnail: "https://cdn.example/thumb.jpg" },
+      ],
+    }),
+    "https://cdn.example/thumb.jpg",
+  );
+  assert.equal(pickMediaThumb({ thumbnailUrl: "https://cdn.example/photo.jpg" }), "https://cdn.example/photo.jpg");
 });

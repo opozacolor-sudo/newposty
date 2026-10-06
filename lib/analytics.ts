@@ -10,6 +10,7 @@ import {
   type AnalyticsComment,
   type AnalyticsKpi,
 } from "@/lib/analytics-shared";
+import { pickMediaThumb } from "@/lib/analytics-parse";
 import {
   getDailyMetrics,
   getFollowerStats,
@@ -255,10 +256,6 @@ export async function loadAccountAnalytics(input: {
   const posts = analyticsPosts(postsBody)
     .map((post) => {
       const metrics = postMetrics(post);
-      const media = Array.isArray(post.mediaItems)
-        ? post.mediaItems.find((item) => asRecord(item)?.thumbnail || asRecord(item)?.url)
-        : null;
-      const mediaRecord = asRecord(media);
       return {
         id: String(post.postId ?? post.id ?? ""),
         content: String(post.content ?? ""),
@@ -268,11 +265,7 @@ export async function loadAccountAnalytics(input: {
             : typeof post.scheduledFor === "string"
               ? post.scheduledFor
               : null,
-        thumbnailUrl:
-          (typeof post.thumbnailUrl === "string" && post.thumbnailUrl) ||
-          (typeof mediaRecord?.thumbnail === "string" && mediaRecord.thumbnail) ||
-          (typeof mediaRecord?.url === "string" && mediaRecord.url) ||
-          null,
+        thumbnailUrl: pickMediaThumb(post),
         views: limited ? null : metrics.views,
         likes: metrics.likes,
         comments: metrics.comments,

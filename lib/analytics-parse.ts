@@ -99,13 +99,38 @@ export function engagementRate(row: {
   return Math.round((interactions / base) * 10000) / 100;
 }
 
-function mediaThumb(post: Record<string, unknown>) {
-  if (typeof post.thumbnailUrl === "string" && post.thumbnailUrl) return post.thumbnailUrl;
+function looksLikeVideo(url: string, type?: string | null) {
+  const kind = (type ?? "").toLowerCase();
+  if (kind.includes("video")) return true;
+  return /\.(mp4|mov|webm|m4v|avi)(\?|#|$)/i.test(url);
+}
+
+function usableImageUrl(url: string, type?: string | null) {
+  if (!url) return false;
+  if (url.startsWith("data:image/")) return true;
+  if (looksLikeVideo(url, type)) return false;
+  return /^(https?:|blob:|data:)/i.test(url);
+}
+
+export function pickMediaThumb(post: Record<string, unknown>) {
+  const mediaType = typeof post.mediaType === "string" ? post.mediaType : null;
+  const candidates: Array<{ url: string; type: string | null }> = [];
+  if (typeof post.thumbnailUrl === "string" && post.thumbnailUrl) {
+    candidates.push({ url: post.thumbnailUrl, type: "image" });
+  }
   const items = Array.isArray(post.mediaItems) ? post.mediaItems : [];
   for (const item of items) {
     const media = asRecord(item);
-    if (typeof media?.thumbnail === "string" && media.thumbnail) return media.thumbnail;
-    if (typeof media?.url === "string" && media.url) return media.url;
+    const kind = typeof media?.type === "string" ? media.type : mediaType;
+    if (typeof media?.thumbnail === "string" && media.thumbnail) {
+      candidates.push({ url: media.thumbnail, type: "image" });
+    }
+    if (typeof media?.url === "string" && media.url) {
+      candidates.push({ url: media.url, type: kind });
+    }
+  }
+  for (const candidate of candidates) {
+    if (usableImageUrl(candidate.url, candidate.type)) return candidate.url;
   }
   return null;
 }
@@ -139,7 +164,7 @@ export function flattenAnalyticsPost(
   ownedIds?: Set<string>,
 ): ParsedAnalyticsRow[] {
   const slices = platformSlices(post);
-  const thumb = mediaThumb(post);
+  const thumb = pickMediaThumb(post);
   const content = String(post.content ?? "");
   const published = publishedAt(post);
   const mediaType = typeof post.mediaType === "string" ? post.mediaType : null;

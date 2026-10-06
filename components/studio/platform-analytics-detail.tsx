@@ -380,6 +380,7 @@ export function PlatformAnalyticsDetail({
                     <img
                       src={post.thumbnailUrl}
                       alt=""
+                      referrerPolicy="no-referrer"
                       className="h-28 w-full object-cover"
                     />
                   ) : (

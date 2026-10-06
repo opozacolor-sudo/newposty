@@ -57,6 +57,29 @@ function dash(value: number, locale: string) {
   return value ? compact(value, locale) : "—";
 }
 
+function BestPostThumb({ url, platform }: { url: string | null; platform: string }) {
+  const [failed, setFailed] = useState(false);
+  const meta = getPlatform(platform);
+  if (!url || failed) {
+    if (meta) return <PlatformIcon platform={meta} connected size="md" />;
+    return (
+      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-neutral-400">
+        <FileText size={16} />
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={url}
+      alt=""
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+      className="h-10 w-10 rounded-lg object-cover"
+    />
+  );
+}
+
 function PlatformMark({ id }: { id: string }) {
   const platform = getPlatform(id);
   if (!platform) return <span className="text-xs">{platformLabel(id)}</span>;
@@ -293,17 +316,7 @@ export function AnalyticsBoardView({
             <div>
               <p className="text-xs text-neutral-500">{labels.bestPost}</p>
               <div className="mt-1 flex items-center gap-2">
-                {board.bestPost.thumbnailUrl ? (
-                  <img
-                    src={board.bestPost.thumbnailUrl}
-                    alt=""
-                    className="h-10 w-10 rounded-lg object-cover"
-                  />
-                ) : (
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-neutral-400">
-                    <FileText size={16} />
-                  </span>
-                )}
+                <BestPostThumb url={board.bestPost.thumbnailUrl} platform={board.bestPost.platform} />
                 <p className="text-lg font-semibold">{compact(board.bestPost.likes, locale)}</p>
                 {board.bestPost.url ? (
                   <a
