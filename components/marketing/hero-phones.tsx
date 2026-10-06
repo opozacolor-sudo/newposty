@@ -176,7 +176,7 @@ export function HeroPhones() {
                     {t(card.title)}
                   </p>
                 </div>
-                <div className="relative mx-4 mb-3 mt-3 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.2rem] lg:mx-2.5 lg:mb-11 lg:mt-2 lg:rounded-[1rem] xl:mx-3">
+                <div className="relative mx-2 mb-2 mt-2 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.25rem] lg:mx-1 lg:mb-1 lg:mt-0.5 lg:rounded-[1.05rem] xl:mx-1.5 xl:mb-1.5">
                   <Image
                     src={card.src}
                     alt=""
@@ -189,7 +189,7 @@ export function HeroPhones() {
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-4 right-4 z-[1] flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_2px_10px_rgba(0,0,0,0.22)] lg:bottom-2.5 lg:right-2.5 lg:h-8 lg:w-8 lg:shadow-none"
+                  className="absolute bottom-5 right-5 z-[1] flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_2px_10px_rgba(0,0,0,0.22)] lg:bottom-3 lg:right-3 lg:h-8 lg:w-8"
                   aria-label={t("screenOpen")}
                 >
                   <Plus size={16} strokeWidth={2.5} />
