@@ -340,6 +340,7 @@ export async function saveTrainedAgent(input: {
         ...knowledge,
         instructions: existing.knowledge.instructions ?? knowledge.instructions,
         coach: existing.knowledge.coach ?? knowledge.coach,
+        listenFrom: existing.knowledge.listenFrom ?? knowledge.listenFrom,
         booking: {
           ...knowledge.booking,
           url: existing.knowledge.booking?.url || knowledge.booking?.url || null,
@@ -371,17 +372,21 @@ export async function setLeadAgentEnabled(input: {
   if (!existing?.trained_at) {
     throw new Error("not_trained");
   }
+  const knowledge = input.enabled
+    ? { ...existing.knowledge, listenFrom: new Date().toISOString() }
+    : existing.knowledge;
   const { error } = await input.supabase
     .from("lead_agents")
     .update({
       enabled: input.enabled,
       addon_status: input.enabled ? "active" : existing.addon_status,
+      knowledge,
       updated_at: new Date().toISOString(),
     })
     .eq("id", existing.id)
     .eq("user_id", input.userId);
   if (error) throw error;
-  return { ...existing, enabled: input.enabled };
+  return { ...existing, enabled: input.enabled, knowledge };
 }
 
 export async function saveAgentKnowledge(input: {

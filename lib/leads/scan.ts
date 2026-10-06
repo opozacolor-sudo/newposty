@@ -1,6 +1,6 @@
 import { agentCopy } from "@/lib/leads/copy";
 import { nextAgentReply } from "@/lib/leads/qualify";
-import { looksLikePraiseOnly, textMatchesPhrases } from "@/lib/leads/triggers";
+import { isAfterListenFrom, isInboundLeadMessage, isNewLeadInbound } from "@/lib/leads/scan-rules";
 import { syncAdLeads } from "@/lib/leads/ads";
 import type { AgentKnowledge } from "@/lib/leads/knowledge";
 import {
@@ -41,13 +41,6 @@ export type LeadScanStats = {
   adsImported: number;
   errors: number;
 };
-
-function inboundDirection(direction?: string | null) {
-  const value = (direction || "").toLowerCase();
-  if (!value) return true;
-  if (/(out|send|agent|page|business)/.test(value)) return false;
-  return /(in|receiv|user|customer|from)/.test(value) || true;
-}
 
 function messageText(row: { message?: string; text?: string }) {
   return String(row.message || row.text || "").trim();
@@ -178,6 +171,7 @@ export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats
         const posts = await listInboxComments({
           profileId: profile.profileId,
           accountId: account.zernio_account_id,
+          since: knowledge.listenFrom ?? undefined,
           limit: 15,
         });
         for (const post of posts.data ?? []) {
@@ -197,6 +191,8 @@ export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats
               authorName: comment.from?.name ?? comment.from?.username ?? null,
               authorHandle: comment.from?.username ?? null,
               text: comment.message ?? "",
+              createdTime: comment.createdTime,
+              listenFrom: knowledge.listenFrom,
               phrases,
             });
             stats.invited += invited;
@@ -235,10 +231,24 @@ async function handleConversation(input: {
     conversationId,
   });
 
-  const lastMessage = String(input.conversation.lastMessage || "").trim();
-  const interested = Boolean(lastMessage) && textMatchesPhrases(lastMessage, input.phrases) && !looksLikePraiseOnly(lastMessage);
+  const listenFrom = input.knowledge?.listenFrom ?? null;
+  const messagesBody = await listConversationMessages(conversationId, input.accountId).catch(() => null);
+  const messages = [...(messagesBody?.messages ?? messagesBody?.data ?? [])].sort((a, b) =>
+    String(a.createdTime ?? "").localeCompare(String(b.createdTime ?? "")),
+  );
+  const inbound = messages.filter(
+    (row) =>
+      isInboundLeadMessage(row) &&
+      messageText(row) &&
+      isAfterListenFrom(row.createdTime, listenFrom),
+  );
+  const latest = inbound[inbound.length - 1];
+  if (!latest) return result;
 
-  if (!existing && !interested) return result;
+  const latestText = messageText(latest);
+  if (!existing && !isNewLeadInbound(latestText, input.phrases, latest.createdTime, listenFrom)) {
+    return result;
+  }
 
   let thread =
     existing ??
@@ -252,36 +262,24 @@ async function handleConversation(input: {
       externalId: conversationId,
       conversationId,
       authorName: input.conversation.participantName ?? null,
-      triggerText: lastMessage,
+      triggerText: latestText,
       stage: "invited",
     }));
 
   if (thread.stage === "qualified" || thread.stage === "dismissed") return result;
 
-  const messagesBody = await listConversationMessages(conversationId, input.accountId).catch(() => null);
-  const messages = [...(messagesBody?.messages ?? messagesBody?.data ?? [])].sort((a, b) =>
-    String(a.createdTime ?? "").localeCompare(String(b.createdTime ?? "")),
-  );
-
-  const inbound = messages.filter((row) => inboundDirection(row.direction) && messageText(row));
   const seenIndex = inbound.findIndex((item) => messageKey(item) === thread.last_external_id);
   const lastUser = [...thread.transcript].reverse().find((item) => item.role === "user")?.text;
   const textIndex = lastUser ? inbound.findIndex((item) => messageText(item) === lastUser) : -1;
-  const unseen =
-    seenIndex >= 0
+  const unseen = existing
+    ? seenIndex >= 0
       ? inbound.slice(seenIndex + 1)
       : textIndex >= 0
         ? inbound.slice(textIndex + 1)
-        : thread.last_external_id
-          ? inbound.filter((item) => !thread.transcript.some((entry) => entry.role === "user" && entry.text === messageText(item)))
-          : inbound;
+        : inbound.filter((item) => !thread.transcript.some((entry) => entry.role === "user" && entry.text === messageText(item)))
+    : [latest];
 
-  const toProcess =
-    unseen.length > 0
-      ? unseen
-      : interested && thread.stage === "invited"
-        ? [{ id: conversationId, message: lastMessage, direction: "inbound" }]
-        : [];
+  const toProcess = unseen;
 
   let lastReply: string | null = null;
   for (const row of toProcess) {
@@ -319,11 +317,13 @@ async function handleComment(input: {
   authorName: string | null;
   authorHandle: string | null;
   text: string;
+  createdTime?: string;
+  listenFrom?: string | null;
   phrases: string[];
 }) {
   const text = input.text.trim();
   const externalId = input.commentId || `${input.postId}:${text.slice(0, 40)}`;
-  if (!text || looksLikePraiseOnly(text) || !textMatchesPhrases(text, input.phrases)) return 0;
+  if (!isNewLeadInbound(text, input.phrases, input.createdTime, input.listenFrom)) return 0;
 
   const existing = await findLeadThread({
     supabase: input.supabase,

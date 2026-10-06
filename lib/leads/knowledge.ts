@@ -31,6 +31,7 @@ export type AgentKnowledge = {
   faqs?: Array<{ q: string; a: string }>;
   pages?: KnowledgePage[];
   coach?: CoachTurn[];
+  listenFrom?: string | null;
 };
 
 export type LeadAgent = {
