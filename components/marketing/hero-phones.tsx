@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
+import { ContentScene } from "@/components/marketing/content-scene";
 import { NetworkScene } from "@/components/marketing/network-scene";
 
 const CARDS = [
@@ -19,7 +20,17 @@ const CARDS = [
     ],
     closer: "screenNetworksCloser",
   },
-  { kicker: "screenContentKicker", title: "screenContent", src: "/marketing/phone-content-hud.png" },
+  {
+    kicker: "screenContentKicker",
+    title: "screenContent",
+    src: "/marketing/phone-content-hud.png",
+    popupTitle: "screenContentPopupTitle",
+    sections: [
+      { body: "screenContentMake", scene: "make", label: "screenContentMakeLabel" },
+      { body: "screenContentPlan", scene: "plan", label: "screenContentPlanLabel" },
+    ],
+    closer: "screenContentCloser",
+  },
   { kicker: "screenAdsKicker", title: "screenAds", src: "/marketing/phone-ads-hud.png" },
   { kicker: "screenChatKicker", title: "screenChat", src: "/marketing/phone-chat-hud.png" },
   { kicker: "screenLeadsKicker", title: "screenLeads", src: "/marketing/phone-leads-hud.png" },
@@ -192,7 +203,11 @@ export function HeroPhones() {
                           {t(section.body)}
                         </p>
                         {"scene" in section ? (
-                          <NetworkScene kind={section.scene} label={t(section.label)} />
+                          section.scene === "social" || section.scene === "ads" ? (
+                            <NetworkScene kind={section.scene} label={t(section.label)} />
+                          ) : (
+                            <ContentScene kind={section.scene} label={t(section.label)} />
+                          )
                         ) : (
                           <div className="relative mx-auto mt-10 h-[min(58vw,26rem)] w-full max-w-[28rem]">
                             <Image src={section.src} alt="" fill className="object-contain object-bottom" sizes="28rem" />
