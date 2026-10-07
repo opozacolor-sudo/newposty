@@ -3,6 +3,11 @@ import { LocaleSwitch } from "@/components/locale-switch";
 import { HomeWaitlistBand } from "@/components/marketing/home-waitlist-band";
 import { MARKETING_SOCIAL } from "@/lib/marketing-social";
 
+const ANPC_SAL_HREF = "https://reclamatiisal.anpc.ro/";
+
+const metaLabel =
+  "whitespace-nowrap text-[8px] font-medium text-[#55514e] sm:text-[9px] lg:text-[10px]";
+
 export async function MarketingFooter() {
   const t = await getTranslations("Footer");
 
@@ -42,9 +47,27 @@ export async function MarketingFooter() {
               <LocaleSwitch className="shrink-0" />
             </div>
             <div className="posty-footer-meta-tile h-7 w-14 rounded-full transition duration-200 hover:-translate-y-0.5 sm:h-8 sm:w-16 lg:h-10 lg:w-[4.5rem]">
-              <span className="whitespace-nowrap text-[8px] font-medium text-[#55514e] sm:text-[9px] lg:text-[10px]">
-                {t("copyright")}
-              </span>
+              <span className={metaLabel}>{t("copyright")}</span>
+            </div>
+            <div className="posty-footer-anpc-group hidden lg:contents">
+              <a
+                href={ANPC_SAL_HREF}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t("salAria")}
+                className="posty-footer-meta-tile h-10 w-12 rounded-full no-underline transition duration-200 hover:-translate-y-0.5 lg:w-14"
+              >
+                <span className={metaLabel}>{t("sal")}</span>
+              </a>
+              <a
+                href={ANPC_SAL_HREF}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t("anpcAria")}
+                className="posty-footer-meta-tile h-10 w-[3.25rem] rounded-full no-underline transition duration-200 hover:-translate-y-0.5 lg:w-[3.6rem]"
+              >
+                <span className={metaLabel}>{t("anpc")}</span>
+              </a>
             </div>
           </div>
         </div>

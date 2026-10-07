@@ -193,6 +193,10 @@
   },
   "Footer": {
     "copyright": "© 2026",
+    "anpc": "ANPC",
+    "sal": "SAL",
+    "anpcAria": "ANPC — alternative Streitbeilegung",
+    "salAria": "Alternative Streitbeilegung",
     "privacy": "Datenschutz",
     "terms": "AGB",
     "legal": "Rechtliches",

@@ -193,6 +193,10 @@
   },
   "Footer": {
     "copyright": "© 2026",
+    "anpc": "ANPC",
+    "sal": "SAL",
+    "anpcAria": "ANPC — alternative dispute resolution",
+    "salAria": "Alternative dispute resolution",
     "privacy": "Privacy",
     "terms": "Terms",
     "legal": "Legal",

@@ -618,6 +618,12 @@ html:has(.marketing):not(.home-no-scroll) body {
   display: block;
 }
 
+@media (max-width: 1023px) {
+  .posty-footer-anpc-group {
+    display: none !important;
+  }
+}
+
 .posty-footer-meta-tile {
   position: relative;
   isolation: isolate;
