@@ -22,9 +22,9 @@ export async function MarketingFooter() {
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`/footer-social/${item.id}.${item.id === "youtube" ? "jpg" : "png"}`}
+                    src={`/footer-social/${item.id}.jpg`}
                     alt=""
-                    className="h-full w-full scale-[1.28] object-cover"
+                    className="h-full w-full scale-[1.16] object-cover"
                   />
                 </a>
               </li>

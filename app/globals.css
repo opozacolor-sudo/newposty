@@ -385,8 +385,7 @@ body {
 }
 
 .posty-footer-social-icon img {
-  mix-blend-mode: luminosity;
-  filter: brightness(0.84) contrast(1.22);
+  display: block;
 }
 
 .posty-footer-meta-tile {
