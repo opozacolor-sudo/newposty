@@ -372,6 +372,7 @@ body {
 
 .posty-footer-social-icon {
   isolation: isolate;
+  flex: none;
   background: linear-gradient(
     145deg,
     #b8b7b3 0%,
@@ -382,6 +383,14 @@ body {
     -2px -2px 5px rgba(255, 255, 255, 0.24),
     3px 4px 6px rgba(63, 54, 49, 0.2),
     0 0 9px rgba(255, 197, 154, 0.16);
+}
+
+@media (max-width: 1023px) {
+  .posty-footer-social-icon {
+    box-shadow:
+      -1px -1px 2px rgba(255, 255, 255, 0.2),
+      1px 2px 3px rgba(63, 54, 49, 0.14);
+  }
 }
 
 .posty-footer-social-icon img {

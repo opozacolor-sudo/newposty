@@ -7,24 +7,24 @@ export async function MarketingFooter() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="posty-footer-dock posty-clay-card relative mx-3 mb-3 mt-1 shrink-0 rounded-[1.6rem] sm:mx-5 sm:mb-4 sm:mt-2 sm:rounded-[2rem]">
-      <div className="relative z-[3] mx-auto grid max-w-[1180px] grid-cols-2 items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-3 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,1.45fr)_minmax(0,1fr)]">
-        <div className="relative order-2 col-start-1 px-1 py-1 lg:order-1 lg:col-start-1">
-          <ul className="relative z-[3] flex items-center justify-center gap-1">
+    <footer className="posty-footer-dock posty-clay-card relative mx-3 mb-3 mt-1 shrink-0 overflow-hidden rounded-[1.6rem] sm:mx-5 sm:mb-4 sm:mt-2 sm:rounded-[2rem]">
+      <div className="relative z-[3] mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:gap-3 sm:px-3 sm:py-3 sm:pb-3 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,1.45fr)_minmax(0,1fr)]">
+        <div className="relative order-2 min-w-0 px-0.5 py-0.5 lg:order-1 lg:col-start-1">
+          <ul className="relative z-[3] flex items-center justify-start gap-1 sm:justify-center sm:gap-1.5">
             {MARKETING_SOCIAL.map((item) => (
-              <li key={item.id}>
+              <li key={item.id} className="shrink-0">
                 <a
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="posty-footer-social-icon inline-flex size-8 items-center justify-center overflow-hidden rounded-[0.75rem] transition duration-200 hover:z-[1] hover:-translate-y-1 hover:scale-105 sm:size-10 sm:rounded-[0.9rem] lg:size-[3.75rem] lg:rounded-[1.1rem]"
+                  className="posty-footer-social-icon inline-flex size-8 items-center justify-center overflow-hidden rounded-[0.6rem] transition duration-200 sm:size-10 sm:rounded-[0.7rem] lg:size-[3.75rem] lg:rounded-[1.15rem] lg:hover:z-[1] lg:hover:-translate-y-1 lg:hover:scale-105"
                   aria-label={item.label}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`/footer-social/${item.id}.jpg`}
                     alt=""
-                    className="h-full w-full scale-[1.16] object-cover"
+                    className="h-full w-full object-cover lg:scale-[1.06]"
                   />
                 </a>
               </li>
