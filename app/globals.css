@@ -618,16 +618,6 @@ html:has(.marketing):not(.home-no-scroll) body {
   display: block;
 }
 
-.posty-footer-anpc-badge {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .posty-footer-anpc-badge {
-    display: inline-flex;
-  }
-}
-
 .posty-footer-meta-tile {
   position: relative;
   isolation: isolate;
