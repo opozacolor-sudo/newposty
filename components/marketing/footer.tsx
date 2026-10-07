@@ -18,7 +18,6 @@ export async function MarketingFooter() {
                   target="_blank"
                   rel="noreferrer"
                   className="posty-footer-social-icon inline-flex size-8 items-center justify-center overflow-hidden rounded-[0.75rem] transition duration-200 hover:z-[1] hover:-translate-y-1 hover:scale-105 sm:size-10 sm:rounded-[0.9rem] lg:size-[3.75rem] lg:rounded-[1.1rem]"
-                  data-network={item.id}
                   aria-label={item.label}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
