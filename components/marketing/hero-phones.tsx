@@ -166,10 +166,10 @@ export function HeroPhones() {
               key={card.title}
               className="aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem),calc(80cqh-1.75rem))] max-h-full shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:w-auto lg:min-w-0 lg:max-h-full"
             >
-              <div className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-white lg:rounded-[1.4rem]">
+              <div className="posty-glow group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] lg:rounded-[1.4rem]">
                 <div className="shrink-0 px-3.5 pt-3 lg:px-3 lg:pt-3 xl:px-3.5 xl:pt-3.5">
-                  <p className="text-[11px] font-normal text-[#1d1d1f] lg:text-[11px] xl:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-0.5 line-clamp-2 max-w-[16rem] text-[clamp(1rem,2.7dvh,1.25rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-0.5 lg:max-w-none lg:min-h-[2.1em] lg:text-[13px] xl:text-[15px]">
+                  <p className="text-[11px] font-normal text-white/80 lg:text-[11px] xl:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-0.5 line-clamp-2 max-w-[16rem] text-[clamp(1rem,2.7dvh,1.25rem)] font-semibold leading-[1.12] tracking-tight text-white lg:mt-0.5 lg:max-w-none lg:min-h-[2.1em] lg:text-[13px] xl:text-[15px]">
                     {t(card.title)}
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export function HeroPhones() {
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-3 right-3 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_2px_10px_rgba(0,0,0,0.22)] lg:bottom-3 lg:right-3 lg:h-8 lg:w-8"
+                  className="absolute bottom-3 right-3 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/40 backdrop-blur-sm lg:bottom-3 lg:right-3 lg:h-8 lg:w-8"
                   aria-label={t("screenOpen")}
                 >
                   <Plus size={16} strokeWidth={2.5} />

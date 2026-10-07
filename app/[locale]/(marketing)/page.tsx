@@ -19,7 +19,7 @@ export default async function HomePage() {
           </p>
           <Link
             href="/guide"
-            className="mt-1 inline-flex h-7 items-center rounded-full bg-[#0071e3] px-3.5 text-[12px] font-normal text-white transition hover:bg-[#0077ed] lg:mt-2 lg:h-8 lg:px-4 lg:text-[14px]"
+            className="posty-glow-btn mt-1 inline-flex h-7 items-center rounded-full px-3.5 text-[12px] font-normal text-white transition hover:brightness-110 lg:mt-2 lg:h-8 lg:px-4 lg:text-[14px]"
           >
             {t("learnMore")}
           </Link>
