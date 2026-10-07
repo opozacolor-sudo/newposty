@@ -355,14 +355,31 @@ export type ZernioConversation = {
   lastMessage?: string;
   updatedTime?: string;
   status?: string;
+  folder?: string;
   unreadCount?: number | null;
 };
+
+export type ZernioInboxMessage = {
+  id?: string;
+  message?: string;
+  text?: string;
+  createdTime?: string;
+  createdAt?: string;
+  sentAt?: string;
+  direction?: string;
+  from?: string;
+};
+
+function withInboxCreatedTime(row: ZernioInboxMessage): ZernioInboxMessage {
+  return { ...row, createdTime: row.createdTime || row.createdAt || row.sentAt };
+}
 
 export async function listConversations(query: {
   profileId: string;
   accountId?: string;
   platform?: string;
   status?: string;
+  folder?: "inbox" | "requests";
   limit?: number;
 }) {
   return zernioFetch<{ data?: ZernioConversation[] }>(withQuery("/inbox/conversations", query));
@@ -375,17 +392,45 @@ export async function getConversation(conversationId: string, accountId: string)
 }
 
 export async function listConversationMessages(conversationId: string, accountId: string) {
-  return zernioFetch<{
-    messages?: Array<{ id?: string; message?: string; text?: string; createdTime?: string; direction?: string }>;
-    data?: Array<{ id?: string; message?: string; text?: string; createdTime?: string; direction?: string }>;
+  const body = await zernioFetch<{
+    messages?: ZernioInboxMessage[];
+    data?: ZernioInboxMessage[];
   }>(withQuery(`/inbox/conversations/${encodeURIComponent(conversationId)}/messages`, { accountId }));
+  const normalized = (body.messages ?? body.data ?? []).map(withInboxCreatedTime);
+  return { ...body, messages: normalized, data: normalized };
 }
 
-export async function sendConversationMessage(conversationId: string, accountId: string, message: string) {
-  return zernioFetch<unknown>(`/inbox/conversations/${encodeURIComponent(conversationId)}/messages`, {
-    method: "POST",
-    body: JSON.stringify({ accountId, message }),
-  });
+const META_MESSAGING_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+export async function sendConversationMessage(
+  conversationId: string,
+  accountId: string,
+  message: string,
+  options?: { platform?: string; lastInboundAt?: string },
+) {
+  const body: Record<string, unknown> = { accountId, message };
+  const platform = (options?.platform || "").toLowerCase();
+  const inboundAt = options?.lastInboundAt ? Date.parse(options.lastInboundAt) : Number.NaN;
+  const outsideWindow = Number.isNaN(inboundAt) || Date.now() - inboundAt > META_MESSAGING_WINDOW_MS;
+  if ((platform === "instagram" || platform === "facebook") && outsideWindow) {
+    body.messagingType = "MESSAGE_TAG";
+    body.messageTag = "HUMAN_AGENT";
+  }
+  const headers = { "Idempotency-Key": crypto.randomUUID() };
+  try {
+    return await zernioFetch<unknown>(`/inbox/conversations/${encodeURIComponent(conversationId)}/messages`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+  } catch (error) {
+    if (!(error instanceof ZernioError) || error.status < 400 || error.status >= 500) throw error;
+    return zernioFetch<unknown>(`/inbox/conversations/${encodeURIComponent(conversationId)}/accept`, {
+      method: "POST",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
+      body: JSON.stringify(body),
+    });
+  }
 }
 
 export async function replyToComment(input: {
@@ -485,6 +530,8 @@ export type ZernioInboxComment = {
   id?: string;
   message?: string;
   createdTime?: string;
+  createdAt?: string;
+  sentAt?: string;
   from?: {
     id?: string;
     name?: string;

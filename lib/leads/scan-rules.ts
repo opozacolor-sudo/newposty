@@ -17,6 +17,15 @@ export function looksLikeOwnOutreach(text: string) {
   return /sunt daniel|pre[iî]nregistreaz|agentul posty\.now|sunt agentul posty/i.test(text);
 }
 
+export function inboxMessageTime(row: {
+  createdTime?: string;
+  createdAt?: string;
+  sentAt?: string;
+}) {
+  const value = row.createdTime || row.createdAt || row.sentAt;
+  return value ? String(value) : undefined;
+}
+
 export function isAfterListenFrom(createdTime: string | undefined, listenFrom: string | null | undefined) {
   if (!listenFrom || !createdTime) return false;
   const created = Date.parse(createdTime);

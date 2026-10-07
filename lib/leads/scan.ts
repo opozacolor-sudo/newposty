@@ -1,7 +1,7 @@
 import { agentCopy } from "@/lib/leads/copy";
 import { localeFromLeadText } from "@/lib/leads/locale";
 import { nextAgentReply } from "@/lib/leads/qualify";
-import { isAfterListenFrom, isInboundLeadMessage, isNewLeadInbound } from "@/lib/leads/scan-rules";
+import { inboxMessageTime, isAfterListenFrom, isInboundLeadMessage, isNewLeadInbound } from "@/lib/leads/scan-rules";
 import { syncAdLeads } from "@/lib/leads/ads";
 import type { AgentKnowledge } from "@/lib/leads/knowledge";
 import {
@@ -47,30 +47,28 @@ function messageText(row: { message?: string; text?: string }) {
   return String(row.message || row.text || "").trim();
 }
 
-function messageKey(row: { id?: string; createdTime?: string; message?: string; text?: string }) {
-  return String(row.id || `${row.createdTime || ""}:${messageText(row)}`).trim();
+function messageKey(row: { id?: string; createdTime?: string; createdAt?: string; sentAt?: string; message?: string; text?: string }) {
+  return String(row.id || `${inboxMessageTime(row) || ""}:${messageText(row)}`).trim();
 }
 
-async function applyReply(input: {
-  supabase: ReturnType<typeof createAdminSupabase>;
-  thread: LeadThread;
-  inbound: string;
-  playbook: LeadPlaybook;
-  knowledge?: AgentKnowledge;
-  lastExternalId?: string | null;
-}) {
-  const next = await nextAgentReply({
-    thread: input.thread,
-    inbound: input.inbound,
-    playbook: input.playbook,
-    knowledge: input.knowledge,
+async function listAccountConversations(profileId: string, accountId: string) {
+  const inbox = await listConversations({
+    profileId,
+    accountId,
+    folder: "inbox",
+    limit: 20,
   });
-  if (input.lastExternalId) next.thread.last_external_id = input.lastExternalId;
-  await saveLeadThread(input.supabase, next.thread);
-  if (next.thread.stage === "qualified") {
-    await insertQualifiedLead({ supabase: input.supabase, thread: next.thread });
+  const requests = await listConversations({
+    profileId,
+    accountId,
+    folder: "requests",
+    limit: 20,
+  }).catch(() => ({ data: [] as ZernioConversation[] }));
+  const byId = new Map<string, ZernioConversation>();
+  for (const row of [...(inbox.data ?? []), ...(requests.data ?? [])]) {
+    if (row.id) byId.set(row.id, row);
   }
-  return next;
+  return [...byId.values()];
 }
 
 export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats> {
@@ -143,26 +141,26 @@ export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats
       }
 
       try {
-        const conversations = await listConversations({
-          profileId: profile.profileId,
-          accountId: account.zernio_account_id,
-          limit: 20,
-        });
-        for (const conversation of conversations.data ?? []) {
+        const conversations = await listAccountConversations(profile.profileId, account.zernio_account_id);
+        for (const conversation of conversations) {
           stats.scanned += 1;
-          const result = await handleConversation({
-            supabase,
-            userId,
-            clientId,
-            accountId: account.zernio_account_id,
-            platform: account.platform,
-            conversation,
-            phrases,
-            playbook,
-            knowledge,
-          });
-          stats.replied += result.replied;
-          stats.qualified += result.qualified;
+          try {
+            const result = await handleConversation({
+              supabase,
+              userId,
+              clientId,
+              accountId: account.zernio_account_id,
+              platform: account.platform,
+              conversation,
+              phrases,
+              playbook,
+              knowledge,
+            });
+            stats.replied += result.replied;
+            stats.qualified += result.qualified;
+          } catch {
+            stats.errors += 1;
+          }
         }
       } catch {
         stats.errors += 1;
@@ -192,7 +190,7 @@ export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats
               authorName: comment.from?.name ?? comment.from?.username ?? null,
               authorHandle: comment.from?.username ?? null,
               text: comment.message ?? "",
-              createdTime: comment.createdTime,
+              createdTime: inboxMessageTime(comment),
               listenFrom: knowledge.listenFrom,
               phrases,
             });
@@ -235,19 +233,18 @@ async function handleConversation(input: {
   const listenFrom = input.knowledge?.listenFrom ?? null;
   const messagesBody = await listConversationMessages(conversationId, input.accountId).catch(() => null);
   const messages = [...(messagesBody?.messages ?? messagesBody?.data ?? [])].sort((a, b) =>
-    String(a.createdTime ?? "").localeCompare(String(b.createdTime ?? "")),
+    String(inboxMessageTime(a) ?? "").localeCompare(String(inboxMessageTime(b) ?? "")),
   );
-  const inbound = messages.filter(
-    (row) =>
-      isInboundLeadMessage(row) &&
-      messageText(row) &&
-      isAfterListenFrom(row.createdTime, listenFrom),
-  );
+  const inbound = messages.filter((row) => {
+    const createdTime = inboxMessageTime(row);
+    return isInboundLeadMessage(row) && messageText(row) && isAfterListenFrom(createdTime, listenFrom);
+  });
   const latest = inbound[inbound.length - 1];
   if (!latest) return result;
 
   const latestText = messageText(latest);
-  if (!existing && !isNewLeadInbound(latestText, input.phrases, latest.createdTime, listenFrom)) {
+  const latestTime = inboxMessageTime(latest);
+  if (!existing && !isNewLeadInbound(latestText, input.phrases, latestTime, listenFrom)) {
     return result;
   }
 
@@ -281,27 +278,33 @@ async function handleConversation(input: {
     : [latest];
 
   const toProcess = unseen;
+  if (toProcess.length === 0) return result;
 
   let lastReply: string | null = null;
   for (const row of toProcess) {
-    const text = messageText(row);
-    const next = await applyReply({
-      supabase: input.supabase,
+    const next = await nextAgentReply({
       thread,
-      inbound: text,
+      inbound: messageText(row),
       playbook: input.playbook,
       knowledge: input.knowledge,
-      lastExternalId: messageKey(row),
     });
     thread = next.thread;
+    thread.last_external_id = messageKey(row);
     if (next.reply) lastReply = next.reply;
     if (next.thread.stage === "qualified") result.qualified += 1;
     if (next.thread.stage === "dismissed") break;
   }
 
   if (lastReply) {
-    await sendConversationMessage(conversationId, input.accountId, lastReply);
+    await sendConversationMessage(conversationId, input.accountId, lastReply, {
+      platform: input.conversation.platform || input.platform,
+      lastInboundAt: latestTime,
+    });
     result.replied += 1;
+  }
+  await saveLeadThread(input.supabase, thread);
+  if (thread.stage === "qualified") {
+    await insertQualifiedLead({ supabase: input.supabase, thread });
   }
   return result;
 }
