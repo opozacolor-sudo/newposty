@@ -231,7 +231,8 @@ body {
 
 @media (max-width: 1023px) {
   .posty-clay-card-wrap::before,
-  .posty-clay-card-wrap::after {
+  .posty-clay-card-wrap::after,
+  .posty-footer-dock::after {
     display: none;
   }
 
@@ -239,8 +240,7 @@ body {
     box-shadow:
       inset 8px 8px 11px rgba(255, 255, 252, 0.58),
       inset 2px 2px 3px rgba(255, 255, 252, 0.46),
-      inset -9px -10px 12px rgba(55, 53, 51, 0.35),
-      0 8px 16px rgba(63, 54, 49, 0.18);
+      inset -9px -10px 12px rgba(55, 53, 51, 0.35);
   }
 }
 
@@ -649,6 +649,52 @@ html.home-no-scroll .posty-header-popover li:hover {
   html.home-no-scroll .marketing {
     height: 100svh;
     max-height: 100svh;
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  html.home-no-scroll .posty-clay-card-wrap {
+    overflow: hidden;
+  }
+
+  html.home-no-scroll .posty-footer-signup-content {
+    gap: 0.35rem;
+    padding: 0.4rem;
+  }
+
+  html.home-no-scroll .posty-footer-signup-copy {
+    padding: 0.35rem 0.75rem 0.4rem;
+  }
+
+  html.home-no-scroll .posty-footer-signup-copy p {
+    display: none;
+  }
+
+  html.home-no-scroll .posty-footer-signup-controls {
+    padding: 0.28rem;
+  }
+
+  html.home-no-scroll .posty-footer-signup-controls input,
+  html.home-no-scroll .posty-footer-signup-controls button[type="submit"] {
+    height: 2rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 1023px) and (max-height: 740px) {
+  html.home-no-scroll .posty-hero-intro {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  html.home-no-scroll .posty-hero-intro h1 {
+    font-size: 1.25rem;
+  }
+
+  html.home-no-scroll .posty-footer-dock {
+    margin-bottom: 0.5rem;
+    margin-top: 0.25rem;
   }
 }
 

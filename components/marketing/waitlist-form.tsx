@@ -86,7 +86,9 @@ export function WaitlistForm({
         className={
           sky
             ? "mt-1 flex w-full flex-row items-stretch justify-center gap-1.5 sm:mt-2 sm:gap-2"
-            : "mt-2 flex w-full flex-col gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
+            : compact
+              ? "mt-2 flex w-full flex-row items-stretch justify-center gap-1.5"
+              : "mt-2 flex w-full flex-col gap-2 sm:mt-3 sm:flex-row sm:items-stretch sm:justify-center"
         }
       >
         <label className="sr-only" htmlFor={emailId}>

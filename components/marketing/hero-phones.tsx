@@ -159,12 +159,12 @@ export function HeroPhones() {
       <div className="mt-1 flex min-h-0 w-full flex-1 flex-col [container-type:size] lg:mt-3 lg:flex-none lg:items-center lg:[container-type:normal]">
         <ul
           ref={scroller}
-          className="flex h-auto max-h-full shrink-0 snap-x snap-mandatory items-start gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(94vw,calc(4.5*(100cqh-7.25rem)+3.125rem))] lg:max-h-[calc(100cqh-7.25rem)] lg:flex-none lg:grid-cols-6 lg:items-stretch lg:gap-2.5 lg:overflow-visible lg:px-0"
+          className="flex min-h-0 flex-1 snap-x snap-mandatory items-stretch gap-3 overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:mx-auto lg:grid lg:h-auto lg:w-[min(94vw,calc(4.5*(100cqh-7.25rem)+3.125rem))] lg:max-h-[calc(100cqh-7.25rem)] lg:flex-none lg:grid-cols-6 lg:items-stretch lg:gap-2.5 lg:overflow-visible lg:px-0"
         >
           {CARDS.map((card) => (
             <li
               key={card.title}
-              className="posty-clay-card-wrap aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem),calc(80cqh-1.75rem))] max-h-full shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:w-auto lg:min-w-0 lg:max-h-full"
+              className="posty-clay-card-wrap aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem),calc(88cqh*0.8))] max-h-full shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:w-auto lg:min-w-0 lg:max-h-full"
             >
               <div className="posty-clay-card group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] lg:rounded-[1.65rem]">
                 <div className="relative z-[3] shrink-0 px-4 pt-4 lg:px-4 lg:pt-4">

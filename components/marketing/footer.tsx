@@ -7,7 +7,7 @@ export async function MarketingFooter() {
   const t = await getTranslations("Footer");
 
   return (
-    <footer className="posty-footer-dock posty-clay-card relative mx-3 mb-3 mt-2 shrink-0 rounded-[2rem] sm:mx-5 sm:mb-4">
+    <footer className="posty-footer-dock posty-clay-card relative mx-3 mb-3 mt-1 shrink-0 rounded-[1.6rem] sm:mx-5 sm:mb-4 sm:mt-2 sm:rounded-[2rem]">
       <div className="relative z-[3] mx-auto grid max-w-[1180px] grid-cols-2 items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-3 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,1.45fr)_minmax(0,1fr)]">
         <div className="relative order-2 col-start-1 px-1 py-1 lg:order-1 lg:col-start-1">
           <ul className="relative z-[3] flex items-center justify-center gap-1">
