@@ -106,6 +106,19 @@ body:has(.marketing) {
   background: #b7b6b3;
 }
 
+html:has(.marketing):not(.home-no-scroll) {
+  height: auto !important;
+  min-height: 100%;
+  overflow-x: clip;
+  overflow-y: auto;
+}
+
+html:has(.marketing):not(.home-no-scroll) body {
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+
 .marketing > header {
   background: rgba(183, 182, 179, 0.86);
   backdrop-filter: blur(18px);
@@ -688,6 +701,11 @@ html.home-no-scroll body {
 
 html.home-no-scroll .marketing {
   height: 100dvh;
+  overflow: hidden;
+}
+
+html.home-no-scroll .marketing > main {
+  min-height: 0;
   overflow: hidden;
 }
 
