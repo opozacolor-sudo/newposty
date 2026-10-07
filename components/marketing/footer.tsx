@@ -54,16 +54,16 @@ export async function MarketingFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={t("anpcAria")}
-              className="posty-footer-social-icon posty-footer-anpc-badge inline-flex h-[3.75rem] w-[10.9rem] items-center justify-center overflow-hidden rounded-[1.15rem] transition duration-200 hover:z-[1] hover:-translate-y-1 hover:scale-105"
+              className="posty-footer-social-icon posty-footer-anpc-badge inline-flex h-[3.75rem] w-[11.375rem] items-center justify-center overflow-hidden rounded-full transition duration-200 hover:z-[1] hover:-translate-y-1 hover:scale-105"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/marketing/anpc-sal.jpg"
                 alt=""
-                width={926}
-                height={311}
+                width={919}
+                height={303}
                 draggable={false}
-                className="h-full w-full object-cover scale-[1.08]"
+                className="h-full w-full object-cover scale-[1.06]"
               />
             </a>
           </div>
