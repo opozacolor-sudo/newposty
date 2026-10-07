@@ -386,7 +386,40 @@ body {
 
 .posty-footer-social-icon img {
   mix-blend-mode: luminosity;
-  filter: brightness(0.84) contrast(1.22);
+  filter: brightness(1.08) contrast(1.12);
+}
+
+.posty-footer-social-icon[data-network="instagram"] {
+  background: linear-gradient(145deg, #f9ce34 0%, #ee2a7b 48%, #6228d7 100%);
+}
+
+.posty-footer-social-icon[data-network="tiktok"] {
+  background: linear-gradient(145deg, #69f0ea 0%, #2a2a2a 46%, #fe2c55 100%);
+}
+
+.posty-footer-social-icon[data-network="tiktok"] img {
+  filter: brightness(0.88) contrast(1.2);
+}
+
+.posty-footer-social-icon[data-network="facebook"] {
+  background: linear-gradient(145deg, #4b9bff 0%, #1877f2 48%, #0c5fcc 100%);
+}
+
+.posty-footer-social-icon[data-network="linkedin"] {
+  background: linear-gradient(145deg, #3d9bdc 0%, #0a66c8 48%, #004182 100%);
+}
+
+.posty-footer-social-icon[data-network="facebook"] img,
+.posty-footer-social-icon[data-network="linkedin"] img {
+  filter: brightness(0.72) contrast(1.28);
+}
+
+.posty-footer-social-icon[data-network="youtube"] {
+  background: linear-gradient(145deg, #ff5a5a 0%, #ff0000 48%, #b80000 100%);
+}
+
+.posty-footer-social-icon[data-network="youtube"] img {
+  filter: brightness(0.74) contrast(1.26);
 }
 
 .posty-footer-meta-tile {
