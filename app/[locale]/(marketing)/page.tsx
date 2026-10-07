@@ -14,12 +14,12 @@ export default async function HomePage() {
         <div className="posty-hero-intro flex shrink-0 flex-col items-center px-5 text-center">
           <h1 className="m-0">
             <Image
-              src="/marketing/hero-wordmark.jpg"
+              src="/marketing/hero-wordmark.png"
               alt="posty.now"
-              width={983}
-              height={232}
+              width={996}
+              height={206}
               priority
-              className="posty-hero-wordmark h-[clamp(2.15rem,7.1dvh,3.4rem)] w-auto max-w-[min(22rem,90vw)] rounded-[0.7rem] bg-black object-contain lg:h-[clamp(2.55rem,7.8dvh,3.9rem)] lg:rounded-[0.85rem]"
+              className="posty-hero-wordmark h-[clamp(1.7rem,5.6dvh,2.7rem)] w-auto max-w-[min(20rem,88vw)] object-contain lg:h-[clamp(2rem,6.2dvh,3.1rem)]"
             />
           </h1>
           <p className="mt-0.5 flex max-w-[20rem] items-center justify-center text-[clamp(0.65rem,1.35dvh,0.9rem)] leading-tight text-[#1d1d1f] lg:mt-1 lg:max-w-2xl">
