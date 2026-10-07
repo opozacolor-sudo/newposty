@@ -765,8 +765,8 @@ html.home-no-scroll .marketing > header {
     padding-bottom: 0;
   }
 
-  html.home-no-scroll .posty-hero-intro h1 {
-    font-size: 1.25rem;
+  html.home-no-scroll .posty-hero-intro .posty-hero-wordmark {
+    height: 1.85rem;
   }
 
   html.home-no-scroll .posty-footer-dock {
