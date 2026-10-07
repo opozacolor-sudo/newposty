@@ -9,12 +9,17 @@ export function HomeWaitlistBand() {
   const t = useTranslations("Landing");
   if (pathname !== "/") return null;
   return (
-    <div className="posty-glow flex shrink-0 flex-col justify-center px-4 py-1 text-center sm:py-3 lg:min-h-0 lg:py-2.5 xl:py-3 [@media(min-height:1100px)]:lg:min-h-[13.75rem] [@media(min-height:1100px)]:lg:py-8 [@media(min-height:1100px)]:xl:min-h-[15.5rem] [@media(min-height:1100px)]:xl:py-10">
-      <h2 className="text-[clamp(0.88rem,2.2dvh,1.05rem)] font-semibold tracking-tight text-white sm:text-[1.25rem] lg:text-[1.35rem] [@media(min-height:1100px)]:lg:text-[clamp(1.7rem,4vw,2.5rem)]">
-        {t("kicker")}
-      </h2>
-      <div className="mx-auto mt-0.5 w-full max-w-[20rem] lg:mt-1.5 lg:max-w-md">
-        <WaitlistForm compact tone="onSky" />
+    <div className="posty-footer-signup-content">
+      <div className="posty-footer-signup-copy">
+        <h2 className="text-[clamp(0.88rem,2.2dvh,1.05rem)] font-semibold tracking-tight text-[#1d1d1f] sm:text-[1.2rem] lg:text-[1.3rem]">
+          {t("kicker")}
+        </h2>
+        <p className="mt-1 text-center text-[11px] leading-4 text-[#6e6e73] sm:text-[13px] sm:leading-5">
+          {t("waitlistLead")}
+        </p>
+      </div>
+      <div className="posty-footer-signup-controls">
+        <WaitlistForm compact hideLead />
       </div>
     </div>
   );

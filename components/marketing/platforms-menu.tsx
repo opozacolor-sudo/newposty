@@ -29,7 +29,7 @@ export function PlatformsPanel({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="grid gap-6 sm:grid-cols-[1.15fr_0.85fr] sm:gap-8">
       <div>
-        <p className="px-2 text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-400">
+        <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#4f4b48]">
           {t("channels")}
         </p>
         <ul className="mt-2 grid grid-cols-1 min-[380px]:grid-cols-2">
@@ -39,7 +39,7 @@ export function PlatformsPanel({ onNavigate }: { onNavigate?: () => void }) {
         </ul>
       </div>
       <div>
-        <p className="px-2 text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-400">
+        <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#4f4b48]">
           {t("ads")}
         </p>
         <ul className="mt-2">

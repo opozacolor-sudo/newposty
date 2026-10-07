@@ -164,16 +164,16 @@ export function HeroPhones() {
           {CARDS.map((card) => (
             <li
               key={card.title}
-              className="aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem),calc(80cqh-1.75rem))] max-h-full shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:w-auto lg:min-w-0 lg:max-h-full"
+              className="posty-clay-card-wrap aspect-[4/5] h-auto w-[min(22.5rem,calc(100vw-3.25rem),calc(80cqh-1.75rem))] max-h-full shrink-0 snap-start lg:aspect-[3/4] lg:h-auto lg:w-auto lg:min-w-0 lg:max-h-full"
             >
-              <div className="posty-glow group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] lg:rounded-[1.4rem]">
-                <div className="shrink-0 px-3.5 pt-3 lg:px-3 lg:pt-3 xl:px-3.5 xl:pt-3.5">
-                  <p className="text-[11px] font-normal text-white/80 lg:text-[11px] xl:text-[12px]">{t(card.kicker)}</p>
-                  <p className="mt-0.5 line-clamp-2 max-w-[16rem] text-[clamp(1rem,2.7dvh,1.25rem)] font-semibold leading-[1.12] tracking-tight text-white lg:mt-0.5 lg:max-w-none lg:min-h-[2.1em] lg:text-[13px] xl:text-[15px]">
+              <div className="posty-clay-card group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] lg:rounded-[1.65rem]">
+                <div className="relative z-[3] shrink-0 px-4 pt-4 lg:px-4 lg:pt-4">
+                  <p className="text-[11px] font-normal text-[#6e6e73] lg:text-[11px] xl:text-[12px]">{t(card.kicker)}</p>
+                  <p className="mt-0.5 line-clamp-2 max-w-[16rem] text-[clamp(1rem,2.7dvh,1.25rem)] font-semibold leading-[1.12] tracking-tight text-[#1d1d1f] lg:mt-0.5 lg:max-w-none lg:min-h-[2.1em] lg:text-[13px] xl:text-[15px]">
                     {t(card.title)}
                   </p>
                 </div>
-                <div className="relative mx-2 mb-2 mt-1 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.15rem] lg:mx-1.5 lg:mb-1.5 lg:mt-1 lg:min-h-0 lg:rounded-[1.05rem]">
+                <div className="relative z-[3] mx-3 mb-3 mt-2 min-h-0 flex-1 basis-0 overflow-hidden rounded-[1.15rem] lg:mx-3 lg:mb-3 lg:mt-2 lg:min-h-0 lg:rounded-[1.05rem]">
                   <Image
                     src={card.src}
                     alt=""
@@ -186,7 +186,7 @@ export function HeroPhones() {
                 <button
                   type="button"
                   onClick={() => setOpen(card)}
-                  className="absolute bottom-3 right-3 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/40 backdrop-blur-sm lg:bottom-3 lg:right-3 lg:h-8 lg:w-8"
+                  className="absolute bottom-5 right-5 z-[4] flex h-8 w-8 items-center justify-center rounded-full bg-white/55 text-[#1d1d1f] ring-1 ring-black/10 backdrop-blur-sm lg:bottom-5 lg:right-5 lg:h-8 lg:w-8"
                   aria-label={t("screenOpen")}
                 >
                   <Plus size={16} strokeWidth={2.5} />
@@ -227,18 +227,18 @@ export function HeroPhones() {
                   role="dialog"
                   aria-modal
                   aria-labelledby={titleId}
-                  className="relative w-full max-w-[56rem] overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                  className="posty-clay-card relative w-full max-w-[56rem] overflow-hidden rounded-[2rem]"
                   onClick={(event) => event.stopPropagation()}
                 >
                   <button
                     type="button"
                     onClick={() => setOpen(null)}
-                    className="absolute right-4 top-4 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white sm:right-6 sm:top-6"
+                    className="absolute right-4 top-4 z-[4] flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white sm:right-6 sm:top-6"
                     aria-label={t("screenClose")}
                   >
                     <X size={16} />
                   </button>
-                  <div className="px-8 pt-12 sm:px-16 sm:pt-16">
+                  <div className="relative z-[3] px-8 pt-12 sm:px-16 sm:pt-16">
                     <p className="text-[13px] text-[#1d1d1f] sm:text-[15px]">{t(open.kicker)}</p>
                     <h2
                       id={titleId}
@@ -247,37 +247,39 @@ export function HeroPhones() {
                       {t(popup!.title)}
                     </h2>
                   </div>
-                  <div className="mt-8 flex flex-col gap-4 px-4 pb-4 sm:mt-10 sm:gap-5 sm:px-6 sm:pb-6">
+                  <div className="relative z-[3] mt-8 flex flex-col gap-4 px-4 pb-4 sm:mt-10 sm:gap-5 sm:px-6 sm:pb-6">
                     {popup!.sections.map((section) => (
-                      <div key={section.body} className="overflow-hidden rounded-[1.75rem] bg-[#f5f5f7] sm:rounded-[2rem]">
-                        <p className="mx-auto max-w-[38rem] px-7 pt-10 text-[16px] leading-7 tracking-normal text-[#6e6e73] sm:px-16 sm:pt-14 sm:text-[19px] sm:leading-[1.47]">
-                          {t(section.body)}
-                        </p>
-                        {section.scene === "social" || section.scene === "ads" ? (
-                          <NetworkScene kind={section.scene} label={t(section.label)} />
-                        ) : section.scene === "make" || section.scene === "plan" ? (
-                          <ContentScene kind={section.scene} label={t(section.label)} />
-                        ) : section.scene === "voice" ||
-                          section.scene === "publish" ||
-                          section.scene === "month" ||
-                          section.scene === "create" ||
-                          section.scene === "manage" ? (
-                          <ChatScene kind={section.scene} label={t(section.label)} />
-                        ) : section.scene === "intent" ||
-                          section.scene === "train" ||
-                          section.scene === "qualify" ||
-                          section.scene === "inbox" ||
-                          section.scene === "paid" ? (
-                          <LeadsScene kind={section.scene} label={t(section.label)} />
-                        ) : section.scene === "pulse" ||
-                          section.scene === "when" ||
-                          section.scene === "formats" ||
-                          section.scene === "split" ||
-                          section.scene === "spend" ? (
-                          <AnalyticsScene kind={section.scene} label={t(section.label)} />
-                        ) : (
-                          <AdsScene kind={section.scene} label={t(section.label)} />
-                        )}
+                      <div key={section.body} className="posty-glass-3d relative overflow-hidden rounded-[1.75rem] sm:rounded-[2rem]">
+                        <div className="relative z-[3]">
+                          <p className="mx-auto max-w-[38rem] px-7 pt-10 text-[16px] leading-7 tracking-normal text-[#5f5f64] sm:px-16 sm:pt-14 sm:text-[19px] sm:leading-[1.47]">
+                            {t(section.body)}
+                          </p>
+                          {section.scene === "social" || section.scene === "ads" ? (
+                            <NetworkScene kind={section.scene} label={t(section.label)} />
+                          ) : section.scene === "make" || section.scene === "plan" ? (
+                            <ContentScene kind={section.scene} label={t(section.label)} />
+                          ) : section.scene === "voice" ||
+                            section.scene === "publish" ||
+                            section.scene === "month" ||
+                            section.scene === "create" ||
+                            section.scene === "manage" ? (
+                            <ChatScene kind={section.scene} label={t(section.label)} />
+                          ) : section.scene === "intent" ||
+                            section.scene === "train" ||
+                            section.scene === "qualify" ||
+                            section.scene === "inbox" ||
+                            section.scene === "paid" ? (
+                            <LeadsScene kind={section.scene} label={t(section.label)} />
+                          ) : section.scene === "pulse" ||
+                            section.scene === "when" ||
+                            section.scene === "formats" ||
+                            section.scene === "split" ||
+                            section.scene === "spend" ? (
+                            <AnalyticsScene kind={section.scene} label={t(section.label)} />
+                          ) : (
+                            <AdsScene kind={section.scene} label={t(section.label)} />
+                          )}
+                        </div>
                       </div>
                     ))}
                     {popup!.closer ? (

@@ -7,9 +7,11 @@ import { btnSolid } from "@/components/marketing/styles";
 export function WaitlistForm({
   compact = false,
   tone = "light",
+  hideLead = false,
 }: {
   compact?: boolean;
   tone?: "light" | "onDark" | "onSky";
+  hideLead?: boolean;
 }) {
   const t = useTranslations("Landing");
   const locale = useLocale();
@@ -64,19 +66,21 @@ export function WaitlistForm({
 
   return (
     <div id="waitlist" className={compact || dark || sky ? "mt-0" : "mt-8"}>
-      <p
-        className={
-          dark
-            ? "text-center text-[13px] leading-5 text-[#E4EEF0] sm:text-sm sm:leading-6"
-            : sky
-              ? "mx-auto text-center text-[clamp(0.65rem,1.55dvh,0.78rem)] leading-4 text-white/80 sm:text-[14px] sm:leading-5 lg:flex lg:max-w-xl lg:items-center lg:justify-center lg:text-[15px] [@media(min-height:1100px)]:lg:min-h-[3rem] [@media(min-height:1100px)]:lg:text-base"
-              : compact
-                ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
-                : "text-sm leading-6 text-neutral-500"
-        }
-      >
-        {t("waitlistLead")}
-      </p>
+      {hideLead ? null : (
+        <p
+          className={
+            dark
+              ? "text-center text-[13px] leading-5 text-[#E4EEF0] sm:text-sm sm:leading-6"
+              : sky
+                ? "mx-auto text-center text-[clamp(0.65rem,1.55dvh,0.78rem)] leading-4 text-white/80 sm:text-[14px] sm:leading-5 lg:flex lg:max-w-xl lg:items-center lg:justify-center lg:text-[15px] [@media(min-height:1100px)]:lg:min-h-[3rem] [@media(min-height:1100px)]:lg:text-base"
+                : compact
+                  ? "text-center text-[12px] leading-5 text-neutral-500 sm:text-sm sm:leading-6"
+                  : "text-sm leading-6 text-neutral-500"
+          }
+        >
+          {t("waitlistLead")}
+        </p>
+      )}
       <form
         onSubmit={onSubmit}
         className={
@@ -114,7 +118,7 @@ export function WaitlistForm({
               : sky
                 ? `posty-glow-btn h-8 shrink-0 rounded-full px-3 text-[12px] font-normal text-white transition hover:brightness-110 disabled:opacity-60 sm:h-10 sm:px-5 sm:text-sm`
                 : compact
-                  ? `${btnSolid} h-9 shrink-0 !px-3 !py-1.5 !text-[11px] sm:h-auto sm:!px-5 sm:!py-3 sm:!text-sm disabled:opacity-60`
+                  ? `${btnSolid} posty-site-btn h-9 shrink-0 !px-3 !py-1.5 !text-[11px] sm:h-auto sm:!px-5 sm:!py-3 sm:!text-sm disabled:opacity-60`
                   : `${btnSolid} shrink-0 px-5 py-3 disabled:opacity-60`
           }
         >

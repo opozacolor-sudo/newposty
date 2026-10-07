@@ -66,7 +66,7 @@ function DesktopMenu({
                 : wide
                   ? "w-[min(36rem,calc(100vw-2rem))] p-4 sm:p-5"
                   : "w-[min(32rem,calc(100vw-2rem))] p-4 sm:p-5"
-            } rounded-2xl border border-black/5 bg-white text-neutral-900 shadow-[0_18px_50px_rgba(0,0,0,0.12)]`}
+            } posty-header-popover rounded-2xl border border-black/5 bg-white text-neutral-900 shadow-[0_18px_50px_rgba(0,0,0,0.12)]`}
           >
             {children}
           </div>
@@ -133,12 +133,16 @@ export function MarketingHeader() {
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <Link href="/" className={`${navLink} shrink-0`} onClick={closeAll}>
+          <Link
+            href="/"
+            className={`${navLink} posty-header-button shrink-0`}
+            onClick={closeAll}
+          >
             <BrandLogo wordmark className="text-[12px] font-normal leading-none text-[#1d1d1f]" width={97} height={16} />
           </Link>
         </div>
 
-        <nav className="hidden items-center gap-x-5 lg:flex">
+        <nav className="posty-header-nav-island hidden items-center gap-x-5 lg:flex">
           <DesktopMenu
             label={t("features")}
             open={desktop === "features"}
@@ -181,7 +185,7 @@ export function MarketingHeader() {
         </nav>
 
         <div className="ml-auto flex items-center justify-self-end lg:ml-0">
-          <Link href="/login" className={navLink} onClick={closeAll}>
+          <Link href="/login" className={`${navLink} posty-header-login-button`} onClick={closeAll}>
             {t("signIn")}
           </Link>
         </div>
