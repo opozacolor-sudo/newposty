@@ -348,7 +348,7 @@ export const ES: GuideDoc = {
       body: [
         "En Leads pegas la URL del sitio y pulsas Train the agent. Lee las páginas públicas y los productos. Si ya está entrenado, el botón dice Ya entrenado.",
         "En el recuadro de abajo le dices cómo quieres que vaya la conversación: precios, qué debe detectar («cuánto cuesta», «estoy libre en una fecha») y tu enlace de reserva si tienes. Ese es tu briefing; no sustituye el crawl.",
-        "Después del entrenamiento pulsas AI lead generation. A partir de ahí solo responde a mensajes nuevos recibidos después de encenderla — no a hilos viejos ni a mensajes que enviaste tú. La bandeja se escanea una vez al día.",
+        "Después del entrenamiento pulsas AI lead generation. A partir de ahí solo responde a mensajes nuevos recibidos después de encenderla — no a hilos viejos ni a mensajes que enviaste tú. Responde cuando llega el mensaje, no al día siguiente.",
         "Se presenta como el agente posty.now, pide consentimiento (SÍ) y envía los términos, luego responde con lo que leyó en el sitio. Los leads salen en la lista (mensaje, comentario o anuncio) como nuevo / contactado / rechazado. El mismo control apaga la generación.",
       ],
       tips: [
@@ -420,7 +420,7 @@ export const ES: GuideDoc = {
         "Archivo rechazado: 100 MB máx., 50 archivos máx. YouTube se salta las fotos. TikTok acepta fotos (carrusel).",
         "Confirmación desaparecida: caducó. Vuelve a enviar el comando.",
         "Analítica vacía: conecta una cuenta de publicación en Conexiones. Campañas de anuncios vacías: Conexiones → ADS, luego Anuncios en la barra. Un Instagram de publicaciones no llena el panel de anuncios.",
-        "El agente de leads no responde: ¿está entrenado? ¿AI lead generation está encendido? El mensaje tiene que ser nuevo, recibido después de encenderlo. La bandeja se escanea una vez al día.",
+        "El agente de leads no responde: ¿está entrenado? ¿AI lead generation está encendido? El mensaje tiene que ser nuevo, recibido después de encenderlo.",
         "Idioma equivocado: el selector de idioma está abajo en la barra del estudio, junto al reloj.",
       ],
     },

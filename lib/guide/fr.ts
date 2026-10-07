@@ -348,7 +348,7 @@ export const FR: GuideDoc = {
       body: [
         "Dans Leads, colle l’URL du site et clique sur Train the agent. Il lit les pages publiques et les produits. S’il est déjà entraîné, le bouton dit Déjà entraîné.",
         "Dans le champ en dessous, dis comment tu veux que ça se passe : prix, ce qu’il doit repérer (« ça coûte combien », « je suis libre à telle date »), et ton lien de réservation s’il y en a un. C’est ton brief ; ça ne remplace pas le crawl.",
-        "Après l’entraînement, clique sur AI lead generation. À partir de là il ne répond qu’aux nouveaux messages reçus après l’allumage — pas aux vieux fils, pas aux messages que tu as envoyés. L’inbox est scannée une fois par jour.",
+        "Après l’entraînement, clique sur AI lead generation. À partir de là il ne répond qu’aux nouveaux messages reçus après l’allumage — pas aux vieux fils, pas aux messages que tu as envoyés. Il répond à l’arrivée du message, pas le lendemain.",
         "Il se présente comme l’agent posty.now, demande le consentement (OUI) et envoie les conditions, puis répond à partir de ce qu’il a lu sur le site. Les leads apparaissent dans la liste (message, commentaire ou pub) en nouveau / contacté / refusé. La même commande éteint la génération.",
       ],
       tips: [
@@ -420,7 +420,7 @@ export const FR: GuideDoc = {
         "Fichier refusé : 100 Mo max, 50 fichiers max. YouTube saute les photos. TikTok accepte les photos (carrousel).",
         "Confirmation disparue : expirée. Renvoie la commande.",
         "Analytics vide : connecte un compte de publication dans Connexions. Campagnes ads vides : Connexions → ADS, puis Pubs dans la barre. Un Instagram de posts ne remplit pas le tableau ads.",
-        "L’agent de leads ne répond pas : est-il entraîné ? AI lead generation est-il allumé ? Le message doit être nouveau, reçu après l’allumage. L’inbox est scannée une fois par jour.",
+        "L’agent de leads ne répond pas : est-il entraîné ? AI lead generation est-il allumé ? Le message doit être nouveau, reçu après l’allumage.",
         "Mauvaise langue : le sélecteur de langue est en bas de la barre du studio, à côté de l’horloge.",
       ],
     },

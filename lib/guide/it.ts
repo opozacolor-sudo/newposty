@@ -348,7 +348,7 @@ export const IT: GuideDoc = {
       body: [
         "In Lead incolli l’URL del sito e premi Train the agent. Legge le pagine pubbliche e i prodotti. Se è già addestrato, il pulsante dice Già addestrato.",
         "Nel riquadro sotto gli dici come vuoi che vada la conversazione: prezzi, cosa deve cogliere («quanto costa», «sono libero in una data»), e il link di prenotazione se ce l’hai. È il tuo brief; non sostituisce il crawl.",
-        "Dopo l’addestramento premi AI lead generation. Da lì risponde solo ai nuovi messaggi in arrivo dopo l’accensione — non ai thread vecchi e non ai messaggi che hai inviato tu. La inbox viene scansionata una volta al giorno.",
+        "Dopo l’addestramento premi AI lead generation. Da lì risponde solo ai nuovi messaggi in arrivo dopo l’accensione — non ai thread vecchi e non ai messaggi che hai inviato tu. Risponde quando arriva il messaggio, non il giorno dopo.",
         "Si presenta come l’agente posty.now, chiede il consenso (SÌ) e invia i termini, poi risponde da ciò che ha letto sul sito. I lead compaiono in elenco (messaggio, commento o ads) come nuovo / contattato / rifiutato. Lo stesso controllo spegne la generazione.",
       ],
       tips: [
@@ -420,7 +420,7 @@ export const IT: GuideDoc = {
         "File rifiutato: 100 MB max, 50 file max. YouTube salta le foto. TikTok accetta le foto (carosello).",
         "Conferma sparita: è scaduta. Rimanda il comando.",
         "Analytics vuote: collega un account di pubblicazione in Connessioni. Campagne ads vuote: Connessioni → ADS, poi Ads nella barra. Un Instagram di post non riempie la dashboard ads.",
-        "L’agente lead non risponde: è addestrato? AI lead generation è acceso? Il messaggio deve essere nuovo, arrivato dopo l’accensione. La inbox viene scansionata una volta al giorno.",
+        "L’agente lead non risponde: è addestrato? AI lead generation è acceso? Il messaggio deve essere nuovo, arrivato dopo l’accensione.",
         "Lingua sbagliata: il selettore lingua è in basso nella barra dello studio, accanto all’orologio.",
       ],
     },

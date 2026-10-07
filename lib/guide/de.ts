@@ -348,7 +348,7 @@ export const DE: GuideDoc = {
       body: [
         "Unter Leads fügst du die Website-URL ein und klickst auf Train the agent. Er liest öffentliche Seiten und Produkte. Ist er schon trainiert, steht da Bereits trainiert.",
         "Im Kasten darunter sagst du, wie das Gespräch laufen soll: Preise, woran er Absicht erkennt („was kostet das“, „bin ich an einem Datum frei“), und dein Buchungslink falls vorhanden. Das ist dein Briefing; es ersetzt den Crawl nicht.",
-        "Nach dem Training klickst du auf AI lead generation. Ab dann antwortet er nur auf neue eingehende Nachrichten nach dem Einschalten — nicht auf alte Threads und nicht auf Nachrichten, die du gesendet hast. Der Posteingang wird einmal täglich gescannt.",
+        "Nach dem Training klickst du auf AI lead generation. Ab dann antwortet er nur auf neue eingehende Nachrichten nach dem Einschalten — nicht auf alte Threads und nicht auf Nachrichten, die du gesendet hast. Er antwortet, wenn die Nachricht ankommt, nicht erst am nächsten Tag.",
         "Er stellt sich als posty.now-Agent vor, holt Einwilligung (JA) und sendet die Bedingungen, dann antwortet er aus dem, was er auf der Site gelesen hat. Leads stehen in der Liste (Nachricht, Kommentar oder Anzeige) als neu / kontaktiert / abgelehnt. Dieselbe Steuerung schaltet die Generierung wieder aus.",
       ],
       tips: [
@@ -420,7 +420,7 @@ export const DE: GuideDoc = {
         "Datei abgelehnt: max. 100 MB, max. 50 Dateien. YouTube überspringt Fotos. TikTok akzeptiert Fotos (Karussell).",
         "Bestätigung weg: abgelaufen. Befehl nochmal senden.",
         "Leere Analysen: Posting-Konto unter Verbindungen verbinden. Leere Ads-Kampagnen: Verbindungen → ADS, dann Anzeigen in der Leiste. Ein Posting-Instagram füllt das Ads-Dashboard nicht.",
-        "Lead-Agent antwortet nicht: trainiert? Ist AI lead generation an? Die Nachricht muss neu eingehend sein, nach dem Einschalten. Der Posteingang wird einmal täglich gescannt.",
+        "Lead-Agent antwortet nicht: trainiert? Ist AI lead generation an? Die Nachricht muss neu eingehend sein, nach dem Einschalten.",
         "Falsche Sprache: der Sprachschalter sitzt unten in der Studio-Leiste, neben der Uhr.",
       ],
     },

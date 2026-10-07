@@ -71,6 +71,22 @@ async function listAccountConversations(profileId: string, accountId: string) {
   return [...byId.values()];
 }
 
+export async function scanLeadsForAccount(zernioAccountId: string): Promise<LeadScanStats> {
+  const supabase = createAdminSupabase();
+  const { data } = await supabase
+    .from("social_accounts")
+    .select("user_id")
+    .eq("zernio_account_id", zernioAccountId)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+  const userId = typeof data?.user_id === "string" ? data.user_id : "";
+  if (!userId) {
+    return { scanned: 0, replied: 0, invited: 0, qualified: 0, adsImported: 0, errors: 0 };
+  }
+  return scanLeadsInbox(userId);
+}
+
 export async function scanLeadsInbox(onlyUserId?: string): Promise<LeadScanStats> {
   const supabase = createAdminSupabase();
   const stats: LeadScanStats = {

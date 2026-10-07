@@ -360,7 +360,7 @@ const RO: GuideDoc = {
       body: [
         "La Lead-uri lipești URL-ul site-ului și apeși Antrenează. Agentul citește paginile publice și produsele. Dacă e deja antrenat, butonul scrie Deja antrenat.",
         "În caseta de jos îi spui cum vrei să decurgă conversația: prețuri, ce să identifice („cât costă”, „am liber pe o dată”), și link-ul de programare dacă ai unul. Asta e briefing-ul tău, nu înlocuiește crawl-ul.",
-        "După antrenare apeși Generare lead-uri AI. De-acolo răspunde doar la mesaje noi, primite după ce ai aprins generarea — nu la conversațiile vechi și nu la mesajele trimise de tine. Inbox-ul e verificat o dată pe zi.",
+        "După antrenare apeși Generare lead-uri AI. De-acolo răspunde doar la mesaje noi, primite după ce ai aprins generarea — nu la conversațiile vechi și nu la mesajele trimise de tine. Răspunde când sosește mesajul, nu a doua zi.",
         "Se prezintă ca agentul posty.now, cere acordul (DA) și trimite termenii, apoi răspunde din ce a citit pe site. Lead-urile apar în listă (mesaj, comentariu sau reclamă) cu status nou / contactat / respins. Oprește generarea din același buton când vrei să tacă.",
       ],
       tips: [
@@ -432,7 +432,7 @@ const RO: GuideDoc = {
         "Fișier respins: maximum 100 MB, maximum 50 odată. YouTube sare pozele. TikTok acceptă poze (carusel).",
         "Confirmarea a dispărut: a expirat. Trimite comanda din nou.",
         "Statistici goale: conectează un cont de postări la Conexiuni. Campaniile ads goale: Conexiuni → Reclame, apoi Promovări. Un Instagram de postări nu umple tabloul de ads.",
-        "Agentul de lead-uri nu răspunde: e antrenat? E aprins Generare lead-uri AI? Mesajul trebuie să fie nou, primit după ce ai aprins generarea. Inbox-ul se scanează o dată pe zi.",
+        "Agentul de lead-uri nu răspunde: e antrenat? E aprins Generare lead-uri AI? Mesajul trebuie să fie nou, primit după ce ai aprins generarea.",
         "Limba greșită: comutatorul de limbă e jos în bara studio-ului, lângă ceas.",
       ],
     },
@@ -787,7 +787,7 @@ const EN: GuideDoc = {
       body: [
         "On Leads, paste the website URL and press Train the agent. It reads public pages and products. If it is already trained, the button says Already trained.",
         "In the box below, tell it how you want the conversation to go: prices, what to spot (“how much is it”, “am I free on a date”), and your booking link if you have one. That is your briefing; it does not replace the crawl.",
-        "After training, press AI lead generation. From then on it only answers new inbound messages received after you turned generation on — not old threads and not messages you sent. The inbox is scanned once a day.",
+        "After training, press AI lead generation. From then on it only answers new inbound messages received after you turned generation on — not old threads and not messages you sent. It replies when the message arrives, not the next day.",
         "It introduces itself as the posty.now agent, asks for consent (YES) and sends the terms, then answers from what it read on the site. Leads show in the list (message, comment, or ad) as new / contacted / dismissed. Turn generation off with the same control when you want it quiet.",
       ],
       tips: [
@@ -859,7 +859,7 @@ const EN: GuideDoc = {
         "File rejected: 100 MB max, 50 files max. YouTube skips photos. TikTok accepts photos (carousel).",
         "Confirmation vanished: it expired. Send the command again.",
         "Empty analytics: connect a posting account at Connections. Empty ads campaigns: Connections → Ads, then Ads in the top bar. A posting Instagram does not fill the ads dashboard.",
-        "Lead agent not answering: is it trained? Is AI lead generation on? The message must be new inbound after you turned generation on. The inbox is scanned once a day.",
+        "Lead agent not answering: is it trained? Is AI lead generation on? The message must be new inbound after you turned generation on.",
         "Wrong language: the language switch is in the studio’s bottom bar, next to the clock.",
       ],
     },

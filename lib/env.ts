@@ -42,6 +42,10 @@ export function getZernioApiKey() {
   return required("ZERNIO_API_KEY");
 }
 
+export function getZernioWebhookSecret() {
+  return process.env.ZERNIO_WEBHOOK_SECRET?.trim() || process.env.CRON_SECRET?.trim() || "";
+}
+
 export function getSupabaseServiceRoleKey() {
   return required("SUPABASE_SERVICE_ROLE_KEY");
 }
