@@ -34,6 +34,25 @@ export async function MarketingFooter() {
                 </a>
               </li>
             ))}
+            <li className="posty-footer-anpc-badge shrink-0">
+              <a
+                href={ANPC_SAL_HREF}
+                target="_blank"
+                rel="noreferrer"
+                className="posty-footer-social-icon inline-flex h-[3.75rem] w-[10.9rem] items-center justify-center overflow-hidden rounded-[1.15rem] transition duration-200 hover:z-[1] hover:-translate-y-1 hover:scale-105"
+                aria-label={t("anpcAria")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/marketing/anpc-sal.png"
+                  alt=""
+                  width={956}
+                  height={329}
+                  draggable={false}
+                  className="h-full w-full object-cover scale-[1.06]"
+                />
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -42,30 +61,12 @@ export async function MarketingFooter() {
         </div>
 
         <div className="relative order-3 col-start-2 px-1 py-1 lg:col-start-3">
-          <div className="relative z-[3] flex items-center justify-end gap-1.5 lg:gap-2">
-            <a
-              href={ANPC_SAL_HREF}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={t("anpcAria")}
-              className="posty-footer-anpc-badge"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/marketing/anpc-sal.png"
-                alt=""
-                width={956}
-                height={329}
-                draggable={false}
-              />
-            </a>
-            <div className="flex items-center gap-1.5 lg:flex-col lg:items-end lg:gap-1">
-              <div className="posty-footer-meta-tile h-7 w-14 rounded-full transition duration-200 hover:-translate-y-0.5 sm:h-8 sm:w-16 lg:h-9 lg:w-[4.25rem]">
-                <span className={metaLabel}>{t("copyright")}</span>
-              </div>
-              <div className="posty-footer-meta-tile posty-footer-language-tile h-7 w-11 rounded-full transition duration-200 hover:-translate-y-0.5 sm:h-8 sm:w-12 lg:h-9 lg:w-14">
-                <LocaleSwitch className="shrink-0" />
-              </div>
+          <div className="relative z-[3] flex flex-row-reverse items-center justify-start gap-1.5">
+            <div className="posty-footer-meta-tile posty-footer-language-tile h-7 w-11 rounded-full transition duration-200 hover:-translate-y-0.5 sm:h-8 sm:w-12 lg:h-10 lg:w-14">
+              <LocaleSwitch className="shrink-0" />
+            </div>
+            <div className="posty-footer-meta-tile h-7 w-14 rounded-full transition duration-200 hover:-translate-y-0.5 sm:h-8 sm:w-16 lg:h-10 lg:w-[4.5rem]">
+              <span className={metaLabel}>{t("copyright")}</span>
             </div>
           </div>
         </div>

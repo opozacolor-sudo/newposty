@@ -624,29 +624,7 @@ html:has(.marketing):not(.home-no-scroll) body {
 
 @media (min-width: 1024px) {
   .posty-footer-anpc-badge {
-    display: inline-flex;
-    height: clamp(4.75rem, 6vw, 5.5rem);
-    width: auto;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    overflow: visible;
-    text-decoration: none;
-    filter: drop-shadow(0 3px 5px rgba(63, 54, 49, 0.18));
-    transition: transform 200ms ease, filter 200ms ease;
-  }
-
-  .posty-footer-anpc-badge img {
     display: block;
-    height: 100%;
-    width: auto;
-    max-width: none;
-    object-fit: contain;
-  }
-
-  .posty-footer-anpc-badge:hover {
-    transform: translateY(-2px) scale(1.03);
-    filter: drop-shadow(0 6px 10px rgba(63, 54, 49, 0.22));
   }
 }
 
