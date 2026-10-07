@@ -73,49 +73,58 @@ body {
   --muted: #6e6e73;
   --line: #d2d2d7;
   --card: #ffffff;
-  --accent: #1a7cff;
-  --accent-dark: #4da3ff;
+  --accent: #ff4713;
+  --accent-dark: #e03d0f;
   --posty-glow:
-    radial-gradient(ellipse 42% 70% at 50% 42%, rgba(200, 236, 255, 0.38) 0%, transparent 58%),
+    radial-gradient(ellipse 42% 70% at 50% 42%, rgba(255, 92, 48, 0.55) 0%, transparent 58%),
     linear-gradient(
       90deg,
-      #020617 0%,
-      #030d22 10%,
-      #061833 18%,
-      #0a3488 32%,
-      #1a7cff 44%,
-      #7ec8ff 50%,
-      #d8f1ff 53%,
-      #4db3ff 58%,
-      #0d4db8 72%,
-      #04122e 88%,
-      #020617 100%
+      #140202 0%,
+      #1a0404 12%,
+      #3a0806 24%,
+      #8a120c 38%,
+      #ff2a14 50%,
+      #ff6a3a 56%,
+      #c4140c 68%,
+      #3a0806 84%,
+      #140202 100%
     );
   background: #f5f5f7;
   color: #1d1d1f;
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-.posty-glow {
-  background-color: #020617;
+.posty-glow,
+.posty-glow-btn {
+  position: relative;
+  isolation: isolate;
+  background-color: #1d1d1f;
+  text-shadow: 0 1px 10px rgba(20, 2, 2, 0.7);
+}
+
+.posty-glow::before,
+.posty-glow-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background-image: var(--posty-glow);
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100vw 100vh;
-  text-shadow: 0 1px 10px rgba(2, 6, 23, 0.7);
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.posty-glow-btn::before {
+  opacity: 0.78;
 }
 
 .posty-glow-btn {
-  background-color: #0a3488;
-  background-image: var(--posty-glow);
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 100vw 100vh;
   box-shadow:
-    0 0 0 1px rgba(220, 242, 255, 0.55),
-    0 0 22px rgba(80, 180, 255, 0.45);
+    0 0 0 1px rgba(255, 180, 150, 0.4),
+    0 0 22px rgba(255, 42, 20, 0.35);
 }
 
 .marketing ::selection {
