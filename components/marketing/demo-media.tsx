@@ -20,7 +20,8 @@ export function DemoReveal({ children }: { children: ReactNode }) {
 
 export function DemoYouTube({ videoId, title }: { videoId: string; title: string }) {
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-3xl bg-neutral-100 shadow-lg">
+    <div className="posty-clay-tile relative aspect-video w-full overflow-hidden rounded-[1.4rem] p-1.5">
+      <div className="relative h-full w-full overflow-hidden rounded-[1.15rem] bg-[#1d1d1f]/10">
       <iframe
         className="absolute inset-0 h-full w-full"
         src={`https://www.youtube-nocookie.com/embed/${videoId}`}
@@ -30,6 +31,7 @@ export function DemoYouTube({ videoId, title }: { videoId: string; title: string
         referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
       />
+      </div>
     </div>
   );
 }

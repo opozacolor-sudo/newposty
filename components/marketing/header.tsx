@@ -66,7 +66,7 @@ function DesktopMenu({
                 : wide
                   ? "w-[min(36rem,calc(100vw-2rem))] p-4 sm:p-5"
                   : "w-[min(32rem,calc(100vw-2rem))] p-4 sm:p-5"
-            } posty-header-popover rounded-2xl border border-black/5 bg-white text-neutral-900 shadow-[0_18px_50px_rgba(0,0,0,0.12)]`}
+            } posty-header-popover rounded-2xl text-[#1d1d1f]`}
           >
             {children}
           </div>
@@ -91,7 +91,7 @@ function MoreLinks({ onNavigate }: { onNavigate?: () => void }) {
           <Link
             href={item.href}
             onClick={onNavigate}
-            className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-950 hover:bg-neutral-50"
+            className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-[#1d1d1f]"
           >
             {item.label}
           </Link>
@@ -121,7 +121,7 @@ export function MarketingHeader() {
   ] as const;
 
   return (
-    <header className="sticky top-0 z-50 bg-[#f5f5f7]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50">
       <div className="mx-auto flex h-10 w-full max-w-[1400px] items-center px-4 lg:grid lg:h-11 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
         <div className="flex min-w-0 items-center gap-2 justify-self-start">
           <button
@@ -192,7 +192,7 @@ export function MarketingHeader() {
       </div>
 
       {open ? (
-        <div className="border-t border-black/5 px-4 py-3 lg:hidden">
+        <div className="px-4 py-3 lg:hidden">
           <nav className="flex flex-col gap-3">
             <button
               type="button"
@@ -204,7 +204,7 @@ export function MarketingHeader() {
               <ChevronDown size={14} className={mobile === "features" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "features" ? (
-              <div className="rounded-2xl bg-white p-3 text-neutral-900">
+              <div className="posty-header-popover rounded-2xl p-3 text-[#1d1d1f]">
                 <FeaturesPanel onNavigate={closeAll} />
               </div>
             ) : null}
@@ -218,7 +218,7 @@ export function MarketingHeader() {
               <ChevronDown size={14} className={mobile === "platforms" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "platforms" ? (
-              <div className="rounded-2xl bg-white p-3 text-neutral-900">
+              <div className="posty-header-popover rounded-2xl p-3 text-[#1d1d1f]">
                 <PlatformsPanel onNavigate={closeAll} />
               </div>
             ) : null}
@@ -232,7 +232,7 @@ export function MarketingHeader() {
               <ChevronDown size={14} className={mobile === "madeFor" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "madeFor" ? (
-              <div className="rounded-2xl bg-white p-3 text-neutral-900">
+              <div className="posty-header-popover rounded-2xl p-3 text-[#1d1d1f]">
                 <MadeForPanel onNavigate={closeAll} />
               </div>
             ) : null}
@@ -246,7 +246,7 @@ export function MarketingHeader() {
               <ChevronDown size={14} className={mobile === "more" ? "rotate-180 transition" : "transition"} />
             </button>
             {mobile === "more" ? (
-              <div className="rounded-2xl bg-white p-2 text-neutral-900">
+              <div className="posty-header-popover rounded-2xl p-2 text-[#1d1d1f]">
                 <MoreLinks onNavigate={closeAll} />
               </div>
             ) : null}

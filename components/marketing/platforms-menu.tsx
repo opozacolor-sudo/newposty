@@ -14,7 +14,7 @@ function PlatformRow({
 }) {
   const soon = isConnectDisabled(platform.id);
   return (
-    <li className="flex items-center gap-2.5 rounded-xl px-2 py-1.5 hover:bg-neutral-50">
+    <li className="flex items-center gap-2.5 rounded-xl px-2 py-1.5">
       <PlatformIcon platform={platform} connected={!soon} size="sm" />
       <span className="text-sm font-medium text-neutral-800">{platform.label}</span>
       {soon ? <span className="text-[11px] text-neutral-400">{comingSoon}</span> : null}
@@ -50,7 +50,7 @@ export function PlatformsPanel({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           href="/platforms"
           onClick={onNavigate}
-          className="mt-3 inline-flex px-2 text-sm font-medium text-[#FF4713] hover:underline"
+          className="mt-3 inline-flex px-2 text-sm font-medium text-[#1d1d1f] underline-offset-4 hover:underline"
         >
           {t("seeAllPlatforms")}
         </Link>

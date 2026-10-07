@@ -16,7 +16,7 @@ export function MadeForPanel({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               href={`/made-for/${page.slug}`}
               onClick={onNavigate}
-              className="block rounded-xl px-3 py-2.5 hover:bg-neutral-50"
+              className="block rounded-xl px-3 py-2.5"
             >
               <span className="block text-sm font-semibold text-neutral-950">{copy.navTitle}</span>
               <span className="mt-0.5 block text-[13px] leading-5 text-neutral-500">{copy.navBody}</span>

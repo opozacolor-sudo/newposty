@@ -27,7 +27,7 @@ export function FeaturesPanel({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               href={`/features/${page.slug}`}
               onClick={onNavigate}
-              className="flex gap-3 rounded-xl px-3 py-2.5 hover:bg-neutral-50"
+              className="flex gap-3 rounded-xl px-3 py-2.5"
             >
               <Icon size={18} className="mt-0.5 shrink-0 text-neutral-700" aria-hidden />
               <span>

@@ -2,10 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { FormEvent, useState } from "react";
-import { btnSolid } from "./styles";
+import { btnClay } from "./styles";
 
 const fieldClass =
-  "mt-2 w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-[#FF4713]";
+  "posty-clay-field mt-2 w-full rounded-2xl px-4 py-3 text-sm text-[#1d1d1f] outline-none transition placeholder:text-[#6e6e73]";
 
 export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
   const t = useTranslations("Contact");
@@ -50,11 +50,11 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
 
   return (
     <form onSubmit={onSubmit} className="mt-10 max-w-xl space-y-5">
-      <label className="block text-sm font-medium text-neutral-800">
+      <label className="block text-sm font-medium text-[#1d1d1f]">
         {t("name")}
         <input name="name" required maxLength={200} className={fieldClass} />
       </label>
-      <label className="block text-sm font-medium text-neutral-800">
+      <label className="block text-sm font-medium text-[#1d1d1f]">
         {t("email")}
         <input
           name="email"
@@ -65,7 +65,7 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
           className={fieldClass}
         />
       </label>
-      <label className="block text-sm font-medium text-neutral-800">
+      <label className="block text-sm font-medium text-[#1d1d1f]">
         {t("message")}
         <textarea
           name="message"
@@ -75,17 +75,17 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
           className={`${fieldClass} resize-y`}
         />
       </label>
-      <button type="submit" className={btnSolid} disabled={pending}>
+      <button type="submit" className={btnClay} disabled={pending}>
         {pending ? t("sending") : t("submit")}
       </button>
       {status === "success" ? (
-        <p className="text-sm text-neutral-600">{t("success")}</p>
+        <p className="text-sm text-[#55514e]">{t("success")}</p>
       ) : null}
       {status === "error" ? (
-        <p className="text-sm text-neutral-600">{t("error")}</p>
+        <p className="text-sm text-[#55514e]">{t("error")}</p>
       ) : null}
       {status === "invalid" ? (
-        <p className="text-sm text-neutral-600">{t("invalid")}</p>
+        <p className="text-sm text-[#55514e]">{t("invalid")}</p>
       ) : null}
     </form>
   );

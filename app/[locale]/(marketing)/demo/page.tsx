@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { DemoReveal, DemoYouTube } from "@/components/marketing/demo-media";
-import { btnSolid } from "@/components/marketing/styles";
+import { MarketingPageFrame } from "@/components/marketing/page-frame";
+import { btnClay, clayLink, pageLead, pageTitle } from "@/components/marketing/styles";
 import { SIGNUPS_OPEN } from "@/lib/flags";
 import { Link } from "@/i18n/navigation";
 
@@ -31,12 +32,10 @@ export default async function DemoPage() {
   const t = await getTranslations("Demo");
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+    <MarketingPageFrame wide>
       <header className="mx-auto max-w-2xl text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl lg:text-5xl">
-          {t("title")}
-        </h1>
-        <p className="mt-3 text-base text-neutral-500 sm:text-lg">{t("subtitle")}</p>
+        <h1 className={pageTitle}>{t("title")}</h1>
+        <p className={pageLead}>{t("subtitle")}</p>
       </header>
 
       <div className="mt-14 flex flex-col gap-16 sm:mt-20 sm:gap-24">
@@ -46,13 +45,13 @@ export default async function DemoPage() {
             <DemoReveal key={step.id}>
               <section className="grid items-center gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
                 <div className={reverse ? "md:order-2" : undefined}>
-                  <p className="text-sm font-medium text-[#FF4713]">
+                  <p className="text-sm font-medium text-[#6b5348]">
                     {String(index + 1).padStart(2, "0")}
                   </p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1d1f] sm:text-3xl">
                     {t(`steps.${step.id}.title`)}
                   </h2>
-                  <p className="mt-3 max-w-md text-base leading-7 text-neutral-500">
+                  <p className="mt-3 max-w-md text-base leading-7 text-[#55514e]">
                     {t(`steps.${step.id}.body`)}
                   </p>
                 </div>
@@ -65,22 +64,17 @@ export default async function DemoPage() {
         })}
       </div>
 
-      <div className="mt-20 border-t border-neutral-100 py-16 text-center sm:mt-24">
-        <p className="text-2xl font-semibold tracking-tight text-neutral-950">
-          {t("ctaTitle")}
-        </p>
+      <div className="mt-20 border-t border-white/20 py-16 text-center sm:mt-24">
+        <p className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("ctaTitle")}</p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href={SIGNUPS_OPEN ? "/signup" : "/waitlist"} className={`${btnSolid} px-6 py-3`}>
+          <Link href={SIGNUPS_OPEN ? "/signup" : "/waitlist"} className={`${btnClay} px-6 py-3`}>
             {t("ctaButton")}
           </Link>
-          <Link
-            href="/guide"
-            className="text-sm font-medium text-[#FF4713] hover:underline"
-          >
+          <Link href="/guide" className={clayLink}>
             {t("readGuide")}
           </Link>
         </div>
       </div>
-    </div>
+    </MarketingPageFrame>
   );
 }
