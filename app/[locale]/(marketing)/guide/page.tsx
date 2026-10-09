@@ -18,5 +18,12 @@ export async function generateMetadata({
 
 export default async function GuidePage() {
   const locale = await getLocale();
-  return <GuideArticle guide={getGuide(locale)} variant="marketing" />;
+  const t = await getTranslations("Guide");
+  return (
+    <GuideArticle
+      guide={getGuide(locale)}
+      variant="marketing"
+      featured={{ href: "/guide/one-message", label: t("featuredArticle") }}
+    />
+  );
 }

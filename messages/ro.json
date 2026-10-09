@@ -206,13 +206,14 @@
     "intro": "Contractul, confidențialitatea, cookie-urile, anularea și abonamentul posty.now sunt cu VLN MOTORS SRL."
   },
   "PlatformsPage": {
-    "metaTitle": "Instagram, TikTok, Facebook și altele | posty.now",
+    "metaTitle": "Programează postări pe Instagram, TikTok, Facebook și altele | posty.now",
     "metaDescription": "Postează și pune reclame pe Instagram, TikTok, Facebook, LinkedIn, YouTube și altele — dintr-un singur chat.",
     "title": "Toate rețelele, într-un studio",
     "subtitle": "Conectezi canalele pe care postezi și conturile de ads.",
     "channels": "Canale",
     "ads": "Reclame",
     "comingSoon": "În curând",
+    "alsoTitle": "Alte rețele",
     "ctaTitle": "Lansare 15 octombrie"
   },
   "MadeFor": {
@@ -236,7 +237,7 @@
     "ctaTitle": "Lansare 15 octombrie"
   },
   "Demo": {
-    "metaTitle": "Cum funcționează posty.now",
+    "metaTitle": "Cum programezi postări Instagram, TikTok și Facebook | posty.now",
     "metaDescription": "Vezi fiecare pas din posty.now — conectează conturi, scrie cu AI, programează, publică și urmărește performanța.",
     "title": "Cum funcționează posty.now",
     "subtitle": "Vezi fiecare pas în acțiune.",
@@ -420,8 +421,9 @@
     ]
   },
   "Guide": {
-    "metaTitle": "Manual: cum programezi postări | posty.now",
-    "metaDescription": "Ghid complet: asistent, conexiuni, postări, statistici, mesaje, lead-uri, promovări și dictare vocală în posty.now."
+    "metaTitle": "Cum programezi postări Instagram și TikTok | posty.now",
+    "metaDescription": "Ghid complet: asistent, conexiuni, postări, statistici, mesaje, lead-uri, promovări și dictare vocală în posty.now.",
+    "featuredArticle": "Cum programezi 30 de postări dintr-un mesaj"
   },
   "Presale": {
     "metaTitle": "Presale — posty.now pe viață",

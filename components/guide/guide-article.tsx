@@ -202,9 +202,11 @@ function SectionBlock({
 export function GuideArticle({
   guide,
   variant,
+  featured,
 }: {
   guide: GuideDoc;
   variant: "marketing" | "studio";
+  featured?: { href: "/guide/one-message"; label: string };
 }) {
   const clay = variant === "marketing";
   const inner = (
@@ -224,6 +226,20 @@ export function GuideArticle({
         >
           {guide.subtitle}
         </p>
+        {featured ? (
+          <p className="mt-4">
+            <Link
+              href={featured.href}
+              className={
+                clay
+                  ? "text-sm font-medium text-[#1d1d1f] underline-offset-4 hover:underline"
+                  : "text-sm font-medium text-[#FF4713] underline-offset-4 hover:underline"
+              }
+            >
+              {featured.label}
+            </Link>
+          </p>
+        ) : null}
         <p className="mt-4">
           <a href={guide.pdfHref} download className={clay ? `${btnOutline} !px-4 !py-2` : btnOutline}>
             {guide.downloadLabel}

@@ -5,7 +5,8 @@ import { MarketingPageFrame } from "@/components/marketing/page-frame";
 import { WaitlistForm } from "@/components/marketing/waitlist-form";
 import { clayLink, clayTile, pageH2, pageKicker, pageLead, pageTitle } from "@/components/marketing/styles";
 import { Link } from "@/i18n/navigation";
-import { getMadeFor, isMadeForSlug, MADE_FOR } from "@/lib/made-for";
+import { getMadeFor, isMadeForSlug, MADE_FOR, type MadeForSlug } from "@/lib/made-for";
+import { getMadeForMeta } from "@/lib/seo-meta";
 import { ADS_PLATFORMS, isConnectDisabled, PLATFORMS } from "@/lib/platforms";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 
@@ -19,10 +20,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const page = getMadeFor(slug);
-  if (!page) return {};
-  const copy = locale === "ro" ? page.ro : page.en;
-  return { title: copy.metaTitle, description: copy.metaDescription };
+  if (!isMadeForSlug(slug)) return {};
+  return getMadeForMeta(slug as MadeForSlug, locale);
 }
 
 export default async function MadeForAudiencePage({

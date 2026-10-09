@@ -206,13 +206,14 @@
     "intro": "Le contrat, la confidentialité, les cookies, l’annulation et l’abonnement posty.now sont avec VLN MOTORS SRL."
   },
   "PlatformsPage": {
-    "metaTitle": "Instagram, TikTok, Facebook et plus | posty.now",
+    "metaTitle": "Programmez Instagram, TikTok, Facebook et plus | posty.now",
     "metaDescription": "Publiez et diffusez des pubs sur Instagram, TikTok, Facebook, LinkedIn, YouTube et plus — depuis un chat.",
     "title": "Tous les réseaux dans un studio",
     "subtitle": "Connectez les canaux où vous publiez et les comptes pubs.",
     "channels": "Canaux",
     "ads": "Pubs",
     "comingSoon": "Bientôt",
+    "alsoTitle": "Autres réseaux",
     "ctaTitle": "Ouverture le 15 octobre"
   },
   "MadeFor": {
@@ -236,7 +237,7 @@
     "ctaTitle": "Ouverture le 15 octobre"
   },
   "Demo": {
-    "metaTitle": "Comment fonctionne posty.now",
+    "metaTitle": "Comment programmer Instagram, TikTok et Facebook | posty.now",
     "metaDescription": "Vois chaque étape dans posty.now — connecte tes comptes, écris avec l’IA, programme, publie et suis les performances.",
     "title": "Comment fonctionne posty.now",
     "subtitle": "See each step in action.",
@@ -420,8 +421,9 @@
     ]
   },
   "Guide": {
-    "metaTitle": "Guide : comment programmer vos posts | posty.now",
-    "metaDescription": "Guide complet : assistant, connexions, posts, analytics, messages, leads, pubs et dictée vocale dans posty.now."
+    "metaTitle": "Comment programmer Instagram et TikTok | posty.now",
+    "metaDescription": "Guide complet : assistant, connexions, posts, analytics, messages, leads, pubs et dictée vocale dans posty.now.",
+    "featuredArticle": "Comment programmer 30 posts en un message"
   },
   "Presale": {
     "metaTitle": "Presale — posty.now lifetime",

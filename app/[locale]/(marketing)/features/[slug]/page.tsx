@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { FaqJsonLd } from "@/components/marketing/faq-json-ld";
 import { MarketingPageFrame } from "@/components/marketing/page-frame";
 import { WaitlistForm } from "@/components/marketing/waitlist-form";
 import { clayLink, clayTile, pageH2, pageKicker, pageLead, pageTitle } from "@/components/marketing/styles";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 import { Link } from "@/i18n/navigation";
-import { FEATURES, getFeature, isFeatureSlug } from "@/lib/features";
+import { FEATURES, getFeature, isFeatureSlug, type FeatureSlug } from "@/lib/features";
+import { getFeatureMeta } from "@/lib/seo-meta";
 import { ADS_PLATFORMS, isConnectDisabled, PLATFORMS } from "@/lib/platforms";
 
 export function generateStaticParams() {
@@ -19,10 +21,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const page = getFeature(slug);
-  if (!page) return {};
-  const copy = locale === "ro" ? page.ro : page.en;
-  return { title: copy.metaTitle, description: copy.metaDescription };
+  if (!isFeatureSlug(slug)) return {};
+  return getFeatureMeta(slug as FeatureSlug, locale);
 }
 
 export default async function FeaturePage({
@@ -42,6 +42,7 @@ export default async function FeaturePage({
 
   return (
     <MarketingPageFrame wide>
+      <FaqJsonLd faqs={copy.faqs} />
       <header className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
         <div>
           <p className={pageKicker}>{copy.kicker}</p>

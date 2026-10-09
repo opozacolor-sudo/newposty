@@ -206,13 +206,14 @@
     "intro": "Vertrag, Datenschutz, Cookies, Widerruf und Abo von posty.now laufen über VLN MOTORS SRL."
   },
   "PlatformsPage": {
-    "metaTitle": "Instagram, TikTok, Facebook und mehr | posty.now",
+    "metaTitle": "Beiträge auf Instagram, TikTok, Facebook und mehr planen | posty.now",
     "metaDescription": "Posten und Werbung auf Instagram, TikTok, Facebook, LinkedIn, YouTube und mehr — aus einem Chat.",
     "title": "Jedes Netzwerk in einem Studio",
     "subtitle": "Verbinde die Kanäle, auf denen du postest, und die Werbekonten.",
     "channels": "Kanäle",
     "ads": "Anzeigen",
     "comingSoon": "Demnächst",
+    "alsoTitle": "Andere Netzwerke",
     "ctaTitle": "Start 15. Oktober"
   },
   "MadeFor": {
@@ -236,7 +237,7 @@
     "ctaTitle": "Start 15. Oktober"
   },
   "Demo": {
-    "metaTitle": "So funktioniert posty.now",
+    "metaTitle": "Instagram-, TikTok- und Facebook-Beiträge planen | posty.now",
     "metaDescription": "Sieh jeden Schritt in posty.now — Konten verbinden, mit KI schreiben, planen, veröffentlichen und die Leistung prüfen.",
     "title": "So funktioniert posty.now",
     "subtitle": "See each step in action.",
@@ -420,8 +421,9 @@
     ]
   },
   "Guide": {
-    "metaTitle": "Anleitung: Beiträge planen | posty.now",
-    "metaDescription": "Komplette Anleitung zu Assistent, Verbindungen, Beiträgen, Analysen, Nachrichten, Leads, Anzeigen und Sprachdiktat in posty.now."
+    "metaTitle": "Instagram- und TikTok-Beiträge planen | posty.now",
+    "metaDescription": "Komplette Anleitung zu Assistent, Verbindungen, Beiträgen, Analysen, Nachrichten, Leads, Anzeigen und Sprachdiktat in posty.now.",
+    "featuredArticle": "So planst du 30 Beiträge mit einer Nachricht"
   },
   "Presale": {
     "metaTitle": "Presale — posty.now lifetime",

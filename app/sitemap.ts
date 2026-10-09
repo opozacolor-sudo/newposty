@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { FEATURES } from "@/lib/features";
+import { HOW_TO_SLUGS } from "@/lib/how-to";
 import { MADE_FOR } from "@/lib/made-for";
+import { PLATFORM_LANDING_SLUGS } from "@/lib/platform-pages";
 import { routing } from "@/i18n/routing";
 
 const SITE = "https://posty.now";
@@ -9,7 +11,17 @@ const MARKETING_PATHS: { path: string; priority: number; changeFrequency: Metada
   [
     { path: "", priority: 1, changeFrequency: "weekly" },
     { path: "/guide", priority: 0.9, changeFrequency: "weekly" },
+    ...HOW_TO_SLUGS.map((slug) => ({
+      path: `/guide/${slug}`,
+      priority: 0.9,
+      changeFrequency: "monthly" as const,
+    })),
     { path: "/platforms", priority: 0.8, changeFrequency: "weekly" },
+    ...PLATFORM_LANDING_SLUGS.map((slug) => ({
+      path: `/platforms/${slug}`,
+      priority: 0.85,
+      changeFrequency: "monthly" as const,
+    })),
     { path: "/demo", priority: 0.8, changeFrequency: "monthly" },
     { path: "/about", priority: 0.6, changeFrequency: "monthly" },
     { path: "/contact", priority: 0.5, changeFrequency: "monthly" },

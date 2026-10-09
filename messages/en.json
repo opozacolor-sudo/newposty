@@ -206,13 +206,14 @@
     "intro": "The contract, privacy, cookies, cancellation, and subscription for posty.now are with VLN MOTORS SRL."
   },
   "PlatformsPage": {
-    "metaTitle": "Instagram, TikTok, Facebook and more | posty.now",
+    "metaTitle": "Schedule posts on Instagram, TikTok, Facebook and more | posty.now",
     "metaDescription": "Post and run ads on Instagram, TikTok, Facebook, LinkedIn, YouTube and more — from one chat.",
     "title": "Every network in one studio",
     "subtitle": "Connect the channels you post on and the ad accounts you advertise with.",
     "channels": "Channels",
     "ads": "Ads",
     "comingSoon": "Coming soon",
+    "alsoTitle": "Other networks",
     "ctaTitle": "Launch 15 October"
   },
   "MadeFor": {
@@ -236,7 +237,7 @@
     "ctaTitle": "Launch 15 October"
   },
   "Demo": {
-    "metaTitle": "How posty.now works",
+    "metaTitle": "How to schedule Instagram, TikTok and Facebook posts | posty.now",
     "metaDescription": "See each major step in posty.now — connect accounts, write with AI, schedule, publish, and review performance.",
     "title": "How posty.now works",
     "subtitle": "See each step in action.",
@@ -420,8 +421,9 @@
     ]
   },
   "Guide": {
-    "metaTitle": "Guide: how to schedule social posts | posty.now",
-    "metaDescription": "Complete guide to the assistant, connections, posts, analytics, messages, leads, ads, and voice dictation in posty.now."
+    "metaTitle": "How to schedule Instagram and TikTok posts | posty.now",
+    "metaDescription": "Complete guide to the assistant, connections, posts, analytics, messages, leads, ads, and voice dictation in posty.now.",
+    "featuredArticle": "How to schedule 30 posts from one message"
   },
   "Presale": {
     "metaTitle": "Presale — posty.now lifetime",

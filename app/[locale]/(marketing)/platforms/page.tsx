@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { MarketingPageFrame } from "@/components/marketing/page-frame";
 import { WaitlistForm } from "@/components/marketing/waitlist-form";
-import { pageKicker, pageLead, pageTitle } from "@/components/marketing/styles";
+import { clayLink, pageKicker, pageLead, pageTitle } from "@/components/marketing/styles";
 import { PlatformIcon } from "@/components/studio/platform-icon";
+import { Link } from "@/i18n/navigation";
+import { isPlatformLandingSlug } from "@/lib/platform-pages";
 import { ADS_PLATFORMS, isConnectDisabled, PLATFORMS } from "@/lib/platforms";
 
 export async function generateMetadata({
@@ -21,6 +23,7 @@ export async function generateMetadata({
 
 export default async function PlatformsPage() {
   const t = await getTranslations("PlatformsPage");
+  const guide = await getTranslations("Guide");
   const comingSoon = t("comingSoon");
 
   return (
@@ -28,6 +31,11 @@ export default async function PlatformsPage() {
       <header className="mx-auto max-w-2xl text-center">
         <h1 className={pageTitle}>{t("title")}</h1>
         <p className={pageLead}>{t("subtitle")}</p>
+        <p className="mt-4">
+          <Link href="/guide/one-message" className={clayLink}>
+            {guide("featuredArticle")}
+          </Link>
+        </p>
       </header>
 
       <section className="mt-14">
@@ -35,11 +43,26 @@ export default async function PlatformsPage() {
         <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {PLATFORMS.map((platform) => {
             const soon = isConnectDisabled(platform.id);
-            return (
-              <li key={platform.id} className="posty-clay-tile flex items-center gap-3 rounded-[1.15rem] px-3 py-3">
+            const landing = isPlatformLandingSlug(platform.id);
+            const row = (
+              <>
                 <PlatformIcon platform={platform} connected={!soon} />
                 <span className="text-sm font-medium text-[#1d1d1f]">{platform.label}</span>
                 {soon ? <span className="ml-auto text-xs text-[#6e6e73]">{comingSoon}</span> : null}
+              </>
+            );
+            return (
+              <li key={platform.id}>
+                {landing ? (
+                  <Link
+                    href={`/platforms/${platform.id}`}
+                    className="posty-clay-tile flex items-center gap-3 rounded-[1.15rem] px-3 py-3"
+                  >
+                    {row}
+                  </Link>
+                ) : (
+                  <div className="posty-clay-tile flex items-center gap-3 rounded-[1.15rem] px-3 py-3">{row}</div>
+                )}
               </li>
             );
           })}
