@@ -19,7 +19,7 @@ export function StudioChrome({
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-white text-[#1d1d1f]">
       <StudioTopNav />
-      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</div>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">{children}</div>
       <StudioDock
         email={email}
         accountKind={accountKind}

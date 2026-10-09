@@ -465,6 +465,43 @@ html:has(.marketing):not(.home-no-scroll) body {
     0 0 0 2px rgba(126, 232, 226, 0.28);
 }
 
+.posty-chat-history {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.07) 55%,
+    rgba(88, 82, 78, 0.05) 100%
+  );
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.32),
+    inset -1px -1px 3px rgba(63, 58, 55, 0.08);
+}
+
+.posty-chat-composer {
+  background: linear-gradient(145deg, #e8e7e4 0%, #d5d4d0 100%);
+  box-shadow:
+    inset 3px 3px 6px rgba(65, 61, 58, 0.14),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.72);
+}
+
+.posty-chat-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  flex: none;
+}
+
+@media (max-width: 639px) {
+  .posty-chat-action {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
 .posty-auth-locale select {
   appearance: none;
   border: 0 !important;

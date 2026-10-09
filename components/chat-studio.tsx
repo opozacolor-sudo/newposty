@@ -162,6 +162,7 @@ export default function ChatStudio() {
   const [speechSupported, setSpeechSupported] = useState(true);
   const [clearing, setClearing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const baseInputRef = useRef("");
@@ -190,6 +191,12 @@ export default function ChatStudio() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pending]);
+
+  useEffect(() => {
+    if (input === "" && composerRef.current) {
+      composerRef.current.style.height = "auto";
+    }
+  }, [input]);
 
   useEffect(() => {
     return () => {
@@ -459,21 +466,18 @@ export default function ChatStudio() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 justify-end px-4 pt-2">
+      <div className="relative min-h-0 flex-1 px-2.5 pt-2.5 sm:px-3.5 sm:pt-3.5">
         <button
           type="button"
           onClick={() => void clearChat()}
           disabled={clearing || pending}
           title={t("cleanChat")}
           aria-label={t("cleanChat")}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] text-[#6e6e73] hover:bg-white hover:text-[#1d1d1f] disabled:opacity-40"
+          className="posty-site-btn posty-chat-action absolute right-3 top-3 z-10 !h-8 !w-8 disabled:opacity-40 sm:right-4 sm:top-4"
         >
-          <Eraser size={11} />
-          {t("cleanChat")}
+          <Eraser size={13} />
         </button>
-      </div>
-
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-2 sm:px-5">
+        <div className="posty-chat-history h-full min-h-0 space-y-3 overflow-y-auto rounded-[1.25rem] px-3 py-3 pr-12 sm:rounded-[1.4rem] sm:px-4 sm:py-4 sm:pr-14">
         {messages.map((message, index) => {
           const wide =
             message.payload?.type === "catalog_plan" ||
@@ -486,9 +490,9 @@ export default function ChatStudio() {
             key={`${message.role}-${index}`}
             className={`rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
               message.role === "user"
-                ? "ml-auto max-w-[min(78%,24rem)] whitespace-pre-wrap bg-[#1A1A1A] text-white"
-                : `mr-auto border border-[#E5E5E5] bg-white text-[#1A1A1A] ${
-                    wide ? "max-w-[min(88%,32rem)]" : "max-w-[min(78%,26rem)]"
+                ? "posty-clay-well ml-auto max-w-[min(82%,24rem)] whitespace-pre-wrap"
+                : `posty-clay-tile mr-auto text-[#1d1d1f] ${
+                    wide ? "max-w-[min(92%,32rem)]" : "max-w-[min(82%,26rem)]"
                   }`
             }`}
           >
@@ -609,22 +613,23 @@ export default function ChatStudio() {
           );
         })}
         {messages.length === 0 && !pending ? (
-          <div className="max-w-[min(78%,26rem)] space-y-2">
-            <p className="text-sm text-[#6B7280]">{t("empty")}</p>
-            <p className="text-xs leading-5 text-[#6B7280]">{t("campaignTip")}</p>
-            <Link href="/help" className="inline-block text-xs font-medium text-[#FF4713] hover:underline">
+          <div className="max-w-[min(82%,26rem)] space-y-2 pt-1">
+            <p className="text-sm text-[#5c5652]">{t("empty")}</p>
+            <p className="text-xs leading-5 text-[#5c5652]">{t("campaignTip")}</p>
+            <Link href="/help" className="inline-block text-xs font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
               {t("guideLink")}
             </Link>
           </div>
         ) : null}
-        {pending ? <p className="text-sm text-[#6B7280]">{t("thinking")}</p> : null}
+        {pending ? <p className="text-sm text-[#5c5652]">{t("thinking")}</p> : null}
         <div ref={bottomRef} />
+        </div>
       </div>
 
-      <form onSubmit={(event) => void send(event)} className="shrink-0 px-4 pb-3 sm:px-5">
+      <form onSubmit={(event) => void send(event)} className="shrink-0 px-2.5 pb-2.5 pt-2 sm:px-3.5 sm:pb-3.5">
         {attachments.length > 0 ? (
-          <div className="mb-3">
-            <p className="mb-2 text-xs font-medium text-[#FF4713]">
+          <div className="mb-2.5">
+            <p className="mb-2 text-xs font-medium text-[#5c5652]">
               {uploading
                 ? t("attachingProgress", { done: media.length, total: attachments.length })
                 : t("attachedReady")}
@@ -674,60 +679,54 @@ export default function ChatStudio() {
           </div>
         ) : null}
 
-        <div className="relative rounded-2xl border border-black/10 bg-white focus-within:border-[#0071e3]">
+        <div className="posty-chat-composer flex items-end gap-1.5 rounded-[1.45rem] p-1.5 sm:gap-2 sm:p-2">
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="posty-site-btn posty-chat-action relative"
+            aria-label={t("attach")}
+            title={t("attach")}
+          >
+            <Paperclip size={16} />
+            {attachments.length > 0 ? (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1d1d1f] px-1 text-[10px] font-semibold text-white">
+                {attachments.length}
+              </span>
+            ) : null}
+          </button>
+          <button
+            type="button"
+            onClick={() => void toggleDictation()}
+            className="posty-site-btn posty-chat-action"
+            style={listening ? { animation: "mic-pulse 1.4s ease-out infinite" } : undefined}
+            aria-label={listening ? t("stopDictation") : t("dictate")}
+            title={speechSupported ? (listening ? t("stopDictation") : t("dictate")) : t("speechUnavailable")}
+          >
+            <Mic size={16} />
+          </button>
           <textarea
+            ref={composerRef}
             value={input}
-            onChange={(event) => setInput(event.target.value)}
+            onChange={(event) => {
+              setInput(event.target.value);
+              const el = event.currentTarget;
+              el.style.height = "auto";
+              el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+            }}
             onKeyDown={onComposerKeyDown}
-            rows={2}
+            rows={1}
             placeholder={listening ? t("speechListening") : t("placeholder")}
-            className="w-full resize-none bg-transparent px-3.5 pb-10 pt-2.5 text-sm text-[#1A1A1A] outline-none placeholder:text-[#6B7280]"
+            className="min-h-10 min-w-0 flex-1 resize-none bg-transparent px-1.5 py-2.5 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:min-h-11 sm:px-2"
           />
-          <div className="absolute inset-x-2 bottom-1.5 flex items-center justify-between">
-            <div className="flex items-center gap-0.5">
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                className={`relative inline-flex h-8 w-8 items-center justify-center rounded-full ${
-                  media.length > 0 || uploading
-                    ? "bg-[#FF4713] text-white"
-                    : "text-[#6B7280] hover:bg-[#f5f5f7] hover:text-[#FF4713]"
-                }`}
-                aria-label={t("attach")}
-                title={t("attach")}
-              >
-                <Paperclip size={16} />
-                {attachments.length > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-semibold text-[#FF4713]">
-                    {attachments.length}
-                  </span>
-                ) : null}
-              </button>
-              <button
-                type="button"
-                onClick={() => void toggleDictation()}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
-                  listening
-                    ? "bg-[#FF4713] text-white"
-                    : "text-[#6B7280] hover:bg-[#f5f5f7] hover:text-[#FF4713]"
-                }`}
-                style={listening ? { animation: "mic-pulse 1.4s ease-out infinite" } : undefined}
-                aria-label={listening ? t("stopDictation") : t("dictate")}
-                title={speechSupported ? (listening ? t("stopDictation") : t("dictate")) : t("speechUnavailable")}
-              >
-                <Mic size={16} />
-              </button>
-            </div>
-            <button
-              type="submit"
-              disabled={pending || uploading || !input.trim()}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#FF4713] text-white hover:bg-[#e03d0f] disabled:opacity-40"
-              aria-label={t("send")}
-              title={t("send")}
-            >
-              <ArrowUp size={16} />
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={pending || uploading || !input.trim()}
+            className="posty-site-btn posty-chat-action disabled:opacity-40"
+            aria-label={t("send")}
+            title={t("send")}
+          >
+            <ArrowUp size={16} />
+          </button>
           <input
             ref={fileRef}
             type="file"
@@ -740,7 +739,7 @@ export default function ChatStudio() {
             }}
           />
         </div>
-        {error ? <p className="mt-2 text-sm text-[#FF4713]">{error}</p> : null}
+        {error ? <p className="mt-2 text-sm text-[#8b3a2a]">{error}</p> : null}
       </form>
     </div>
   );
