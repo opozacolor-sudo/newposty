@@ -193,12 +193,6 @@ export default function ChatStudio() {
   }, [messages, pending]);
 
   useEffect(() => {
-    if (input === "" && composerRef.current) {
-      composerRef.current.style.height = "auto";
-    }
-  }, [input]);
-
-  useEffect(() => {
     return () => {
       recognitionRef.current?.stop();
     };
@@ -679,55 +673,50 @@ export default function ChatStudio() {
           </div>
         ) : null}
 
-        <div className="posty-chat-composer flex items-end gap-1.5 rounded-[1.45rem] p-1.5 sm:gap-2 sm:p-2">
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="posty-site-btn posty-chat-action relative"
-            aria-label={t("attach")}
-            title={t("attach")}
-          >
-            <Paperclip size={16} />
-            {attachments.length > 0 ? (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1d1d1f] px-1 text-[10px] font-semibold text-white">
-                {attachments.length}
-              </span>
-            ) : null}
-          </button>
-          <button
-            type="button"
-            onClick={() => void toggleDictation()}
-            className="posty-site-btn posty-chat-action"
-            style={listening ? { animation: "mic-pulse 1.4s ease-out infinite" } : undefined}
-            aria-label={listening ? t("stopDictation") : t("dictate")}
-            title={speechSupported ? (listening ? t("stopDictation") : t("dictate")) : t("speechUnavailable")}
-          >
-            <Mic size={16} />
-          </button>
-          <textarea
-            ref={composerRef}
-            value={input}
-            onChange={(event) => {
-              setInput(event.target.value);
-              const el = event.currentTarget;
-              el.style.height = "auto";
-              const next = Math.min(el.scrollHeight, 128);
-              el.style.height = `${next}px`;
-              el.style.overflowY = el.scrollHeight > 128 ? "auto" : "hidden";
-            }}
-            onKeyDown={onComposerKeyDown}
-            rows={1}
-            placeholder={listening ? t("speechListening") : t("placeholder")}
-            className="min-h-10 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-1.5 py-2.5 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:min-h-11 sm:px-2"
-          />
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="posty-chat-composer flex min-w-0 flex-1 items-center gap-1.5 rounded-full p-1 sm:gap-2 sm:p-1.5">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="posty-site-btn posty-chat-action relative"
+              aria-label={t("attach")}
+              title={t("attach")}
+            >
+              <Paperclip size={16} />
+              {attachments.length > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1d1d1f] px-1 text-[10px] font-semibold text-white">
+                  {attachments.length}
+                </span>
+              ) : null}
+            </button>
+            <button
+              type="button"
+              onClick={() => void toggleDictation()}
+              className="posty-site-btn posty-chat-action"
+              style={listening ? { animation: "mic-pulse 1.4s ease-out infinite" } : undefined}
+              aria-label={listening ? t("stopDictation") : t("dictate")}
+              title={speechSupported ? (listening ? t("stopDictation") : t("dictate")) : t("speechUnavailable")}
+            >
+              <Mic size={16} />
+            </button>
+            <textarea
+              ref={composerRef}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={onComposerKeyDown}
+              rows={1}
+              placeholder={listening ? t("speechListening") : t("placeholder")}
+              className="posty-chat-input min-w-0 flex-1 resize-none bg-transparent px-1.5 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:px-2"
+            />
+          </div>
           <button
             type="submit"
             disabled={pending || uploading || !input.trim()}
-            className="posty-site-btn posty-chat-action disabled:opacity-40"
+            className="posty-site-btn posty-chat-send disabled:opacity-40"
             aria-label={t("send")}
             title={t("send")}
           >
-            <ArrowUp size={16} />
+            <ArrowUp size={18} />
           </button>
           <input
             ref={fileRef}

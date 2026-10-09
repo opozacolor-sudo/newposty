@@ -106,17 +106,24 @@ body:has(.marketing) {
   background: #b7b6b3;
 }
 
-html:has(.marketing):not(.home-no-scroll) {
+html:has(.marketing):not(.home-no-scroll):not(:has(.studio)) {
   height: auto !important;
   min-height: 100%;
   overflow-x: clip;
   overflow-y: auto;
 }
 
-html:has(.marketing):not(.home-no-scroll) body {
+html:has(.marketing):not(.home-no-scroll):not(:has(.studio)) body {
   height: auto;
   min-height: 100dvh;
   overflow: visible;
+}
+
+html:has(.studio),
+html:has(.studio) body {
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #b7b6b3;
 }
 
 .marketing > header {
@@ -484,32 +491,69 @@ html:has(.marketing):not(.home-no-scroll) body {
     inset -2px -2px 5px rgba(255, 255, 255, 0.72);
 }
 
-.posty-chat-composer textarea {
-  overflow: hidden;
+.posty-chat-composer textarea,
+.posty-chat-input {
+  height: 2.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.posty-chat-composer textarea::placeholder {
+.posty-chat-composer textarea::placeholder,
+.posty-chat-input::placeholder {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.posty-chat-action {
+.posty-chat-action,
+.posty-chat-send {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
   padding: 0 !important;
   border-radius: 999px !important;
   flex: none;
 }
 
-@media (max-width: 639px) {
-  .posty-chat-action {
-    width: 2.25rem;
-    height: 2.25rem;
+.posty-chat-action {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.posty-chat-send {
+  width: 3.15rem;
+  height: 3.15rem;
+}
+
+@media (min-width: 640px) {
+  .posty-chat-composer textarea,
+  .posty-chat-input {
+    height: 2.5rem;
   }
+
+  .posty-chat-action {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .posty-chat-send {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+}
+
+.studio .posty-header-nav-island {
+  column-gap: 0.35rem;
+}
+
+.studio .posty-header-nav-island > div > button,
+.studio .posty-header-nav-island > a {
+  padding-inline: 0.55rem;
+}
+
+.studio .posty-clay-card-wrap::before,
+.studio .posty-clay-card-wrap::after {
+  display: none;
 }
 
 .posty-auth-locale select {
