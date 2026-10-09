@@ -525,6 +525,33 @@ html:has(.studio) body {
   height: 3.15rem;
 }
 
+.posty-chat-composer-tall {
+  --chat-action-gap: 0.25rem;
+  --chat-stack: calc(2 * 2.25rem + var(--chat-action-gap));
+}
+
+.posty-chat-composer-tall textarea,
+.posty-chat-composer-tall .posty-chat-input {
+  height: var(--chat-stack);
+  scrollbar-width: none;
+}
+
+.posty-chat-composer-tall textarea::-webkit-scrollbar,
+.posty-chat-composer-tall .posty-chat-input::-webkit-scrollbar {
+  display: none;
+}
+
+.posty-chat-composer-tall textarea::placeholder,
+.posty-chat-composer-tall .posty-chat-input::placeholder {
+  white-space: normal;
+  text-overflow: unset;
+}
+
+.posty-chat-composer-tall .posty-chat-send {
+  width: var(--chat-stack);
+  height: var(--chat-stack);
+}
+
 @media (min-width: 640px) {
   .posty-chat-composer textarea,
   .posty-chat-input {
@@ -539,6 +566,21 @@ html:has(.studio) body {
   .posty-chat-send {
     width: 3.6rem;
     height: 3.6rem;
+  }
+
+  .posty-chat-composer-tall {
+    --chat-action-gap: 0.375rem;
+    --chat-stack: calc(2 * 2.5rem + var(--chat-action-gap));
+  }
+
+  .posty-chat-composer-tall textarea,
+  .posty-chat-composer-tall .posty-chat-input {
+    height: var(--chat-stack);
+  }
+
+  .posty-chat-composer-tall .posty-chat-send {
+    width: var(--chat-stack);
+    height: var(--chat-stack);
   }
 }
 

@@ -673,8 +673,8 @@ export default function ChatStudio() {
           </div>
         ) : null}
 
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          <div className="posty-chat-composer flex min-w-0 flex-1 items-center gap-1.5 rounded-full p-1 sm:gap-2 sm:p-1.5">
+        <div className="posty-chat-composer posty-chat-composer-tall flex min-w-0 items-center gap-1.5 rounded-[1.75rem] p-1 sm:gap-2 sm:rounded-[2rem] sm:p-1.5">
+          <div className="flex shrink-0 flex-col gap-1 sm:gap-1.5">
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
@@ -699,16 +699,16 @@ export default function ChatStudio() {
             >
               <Mic size={16} />
             </button>
-            <textarea
-              ref={composerRef}
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              onKeyDown={onComposerKeyDown}
-              rows={1}
-              placeholder={listening ? t("speechListening") : t("placeholder")}
-              className="posty-chat-input min-w-0 flex-1 resize-none bg-transparent px-1.5 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:px-2"
-            />
           </div>
+          <textarea
+            ref={composerRef}
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={onComposerKeyDown}
+            rows={3}
+            placeholder={listening ? t("speechListening") : t("placeholder")}
+            className="posty-chat-input min-w-0 flex-1 resize-none bg-transparent px-1.5 py-1 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:px-2 sm:py-1.5"
+          />
           <button
             type="submit"
             disabled={pending || uploading || !input.trim()}
@@ -716,7 +716,7 @@ export default function ChatStudio() {
             aria-label={t("send")}
             title={t("send")}
           >
-            <ArrowUp size={18} />
+            <ArrowUp size={22} />
           </button>
           <input
             ref={fileRef}
