@@ -2,9 +2,17 @@ import { getFalKey } from "@/lib/env";
 
 export type FalImageSize = "portrait_4_3" | "square_hd" | "landscape_4_3";
 
-/** Flux.2 [dev]: ~$0.012/MP. Edit bills input+output (~$0.024 with one reference). */
-export const FAL_TEXT_MODEL = "fal-ai/flux-2";
-export const FAL_EDIT_MODEL = "fal-ai/flux-2/edit";
+/** Nano Banana 2.1 at 1K + medium thinking: ~$0.04 / image. */
+export const FAL_TEXT_MODEL = "google/nano-banana-2.1";
+export const FAL_EDIT_MODEL = "google/nano-banana-2.1/edit";
+export const FAL_IMAGE_RESOLUTION = "1K";
+export const FAL_IMAGE_THINKING = "medium";
+
+export function falImageAspectRatio(size: FalImageSize) {
+  if (size === "square_hd") return "1:1";
+  if (size === "landscape_4_3") return "4:3";
+  return "4:5";
+}
 
 type FalImage = { url?: string };
 
@@ -76,10 +84,12 @@ async function runFalImage(input: {
   const model = pickFalImageModel(input.imageUrls.length > 0);
   const body: Record<string, unknown> = {
     prompt: input.prompt,
-    image_size: input.imageSize,
+    aspect_ratio: falImageAspectRatio(input.imageSize),
+    resolution: FAL_IMAGE_RESOLUTION,
+    thinking_level: FAL_IMAGE_THINKING,
     output_format: "jpeg",
-    enable_safety_checker: true,
     num_images: 1,
+    enable_web_search: false,
   };
   if (input.imageUrls.length > 0) body.image_urls = input.imageUrls;
 
@@ -90,7 +100,7 @@ async function runFalImage(input: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(90_000),
+    signal: AbortSignal.timeout(120_000),
   });
   const payload = (await response.json().catch(() => null)) as unknown;
   const detail = falDetail(payload);
