@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { FormEvent, useState } from "react";
-import { LocaleSwitch } from "@/components/locale-switch";
+import { AuthShell, authField, authLabel } from "@/components/auth/auth-shell";
+import { btnSolid, clayTile } from "@/components/marketing/styles";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getPublicSiteUrl } from "@/lib/env";
 import { SIGNUPS_OPEN } from "@/lib/flags";
@@ -55,73 +56,69 @@ export default function SignupForm() {
   }
 
   return (
-    <main className="mx-auto flex min-h-full max-w-md flex-col justify-center px-6 py-16">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="font-serif text-2xl italic">
-          newposty
-        </Link>
-        <LocaleSwitch />
-      </div>
-      <h1 className="mt-8 font-serif text-4xl">{t("signupTitle")}</h1>
-      <p className="mt-2 text-sm text-muted">{t("signupSubtitle")}</p>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+    <AuthShell>
+      <h1 className="mt-8 text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("signupTitle")}</h1>
+      <p className="mt-1.5 text-sm leading-6 text-[#5c5652]">{t("signupSubtitle")}</p>
+      <form onSubmit={onSubmit} className="mt-7 space-y-4">
         <fieldset>
-          <legend className="text-sm">{t("accountKind")}</legend>
+          <legend className={authLabel}>{t("accountKind")}</legend>
           <div className="mt-2 grid grid-cols-2 gap-2">
             {(["individual", "team"] as const).map((kind) => (
               <button
                 key={kind}
                 type="button"
                 onClick={() => setAccountKind(kind)}
-                className={`rounded-2xl border px-3 py-3 text-left text-sm ${
-                  accountKind === kind
-                    ? "border-[#FF4713] bg-[#FF4713]/5 text-[#1A1A1A]"
-                    : "border-line bg-card text-muted"
+                className={`${clayTile} px-3 py-3 text-left text-sm ${
+                  accountKind === kind ? "ring-1 ring-[#1d1d1f]/25" : "opacity-80"
                 }`}
               >
-                <span className="block font-medium text-[#1A1A1A]">{t(`${kind}Label`)}</span>
-                <span className="mt-1 block text-xs leading-4">{t(`${kind}Hint`)}</span>
+                <span className="block font-medium text-[#1d1d1f]">{t(`${kind}Label`)}</span>
+                <span className="mt-1 block text-[11px] leading-4 text-[#5c5652]">{t(`${kind}Hint`)}</span>
               </button>
             ))}
           </div>
         </fieldset>
-        <label className="block text-sm">
+        <label className={authLabel}>
           {t("email")}
           <input
             type="email"
             required
+            autoComplete="email"
+            placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-1 w-full rounded-2xl border border-line bg-card px-4 py-3 outline-none focus:border-ink"
+            className={authField}
           />
         </label>
-        <label className="block text-sm">
+        <label className={authLabel}>
           {t("password")}
           <input
             type="password"
             required
             minLength={8}
+            autoComplete="new-password"
+            placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 w-full rounded-2xl border border-line bg-card px-4 py-3 outline-none focus:border-ink"
+            className={authField}
           />
         </label>
-        {error ? <p className="text-sm text-accent">{error}</p> : null}
-        {info ? <p className="text-sm text-good">{info}</p> : null}
+        {error ? <p className="text-sm text-[#8b3a2a]">{error}</p> : null}
+        {info ? <p className="text-sm text-[#3f6b4a]">{info}</p> : null}
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-full bg-accent py-3 text-sm text-white disabled:opacity-60"
+          className={`${btnSolid} posty-site-btn mt-2 w-full !py-3 disabled:opacity-60`}
         >
           {pending ? t("creating") : t("create")}
         </button>
       </form>
-      <p className="mt-6 text-sm text-muted">
+      <p className="mt-7 text-center text-[13px] leading-6 text-[#5c5652]">
         {t("alreadyHave")}{" "}
-        <Link href="/login" className="text-ink underline">
+        <Link href="/login" className="font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
           {t("signIn")}
         </Link>
       </p>
-    </main>
+    </AuthShell>
   );
 }

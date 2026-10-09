@@ -482,7 +482,9 @@
   },
   "Auth": {
     "email": "Email",
+    "emailPlaceholder": "tu@studio.com",
     "password": "Contraseña",
+    "passwordPlaceholder": "Introduce la contraseña",
     "loginTitle": "Bienvenido de nuevo",
     "loginSubtitle": "Entra en tu estudio.",
     "signIn": "Entrar",

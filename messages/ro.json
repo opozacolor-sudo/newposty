@@ -482,7 +482,9 @@
   },
   "Auth": {
     "email": "Email",
+    "emailPlaceholder": "tu@studio.ro",
     "password": "Parolă",
+    "passwordPlaceholder": "Introdu parola",
     "loginTitle": "Bine ai revenit",
     "loginSubtitle": "Intră în studio.",
     "signIn": "Autentificare",

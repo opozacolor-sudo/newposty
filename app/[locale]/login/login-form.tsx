@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { LocaleSwitch } from "@/components/locale-switch";
+import { AuthShell, authField, authLabel } from "@/components/auth/auth-shell";
+import { btnSolid } from "@/components/marketing/styles";
 import { Link, useRouter } from "@/i18n/navigation";
 import { SIGNUPS_OPEN } from "@/lib/flags";
 import { createBrowserSupabase } from "@/lib/supabase/client";
@@ -44,63 +45,61 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-full max-w-md flex-col justify-center px-6 py-16">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="font-serif text-2xl italic">
-          newposty
-        </Link>
-        <LocaleSwitch />
-      </div>
-      <h1 className="mt-8 font-serif text-4xl">{t("loginTitle")}</h1>
-      <p className="mt-2 text-sm text-muted">{t("loginSubtitle")}</p>
-      {confirmed ? (
-        <p className="mt-4 text-sm text-good">{t("emailConfirmed")}</p>
-      ) : null}
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
-        <label className="block text-sm">
+    <AuthShell>
+      <h1 className="mt-8 text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("loginTitle")}</h1>
+      <p className="mt-1.5 text-sm leading-6 text-[#5c5652]">{t("loginSubtitle")}</p>
+      {confirmed ? <p className="mt-4 text-sm text-[#3f6b4a]">{t("emailConfirmed")}</p> : null}
+      <form onSubmit={onSubmit} className="mt-7 space-y-4">
+        <label className={authLabel}>
           {t("email")}
           <input
             type="email"
             required
+            autoComplete="email"
+            placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-1 w-full rounded-2xl border border-line bg-card px-4 py-3 outline-none focus:border-ink"
+            className={authField}
           />
         </label>
-        <label className="block text-sm">
+        <label className={authLabel}>
           {t("password")}
           <input
             type="password"
             required
+            autoComplete="current-password"
+            placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 w-full rounded-2xl border border-line bg-card px-4 py-3 outline-none focus:border-ink"
+            className={authField}
           />
         </label>
-        {error ? <p className="text-sm text-accent">{error}</p> : null}
+        {error ? <p className="text-sm text-[#8b3a2a]">{error}</p> : null}
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-full bg-ink py-3 text-sm text-paper disabled:opacity-60"
+          className={`${btnSolid} posty-site-btn mt-2 w-full !py-3 disabled:opacity-60`}
         >
           {pending ? t("signingIn") : t("signIn")}
         </button>
       </form>
-      {SIGNUPS_OPEN ? (
-        <p className="mt-6 text-sm text-muted">
-          {t("newHere")}{" "}
-          <Link href="/signup" className="text-ink underline">
-            {t("createAccount")}
-          </Link>
-        </p>
-      ) : (
-        <p className="mt-6 text-sm text-muted">
-          {t("waitlistHint")}{" "}
-          <Link href="/waitlist" className="text-ink underline">
-            {t("waitlistLink")}
-          </Link>
-        </p>
-      )}
-    </main>
+      <p className="mt-7 text-center text-[13px] leading-6 text-[#5c5652]">
+        {SIGNUPS_OPEN ? (
+          <>
+            {t("newHere")}{" "}
+            <Link href="/signup" className="font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
+              {t("createAccount")}
+            </Link>
+          </>
+        ) : (
+          <>
+            {t("waitlistHint")}{" "}
+            <Link href="/waitlist" className="font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
+              {t("waitlistLink")}
+            </Link>
+          </>
+        )}
+      </p>
+    </AuthShell>
   );
 }

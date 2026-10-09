@@ -482,7 +482,9 @@
   },
   "Auth": {
     "email": "E-mail",
+    "emailPlaceholder": "toi@studio.com",
     "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez le mot de passe",
     "loginTitle": "Bon retour",
     "loginSubtitle": "Connectez-vous à votre studio.",
     "signIn": "Connexion",

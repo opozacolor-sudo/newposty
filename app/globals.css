@@ -465,6 +465,22 @@ html:has(.marketing):not(.home-no-scroll) body {
     0 0 0 2px rgba(126, 232, 226, 0.28);
 }
 
+.posty-auth-locale select {
+  appearance: none;
+  border: 0 !important;
+  background: linear-gradient(145deg, #e0dfdc 0%, #d3d2ce 100%) !important;
+  box-shadow:
+    inset 2px 2px 4px rgba(65, 61, 58, 0.14),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  padding: 0.35rem 1.15rem 0.35rem 0.7rem !important;
+  color: #3f3b38 !important;
+  font-size: 10px !important;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
 .posty-footer-dock {
   isolation: isolate;
 }

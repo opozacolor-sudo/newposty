@@ -482,7 +482,9 @@
   },
   "Auth": {
     "email": "E-Mail",
+    "emailPlaceholder": "du@studio.com",
     "password": "Passwort",
+    "passwordPlaceholder": "Passwort eingeben",
     "loginTitle": "Willkommen zurück",
     "loginSubtitle": "Melde dich in deinem Studio an.",
     "signIn": "Anmelden",
