@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { MarketingPageFrame } from "@/components/marketing/page-frame";
 import { pageBody, pageH2, pageTitle } from "@/components/marketing/styles";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "About" });
+  return { title: `${t("title")} | posty.now` };
+}
 
 export default async function AboutPage() {
   const t = await getTranslations("About");

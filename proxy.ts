@@ -5,7 +5,18 @@ import { updateSession } from "@/lib/supabase/proxy";
 
 const handleI18nRouting = createMiddleware(routing);
 
+const RETIRED_LOCALES = new Set(["pt", "ar", "hi", "ru", "zh"]);
+
 export default async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const first = pathname.split("/").filter(Boolean)[0];
+  if (first && RETIRED_LOCALES.has(first)) {
+    const rest = pathname.split("/").filter(Boolean).slice(1).join("/");
+    const target = request.nextUrl.clone();
+    target.pathname = rest ? `/en/${rest}` : "/en";
+    return NextResponse.redirect(target, 301);
+  }
+
   const code = request.nextUrl.searchParams.get("code");
   if (code && !request.nextUrl.pathname.startsWith("/auth/callback")) {
     const target = request.nextUrl.clone();

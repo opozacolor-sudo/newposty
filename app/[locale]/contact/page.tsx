@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/marketing/contact-form";
 import { MarketingPageFrame } from "@/components/marketing/page-frame";
@@ -8,6 +9,16 @@ import { loadWorkspace } from "@/lib/clients";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Contact" });
+  return { title: `${t("title")} | posty.now` };
+}
 
 export default async function ContactPage() {
   const t = await getTranslations("Contact");
