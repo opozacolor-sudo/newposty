@@ -71,17 +71,16 @@ export function classifyFalError(status: number, detail: string) {
   return "failed" as const;
 }
 
-export function pickFalImageModel(hasReferences: boolean) {
-  return hasReferences ? FAL_EDIT_MODEL : FAL_TEXT_MODEL;
+export function pickFalImageModel(_hasReferences?: boolean) {
+  return FAL_TEXT_MODEL;
 }
 
 async function runFalImage(input: {
   prompt: string;
-  imageUrls: string[];
   imageSize: FalImageSize;
 }) {
   const key = getFalKey();
-  const model = pickFalImageModel(input.imageUrls.length > 0);
+  const model = pickFalImageModel();
   const body: Record<string, unknown> = {
     prompt: input.prompt,
     aspect_ratio: falImageAspectRatio(input.imageSize),
@@ -91,7 +90,6 @@ async function runFalImage(input: {
     num_images: 1,
     enable_web_search: false,
   };
-  if (input.imageUrls.length > 0) body.image_urls = input.imageUrls;
 
   const response = await fetch(`https://fal.run/${model}`, {
     method: "POST",
@@ -121,14 +119,8 @@ export async function generateFalImage(input: {
   imageUrls?: string[];
   imageSize?: FalImageSize;
 }) {
-  const refs = (input.imageUrls ?? []).filter((url) => url.startsWith("http")).slice(0, 4);
-  const imageSize = input.imageSize ?? "portrait_4_3";
-  try {
-    return await runFalImage({ prompt: input.prompt, imageUrls: refs, imageSize });
-  } catch (error) {
-    if (error instanceof FalImageError && error.code !== "failed") throw error;
-    if (refs.length === 0) throw error;
-    console.error("[poster] edit failed, retrying text-only");
-    return runFalImage({ prompt: input.prompt, imageUrls: [], imageSize });
-  }
+  return runFalImage({
+    prompt: input.prompt,
+    imageSize: input.imageSize ?? "portrait_4_3",
+  });
 }

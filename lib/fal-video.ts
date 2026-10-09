@@ -1,7 +1,7 @@
 import { getFalKey } from "@/lib/env";
 import { FalImageError, classifyFalError, falDetail } from "@/lib/fal-image";
 
-/** Fixed cheap preset: 480p, 5 seconds. ~$0.08–0.13 / clip. */
+/** 480p × 5s text-to-video. Promo until 15 Oct 2026: ~$0.075. Then ~$0.125. */
 export const VIDEO_RESOLUTION = "480P";
 export const VIDEO_DURATION_SEC = 5;
 export const FAL_TEXT_VIDEO_MODEL = "minimax/h3-max-turbo/text-to-video";
@@ -17,8 +17,8 @@ function firstVideoUrl(body: unknown) {
   return typeof url === "string" && url.startsWith("http") ? url : null;
 }
 
-export function pickFalVideoModel(hasImage: boolean) {
-  return hasImage ? FAL_IMAGE_VIDEO_MODEL : FAL_TEXT_VIDEO_MODEL;
+export function pickFalVideoModel(_hasImage?: boolean) {
+  return FAL_TEXT_VIDEO_MODEL;
 }
 
 function falHeaders(key: string) {
@@ -73,17 +73,15 @@ export async function generateFalVideo(input: {
   imageUrl?: string;
 }) {
   const key = getFalKey();
-  const imageUrl = input.imageUrl?.startsWith("http") ? input.imageUrl : "";
-  const model = pickFalVideoModel(Boolean(imageUrl));
+  const model = pickFalVideoModel();
   const body: Record<string, unknown> = {
     prompt: input.prompt,
     duration: VIDEO_DURATION_SEC,
     resolution: VIDEO_RESOLUTION,
+    aspect_ratio: "9:16",
     enable_safety_checker: true,
     prompt_expansion_mode: "disabled",
   };
-  if (imageUrl) body.image_url = imageUrl;
-  else body.aspect_ratio = "9:16";
 
   const { response, payload } = await falJson(`https://queue.fal.run/${model}`, {
     method: "POST",

@@ -10,9 +10,9 @@ import {
 } from "./fal-image";
 import { normalizeFalKey } from "./env";
 
-test("Nano Banana 2.1 at 1K for text-only posters, edit when photos exist", () => {
+test("Nano Banana 2.1 text-to-image at 1K, never edit from attachments", () => {
   assert.equal(pickFalImageModel(false), FAL_TEXT_MODEL);
-  assert.equal(pickFalImageModel(true), FAL_EDIT_MODEL);
+  assert.equal(pickFalImageModel(true), FAL_TEXT_MODEL);
   assert.equal(FAL_TEXT_MODEL, "google/nano-banana-2.1");
   assert.equal(FAL_EDIT_MODEL, "google/nano-banana-2.1/edit");
   assert.equal(FAL_IMAGE_RESOLUTION, "1K");

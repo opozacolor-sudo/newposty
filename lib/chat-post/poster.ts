@@ -60,14 +60,6 @@ export async function createGeneratedPoster(input: {
     }
   }
 
-  const attached = input.references.filter((item) => item.type === "image" && item.url).slice(0, 4);
-  const refs =
-    attached.length > 0
-      ? attached
-      : site?.imageUrl
-        ? [{ id: "og", url: site.imageUrl, type: "image" as const, name: site.title }]
-        : [];
-  const imageUrls = refs.map((item) => item.url);
   const imageSize: FalImageSize = input.aspect === "square" ? "square_hd" : "portrait_4_3";
   const prompt = buildPosterPrompt({
     locale: input.locale,
@@ -78,12 +70,12 @@ export async function createGeneratedPoster(input: {
     siteDescription: site?.description,
     siteUrl: site?.url,
     price: site?.price,
-    hasReferences: imageUrls.length > 0,
+    hasReferences: false,
   });
 
   let remoteUrl: string;
   try {
-    remoteUrl = await generateFalImage({ prompt, imageUrls, imageSize });
+    remoteUrl = await generateFalImage({ prompt, imageSize });
   } catch (error) {
     const missing = error instanceof Error && error.message === "MISSING_FAL_KEY";
     const code = error instanceof FalImageError ? error.code : null;

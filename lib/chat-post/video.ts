@@ -55,7 +55,6 @@ export async function createGeneratedVideo(input: {
     }
   }
 
-  const still = input.references.find((item) => item.type === "image" && item.url);
   const prompt = buildVideoPrompt({
     locale: input.locale,
     brief: input.brief,
@@ -63,12 +62,12 @@ export async function createGeneratedVideo(input: {
     siteTitle: site?.title,
     siteDescription: site?.description,
     siteUrl: site?.url,
-    hasImage: Boolean(still?.url),
+    hasImage: false,
   });
 
   let remoteUrl: string;
   try {
-    remoteUrl = await generateFalVideo({ prompt, imageUrl: still?.url });
+    remoteUrl = await generateFalVideo({ prompt });
   } catch (error) {
     const missing = error instanceof Error && error.message === "MISSING_FAL_KEY";
     const code = error instanceof FalImageError ? error.code : null;
