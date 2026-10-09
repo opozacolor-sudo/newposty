@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 
@@ -49,25 +50,27 @@ export function InboxReplyForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-2">
-      <textarea
-        value={message}
-        onChange={(event) => setMessage(event.target.value)}
-        placeholder={placeholder}
-        maxLength={2000}
-        rows={3}
-        className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm"
-      />
-      <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          disabled={pending || message.trim().length === 0}
-          className="rounded-full bg-[#FF4713] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-        >
-          {pending ? sendingLabel : sendLabel}
-        </button>
-        {error ? <span className="text-sm text-[#FF4713]">{errorLabel}</span> : null}
+    <form onSubmit={onSubmit} className="flex items-center gap-2 sm:gap-2.5">
+      <div className="posty-chat-composer flex min-w-0 flex-1 items-center rounded-full p-1 sm:p-1.5">
+        <textarea
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          placeholder={placeholder}
+          maxLength={2000}
+          rows={1}
+          className="posty-chat-input min-w-0 flex-1 resize-none bg-transparent px-3 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682]"
+        />
       </div>
+      <button
+        type="submit"
+        disabled={pending || message.trim().length === 0}
+        className="posty-site-btn posty-chat-send disabled:opacity-40"
+        aria-label={pending ? sendingLabel : sendLabel}
+        title={pending ? sendingLabel : sendLabel}
+      >
+        <ArrowUp size={18} />
+      </button>
+      {error ? <span className="sr-only">{errorLabel}</span> : null}
     </form>
   );
 }

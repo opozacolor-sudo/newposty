@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { FilterField, FilterForm, StudioNotice, filterControl } from "@/components/studio/studio-filters";
+import { StudioPage } from "@/components/studio/studio-surface";
 import { Link } from "@/i18n/navigation";
 import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
@@ -28,9 +29,9 @@ export default async function AdsCampaignsPage({
         });
 
   return (
-    <main className="h-full overflow-y-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("adsTitle")}</h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("adsLead")}</p>
+    <StudioPage>
+      <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("adsTitle")}</h1>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5c5652]">{t("adsLead")}</p>
       {ads.length === 0 ? (
         <p className="mt-6 text-sm">
           <Link href="/connections#promotions" className="font-medium text-[#FF4713]">
@@ -81,7 +82,8 @@ export default async function AdsCampaignsPage({
       <p className="mt-3 text-sm text-neutral-500">{t("createInChat")}</p>
       <ul className="mt-6 grid gap-3 md:grid-cols-2">
         {result.rows.map((row) => (
-          <li key={`${row.accountId}-${row.id}`} className="rounded-2xl border border-neutral-200 p-4">
+          <li key={`${row.accountId}-${row.id}`} className="posty-glass-3d relative overflow-hidden rounded-[1.4rem] p-4">
+            <div className="relative z-[3]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-medium">{row.name}</p>
@@ -108,12 +110,13 @@ export default async function AdsCampaignsPage({
                 <dd className="font-semibold">{row.clicks.toLocaleString()}</dd>
               </div>
             </dl>
+            </div>
           </li>
         ))}
       </ul>
       {ads.length > 0 && result.rows.length === 0 && !result.error ? (
-        <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
+        <p className="mt-4 text-sm text-[#5c5652]">{t("empty")}</p>
       ) : null}
-    </main>
+    </StudioPage>
   );
 }

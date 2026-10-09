@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ConnectionList } from "@/components/studio/connection-list";
+import { StudioPage } from "@/components/studio/studio-surface";
 import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { requireUser } from "@/lib/data";
 import {
@@ -52,24 +53,24 @@ export default async function ConnectionsPage({
                 : null;
 
   return (
-    <main className="h-full overflow-y-auto px-4 py-5 sm:px-6 sm:py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("connectionsTitle")}</h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("connectionsLead")}</p>
+    <StudioPage>
+      <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("connectionsTitle")}</h1>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5c5652]">{t("connectionsLead")}</p>
 
       {params.connected ? (
-        <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-good">
+        <p className="posty-clay-tile mt-4 rounded-2xl px-4 py-3 text-sm text-[#1d1d1f]">
           {params.platform
             ? t("connectedNamed", { platform: platformLabel(params.platform) })
             : t("connectedGeneric")}
         </p>
       ) : null}
       {errorMessage ? (
-        <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-accent">
+        <p className="posty-clay-tile mt-4 rounded-2xl px-4 py-3 text-sm text-[#8b3a2a]">
           {errorMessage}
         </p>
       ) : null}
 
-      <div className="mx-auto mt-4 max-w-xl">
+      <div className="mx-auto mt-2 max-w-xl">
         <ConnectionList
           title={t("socialHeading")}
           disconnectLabel={t("disconnect")}
@@ -115,6 +116,6 @@ export default async function ConnectionsPage({
           />
         </div>
       </div>
-    </main>
+    </StudioPage>
   );
 }

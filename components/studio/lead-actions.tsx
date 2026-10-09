@@ -17,7 +17,7 @@ export function LeadStatusForm({
 
   return (
     <select
-      className="rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs"
+      className="posty-clay-field rounded-full px-2 py-1 text-xs"
       value={pending}
       onChange={async (event) => {
         const next = event.target.value;

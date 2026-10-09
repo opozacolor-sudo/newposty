@@ -103,15 +103,17 @@ function Card({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5">
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold tracking-tight">{title}</h2>
-          {subtitle ? <p className="mt-0.5 text-xs text-neutral-400">{subtitle}</p> : null}
+    <section className="posty-glass-3d relative overflow-hidden rounded-[1.4rem] p-4 sm:p-5">
+      <div className="relative z-[3]">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold tracking-tight text-[#1d1d1f]">{title}</h2>
+            {subtitle ? <p className="mt-0.5 text-xs text-[#5c5652]">{subtitle}</p> : null}
+          </div>
+          {aside ? <div className="text-right">{aside}</div> : null}
         </div>
-        {aside ? <div className="text-right">{aside}</div> : null}
+        {children}
       </div>
-      {children}
     </section>
   );
 }
@@ -275,8 +277,7 @@ export function AnalyticsBoardView({
 
   return (
     <div className="mt-6 space-y-4">
-      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
-        <div className="grid sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Kpi
             label={labels.engagementRate}
             value={`${board.engagementRate}%`}
@@ -310,9 +311,10 @@ export function AnalyticsBoardView({
             icon={<FileText size={16} />}
             delta={<Delta percent={board.deltas.posts.percent} vsPrior={labels.vsPrior} inLast={labels.inLastDays} />}
           />
-        </div>
-        {board.bestPost ? (
-          <div className="flex items-center gap-3 border-t border-neutral-100 px-4 py-3">
+      </div>
+      {board.bestPost ? (
+          <div className="posty-glass-3d relative mt-3 flex items-center gap-3 overflow-hidden rounded-[1.4rem] px-4 py-3">
+            <div className="relative z-[3] flex items-center gap-3">
             <div>
               <p className="text-xs text-neutral-500">{labels.bestPost}</p>
               <div className="mt-1 flex items-center gap-2">
@@ -330,9 +332,9 @@ export function AnalyticsBoardView({
                 ) : null}
               </div>
             </div>
+            </div>
           </div>
         ) : null}
-      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card
@@ -705,13 +707,15 @@ function Kpi({
   delta: ReactNode;
 }) {
   return (
-    <div className="border-b border-neutral-100 px-4 py-4 sm:even:border-l">
-      <p className="text-xs text-neutral-500">{label}</p>
-      <p className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight">
-        {icon ? <span className="text-neutral-400">{icon}</span> : null}
-        {value}
-      </p>
-      {delta}
+    <div className="posty-glass-3d relative overflow-hidden rounded-[1.4rem] px-4 py-4">
+      <div className="relative z-[3]">
+        <p className="text-xs text-[#5c5652]">{label}</p>
+        <p className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-[#1d1d1f]">
+          {icon ? <span className="text-[#5c5652]">{icon}</span> : null}
+          {value}
+        </p>
+        {delta}
+      </div>
     </div>
   );
 }

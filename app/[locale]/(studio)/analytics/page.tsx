@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AnalyticsBoardView } from "@/components/studio/analytics-board";
+import { StudioPage } from "@/components/studio/studio-surface";
 import { AnalyticsFilters } from "@/components/studio/analytics-filters";
 import { StudioNotice } from "@/components/studio/studio-filters";
 import { Link } from "@/i18n/navigation";
@@ -43,8 +44,8 @@ export default async function AnalyticsPage({
         });
 
   return (
-    <main className="h-full overflow-y-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("analyticsTitle")}</h1>
+    <StudioPage>
+      <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("analyticsTitle")}</h1>
       {posting.length === 0 ? (
         <p className="mt-6 text-sm">
           <Link href="/connections" className="font-medium text-[#FF4713]">
@@ -136,6 +137,6 @@ export default async function AnalyticsPage({
           }}
         />
       ) : null}
-    </main>
+    </StudioPage>
   );
 }

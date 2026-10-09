@@ -2,8 +2,7 @@
 
 import { useRouter, usePathname } from "@/i18n/navigation";
 
-const pill =
-  "h-9 max-w-full rounded-full border border-neutral-200 bg-white px-3 text-sm text-neutral-900";
+const pill = "posty-clay-field h-9 max-w-full rounded-full px-3 text-sm text-[#1d1d1f]";
 
 export function AnalyticsFilters({
   platforms,

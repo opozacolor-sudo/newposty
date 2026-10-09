@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { InboxReplyForm } from "@/components/studio/inbox-actions";
 import { FilterField, FilterForm, StudioNotice, filterControl } from "@/components/studio/studio-filters";
+import { StudioFillCard } from "@/components/studio/studio-surface";
 import { Link } from "@/i18n/navigation";
 import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
@@ -60,19 +61,20 @@ export default async function InboxPage({
       : null;
 
   return (
-    <main className="flex h-full min-h-0 flex-col">
-      <div className="border-b border-neutral-100 px-4 py-3">
-      <h1 className="text-lg font-semibold tracking-tight">{t("inboxTitle")}</h1>
+    <StudioFillCard wide>
+      <div className="flex h-full min-h-0 flex-col">
+      <div className="shrink-0 px-3 pt-3 sm:px-4 sm:pt-4">
+      <h1 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">{t("inboxTitle")}</h1>
       <div className="mt-2 flex gap-2 text-sm">
         <Link
           href="/inbox?tab=messages"
-          className={tab === "messages" ? "font-medium text-[#FF4713]" : "text-neutral-500"}
+          className={tab === "messages" ? "posty-site-btn !px-3 !py-1 text-[12px]" : "posty-clay-tile rounded-full px-3 py-1 text-[12px] text-[#5c5652]"}
         >
           {t("messagesTab")}
         </Link>
         <Link
           href="/inbox?tab=comments"
-          className={tab === "comments" ? "font-medium text-[#FF4713]" : "text-neutral-500"}
+          className={tab === "comments" ? "posty-site-btn !px-3 !py-1 text-[12px]" : "posty-clay-tile rounded-full px-3 py-1 text-[12px] text-[#5c5652]"}
         >
           {t("commentsTab")}
         </Link>
@@ -128,8 +130,14 @@ export default async function InboxPage({
         kind={listedError}
         labels={{ failed: t("loadFailed"), unavailable: t("unavailable"), unknown: t("unknownAccount") }}
       />
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[320px_minmax(0,1fr)]">
-      <ul className="min-h-0 overflow-y-auto border-r border-neutral-100">
+      <div
+        className={`grid min-h-0 flex-1 gap-2 px-2.5 pb-2.5 pt-2 sm:px-3.5 lg:grid-cols-[18rem_minmax(0,1fr)] lg:grid-rows-none lg:gap-3 ${
+          (tab === "messages" && thread && params.conversation) || (tab === "comments" && comments && params.post)
+            ? "grid-rows-[minmax(9rem,34%)_minmax(0,1fr)]"
+            : "grid-rows-1"
+        }`}
+      >
+      <ul className="posty-chat-history min-h-0 overflow-y-auto rounded-[1.25rem]">
         {tab === "messages"
           ? conversations.rows.flatMap((row) => {
               if (!("id" in row) || !row.id || !row.accountId) return [];
@@ -140,7 +148,7 @@ export default async function InboxPage({
                 <li key={row.id}>
                   <Link
                     href={`/inbox?tab=messages&conversation=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
-                    className={`flex items-center gap-3 border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
+                    className={`flex items-center gap-3 px-3 py-3 ${open ? "posty-clay-tile mx-2 my-1 rounded-2xl" : "hover:bg-white/15"}`}
                   >
                     <Face src={row.participantPicture} name={row.participantName || "?"} />
                     <span className="min-w-0">
@@ -152,11 +160,11 @@ export default async function InboxPage({
                           </span>
                         ) : null}
                       </span>
-                      <span className="block truncate text-xs text-neutral-500">
+                      <span className="block truncate text-xs text-[#5c5652]">
                         {platformLabel(row.platform ?? "")}
                         {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-neutral-600">{row.lastMessage || ""}</span>
+                      <span className="mt-0.5 block truncate text-xs text-[#3f3b38]">{row.lastMessage || ""}</span>
                     </span>
                   </Link>
                 </li>,
@@ -171,7 +179,7 @@ export default async function InboxPage({
                 <li key={`${row.accountId}-${row.id}`}>
                   <Link
                     href={`/inbox?tab=comments&post=${encodeURIComponent(row.id)}&threadAccount=${encodeURIComponent(row.accountId)}`}
-                    className={`flex items-center gap-3 border-b border-neutral-100 px-4 py-3 ${open ? "bg-neutral-50" : "hover:bg-neutral-50"}`}
+                    className={`flex items-center gap-3 px-3 py-3 ${open ? "posty-clay-tile mx-2 my-1 rounded-2xl" : "hover:bg-white/15"}`}
                   >
                     <PostFace src={row.picture} />
                     <span className="min-w-0">
@@ -183,7 +191,7 @@ export default async function InboxPage({
                           </span>
                         ) : null}
                       </span>
-                      <span className="block truncate text-xs text-neutral-500">
+                      <span className="block truncate text-xs text-[#5c5652]">
                         {platformLabel(row.platform ?? "")}
                         {row.accountUsername ? ` · @${row.accountUsername.replace(/^@/, "")}` : ""}
                         {typeof row.commentCount === "number" ? ` · ${row.commentCount}` : ""}
@@ -195,13 +203,14 @@ export default async function InboxPage({
             })}
       </ul>
       <section className="flex min-h-0 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col">
         {tab === "messages" && thread && params.conversation ? (
           <>
             <ThreadPerson
               src={conversations.rows.find((row) => row.id === params.conversation)?.participantPicture}
               name={conversations.rows.find((row) => row.id === params.conversation)?.participantName || ""}
             />
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            <div className="posty-chat-history min-h-0 flex-1 space-y-3 overflow-y-auto rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4">
               {[...thread.messages]
                 .sort((a, b) => String(a.createdTime ?? "").localeCompare(String(b.createdTime ?? "")))
                 .map((message, index) => {
@@ -211,11 +220,11 @@ export default async function InboxPage({
                 return (
                   <div key={message.id || index} className={`flex ${own ? "justify-end" : "justify-start"}`}>
                     <div
-                      className={`max-w-[min(36rem,85%)] rounded-2xl px-3 py-2 text-sm ${
-                        own ? "bg-[#FF4713] text-white" : "bg-neutral-100 text-neutral-900"
+                      className={`max-w-[min(36rem,85%)] rounded-2xl px-3.5 py-2.5 text-sm ${
+                        own ? "posty-clay-well" : "posty-clay-tile text-[#1d1d1f]"
                       }`}
                     >
-                      <p className={`text-[11px] ${own ? "text-white/80" : "text-neutral-500"}`}>
+                      <p className={`text-[11px] ${own ? "text-white/70" : "text-[#5c5652]"}`}>
                         {own ? t("you") : who}
                       </p>
                       <p className="mt-0.5 whitespace-pre-wrap break-words">{text}</p>
@@ -224,7 +233,7 @@ export default async function InboxPage({
                 );
               })}
             </div>
-            <div className="border-t border-neutral-100 px-4 py-3">
+            <div className="shrink-0 px-1 pb-1 pt-2 sm:px-0">
               <InboxReplyForm
                 endpoint="/api/inbox/messages"
                 fields={{ conversationId: params.conversation, accountId: openAccount }}
@@ -242,18 +251,18 @@ export default async function InboxPage({
               src={commentPosts.rows.find((row) => row.id === params.post)?.picture}
               caption={commentPosts.rows.find((row) => row.id === params.post)?.content || ""}
             />
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            <div className="posty-chat-history min-h-0 flex-1 space-y-3 overflow-y-auto rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4">
               {comments.comments.map((comment, index) => (
-                <div key={comment.id || index} className="flex gap-2 text-sm">
+                <div key={comment.id || index} className="flex justify-start gap-2 text-sm">
                   <Face src={comment.from?.picture} name={comment.from?.name || comment.from?.username || "?"} />
-                  <div className="min-w-0">
-                    <p className="text-xs text-neutral-500">{comment.from?.username || comment.from?.name || ""}</p>
-                    <p>{comment.message}</p>
+                  <div className="posty-clay-tile min-w-0 max-w-[min(36rem,85%)] rounded-2xl px-3.5 py-2.5">
+                    <p className="text-xs text-[#5c5652]">{comment.from?.username || comment.from?.name || ""}</p>
+                    <p className="mt-0.5 whitespace-pre-wrap break-words text-[#1d1d1f]">{comment.message}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="border-t border-neutral-100 px-4 py-3">
+            <div className="shrink-0 px-1 pb-1 pt-2 sm:px-0">
               <InboxReplyForm
                 endpoint="/api/inbox/reply"
                 fields={{ postId: params.post, accountId: openAccount }}
@@ -265,14 +274,16 @@ export default async function InboxPage({
             </div>
           </>
         ) : null}
+        </div>
       </section>
       </div>
       {posting.length > 0 &&
       (tab === "messages" ? conversations.rows.length : commentPosts.rows.length) === 0 &&
       !listedError ? (
-        <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
+        <p className="px-4 pb-3 text-sm text-[#5c5652]">{t("empty")}</p>
       ) : null}
-    </main>
+      </div>
+    </StudioFillCard>
   );
 }
 
@@ -280,7 +291,7 @@ function Face({ src, name }: { src?: string; name: string }) {
   const letter = name.trim().charAt(0).toUpperCase() || "?";
   if (!src) {
     return (
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-sm font-medium text-neutral-500">
+      <span className="posty-clay-tile inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-medium text-[#5c5652]">
         {letter}
       </span>
     );
@@ -292,7 +303,7 @@ function Face({ src, name }: { src?: string; name: string }) {
 }
 
 function PostFace({ src }: { src?: string }) {
-  if (!src) return <span className="inline-block h-12 w-12 shrink-0 rounded-lg bg-neutral-100" />;
+  if (!src) return <span className="posty-clay-tile inline-block h-12 w-12 shrink-0 rounded-lg" />;
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
@@ -302,18 +313,18 @@ function PostFace({ src }: { src?: string }) {
 function ThreadPerson({ src, name }: { src?: string; name: string }) {
   if (!name && !src) return null;
   return (
-    <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3">
+    <div className="flex items-center gap-3 px-3 py-2 sm:px-4">
       <Face src={src} name={name || "?"} />
-      <p className="truncate text-sm font-medium">{name}</p>
+      <p className="truncate text-sm font-medium text-[#1d1d1f]">{name}</p>
     </div>
   );
 }
 
 function ThreadPost({ src, caption }: { src?: string; caption: string }) {
   return (
-    <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-3">
+    <div className="flex items-center gap-3 px-3 py-2 sm:px-4">
       <PostFace src={src} />
-      <p className="line-clamp-2 text-sm text-neutral-700">{caption}</p>
+      <p className="line-clamp-2 text-sm text-[#3f3b38]">{caption}</p>
     </div>
   );
 }

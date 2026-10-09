@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUp } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 
@@ -54,7 +55,8 @@ export function LeadAgentPanel({
   }, [coach]);
 
   return (
-    <section className="mt-6 rounded-2xl border border-neutral-200 p-4">
+    <section className="posty-glass-3d relative mt-6 overflow-hidden rounded-[1.5rem] p-4 sm:p-5">
+      <div className="relative z-[3]">
       <form
         className="flex flex-wrap items-end gap-3"
         onSubmit={async (event) => {
@@ -84,13 +86,13 @@ export function LeadAgentPanel({
             required
             defaultValue={siteUrl}
             placeholder="https://"
-            className="mt-1 block w-full rounded-lg border border-neutral-200 px-2 py-1.5 text-sm text-neutral-900"
+            className="posty-clay-field mt-1 block w-full rounded-full px-3 py-1.5 text-sm text-[#1d1d1f]"
           />
         </label>
         <button
           type="submit"
           disabled={busy !== null}
-          className="rounded-lg bg-[#1A1A1A] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+          className="posty-site-btn px-3 py-1.5 text-sm disabled:opacity-60"
         >
           {busy === "train" ? labels.training : isTrained ? labels.already : labels.train}
         </button>
@@ -99,15 +101,15 @@ export function LeadAgentPanel({
       <div className="mt-5">
         <p className="text-sm font-medium">{labels.chatTitle}</p>
         <p className="mt-1 text-sm text-neutral-500">{labels.chatHint}</p>
-        <div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-xl bg-neutral-50 p-3">
+        <div className="posty-chat-history mt-3 max-h-56 space-y-2 overflow-y-auto rounded-[1.25rem] p-3">
           {turns.length === 0 ? (
-            <p className="text-sm text-neutral-400">{labels.chatHint}</p>
+            <p className="text-sm text-[#5c5652]">{labels.chatHint}</p>
           ) : (
             turns.map((turn, index) => (
               <p
                 key={`${turn.role}-${index}`}
                 className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm ${
-                  turn.role === "user" ? "ml-auto bg-white" : "bg-[#FF4713]/10 text-neutral-800"
+                  turn.role === "user" ? "posty-clay-well ml-auto" : "posty-clay-tile text-[#1d1d1f]"
                 }`}
               >
                 {turn.text}
@@ -116,7 +118,7 @@ export function LeadAgentPanel({
           )}
         </div>
         <form
-          className="mt-3 flex gap-2"
+          className="mt-3 flex items-center gap-2"
           onSubmit={async (event) => {
             event.preventDefault();
             const form = event.currentTarget;
@@ -143,18 +145,21 @@ export function LeadAgentPanel({
             router.refresh();
           }}
         >
-          <textarea
-            name="brief"
-            rows={3}
-            placeholder={labels.chatPlaceholder}
-            className="min-h-[4.5rem] flex-1 resize-y rounded-lg border border-neutral-200 px-2 py-1.5 text-sm text-neutral-900"
-          />
+          <div className="posty-chat-composer flex min-w-0 flex-1 items-center rounded-full p-1 sm:p-1.5">
+            <textarea
+              name="brief"
+              rows={1}
+              placeholder={labels.chatPlaceholder}
+              className="posty-chat-input min-w-0 flex-1 resize-none bg-transparent px-3 text-sm text-[#1d1d1f] outline-none placeholder:text-[#8a8682]"
+            />
+          </div>
           <button
             type="submit"
             disabled={busy !== null}
-            className="self-end rounded-lg bg-[#1A1A1A] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+            className="posty-site-btn posty-chat-send disabled:opacity-60"
+            aria-label={busy === "chat" ? labels.sending : labels.chatSend}
           >
-            {busy === "chat" ? labels.sending : labels.chatSend}
+            <ArrowUp size={18} />
           </button>
         </form>
       </div>
@@ -172,8 +177,8 @@ export function LeadAgentPanel({
       <button
         type="button"
         disabled={!isTrained || busy !== null}
-        className={`mt-3 rounded-lg px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 ${
-          enabled ? "bg-neutral-200 text-neutral-800" : "bg-[#FF4713] text-white"
+        className={`posty-site-btn mt-3 px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50 ${
+          enabled ? "opacity-80" : ""
         }`}
         onClick={async () => {
           if (!isTrained) return;
@@ -194,7 +199,8 @@ export function LeadAgentPanel({
       >
         {enabled ? labels.disable : labels.enable}
       </button>
-      {error ? <p className="mt-2 text-sm text-[#FF4713]">{error}</p> : null}
+      {error ? <p className="mt-2 text-sm text-[#8b3a2a]">{error}</p> : null}
+      </div>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 import { FilterField, FilterForm, StudioNotice, filterControl } from "@/components/studio/studio-filters";
+import { StudioGlass, StudioPage } from "@/components/studio/studio-surface";
 import { Link } from "@/i18n/navigation";
 import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
@@ -32,9 +33,9 @@ export default async function PostsHistoryPage({
         });
 
   return (
-    <main className="h-full overflow-y-auto px-4 py-5 sm:px-6 sm:py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">{t("postsTitle")}</h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">{t("postsLead")}</p>
+    <StudioPage>
+      <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("postsTitle")}</h1>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5c5652]">{t("postsLead")}</p>
       {posting.length === 0 ? (
         <p className="mt-6 text-sm">
           <Link href="/connections" className="font-medium text-[#FF4713]">
@@ -100,9 +101,9 @@ export default async function PostsHistoryPage({
         ))}
       </ul>
       {posting.length > 0 && result.posts.length === 0 && !result.error ? (
-        <p className="mt-4 text-sm text-neutral-500">{t("empty")}</p>
+        <p className="mt-4 text-sm text-[#5c5652]">{t("empty")}</p>
       ) : null}
-    </main>
+    </StudioPage>
   );
 }
 
@@ -137,41 +138,43 @@ function PostCard({
   const meta = platform ? getPlatform(platform.platform) : null;
   const when = post.scheduledFor ? new Date(post.scheduledFor) : null;
   return (
-    <li className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
-      <div className="relative aspect-square bg-neutral-100">
-        {thumb ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={thumb} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center px-3 text-center text-xs text-neutral-400">
-            {post.content?.slice(0, 80) || emptyLabel}
-          </div>
-        )}
-        {label ? (
-          <span className="absolute bottom-2 left-2 rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-700">
-            {label}
-          </span>
-        ) : null}
-      </div>
-      <div className="flex items-center gap-2 px-2.5 py-2">
-        {meta ? <PlatformIcon size="sm" connected platform={meta} /> : null}
-        <div className="min-w-0">
-          <p className="truncate text-[11px] text-neutral-500">
-            {when
-              ? when.toLocaleString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                })
-              : ""}
-          </p>
-          <p className="truncate text-[11px] text-neutral-400">
-            {platform ? platformLabel(platform.platform) : ""}
-            {post.content ? ` · ${post.content}` : ""}
-          </p>
+    <li>
+      <StudioGlass className="h-full rounded-[1.25rem]">
+        <div className="relative aspect-square overflow-hidden bg-black/5">
+          {thumb ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={thumb} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center px-3 text-center text-xs text-[#5c5652]">
+              {post.content?.slice(0, 80) || emptyLabel}
+            </div>
+          )}
+          {label ? (
+            <span className="posty-clay-well absolute bottom-2 left-2 rounded-full px-2 py-0.5 text-[10px] font-medium">
+              {label}
+            </span>
+          ) : null}
         </div>
-      </div>
+        <div className="flex items-center gap-2 px-2.5 py-2.5">
+          {meta ? <PlatformIcon size="sm" connected platform={meta} /> : null}
+          <div className="min-w-0">
+            <p className="truncate text-[11px] text-[#3f3b38]">
+              {when
+                ? when.toLocaleString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })
+                : ""}
+            </p>
+            <p className="truncate text-[11px] text-[#5c5652]">
+              {platform ? platformLabel(platform.platform) : ""}
+              {post.content ? ` · ${post.content}` : ""}
+            </p>
+          </div>
+        </div>
+      </StudioGlass>
     </li>
   );
 }
