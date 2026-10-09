@@ -618,6 +618,32 @@ html:has(.marketing):not(.home-no-scroll) body {
   display: block;
 }
 
+.posty-footer-anpc-badge {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .posty-footer-anpc-badge {
+    display: block;
+    height: 3.75rem;
+    width: auto;
+    line-height: 0;
+    text-decoration: none;
+    filter: drop-shadow(0 2px 4px rgba(63, 54, 49, 0.2));
+    transition: transform 200ms ease;
+  }
+
+  .posty-footer-anpc-badge img {
+    display: block;
+    height: 100%;
+    width: auto;
+  }
+
+  .posty-footer-anpc-badge:hover {
+    transform: translateY(-2px) scale(1.03);
+  }
+}
+
 .posty-footer-meta-tile {
   position: relative;
   isolation: isolate;
