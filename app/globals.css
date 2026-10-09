@@ -619,24 +619,44 @@ html:has(.marketing):not(.home-no-scroll) body {
 }
 
 .posty-footer-anpc-badge {
+  display: inline-block;
+  height: 1.85rem;
+  width: auto;
+  flex: none;
+  line-height: 0;
+  text-decoration: none;
+  filter: drop-shadow(0 1px 2px rgba(63, 54, 49, 0.18));
+  transition: transform 200ms ease;
+}
+
+.posty-footer-anpc-badge img {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+.posty-footer-anpc-desktop {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 640px) {
   .posty-footer-anpc-badge {
-    display: block;
-    height: 3.75rem;
-    width: auto;
-    line-height: 0;
-    text-decoration: none;
-    filter: drop-shadow(0 2px 4px rgba(63, 54, 49, 0.2));
-    transition: transform 200ms ease;
+    height: 2.35rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .posty-footer-anpc-mobile {
+    display: none;
   }
 
-  .posty-footer-anpc-badge img {
-    display: block;
-    height: 100%;
-    width: auto;
+  .posty-footer-anpc-desktop {
+    display: inline-block;
+  }
+
+  .posty-footer-anpc-badge {
+    height: 3.75rem;
+    filter: drop-shadow(0 2px 4px rgba(63, 54, 49, 0.2));
   }
 
   .posty-footer-anpc-badge:hover {
@@ -682,10 +702,11 @@ html:has(.marketing):not(.home-no-scroll) body {
   appearance: none;
   border: 0 !important;
   background: transparent !important;
-  padding: 0 !important;
-  color: #55514e !important;
-  font-size: 7px !important;
-  font-weight: 600;
+  padding: 0 11px 0 5px !important;
+  color: #3f3b38 !important;
+  font-size: 8px !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   text-align: center;
   text-align-last: center;
   outline: none;
@@ -695,14 +716,15 @@ html:has(.marketing):not(.home-no-scroll) body {
 .posty-footer-language-tile::after {
   content: "";
   position: absolute;
-  right: 17%;
-  top: 48%;
+  right: 12%;
+  top: 50%;
   z-index: 3;
   width: 0;
   height: 0;
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;
   border-top: 3px solid #625d59;
+  transform: translateY(-35%);
   pointer-events: none;
 }
 
