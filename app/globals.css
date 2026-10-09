@@ -619,8 +619,9 @@ html:has(.marketing):not(.home-no-scroll) body {
 }
 
 .posty-footer-anpc-badge {
-  display: inline-block;
-  height: 1.85rem;
+  display: flex;
+  align-items: center;
+  height: 1.75rem;
   width: auto;
   flex: none;
   line-height: 0;
@@ -641,7 +642,7 @@ html:has(.marketing):not(.home-no-scroll) body {
 
 @media (min-width: 640px) {
   .posty-footer-anpc-badge {
-    height: 2.35rem;
+    height: 2.25rem;
   }
 }
 

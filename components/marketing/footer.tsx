@@ -36,31 +36,30 @@ export async function MarketingFooter() {
           <HomeWaitlistBand />
         </div>
 
-        <div className="relative order-2 flex min-w-0 items-center justify-between gap-1.5 lg:contents">
-          <div className="relative min-w-0 self-center lg:order-1 lg:col-start-1 lg:justify-self-start">
-            <ul className="relative z-[3] flex items-center justify-start gap-0.5 sm:gap-1.5">
-              {MARKETING_SOCIAL.map((item) => (
-                <li key={item.id} className="shrink-0">
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="posty-footer-social-icon inline-flex size-7 items-center justify-center overflow-hidden rounded-[0.55rem] transition duration-200 sm:size-9 sm:rounded-[0.7rem] lg:size-[3.75rem] lg:rounded-[1.15rem] lg:hover:z-[1] lg:hover:-translate-y-1 lg:hover:scale-105"
-                    aria-label={item.label}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`/footer-social/${item.id}.jpg`}
-                      alt=""
-                      className="h-full w-full object-cover lg:scale-[1.06]"
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <AnpcBadge className="posty-footer-anpc-mobile" label={t("anpcAria")} />
+        <div className="relative order-2 flex min-w-0 items-center justify-between gap-2 lg:contents">
+          <ul className="relative z-[3] flex min-w-0 items-center justify-start gap-0.5 leading-none sm:gap-1.5 lg:order-1 lg:col-start-1 lg:justify-self-start">
+            {MARKETING_SOCIAL.map((item) => (
+              <li key={item.id} className="flex shrink-0 items-center leading-none">
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="posty-footer-social-icon inline-flex size-7 items-center justify-center overflow-hidden rounded-[0.55rem] transition duration-200 sm:size-9 sm:rounded-[0.7rem] lg:size-[3.75rem] lg:rounded-[1.15rem] lg:hover:z-[1] lg:hover:-translate-y-1 lg:hover:scale-105"
+                  aria-label={item.label}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/footer-social/${item.id}.jpg`}
+                    alt=""
+                    className="h-full w-full object-cover lg:scale-[1.06]"
+                  />
+                </a>
+              </li>
+            ))}
+            <li className="posty-footer-anpc-mobile flex shrink-0 items-center leading-none">
+              <AnpcBadge label={t("anpcAria")} />
+            </li>
+          </ul>
 
           <div className="relative z-[3] flex shrink-0 items-center justify-end gap-1 self-center lg:order-3 lg:col-start-3 lg:flex-col lg:items-end lg:gap-1.5 lg:justify-self-end">
             <div className="flex flex-row-reverse items-center gap-1">
