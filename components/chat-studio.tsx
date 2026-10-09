@@ -497,7 +497,7 @@ export default function ChatStudio() {
             }`}
           >
             {message.role === "user" && message.payload?.type === "user_media" ? (
-              <MessageMedia items={message.payload.media} onDark />
+              <MessageMedia items={message.payload.media} />
             ) : null}
             <div className="whitespace-pre-wrap">
               {visibleText(
@@ -711,12 +711,14 @@ export default function ChatStudio() {
               setInput(event.target.value);
               const el = event.currentTarget;
               el.style.height = "auto";
-              el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+              const next = Math.min(el.scrollHeight, 128);
+              el.style.height = `${next}px`;
+              el.style.overflowY = el.scrollHeight > 128 ? "auto" : "hidden";
             }}
             onKeyDown={onComposerKeyDown}
             rows={1}
             placeholder={listening ? t("speechListening") : t("placeholder")}
-            className="min-h-10 min-w-0 flex-1 resize-none bg-transparent px-1.5 py-2.5 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:min-h-11 sm:px-2"
+            className="min-h-10 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-1.5 py-2.5 text-sm leading-5 text-[#1d1d1f] outline-none placeholder:text-[#8a8682] sm:min-h-11 sm:px-2"
           />
           <button
             type="submit"

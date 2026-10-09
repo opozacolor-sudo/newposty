@@ -484,6 +484,16 @@ html:has(.marketing):not(.home-no-scroll) body {
     inset -2px -2px 5px rgba(255, 255, 255, 0.72);
 }
 
+.posty-chat-composer textarea {
+  overflow: hidden;
+}
+
+.posty-chat-composer textarea::placeholder {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .posty-chat-action {
   display: inline-flex;
   align-items: center;
