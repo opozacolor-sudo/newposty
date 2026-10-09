@@ -40,10 +40,20 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
   return {
+    metadataBase: new URL("https://posty.now"),
     title: t("title"),
     description: t("description"),
     icons: {
-      icon: [{ url: "/favicon.svg?v=3", type: "image/svg+xml" }],
+      icon: [
+        { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+        { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ],
+      apple: [
+        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+      shortcut: [{ url: "/favicon.ico" }],
     },
   };
 }
