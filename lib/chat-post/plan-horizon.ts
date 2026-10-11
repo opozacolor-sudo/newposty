@@ -35,6 +35,30 @@ export function parseRequestedPlanDays(text: string): number | null {
   return null;
 }
 
+/** Current message plus recent chat — so answers like “pe toate / ton emoționant” still count as the 30-day plan. */
+export function calendarDaysFromChat(current: string, history: string[]): number | null {
+  const fromCurrent = parseRequestedPlanDays(current);
+  if (fromCurrent) return fromCurrent;
+  for (const item of history) {
+    const days = parseRequestedPlanDays(item);
+    if (days) return days;
+  }
+  const recent = [current, ...history.slice(-8)].join("\n");
+  if (
+    /plan de marketing|marketing plan|idei de con[tț]inut|content ideas?|plan marketing|ziua\s*1\b/i.test(
+      recent,
+    )
+  ) {
+    return MONTHLY_ACCESS_DAYS;
+  }
+  return null;
+}
+
+export function chatMaxTokens(calendarDays: number | null) {
+  if (calendarDays && calendarDays >= 7) return 8192;
+  return 1400;
+}
+
 export function planExceedsAccess(planDays: number, access: PlanAccess): boolean {
   if (access.kind === "lifetime") return false;
   if (!Number.isFinite(planDays) || planDays < 1) return false;

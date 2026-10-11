@@ -23,7 +23,8 @@ import { planAccessForUser } from "@/lib/chat-post/plan-access";
 import {
   planAccessLine,
   planExceedsAccess,
-  parseRequestedPlanDays,
+  calendarDaysFromChat,
+  chatMaxTokens,
   planTooLongMessage,
 } from "@/lib/chat-post/plan-horizon";
 import { detectGenerationKind, userRequestedCaption } from "@/lib/chat-post/rules";
@@ -376,7 +377,10 @@ async function postChat(request: Request) {
     lifetime: Boolean(profile?.lifetime_access),
     timeZone,
   });
-  const askedDays = parseRequestedPlanDays(text);
+  const askedDays = calendarDaysFromChat(
+    text,
+    (history ?? []).map((message) => String(message.content ?? "")),
+  );
   if (askedDays && planExceedsAccess(askedDays, planAccess) && planAccess.kind === "period") {
     const blocked = planTooLongMessage(locale, { planDays: askedDays, access: planAccess });
     await supabase.from("messages").insert({
@@ -437,10 +441,11 @@ async function postChat(request: Request) {
   let catalogPlan: CatalogPlanPayload | null = null;
   let skipConfirmation = Boolean(conversation.skip_confirmation);
 
+  const maxTokens = chatMaxTokens(askedDays);
   for (let round = 0; round < 4; round += 1) {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-5",
-      max_tokens: 1400,
+      max_tokens: maxTokens,
       system,
       tools: toolsForChat(posterEnabled),
       messages: anthropicMessages,
@@ -452,8 +457,20 @@ async function postChat(request: Request) {
     const textBlocks = response.content.filter(
       (block): block is Anthropic.TextBlock => block.type === "text",
     );
-    finalText = textBlocks.map((block) => block.text).join("\n").trim();
+    const chunk = textBlocks.map((block) => block.text).join("\n").trim();
 
+    if (response.stop_reason === "max_tokens" && askedDays && askedDays >= 7) {
+      finalText = [finalText, chunk].filter(Boolean).join("\n\n");
+      anthropicMessages.push({ role: "assistant", content: response.content });
+      anthropicMessages.push({
+        role: "user",
+        content:
+          "Continue the same day-by-day plan from the next missing day through the last day. No intro. Do not restart from day 1. Do not call tools.",
+      });
+      continue;
+    }
+
+    finalText = chunk;
     if (response.stop_reason !== "tool_use" || toolUses.length === 0) {
       break;
     }

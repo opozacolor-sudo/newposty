@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  calendarDaysFromChat,
+  chatMaxTokens,
   parseRequestedPlanDays,
   planAccessLine,
   planExceedsAccess,
@@ -15,6 +17,17 @@ test("parseRequestedPlanDays reads days and months, not monthly photos", () => {
   assert.equal(parseRequestedPlanDays("pe 6 luni"), 180);
   assert.equal(parseRequestedPlanDays("20 de poze de lună"), null);
   assert.equal(parseRequestedPlanDays("publică reel-ul acum"), null);
+});
+
+test("calendarDaysFromChat keeps 30 days after the follow-up answers", () => {
+  assert.equal(
+    calendarDaysFromChat("1. pe toate. 2. un ton emoționant. 3. nu am. 4. mai mulți clienți.", [
+      "Vreau un plan de marketing 30 de zile pentru cafeneaua Brasil.",
+    ]),
+    30,
+  );
+  assert.equal(chatMaxTokens(30), 8192);
+  assert.equal(chatMaxTokens(null), 1400);
 });
 
 test("planExceedsAccess allows lifetime and equal remaining days", () => {
