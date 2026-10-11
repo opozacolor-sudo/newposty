@@ -18,6 +18,13 @@ import {
   resolveManageAction,
 } from "@/lib/chat-post/store";
 import { chatPostSystemPrompt, toolsForChat } from "@/lib/chat-post/tools";
+import { planAccessForUser } from "@/lib/chat-post/plan-access";
+import {
+  planAccessLine,
+  planExceedsAccess,
+  parseRequestedPlanDays,
+  planTooLongMessage,
+} from "@/lib/chat-post/plan-horizon";
 import { detectGenerationKind, userRequestedCaption } from "@/lib/chat-post/rules";
 import { CHAT_TURN_PHOTO_LIMIT, photoBlocksForClaude, withPhotos } from "@/lib/chat-post/vision";
 import { localizeCancelledContent } from "@/lib/chat-post/copy";
@@ -359,6 +366,36 @@ async function postChat(request: Request) {
       : posterEnabled && generationKind === "image"
         ? "This message is IMAGE generation. Call generate_poster now. Put the full user text in brief. Do not publish."
         : "";
+  const planAccess = await planAccessForUser({
+    userId: user.id,
+    email: user.email,
+    lifetime: Boolean(profile?.lifetime_access),
+    timeZone,
+  });
+  const askedDays = parseRequestedPlanDays(text);
+  if (askedDays && planExceedsAccess(askedDays, planAccess) && planAccess.kind === "period") {
+    const blocked = planTooLongMessage(locale, { planDays: askedDays, access: planAccess });
+    await supabase.from("messages").insert({
+      conversation_id: conversationId,
+      user_id: user.id,
+      role: "assistant",
+      content: blocked,
+      kind: "text",
+      payload: null,
+    });
+    await supabase
+      .from("conversations")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("id", conversationId)
+      .eq("user_id", user.id);
+    return NextResponse.json({
+      conversationId,
+      reply: blocked,
+      kind: "text",
+      payload: null,
+      skipConfirmation: Boolean(conversation.skip_confirmation),
+    });
+  }
   const anthropic = new Anthropic({ apiKey });
   const system = chatPostSystemPrompt({
     locale,
@@ -374,6 +411,7 @@ async function postChat(request: Request) {
     pendingIntentLine,
     posterEnabled,
     generationHint,
+    planAccessLine: planAccessLine(planAccess),
   });
 
   const photoBlocks =
@@ -532,6 +570,7 @@ async function postChat(request: Request) {
             brandVoice: profile?.brand_voice as string | null,
             fallbackBrief: text,
             keepToolCaption: userRequestedCaption(text),
+            planAccess,
           });
           if (!resolved.ok) {
             if (resolved.missing && resolved.missing.length > 0) {

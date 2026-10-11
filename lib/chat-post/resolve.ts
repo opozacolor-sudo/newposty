@@ -34,6 +34,12 @@ import {
   wantsDailySeries,
 } from "@/lib/chat-post/series";
 import {
+  planExceedsAccess,
+  plannedDaysFromSeries,
+  planTooLongMessage,
+  type PlanAccess,
+} from "@/lib/chat-post/plan-horizon";
+import {
   formatInZone,
   isFutureDate,
   localIsoInZone,
@@ -118,6 +124,7 @@ export async function resolveCreateActions(input: {
   fallbackBrief?: string;
   keepToolCaption?: boolean;
   now?: Date;
+  planAccess?: PlanAccess;
 }): Promise<
   | { ok: true; resolved: Omit<ResolvedAction, "action_id"> }
   | { ok: false; error: string; missing?: Array<"platform" | "media" | "caption" | "time"> }
@@ -162,6 +169,19 @@ export async function resolveCreateActions(input: {
         brief: input.fallbackBrief,
         mediaCount: items.length,
       });
+    if (input.planAccess) {
+      const planDays = plannedDaysFromSeries({
+        brief: input.fallbackBrief,
+        dailyDays: isSeries ? items.length : remix?.pack === "daily" ? remix.count : 0,
+        catalogDays: isCatalog ? catalogItems.length : rawAction.catalog_count ?? 0,
+      });
+      if (planExceedsAccess(planDays, input.planAccess) && input.planAccess.kind === "period") {
+        return {
+          ok: false,
+          error: planTooLongMessage(input.locale, { planDays, access: input.planAccess }),
+        };
+      }
+    }
     const action: ToolPostAction =
       (isSeries || remix || isCatalog) && (!rawAction.platforms || rawAction.platforms.length === 0)
         ? { ...rawAction, platforms: [ALL_CONNECTED], mode: "schedule" }

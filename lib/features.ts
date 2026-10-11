@@ -45,7 +45,7 @@ export const FEATURES: FeaturePage[] = [
       metaDescription:
         "The posty.now assistant writes captions, keeps your brand voice, and turns one message into a post or a month of content.",
       kicker: "Features",
-      title: "Talk to it like a colleague.",
+      title: "Talk to it like you would a colleague.",
       subtitle:
         "The assistant is the studio. You ask for an idea, a caption, a publish, a schedule, or a month of posts. No special commands. If you do not name a network, it asks — it does not guess.",
       features: [
@@ -64,9 +64,10 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "One message, one clear job",
       batchBody:
-        "“Publish this reel now on Instagram and TikTok, and put it on an Instagram Story tomorrow at 9” fits in a single message. A Friday promo mixed with 20 monthly photos does not — split those, and the plan stays clean. Attach up to 50 photos or videos, 100 MB each. The order you pick is the order of the series.",
+        "“Publish this reel now on Instagram and TikTok, and put it on an Instagram Story tomorrow at 9” fits in a single message. A Friday promo and 20 photos for the month are two jobs: send them in separate messages so the plan stays clean. Attach up to 50 photos or videos, 100 MB each. The order you pick is the order of the series.",
       examplesTitle: "You can say",
       examples: [
+        "Content ideas for the next 30 days.",
         "Give me three Instagram captions for a café on a rainy Monday.",
         "Write a short caption and five hashtags, warm tone.",
         "We are a photo studio. Voice: clear, no superlatives. Remember that.",
@@ -99,7 +100,7 @@ export const FEATURES: FeaturePage[] = [
       metaDescription:
         "Asistentul posty.now scrie caption-uri, ține vocea de brand și transformă un mesaj într-o postare sau într-o lună de conținut.",
       kicker: "Funcții",
-      title: "Vorbești cu el ca cu un coleg.",
+      title: "Vorbești cu el ca și cu un coleg.",
       subtitle:
         "Asistentul e studio-ul. Ceri o idee, un text, o publicare, o programare sau o lună de postări. Fără comenzi speciale. Dacă nu spui rețeaua, te întreabă — nu ghicește.",
       features: [
@@ -118,9 +119,10 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "Un mesaj, o treabă clară",
       batchBody:
-        "„Publică reel-ul acum pe Instagram și TikTok, iar mâine la 9 pune-l story pe Instagram” încape într-un mesaj. O promoție de vineri amestecată cu 20 de poze de lună nu — le separi și planul rămâne curat. Atașezi până la 50 de poze sau video, 100 MB fiecare. Ordinea din picker e ordinea seriei.",
+        "„Publică reel-ul acum pe Instagram și TikTok, iar mâine la 9 pune-l story pe Instagram” încape într-un mesaj. Promoția de vineri și cele 20 de poze pentru lună sunt două treburi: le trimiți în mesaje diferite, ca planul să rămână curat. Atașezi până la 50 de poze sau video, 100 MB fiecare. Ordinea din picker e ordinea seriei.",
       examplesTitle: "Poți spune",
       examples: [
+        "Idei de conținut pentru 30 de zile.",
         "Dă-mi trei texte de Instagram pentru o cafenea într-o luni ploioasă.",
         "Fă-i o descriere scurtă, cu 5 hashtag-uri, ton cald.",
         "Suntem un studio foto. Voce: clară, fără superlative. Ține minte.",
@@ -728,4 +730,46 @@ export function isFeatureSlug(value: string): value is FeatureSlug {
 
 export function getFeature(slug: string) {
   return FEATURES.find((page) => page.slug === slug);
+}
+
+const ASSISTANT_LOCALE: Partial<
+  Record<string, { title: string; batchBody: string; ideaExample: string }>
+> = {
+  de: {
+    title: "Du sprichst mit ihm wie mit einem Kollegen.",
+    batchBody:
+      "„Veröffentliche das Reel jetzt auf Instagram und TikTok, und morgen um 9 als Instagram-Story“ passt in eine Nachricht. Die Freitagsaktion und die 20 Fotos für den Monat sind zwei Jobs: schick sie in getrennten Nachrichten, dann bleibt der Plan sauber. Bis zu 50 Fotos oder Videos, je 100 MB. Die Reihenfolge im Picker ist die Reihenfolge der Serie.",
+    ideaExample: "Content-Ideen für die nächsten 30 Tage.",
+  },
+  it: {
+    title: "Gli parli come faresti con un collega.",
+    batchBody:
+      "«Pubblica il reel ora su Instagram e TikTok, e domani alle 9 mettilo in story su Instagram» sta in un messaggio. La promo del venerdì e le 20 foto del mese sono due incarichi: mandali in messaggi diversi, così il piano resta pulito. Fino a 50 foto o video, 100 MB ciascuno. L’ordine del picker è l’ordine della serie.",
+    ideaExample: "Idee di contenuti per i prossimi 30 giorni.",
+  },
+  fr: {
+    title: "Vous lui parlez comme à un collègue.",
+    batchBody:
+      "« Publie le reel maintenant sur Instagram et TikTok, et mets-le en story Instagram demain à 9 h » tient en un message. La promo du vendredi et les 20 photos du mois sont deux jobs : envoie-les dans des messages séparés, le plan reste propre. Jusqu’à 50 photos ou vidéos, 100 Mo chacune. L’ordre du picker est l’ordre de la série.",
+    ideaExample: "Idées de contenu pour les 30 prochains jours.",
+  },
+  es: {
+    title: "Le hablas como a un compañero.",
+    batchBody:
+      "«Publica el reel ahora en Instagram y TikTok, y ponlo en stories de Instagram mañana a las 9» cabe en un mensaje. La promo del viernes y las 20 fotos del mes son dos encargos: envíalos en mensajes distintos para que el plan quede limpio. Hasta 50 fotos o vídeos, 100 MB cada uno. El orden del picker es el de la serie.",
+    ideaExample: "Ideas de contenido para los próximos 30 días.",
+  },
+};
+
+export function featureCopy(page: FeaturePage, locale: string): FeatureCopy {
+  const base = locale === "ro" ? page.ro : page.en;
+  if (page.slug !== "assistant") return base;
+  const extra = ASSISTANT_LOCALE[locale];
+  if (!extra) return base;
+  return {
+    ...base,
+    title: extra.title,
+    batchBody: extra.batchBody,
+    examples: [extra.ideaExample, ...base.examples.filter((item) => !/30 (days|zile)/i.test(item))],
+  };
 }

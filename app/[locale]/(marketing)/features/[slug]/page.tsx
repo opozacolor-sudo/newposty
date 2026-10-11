@@ -7,7 +7,7 @@ import { WaitlistForm } from "@/components/marketing/waitlist-form";
 import { clayLink, clayTile, pageH2, pageKicker, pageLead, pageTitle } from "@/components/marketing/styles";
 import { PlatformIcon } from "@/components/studio/platform-icon";
 import { Link } from "@/i18n/navigation";
-import { FEATURES, getFeature, isFeatureSlug, type FeatureSlug } from "@/lib/features";
+import { FEATURES, featureCopy, getFeature, isFeatureSlug, type FeatureSlug } from "@/lib/features";
 import { getFeatureMeta } from "@/lib/seo-meta";
 import { ADS_PLATFORMS, isConnectDisabled, PLATFORMS } from "@/lib/platforms";
 
@@ -35,7 +35,7 @@ export default async function FeaturePage({
   const page = getFeature(slug);
   if (!page) notFound();
 
-  const copy = locale === "ro" ? page.ro : page.en;
+  const copy = featureCopy(page, locale);
   const t = await getTranslations("Features");
   const others = FEATURES.filter((item) => item.slug !== page.slug);
   const rail = page.rail === "ads" ? ADS_PLATFORMS : page.rail === "posts" ? PLATFORMS : null;
@@ -134,7 +134,7 @@ export default async function FeaturePage({
         <h2 className={pageKicker}>{t("alsoTitle")}</h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {others.map((item) => {
-            const other = locale === "ro" ? item.ro : item.en;
+            const other = featureCopy(item, locale);
             return (
               <li key={item.slug}>
                 <Link href={`/features/${item.slug}`} className={`block ${clayTile}`}>

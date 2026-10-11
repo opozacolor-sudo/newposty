@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
 import { resolveManageAction, savePendingAction } from "@/lib/chat-post/store";
+import { planAccessForUser } from "@/lib/chat-post/plan-access";
 import { userTimezone } from "@/lib/chat-post/timezone";
 import type { ChatMedia, ManageAction, ToolPostAction } from "@/lib/chat-post/types";
 import { getAnthropicApiKey } from "@/lib/env";
@@ -106,6 +107,12 @@ export async function POST(request: Request) {
     });
   }
 
+  const planAccess = await planAccessForUser({
+    userId: user.id,
+    email: user.email,
+    lifetime: Boolean(profile?.lifetime_access),
+    timeZone: timezone,
+  });
   const resolved = await resolveCreateActions({
     actions: body.actions ?? [],
     accounts: posting,
@@ -116,6 +123,7 @@ export async function POST(request: Request) {
     brandName: profile?.brand_name as string | null,
     brandVoice: profile?.brand_voice as string | null,
     fallbackBrief: body.brief,
+    planAccess,
   });
   if (!resolved.ok) return NextResponse.json(resolved, { status: 400 });
 

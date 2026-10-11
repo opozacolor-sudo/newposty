@@ -61,7 +61,7 @@ const ARTICLES: Record<HowToSlug, Record<AppLocale, HowToCopy>> = {
       faqs: [
         {
           q: "Can one message really cover a month?",
-          a: "Yes. Up to 50 files, posted day by day, on the networks you named. Mix a Friday promo with twenty monthly photos in the same command and the plan gets messy — split those jobs.",
+          a: "Yes. Up to 50 files, posted day by day, on the networks you named. A Friday promo and twenty photos for the month are two jobs — send them in separate messages.",
         },
         {
           q: "Does each network get its own caption?",
@@ -115,7 +115,7 @@ const ARTICLES: Record<HowToSlug, Record<AppLocale, HowToCopy>> = {
       faqs: [
         {
           q: "Chiar acoperă un mesaj o lună întreagă?",
-          a: "Da. Până la 50 de fișiere, publicate zi de zi, pe rețelele spuse. Amesteci o promo de vineri cu douăzeci de poze lunare în aceeași comandă și planul se încurcă — desparți joburile.",
+          a: "Da. Până la 50 de fișiere, publicate zi de zi, pe rețelele spuse. Promoția de vineri și cele douăzeci de poze pentru lună sunt două treburi — le trimiți în mesaje diferite.",
         },
         {
           q: "Fiecare rețea își ia descrierea ei?",
@@ -169,7 +169,7 @@ const ARTICLES: Record<HowToSlug, Record<AppLocale, HowToCopy>> = {
       faqs: [
         {
           q: "Reicht eine Nachricht wirklich für einen Monat?",
-          a: "Ja. Bis zu 50 Dateien, Tag für Tag, auf den Netzwerken, die du nennst. Eine Freitags-Promo mit zwanzig Monatsfotos in denselben Befehl mischen macht den Plan unsauber — diese Jobs trennen.",
+          a: "Ja. Bis zu 50 Dateien, Tag für Tag, auf den Netzwerken, die du nennst. Die Freitagsaktion und die zwanzig Fotos für den Monat sind zwei Jobs — schick sie in getrennten Nachrichten.",
         },
         {
           q: "Bekommt jedes Netzwerk eine eigene Caption?",
@@ -223,7 +223,7 @@ const ARTICLES: Record<HowToSlug, Record<AppLocale, HowToCopy>> = {
       faqs: [
         {
           q: "Un messaggio copre davvero un mese?",
-          a: "Sì. Fino a 50 file, pubblicati giorno per giorno, sulle reti che hai indicato. Mischiare una promo del venerdì con venti foto mensili nello stesso comando sporca il piano — spezza quei lavori.",
+          a: "Sì. Fino a 50 file, pubblicati giorno per giorno, sulle reti che hai indicato. La promo del venerdì e le venti foto del mese sono due incarichi — mandali in messaggi diversi.",
         },
         {
           q: "Ogni rete ha la sua didascalia?",
@@ -277,7 +277,7 @@ const ARTICLES: Record<HowToSlug, Record<AppLocale, HowToCopy>> = {
       faqs: [
         {
           q: "Un message couvre-t-il vraiment un mois ?",
-          a: "Oui. Jusqu’à 50 fichiers, publiés jour après jour, sur les réseaux nommés. Mélanger une promo du vendredi avec vingt photos du mois dans la même commande salit le plan — séparez ces jobs.",
+          a: "Oui. Jusqu’à 50 fichiers, publiés jour après jour, sur les réseaux nommés. La promo du vendredi et les vingt photos du mois sont deux jobs — envoyez-les dans des messages séparés.",
         },
         {
           q: "Chaque réseau a-t-il sa légende ?",
@@ -331,7 +331,7 @@ const ARTICLES: Record<HowToSlug, Record<AppLocale, HowToCopy>> = {
       faqs: [
         {
           q: "¿Un mensaje cubre de verdad un mes?",
-          a: "Sí. Hasta 50 archivos, publicados día a día, en las redes que nombraste. Mezclar una promo del viernes con veinte fotos del mes en el mismo comando ensucia el plan — separa esos encargos.",
+          a: "Sí. Hasta 50 archivos, publicados día a día, en las redes que nombraste. La promo del viernes y las veinte fotos del mes son dos encargos — envíalos en mensajes distintos.",
         },
         {
           q: "¿Cada red tiene su propio pie?",

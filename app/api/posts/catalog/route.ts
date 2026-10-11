@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
 import { catalogCaption } from "@/lib/chat-post/catalog";
+import { planAccessForUser } from "@/lib/chat-post/plan-access";
+import { planExceedsAccess, planTooLongMessage } from "@/lib/chat-post/plan-horizon";
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
 import { savePendingAction } from "@/lib/chat-post/store";
 import type { CatalogPlanPayload, ChatMedia } from "@/lib/chat-post/types";
@@ -45,6 +47,19 @@ export async function POST(request: Request) {
 
   const workspace = await loadWorkspace(supabase, user.id);
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const timeZone = userTimezone(profile?.timezone as string | undefined);
+  const planAccess = await planAccessForUser({
+    userId: user.id,
+    email: user.email,
+    lifetime: Boolean(profile?.lifetime_access),
+    timeZone,
+  });
+  if (planExceedsAccess(plan.products.length, planAccess) && planAccess.kind === "period") {
+    return NextResponse.json(
+      { error: planTooLongMessage(locale, { planDays: plan.products.length, access: planAccess }) },
+      { status: 400 },
+    );
+  }
   const { data: accountRows } = await applyClientScope(
     supabase
       .from("social_accounts")
@@ -137,12 +152,13 @@ export async function POST(request: Request) {
     accounts: posting,
     media: items.map((item) => item.media),
     locale,
-    timezone: userTimezone(profile?.timezone as string | undefined),
+    timezone: timeZone,
     apiKey: getAnthropicApiKey(),
     brandName: profile?.brand_name as string | null,
     brandVoice: profile?.brand_voice as string | null,
     fallbackBrief: locale === "ro" ? "câte una pe zi, catalog produse" : "one product a day catalog",
     keepToolCaption: true,
+    planAccess,
   });
 
   if (!resolved.ok) {

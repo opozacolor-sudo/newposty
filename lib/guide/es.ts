@@ -154,7 +154,7 @@ export const ES: GuideDoc = {
       tips: [
         {
           title: "Un mensaje, una intención clara",
-          body: "«Publica esto como reel de Instagram y TikTok ahora, y mañana a las 9 ponlo en stories de Instagram» funciona en un mensaje. Mezclar una promo del viernes con 20 fotos del mes, no.",
+          body: "«Publica esto como reel de Instagram y TikTok ahora, y mañana a las 9 ponlo en stories de Instagram» funciona en un mensaje. La promo del viernes y las 20 fotos del mes son dos encargos: envíalos por separado.",
         },
       ],
     },
@@ -188,12 +188,13 @@ export const ES: GuideDoc = {
       id: "ideas",
       title: "Textos, ideas, voz de marca",
       body: [
-        "Si solo quieres inspiración, dilo. Posty ofrece 1–3 opciones y no publica.",
+        "Si solo quieres inspiración, dilo. Posty ofrece 1–3 opciones y no publica. Si pides ideas para 30 días, primero pregunta — negocio, redes, tono — y luego da el plan día a día. Un plan más largo que la suscripción no sale: necesitas una suscripción que cubra ese plazo.",
         "Un texto se escribe solo si lo pides («hazle una descripción», «caption»). Si mandas una foto y dices solo «publica en Instagram ahora», sale sin texto — no recicla un caption viejo del hilo.",
         "Cuando das tú el texto, se usa tal cual. Si es demasiado largo para una red (280 caracteres en X), se recorta al límite y te lo dice.",
         "Puedes describir la voz de marca: «somos una panadería cálida, sin emoji, sin slang». Posty lo guarda en la conversación para que los siguientes borradores sigan el tono.",
       ],
       examples: [
+        "Ideas de contenido para los próximos 30 días.",
         "Escribe una descripción corta, cinco hashtags, tono cálido.",
         "Somos un estudio de foto. Voz: clara, sin superlativos. Recuérdalo.",
       ],

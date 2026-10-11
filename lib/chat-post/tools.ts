@@ -238,6 +238,7 @@ export function chatPostSystemPrompt(input: {
   pendingIntentLine?: string;
   posterEnabled?: boolean;
   generationHint?: string;
+  planAccessLine?: string;
 }) {
   const language = chatLanguageName(input.locale);
   return [
@@ -292,6 +293,9 @@ export function chatPostSystemPrompt(input: {
       ? ""
       : "If they later say reclamă / ads / boost / paid about an existing creative, do not invent a spend. Reply that it is ready and ask network + budget; only call create_social_post if they also want the organic post.",
     "If the user only wants a caption or content idea, without intent to post now, do NOT call create_social_post. Reply in text.",
+    "Content-idea calendars (idei de conținut for N days, content ideas for a month, no files yet): do NOT invent the calendar in the first reply. Ask 2–4 short questions first: business or niche, networks, tone or goal, any fixed dates or offers. After they answer, offer a day-by-day plan (theme + caption angle). Still do not call create_social_post unless they then ask to publish or schedule.",
+    input.planAccessLine ?? "",
+    "If the requested idea calendar or series is longer than remaining access, do not ask questions and do not draft or schedule it. Tell them they need a subscription that lasts longer than the plan.",
     "Attached files plus programează / postează / schedule / publish / aceste materiale means they want a post. Call create_social_post even if spaces are missing from dictation. Do not wait for a prettier sentence.",
     "If the user gives an explicit caption, pass it EXACTLY as caption with caption_source=user_provided. Do not paraphrase. Long captions are shortened to each platform’s limit.",
     "If the user does not mention a description, caption, or text in THIS message, they do not want one. Caption must be empty. Never copy a caption or hashtags from an earlier message.",
