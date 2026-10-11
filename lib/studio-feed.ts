@@ -8,7 +8,7 @@ import {
   sumDailyMetrics,
 } from "@/lib/analytics-parse";
 import { previousEquivalentRange } from "@/lib/analytics-shared";
-import { isAdsPlatformId, isPlatformId } from "@/lib/platforms";
+import { adsListPlatform, isAdsPlatformId, isPlatformId } from "@/lib/platforms";
 import { ownsAccount, platformAccountId, scopeByAccountId, scopePosts } from "@/lib/studio-scope";
 import {
   ZernioError,
@@ -364,7 +364,7 @@ export async function loadScopedCampaigns(
     targets.map(async (account) => {
       const body = await listAdCampaigns({
         accountId: account.zernioAccountId,
-        platform: account.platform,
+        platform: adsListPlatform(account.platform),
         fromDate: filters.fromDate || undefined,
         toDate: filters.toDate || undefined,
         limit: 50,
@@ -384,7 +384,13 @@ export async function loadScopedCampaigns(
       const campaign = asRecord(item);
       if (!campaign) continue;
       const foreign = platformAccountId(campaign.accountId);
-      if (foreign && foreign !== result.value.account.zernioAccountId) continue;
+      if (
+        foreign &&
+        foreign !== result.value.account.zernioAccountId &&
+        !ownsAccount(scope.ownedIds, foreign)
+      ) {
+        continue;
+      }
       const metrics = asRecord(campaign.metrics) ?? campaign;
       const status = String(campaign.status ?? "");
       const active = /active|enabled|running|live/i.test(status);

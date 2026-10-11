@@ -268,6 +268,15 @@ export function getAdsPlatform(id: string) {
   return ADS_PLATFORMS.find((platform) => platform.id === id);
 }
 
+export function adsListPlatform(platform: string) {
+  if (platform === "metaads") return "facebook";
+  if (platform === "linkedinads") return "linkedin";
+  if (platform === "tiktokads") return "tiktok";
+  if (platform === "pinterestads") return "pinterest";
+  if (platform === "xads") return "twitter";
+  return getAdsPlatform(platform)?.parentPlatform ?? platform;
+}
+
 export function platformHasLimitedStats(id: string) {
   return PLATFORMS.find((platform) => platform.id === id)?.stats === "limited";
 }

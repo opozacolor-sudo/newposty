@@ -6,6 +6,7 @@ import {
   type AnalyticsCard,
   type AnalyticsKpi,
 } from "@/lib/analytics-shared";
+import { adsListPlatform } from "@/lib/platforms";
 import { getCampaignAnalytics, listAdCampaigns } from "@/lib/zernio";
 
 export type { AdsAccountAnalytics } from "@/lib/analytics-shared";
@@ -89,15 +90,6 @@ async function swallow<T>(fn: () => Promise<T>): Promise<T | null> {
   }
 }
 
-function adsApiPlatform(platform: string) {
-  if (platform === "metaads") return "facebook";
-  if (platform === "linkedinads") return "linkedin";
-  if (platform === "tiktokads") return "tiktok";
-  if (platform === "pinterestads") return "pinterest";
-  if (platform === "xads") return "twitter";
-  return platform;
-}
-
 async function campaignsForRange(input: {
   accountId: string;
   platform: string;
@@ -107,7 +99,7 @@ async function campaignsForRange(input: {
   const body = await swallow(() =>
     listAdCampaigns({
       accountId: input.accountId,
-      platform: adsApiPlatform(input.platform),
+      platform: adsListPlatform(input.platform),
       fromDate: input.from,
       toDate: input.to,
       limit: 50,
@@ -212,7 +204,7 @@ async function buildSpendChart(
     campaigns.slice(0, 8).map((campaign) =>
       swallow(() =>
         getCampaignAnalytics(campaign.id, {
-          platform: adsApiPlatform(input.platform),
+          platform: adsListPlatform(input.platform),
           fromDate: input.from,
           toDate: input.to,
         }),
