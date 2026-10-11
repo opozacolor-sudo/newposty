@@ -21,7 +21,7 @@ export default async function WaitlistPage() {
   const t = await getTranslations("Landing");
 
   return (
-    <MarketingPageFrame>
+    <MarketingPageFrame center>
       <p className={pageKicker}>{t("kicker")}</p>
       <h1 className={`mt-3 ${pageTitle}`}>{t("waitlistPageTitle")}</h1>
       <p className={pageLead}>{t("waitlistPageSubtitle")}</p>
