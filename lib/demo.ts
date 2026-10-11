@@ -63,7 +63,7 @@ export function demoCopy(page: DemoPage, locale: string): DemoCopy {
 export const DEMO_PAGES: DemoPage[] = [
   {
     slug: "connect",
-    videos: [{ videoId: "9iuqHmI04ck" }],
+    videos: [{ videoId: "sAtPuXaUDr8" }],
     copy: {
       en: {
         navTitle: "Connect accounts",
@@ -123,7 +123,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "marketing-plan",
-    videos: [],
+    videos: [{ videoId: "Jo14pLFdMOQ" }],
     copy: {
       en: {
         navTitle: "Marketing plan",
@@ -213,7 +213,10 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "create",
-    videos: [],
+    videos: [
+      { videoId: "VDWhsthWngM", kind: "photo" },
+      { videoId: "inmrjR37nLs", kind: "video" },
+    ],
     copy: {
       en: {
         navTitle: "Create content",
@@ -297,7 +300,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "publish",
-    videos: [{ videoId: "TSpik-u6rcg" }],
+    videos: [{ videoId: "Z0LRMOy40u4" }],
     copy: {
       en: {
         navTitle: "Post and schedule",
@@ -381,7 +384,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "calendar",
-    videos: [],
+    videos: [{ videoId: "dHU99vwyRsU" }],
     copy: {
       en: {
         navTitle: "Post calendar",
@@ -441,7 +444,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "ads",
-    videos: [],
+    videos: [{ videoId: "4wncfgRaxOU" }],
     copy: {
       en: {
         navTitle: "Create ads",
@@ -525,7 +528,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "analytics",
-    videos: [{ videoId: "AW24I0apIYk" }],
+    videos: [{ videoId: "WVbQxFO_qeg" }],
     copy: {
       en: {
         navTitle: "Statistics",
@@ -585,7 +588,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "inbox",
-    videos: [],
+    videos: [{ videoId: "nUqSFRSG5YM" }],
     copy: {
       en: {
         navTitle: "Messages and comments",
@@ -645,7 +648,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "leads",
-    videos: [],
+    videos: [{ videoId: "ML7dGFen5Rw" }],
     copy: {
       en: {
         navTitle: "Leads",
