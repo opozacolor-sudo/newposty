@@ -639,6 +639,33 @@ export async function getZernioAccount(accountId: string) {
   return account;
 }
 
+export async function listAdAccounts(accountId: string) {
+  const data = await zernioFetch<unknown>(withQuery("/ads/accounts", { accountId }));
+  const record = data && typeof data === "object" ? (data as Record<string, unknown>) : null;
+  const list = Array.isArray(record?.accounts)
+    ? record.accounts
+    : Array.isArray(record?.advertisers)
+      ? record.advertisers
+      : Array.isArray(record?.data)
+        ? record.data
+        : Array.isArray(data)
+          ? data
+          : [];
+  return list
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const row = item as Record<string, unknown>;
+      const id = String(row.id ?? row.advertiserId ?? row.adAccountId ?? row.platformAdAccountId ?? "");
+      if (!id) return null;
+      return {
+        id,
+        name: String(row.name ?? row.advertiserName ?? ""),
+        selectable: row.selectable !== false,
+      };
+    })
+    .filter((item): item is { id: string; name: string; selectable: boolean } => Boolean(item));
+}
+
 export async function searchAdTargeting(input: {
   dimension: string;
   q: string;

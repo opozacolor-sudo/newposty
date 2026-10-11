@@ -5,6 +5,7 @@ import {
   getPost,
   getTikTokCreatorInfo,
   getZernioAccount,
+  listAdAccounts,
   searchAdTargeting,
   ZernioError,
   type TikTokSettings,
@@ -29,6 +30,13 @@ function isZernioObjectId(value: string) {
   return /^[a-f0-9]{24}$/i.test(value);
 }
 
+function firstString(...values: unknown[]) {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
 function advertiserIdFromAccount(account: (ZernioAccount & Record<string, unknown>) | null) {
   if (!account) return null;
   const nested =
@@ -47,7 +55,17 @@ function advertiserIdFromAccount(account: (ZernioAccount & Record<string, unknow
   for (const value of candidates) {
     if (typeof value === "string" && value && !isZernioObjectId(value)) return value;
   }
-  return null;
+  return firstString(...candidates);
+}
+
+async function resolveAdvertiserId(adsAccountId: string) {
+  const listed = await listAdAccounts(adsAccountId).catch(() => []);
+  const selectable = listed.find((item) => item.selectable) ?? listed[0];
+  if (selectable?.id) return selectable.id;
+  const adsRemote = (await getZernioAccount(adsAccountId).catch(() => null)) as
+    | (ZernioAccount & Record<string, unknown>)
+    | null;
+  return advertiserIdFromAccount(adsRemote) || adsAccountId;
 }
 
 function adCopy(locale: string) {
@@ -231,9 +249,7 @@ export async function resolveTikTokAd(input: {
   const locations = (input.brief.locations ?? []).map((item) => item.trim()).filter(Boolean);
   const interests = (input.brief.interests ?? []).map((item) => item.trim()).filter(Boolean);
   const caption = (input.brief.caption ?? "").trim();
-  const adsRemote = (await getZernioAccount(ads.zernio_account_id).catch(() => null)) as
-    | (ZernioAccount & Record<string, unknown>)
-    | null;
+  const advertiserId = await resolveAdvertiserId(ads.zernio_account_id);
   const ad: ResolvedAd = {
     platform: "tiktokads",
     format: spark ? "spark" : "standalone",
@@ -249,7 +265,7 @@ export async function resolveTikTokAd(input: {
     tiktok_account_id: tiktok?.zernio_account_id ?? null,
     tiktok_handle: tiktok?.username ?? tiktok?.display_name ?? "TikTok",
     ads_account_id: ads.zernio_account_id,
-    platform_ad_account_id: advertiserIdFromAccount(adsRemote) ?? "",
+    platform_ad_account_id: advertiserId,
   };
   return {
     ok: true,
@@ -283,7 +299,8 @@ export async function executeTikTokAd(input: {
     ];
   }
   try {
-    const advertiser = ad.platform_ad_account_id || undefined;
+    const advertiser = ad.platform_ad_account_id;
+    const targetingAdvertiser = advertiser && !isZernioObjectId(advertiser) ? advertiser : undefined;
     const cities: Array<{ key: string; name: string }> = [];
     for (const location of ad.locations) {
       if (/ilfov/i.test(location)) continue;
@@ -292,7 +309,7 @@ export async function executeTikTokAd(input: {
         geoType: "city",
         queries: [location, foldChatText(location)],
         accountId: ad.ads_account_id,
-        adAccountId: advertiser,
+        adAccountId: targetingAdvertiser,
       });
       if (hit) cities.push(geoKey(hit));
     }
@@ -302,7 +319,7 @@ export async function executeTikTokAd(input: {
           geoType: "region",
           queries: ["Ilfov", "RO-IF"],
           accountId: ad.ads_account_id,
-          adAccountId: advertiser,
+          adAccountId: targetingAdvertiser,
         })
       : null;
     const interestHits: Array<{ id: string; name: string }> = [];
@@ -311,7 +328,7 @@ export async function executeTikTokAd(input: {
         dimension: "interest",
         queries: [interest],
         accountId: ad.ads_account_id,
-        adAccountId: advertiser,
+        adAccountId: targetingAdvertiser,
       });
       if (hit) interestHits.push(hit);
     }
@@ -343,13 +360,13 @@ export async function executeTikTokAd(input: {
       const boostBody: Record<string, unknown> = {
         postId: published._id,
         accountId: ad.tiktok_account_id,
+        adAccountId: advertiser,
         name: "Spark views",
         goal: ad.goal,
         budget: { amount: ad.budget_amount, type: "daily", currency: ad.budget_currency },
         schedule: { startDate: start.toISOString(), endDate: end.toISOString() },
         targeting,
       };
-      if (advertiser) boostBody.adAccountId = advertiser;
       let lastError: unknown = null;
       for (let attempt = 0; attempt < 5; attempt += 1) {
         try {
@@ -377,7 +394,7 @@ export async function executeTikTokAd(input: {
 
     await createStandaloneAd({
       accountId: ad.ads_account_id,
-      ...(advertiser ? { adAccountId: advertiser } : {}),
+      adAccountId: advertiser,
       name: "Video views",
       goal: ad.goal,
       budgetAmount: ad.budget_amount,
