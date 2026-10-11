@@ -41,6 +41,9 @@ export type FalVideoPending = {
   requestId: string;
   statusUrl: string;
   resultUrl: string;
+  userId?: string;
+  locale?: string;
+  siteUrl?: string | null;
 };
 
 export function parseVideoJob(value: unknown): FalVideoPending | null {
@@ -50,7 +53,14 @@ export function parseVideoJob(value: unknown): FalVideoPending | null {
   const statusUrl = typeof record.statusUrl === "string" ? record.statusUrl : typeof record.status_url === "string" ? record.status_url : "";
   const resultUrl = typeof record.resultUrl === "string" ? record.resultUrl : typeof record.response_url === "string" ? record.response_url : "";
   if (!requestId || !statusUrl || !resultUrl) return null;
-  return { requestId, statusUrl, resultUrl };
+  return {
+    requestId,
+    statusUrl,
+    resultUrl,
+    userId: typeof record.userId === "string" ? record.userId : undefined,
+    locale: typeof record.locale === "string" ? record.locale : undefined,
+    siteUrl: typeof record.siteUrl === "string" ? record.siteUrl : null,
+  };
 }
 
 export function videoRequestBody(prompt: string) {
@@ -119,14 +129,34 @@ async function waitForFalVideo(input: { statusUrl: string; resultUrl: string; ke
   throw new FalImageError("pending", "Video generation still running.");
 }
 
-export async function submitFalVideo(prompt: string): Promise<{ url: string } | { pending: FalVideoPending }> {
+export async function harvestFalVideo(pending: FalVideoPending): Promise<string | null> {
+  const key = getFalKey();
+  const statusRes = await falJson(pending.statusUrl, { headers: falHeaders(key) });
+  const status =
+    statusRes.payload && typeof statusRes.payload === "object" && "status" in statusRes.payload
+      ? String((statusRes.payload as { status: unknown }).status)
+      : "";
+  if (status === "FAILED") {
+    throw new FalImageError("failed", falDetail(statusRes.payload) || "Video generation failed.");
+  }
+  const result = await falJson(pending.resultUrl, { headers: falHeaders(key) });
+  return firstVideoUrl(result.payload);
+}
+
+export async function submitFalVideo(
+  prompt: string,
+  webhookUrl?: string,
+): Promise<{ url: string } | { pending: FalVideoPending }> {
   const key = getFalKey();
   const model = pickFalVideoModel();
   const body = videoRequestBody(prompt);
   if (body.duration !== 5) {
     throw new FalImageError("failed", "Video duration is locked to 5 seconds.");
   }
-  const queued = await falJson(`https://queue.fal.run/${model}`, {
+  const endpoint = webhookUrl
+    ? `https://queue.fal.run/${model}?fal_webhook=${encodeURIComponent(webhookUrl)}`
+    : `https://queue.fal.run/${model}`;
+  const queued = await falJson(endpoint, {
     method: "POST",
     headers: falHeaders(key),
     body: JSON.stringify(body),

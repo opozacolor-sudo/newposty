@@ -27,6 +27,7 @@ export type GeneratedVideoPayload = {
   type: "generated_video";
   media: ChatMedia;
   site_url?: string | null;
+  status?: "pending" | "ready" | "failed";
 };
 
 export type ToolPostAction = {

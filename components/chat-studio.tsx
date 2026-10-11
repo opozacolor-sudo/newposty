@@ -188,6 +188,60 @@ export default function ChatStudio() {
       });
   }, [locale]);
 
+  const hasPendingVideo = messages.some(
+    (message) => message.payload?.type === "generated_video" && message.payload.status === "pending",
+  );
+
+  useEffect(() => {
+    if (!hasPendingVideo || !conversationId) return;
+    let cancelled = false;
+    const timer = window.setInterval(() => {
+      void fetch(`/api/chat/video?conversationId=${encodeURIComponent(conversationId)}`)
+        .then((response) => response.json())
+        .then((body) => {
+          if (cancelled) return;
+          if (body?.failed) {
+            setMessages((current) =>
+              current.map((message) =>
+                message.payload?.type === "generated_video" && message.payload.status === "pending"
+                  ? {
+                      ...message,
+                      content: t("videoFailed"),
+                      payload: {
+                        type: "generated_video",
+                        status: "failed",
+                        media: { id: message.payload.media.id, url: "", type: "video" },
+                      },
+                    }
+                  : message,
+              ),
+            );
+            return;
+          }
+          const next = body?.payload as GeneratedVideoPayload | undefined;
+          if (!next?.media?.url) return;
+          const content = typeof body?.content === "string" ? body.content : null;
+          setMessages((current) =>
+            current.map((message) =>
+              message.payload?.type === "generated_video" && message.payload.status === "pending"
+                ? {
+                    ...message,
+                    kind: "generated_video",
+                    content: content || message.content,
+                    payload: next,
+                  }
+                : message,
+            ),
+          );
+        })
+        .catch(() => undefined);
+    }, 4000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [hasPendingVideo, conversationId, t]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pending]);
@@ -551,6 +605,16 @@ export default function ChatStudio() {
             message.kind === "results" &&
             message.payload?.type === "results" ? (
               <PostResultsMessage payload={message.payload} />
+            ) : null}
+            {message.role === "assistant" &&
+            message.payload?.type === "generated_video" &&
+            message.payload.status === "pending" ? (
+              <p className="mt-2 text-sm text-[#5c5652]">{t("videoRendering")}</p>
+            ) : null}
+            {message.role === "assistant" &&
+            message.payload?.type === "generated_video" &&
+            message.payload.status === "failed" ? (
+              <p className="mt-2 text-sm text-[#5c5652]">{t("videoFailed")}</p>
             ) : null}
             {message.role === "assistant" &&
             (message.payload?.type === "generated_poster" || message.payload?.type === "generated_video") &&

@@ -958,6 +958,8 @@
     "posterAsAd": "Paid ad",
     "posterWantPost": "Post this poster on every connected network at the best time.",
     "posterWantAd": "I want a paid ad with this poster. Ask me the network and budget — do not post yet.",
+    "videoRendering": "The 5-second clip is rendering. One job, already paid. Leave this chat open.",
+    "videoFailed": "That 5-second job failed. Say again what to film — only if you want a new clip.",
     "videoWantPost": "Post this clip on every connected network at the best time.",
     "videoWantAd": "I want a paid ad with this clip. Ask me the network and budget — do not post yet."
   }

@@ -958,6 +958,8 @@
     "posterAsAd": "Ads a pagamento",
     "posterWantPost": "Pubblica questo poster su tutte le reti collegate all’orario migliore.",
     "posterWantAd": "Voglio un ads a pagamento con questo poster. Chiedimi rete e budget — non pubblicare ancora.",
+    "videoRendering": "Il clip di 5 secondi è in rendering. Un solo job, già pagato. Lascia questa chat aperta.",
+    "videoFailed": "Il job di 5 secondi è fallito. Ripeti cosa filmare — solo se vuoi un nuovo clip.",
     "videoWantPost": "Pubblica questo clip su tutte le reti collegate all’orario migliore.",
     "videoWantAd": "Voglio un ads a pagamento con questo clip. Chiedimi rete e budget — non pubblicare ancora."
   }

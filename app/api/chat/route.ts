@@ -835,16 +835,22 @@ async function postChat(request: Request) {
             });
           } else {
             videoPayload = made.payload;
-            mediaById.set(made.payload.media.id, made.payload.media);
+            if (made.payload.media.url) {
+              mediaById.set(made.payload.media.id, made.payload.media);
+            }
             toolResults.push({
               type: "tool_result",
               tool_use_id: tool.id,
               content: JSON.stringify({
-                generated: true,
+                generated: made.payload.status !== "pending",
+                pending: made.payload.status === "pending",
                 media_id: made.payload.media.id,
                 url: made.payload.media.url,
                 site_url: made.payload.site_url,
-                next: "Ask organic post vs paid ad. Do not publish yet.",
+                next:
+                  made.payload.status === "pending"
+                    ? "The 5-second clip is rendering. Tell them to leave the chat open. Do not start another job. Do not say try again."
+                    : "Ask organic post vs paid ad. Do not publish yet.",
               }),
             });
           }
@@ -891,9 +897,13 @@ async function postChat(request: Request) {
             ? "Am făcut posterul. Vrei postare organică sau reclamă?"
             : "Here’s the poster. Organic post or paid ad?"
           : videoPayload
-            ? locale === "ro"
-              ? "Am făcut clipul. Vrei postare organică sau reclamă?"
-              : "Here’s the clip. Organic post or paid ad?"
+            ? videoPayload.status === "pending"
+              ? locale === "ro"
+                ? "Clipul de 5 secunde se face. Un singur job, deja plătit. Rămâne aici, nu mai trimite o dată."
+                : "The 5-second clip is rendering. One job, already paid. It will land here — do not send again."
+              : locale === "ro"
+                ? "Am făcut clipul. Vrei postare organică sau reclamă?"
+                : "Here’s the clip. Organic post or paid ad?"
             : locale === "ro"
               ? "Am notat, dar n-am avut ce adăuga."
               : "I drafted that, but had nothing else to add.";

@@ -958,6 +958,8 @@
     "posterAsAd": "Bezahlte Anzeige",
     "posterWantPost": "Dieses Poster auf allen verbundenen Netzwerken zur besten Zeit posten.",
     "posterWantAd": "Ich will eine bezahlte Anzeige mit diesem Poster. Frag mich nach Netzwerk und Budget — noch nicht posten.",
+    "videoRendering": "Der 5-Sekunden-Clip wird gerendert. Ein Job, bereits bezahlt. Lass diesen Chat offen.",
+    "videoFailed": "Der 5-Sekunden-Job ist fehlgeschlagen. Sag nochmal, was gefilmt werden soll — nur wenn du einen neuen Clip willst.",
     "videoWantPost": "Diesen Clip auf allen verbundenen Netzwerken zur besten Zeit posten.",
     "videoWantAd": "Ich will eine bezahlte Anzeige mit diesem Clip. Frag mich nach Netzwerk und Budget — noch nicht posten."
   }

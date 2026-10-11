@@ -958,6 +958,8 @@
     "posterAsAd": "Reclamă",
     "posterWantPost": "Postează posterul ăsta pe toate rețelele conectate, la cea mai bună oră.",
     "posterWantAd": "Vreau reclamă plătită cu posterul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă.",
+    "videoRendering": "Clipul de 5 secunde se face. Un job, deja plătit. Lasă chatul deschis.",
+    "videoFailed": "Jobul de 5 secunde a eșuat. Spune din nou ce vrei filmat — doar dacă vrei un clip nou.",
     "videoWantPost": "Postează clipul ăsta pe toate rețelele conectate, la cea mai bună oră.",
     "videoWantAd": "Vreau reclamă plătită cu clipul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă."
   }

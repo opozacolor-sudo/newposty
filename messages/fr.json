@@ -958,6 +958,8 @@
     "posterAsAd": "Pub payante",
     "posterWantPost": "Publie cette affiche sur tous les réseaux connectés à la meilleure heure.",
     "posterWantAd": "Je veux une pub payante avec cette affiche. Demande-moi le réseau et le budget — ne publie pas encore.",
+    "videoRendering": "Le clip de 5 secondes est en cours. Un seul job, déjà payé. Laisse cette conversation ouverte.",
+    "videoFailed": "Le job de 5 secondes a échoué. Redis ce qu’il faut filmer — seulement si tu veux un nouveau clip.",
     "videoWantPost": "Publie ce clip sur tous les réseaux connectés à la meilleure heure.",
     "videoWantAd": "Je veux une pub payante avec ce clip. Demande-moi le réseau et le budget — ne publie pas encore."
   }
