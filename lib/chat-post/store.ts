@@ -18,6 +18,10 @@ import type {
 const ACTION_TTL_MS = 2 * 60 * 60 * 1000;
 const INTENT_TTL_MS = 20 * 60 * 1000;
 
+function isConfirmKind(kind: string | null | undefined) {
+  return kind === "confirmation" || kind === "ad_confirmation";
+}
+
 export async function savePendingAction(input: {
   supabase: SupabaseClient;
   userId: string;
@@ -279,7 +283,7 @@ async function messagesForAction(input: {
     .from("messages")
     .select("id, kind, payload, conversation_id")
     .eq("user_id", input.userId)
-    .in("kind", ["confirmation", "results"]);
+    .in("kind", ["confirmation", "ad_confirmation", "results"]);
   return (data ?? []).filter((message) => {
     const payload = message.payload as { action_id?: string } | null;
     return payload?.action_id === input.actionId;
@@ -294,7 +298,7 @@ export async function dismissConfirmationMessages(input: {
 }) {
   const messages = await messagesForAction(input);
   for (const message of messages) {
-    if (message.kind !== "confirmation") continue;
+    if (!isConfirmKind(message.kind)) continue;
     await input.supabase
       .from("messages")
       .update({
@@ -318,7 +322,7 @@ export async function replaceConfirmationWithResults(input: {
   const allFailed = input.results.length > 0 && input.results.every((item) => item.status === "error");
   const messages = await messagesForAction(input);
   for (const message of messages) {
-    if (message.kind !== "confirmation") continue;
+    if (!isConfirmKind(message.kind)) continue;
     const payload = message.payload as Record<string, unknown> | null;
     await input.supabase
       .from("messages")
@@ -355,7 +359,7 @@ export async function hydrateConfirmationMessages(input: {
   messages: LoadedChatMessage[];
   locale?: string;
 }): Promise<LoadedChatMessage[]> {
-  const confirmations = input.messages.filter((message) => message.kind === "confirmation");
+  const confirmations = input.messages.filter((message) => isConfirmKind(message.kind));
   if (confirmations.length === 0) {
     return input.messages.map((message) => ({
       ...message,
@@ -387,7 +391,7 @@ export async function hydrateConfirmationMessages(input: {
   const next = [...input.messages];
   for (let index = 0; index < next.length; index += 1) {
     const message = next[index];
-    if (message.kind !== "confirmation") {
+    if (!isConfirmKind(message.kind)) {
       next[index] = {
         ...message,
         content: localizeCancelledContent(message.content, input.locale),
