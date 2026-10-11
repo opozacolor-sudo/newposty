@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import { captureDmWaitlist } from "@/lib/campaign/dm-waitlist";
 import { getZernioWebhookSecret } from "@/lib/env";
 import { scanLeadsForAccount } from "@/lib/leads/scan";
 
@@ -58,6 +59,14 @@ export async function POST(request: Request) {
   }
 
   if (!isIncomingEvent(payload)) return NextResponse.json({ ok: true, skipped: true });
+
+  try {
+    if (await captureDmWaitlist(payload)) {
+      return NextResponse.json({ ok: true, waitlist: true });
+    }
+  } catch {
+    return NextResponse.json({ error: "Waitlist capture failed" }, { status: 502 });
+  }
 
   const accountId = inboundAccountId(payload);
   if (!accountId) return NextResponse.json({ ok: true, skipped: true });
