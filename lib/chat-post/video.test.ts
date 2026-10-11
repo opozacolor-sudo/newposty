@@ -4,6 +4,7 @@ import {
   pickFalVideoModel,
   firstVideoUrl,
   falRequestId,
+  videoRequestBody,
   FAL_IMAGE_VIDEO_MODEL,
   FAL_TEXT_VIDEO_MODEL,
   VIDEO_DURATION_SEC,
@@ -24,6 +25,8 @@ test("H3 Max Turbo is always text-to-video, 480p and 5 seconds", () => {
   assert.equal(FAL_IMAGE_VIDEO_MODEL, "minimax/h3-max-turbo/image-to-video");
   assert.equal(VIDEO_RESOLUTION, "480P");
   assert.equal(VIDEO_DURATION_SEC, 5);
+  assert.equal(videoRequestBody("espresso").duration, 5);
+  assert.notEqual(videoRequestBody("espresso").duration, 25);
 });
 
 test("video prompt stays vertical and does not ask to animate an attached still", () => {

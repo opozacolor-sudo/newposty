@@ -1,5 +1,10 @@
 import { FalImageError } from "@/lib/fal-image";
-import { generateFalVideo } from "@/lib/fal-video";
+import {
+  parseVideoJob,
+  submitFalVideo,
+  waitFalVideo,
+  type FalVideoPending,
+} from "@/lib/fal-video";
 import { loadSiteBrief } from "@/lib/site-brief";
 import type { ChatMedia, GeneratedVideoPayload } from "@/lib/chat-post/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -93,9 +98,27 @@ export async function createGeneratedVideo(input: {
     hasImage: false,
   });
 
+  const { data: conversation } = await input.supabase
+    .from("conversations")
+    .select("video_job")
+    .eq("id", input.conversationId)
+    .maybeSingle();
+  const existing = parseVideoJob(conversation?.video_job);
+
   let remoteUrl: string;
   try {
-    remoteUrl = await generateFalVideo({ prompt });
+    if (existing) {
+      remoteUrl = await waitFalVideo(existing);
+    } else {
+      const started = await submitFalVideo(prompt);
+      if ("url" in started) {
+        remoteUrl = started.url;
+      } else {
+        await saveVideoJob(input.supabase, input.conversationId, started.pending);
+        remoteUrl = await waitFalVideo(started.pending);
+      }
+    }
+    await saveVideoJob(input.supabase, input.conversationId, null);
   } catch (error) {
     const missing = error instanceof Error && error.message === "MISSING_FAL_KEY";
     const code = error instanceof FalImageError ? error.code : null;
@@ -114,9 +137,13 @@ export async function createGeneratedVideo(input: {
             ? ro
               ? "Contul de generare n-are credit. Pune câțiva dolari pe el și reîncearcă."
               : "The image account has no credit. Add a few dollars and try again."
-            : ro
-              ? "Nu am putut genera clipul. Încearcă din nou peste un moment."
-              : "I could not generate the clip. Try again in a moment.",
+            : code === "pending"
+              ? ro
+                ? "Clipul de 5 secunde încă se renderizează. Nu mai trimite același mesaj — scrie doar „gata?”."
+                : "The 5-second clip is still rendering. Do not send the same request again — just write “ready?”."
+              : ro
+                ? "Nu am putut genera clipul de 5 secunde. Nu reporni jobul. Scrie „gata?” ca să luăm fișierul deja plătit."
+                : "I could not finish the 5-second clip. Do not start another job. Write “ready?” so we can collect the file already paid for.",
     };
   }
 
@@ -165,8 +192,27 @@ export async function createGeneratedVideo(input: {
       ok: false,
       error:
         input.locale === "ro"
-          ? "Am generat clipul, dar nu am putut să-l salvez. Încearcă din nou."
-          : "I generated the clip but could not save it. Try again.",
+          ? "Clipul de 5 secunde e gata la generator, dar nu l-am putut salva. Scrie „gata?” — nu pornim alt job."
+          : "The 5-second clip is ready at the generator, but I could not save it. Write “ready?” — we will not start another job.",
     };
   }
+}
+
+async function saveVideoJob(
+  supabase: SupabaseClient,
+  conversationId: string,
+  pending: FalVideoPending | null,
+) {
+  await supabase
+    .from("conversations")
+    .update({
+      video_job: pending
+        ? {
+            requestId: pending.requestId,
+            statusUrl: pending.statusUrl,
+            resultUrl: pending.resultUrl,
+          }
+        : null,
+    })
+    .eq("id", conversationId);
 }

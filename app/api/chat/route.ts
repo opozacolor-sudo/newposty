@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
 import { createGeneratedVideo } from "@/lib/chat-post/video";
+import { parseVideoJob } from "@/lib/fal-video";
 import { discoverCatalogProducts, parseCatalogRequest } from "@/lib/chat-post/catalog";
 import { firstPublicUrlInText } from "@/lib/site-brief";
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
@@ -273,7 +274,7 @@ async function postChat(request: Request) {
   const { data: conversation } = await applyClientScope(
     supabase
       .from("conversations")
-      .select("id, skip_confirmation, pending_intent, pending_intent_at")
+      .select("id, skip_confirmation, pending_intent, pending_intent_at, video_job")
       .eq("id", conversationId)
       .eq("user_id", user.id),
     workspace,
@@ -359,13 +360,16 @@ async function postChat(request: Request) {
   const timeZone = userTimezone(profile?.timezone as string | undefined);
 
   const posterEnabled = hasFalKey();
-  const generationKind = detectGenerationKind(text);
+  const resumeVideo = Boolean(parseVideoJob((conversation as { video_job?: unknown }).video_job));
+  const generationKind = resumeVideo ? "video" : detectGenerationKind(text);
   const generationHint =
-    posterEnabled && generationKind === "video"
-      ? "This message is VIDEO generation. Call generate_video now. Write a complete cinematic brief yourself (shot, motion, subject, mood) from what they said. Do not ask them for a prompt. Do not offer to film it or animate a still. Do not publish."
-      : posterEnabled && generationKind === "image"
-        ? "This message is IMAGE generation. Call generate_poster now. Put the full user text in brief. Do not publish."
-        : "";
+    posterEnabled && resumeVideo
+      ? "A 5-second video job is already paid and running for this chat. Call generate_video ONCE to collect that same file. Do not start a new clip. Do not change the brief."
+      : posterEnabled && generationKind === "video"
+        ? "This message is VIDEO generation. Call generate_video ONCE. Duration is locked to 5 seconds. Write a complete cinematic brief yourself. Do not ask them for a prompt. Do not offer to film it or animate a still. Do not publish. Never call generate_video a second time in this turn."
+        : posterEnabled && generationKind === "image"
+          ? "This message is IMAGE generation. Call generate_poster now. Put the full user text in brief. Do not publish."
+          : "";
   const planAccess = await planAccessForUser({
     userId: user.id,
     email: user.email,
@@ -780,6 +784,14 @@ async function postChat(request: Request) {
             });
           }
         } else if (tool.name === "generate_video") {
+          if (videoPayload) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              content: "Already generated this turn. Do not call generate_video again.",
+            });
+            continue;
+          }
           if (!posterEnabled) {
             toolResults.push({
               type: "tool_result",

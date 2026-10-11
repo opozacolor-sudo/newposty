@@ -17,7 +17,7 @@ export function falImageAspectRatio(size: FalImageSize) {
 type FalImage = { url?: string };
 
 export class FalImageError extends Error {
-  readonly code: "unauthorized" | "credits" | "failed";
+  readonly code: "unauthorized" | "credits" | "failed" | "pending";
   constructor(code: FalImageError["code"], message: string) {
     super(message);
     this.name = "FalImageError";

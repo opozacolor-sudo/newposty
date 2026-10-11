@@ -37,6 +37,33 @@ export function falRequestId(body: unknown): string {
   return "";
 }
 
+export type FalVideoPending = {
+  requestId: string;
+  statusUrl: string;
+  resultUrl: string;
+};
+
+export function parseVideoJob(value: unknown): FalVideoPending | null {
+  const record = asRecord(value);
+  if (!record) return null;
+  const requestId = falRequestId(record);
+  const statusUrl = typeof record.statusUrl === "string" ? record.statusUrl : typeof record.status_url === "string" ? record.status_url : "";
+  const resultUrl = typeof record.resultUrl === "string" ? record.resultUrl : typeof record.response_url === "string" ? record.response_url : "";
+  if (!requestId || !statusUrl || !resultUrl) return null;
+  return { requestId, statusUrl, resultUrl };
+}
+
+export function videoRequestBody(prompt: string) {
+  return {
+    prompt,
+    duration: VIDEO_DURATION_SEC,
+    resolution: VIDEO_RESOLUTION,
+    aspect_ratio: "9:16" as const,
+    enable_safety_checker: true,
+    prompt_expansion_mode: "disabled" as const,
+  };
+}
+
 export function pickFalVideoModel(_hasImage?: boolean) {
   return FAL_TEXT_VIDEO_MODEL;
 }
@@ -48,16 +75,6 @@ function falHeaders(key: string) {
   };
 }
 
-function videoBody(prompt: string) {
-  return {
-    prompt,
-    duration: VIDEO_DURATION_SEC,
-    resolution: VIDEO_RESOLUTION,
-    aspect_ratio: "9:16",
-    enable_safety_checker: true,
-    prompt_expansion_mode: "disabled",
-  };
-}
 
 async function falJson(url: string, init: RequestInit) {
   const response = await fetch(url, { ...init, signal: init.signal ?? AbortSignal.timeout(30_000) });
@@ -95,19 +112,24 @@ async function waitForFalVideo(input: { statusUrl: string; resultUrl: string; ke
       return url;
     }
   }
-  throw new FalImageError("failed", "Video generation timed out.");
+  const late = firstVideoUrl(
+    (await falJson(input.resultUrl, { headers: falHeaders(input.key) })).payload,
+  );
+  if (late) return late;
+  throw new FalImageError("pending", "Video generation still running.");
 }
 
-export async function generateFalVideo(input: {
-  prompt: string;
-  imageUrl?: string;
-}) {
+export async function submitFalVideo(prompt: string): Promise<{ url: string } | { pending: FalVideoPending }> {
   const key = getFalKey();
   const model = pickFalVideoModel();
+  const body = videoRequestBody(prompt);
+  if (body.duration !== 5) {
+    throw new FalImageError("failed", "Video duration is locked to 5 seconds.");
+  }
   const queued = await falJson(`https://queue.fal.run/${model}`, {
     method: "POST",
     headers: falHeaders(key),
-    body: JSON.stringify(videoBody(input.prompt)),
+    body: JSON.stringify(body),
     signal: AbortSignal.timeout(20_000),
   });
 
@@ -121,7 +143,7 @@ export async function generateFalVideo(input: {
   }
 
   const immediate = firstVideoUrl(queued.payload);
-  if (immediate) return immediate;
+  if (immediate) return { url: immediate };
 
   const record = asRecord(queued.payload);
   const requestId = falRequestId(queued.payload);
@@ -131,9 +153,28 @@ export async function generateFalVideo(input: {
   const resultUrl =
     (typeof record?.response_url === "string" && record.response_url) ||
     (requestId ? `https://queue.fal.run/${model}/requests/${requestId}` : "");
-  if (!statusUrl || !resultUrl) {
+  if (!statusUrl || !resultUrl || !requestId) {
     console.error("[video] fal returned no request id", Object.keys(record ?? {}));
     throw new FalImageError("failed", "Video generation returned no file.");
   }
-  return waitForFalVideo({ statusUrl, resultUrl, key });
+  return { pending: { requestId, statusUrl, resultUrl } };
+}
+
+export async function waitFalVideo(pending: FalVideoPending) {
+  return waitForFalVideo({
+    statusUrl: pending.statusUrl,
+    resultUrl: pending.resultUrl,
+    key: getFalKey(),
+  });
+}
+
+export async function generateFalVideo(input: {
+  prompt: string;
+  imageUrl?: string;
+  resume?: FalVideoPending | null;
+}) {
+  if (input.resume) return waitFalVideo(input.resume);
+  const started = await submitFalVideo(input.prompt);
+  if ("url" in started) return started.url;
+  return waitFalVideo(started.pending);
 }

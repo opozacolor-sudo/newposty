@@ -284,8 +284,8 @@ export function chatPostSystemPrompt(input: {
           "If they only named the job (reel / video / clip + a place or product), YOU write the cinematic brief: shot, camera move, subject, light, mood. Example: café Brasil + craving fresh coffee → close-up espresso pour, crema, steam to camera, slow push-in, warm wood counter. Call generate_video. Never ask them to write a prompt or to film.",
           "Read any public https site or product link (uite site-ul, uite produsul, link). Put a product page in product_url, a homepage in site_url. A URL alone is enough.",
           "Attached model / reference / product photos go in media_refs. Keep the real product. Do not invent a different one.",
-          "If they want a photo/poster/ad still, call generate_poster. If they want a video/reel/clip, call generate_video (always 480p, 5 seconds, text-to-video). Do NOT call create_social_post in the same turn. After the file exists, ask organic post vs paid ad.",
-          "If generate_video fails, one short sentence. Do not offer to animate a previous still, do not ask them to film, do not list numbered alternatives.",
+          "If they want a photo/poster/ad still, call generate_poster. If they want a video/reel/clip, call generate_video ONCE (always 480p, 5 seconds, text-to-video — duration is locked). Do NOT call generate_video twice. Do NOT call create_social_post in the same turn. After the file exists, ask organic post vs paid ad.",
+          "If generate_video is still rendering, tell them to wait and write “gata?” / “ready?”. Never start a second paid job. Never say try again if a clip was already billed.",
         ].join(" "),
     input.generationHint ?? "",
     input.posterEnabled === false
