@@ -207,7 +207,9 @@ function isRetryableBoost(error: unknown) {
 }
 
 function isWrongBoostAccount(error: unknown) {
-  return /not been published to this account/i.test(boostMessage(error));
+  return /not been published to this account|ads-only|no tiktok identity|sparkauthcode/i.test(
+    boostMessage(error),
+  );
 }
 
 export async function resolveTikTokAd(input: {
@@ -384,7 +386,7 @@ export async function executeTikTokAd(input: {
       const boostBody: Record<string, unknown> = {
         postId: ready.post._id,
         platformPostId: ready.itemId,
-        accountId: ad.ads_account_id,
+        accountId: ad.tiktok_account_id,
         adAccountId: advertiser,
         name: "Spark views",
         goal: ad.goal,
