@@ -274,7 +274,11 @@ export function adsListPlatform(platform: string) {
   if (platform === "tiktokads") return "tiktok";
   if (platform === "pinterestads") return "pinterest";
   if (platform === "xads") return "twitter";
-  return getAdsPlatform(platform)?.parentPlatform ?? platform;
+  const ads = getAdsPlatform(platform);
+  if (ads && "parentPlatform" in ads && typeof ads.parentPlatform === "string") {
+    return ads.parentPlatform;
+  }
+  return platform;
 }
 
 export function platformHasLimitedStats(id: string) {
