@@ -248,7 +248,15 @@
     "back": "Tutte le demo",
     "sayTitle": "Dì questo",
     "videoPhoto": "Foto",
-    "videoVideo": "Video"
+    "videoVideo": "Video",
+    "studioCtaTitle": "Provalo ora qui",
+    "tryConnections": "Apri Connessioni",
+    "tryChat": "Apri l’assistente",
+    "tryPosts": "Apri Post",
+    "tryAds": "Apri Ads",
+    "tryAnalytics": "Apri Analytics",
+    "tryInbox": "Apri Messaggi",
+    "tryLeads": "Apri Lead"
   },
   "About": {
     "title": "Chi siamo",

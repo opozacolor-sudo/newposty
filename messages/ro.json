@@ -248,7 +248,15 @@
     "back": "Toate demo-urile",
     "sayTitle": "Spui asta",
     "videoPhoto": "Poză",
-    "videoVideo": "Video"
+    "videoVideo": "Video",
+    "studioCtaTitle": "Acum încearcă aici",
+    "tryConnections": "Deschide Conexiuni",
+    "tryChat": "Deschide asistentul",
+    "tryPosts": "Deschide Postări",
+    "tryAds": "Deschide Promovări",
+    "tryAnalytics": "Deschide Statistici",
+    "tryInbox": "Deschide Mesaje",
+    "tryLeads": "Deschide Lead-uri"
   },
   "About": {
     "title": "Despre noi",

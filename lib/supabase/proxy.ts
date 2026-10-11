@@ -60,7 +60,9 @@ export async function updateSession(request: NextRequest, response: NextResponse
     path === "/accounts" ||
     path.startsWith("/accounts/") ||
     path === "/profile" ||
-    path.startsWith("/profile/");
+    path.startsWith("/profile/") ||
+    path === "/help" ||
+    path.startsWith("/help/");
 
   if (!user && isProtected) {
     const redirectUrl = request.nextUrl.clone();

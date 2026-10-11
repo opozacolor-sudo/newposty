@@ -1,5 +1,20 @@
 import { pickLocale, type AppLocale } from "@/lib/app-locale";
 
+export const PUBLIC_DEMO_PATH = "/demo";
+export const STUDIO_DEMO_PATH = "/help";
+
+export const DEMO_STUDIO_TRY = {
+  connect: { href: "/connections", labelKey: "tryConnections" },
+  "marketing-plan": { href: "/chat", labelKey: "tryChat" },
+  create: { href: "/chat", labelKey: "tryChat" },
+  publish: { href: "/posts", labelKey: "tryPosts" },
+  calendar: { href: "/posts", labelKey: "tryPosts" },
+  ads: { href: "/ads", labelKey: "tryAds" },
+  analytics: { href: "/analytics", labelKey: "tryAnalytics" },
+  inbox: { href: "/inbox", labelKey: "tryInbox" },
+  leads: { href: "/leads", labelKey: "tryLeads" },
+} as const;
+
 export const DEMO_SLUGS = [
   "connect",
   "marketing-plan",

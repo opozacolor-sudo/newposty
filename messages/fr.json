@@ -248,7 +248,15 @@
     "back": "Toutes les démos",
     "sayTitle": "Dis ça",
     "videoPhoto": "Photo",
-    "videoVideo": "Vidéo"
+    "videoVideo": "Vidéo",
+    "studioCtaTitle": "Essaie maintenant ici",
+    "tryConnections": "Ouvrir Connexions",
+    "tryChat": "Ouvrir l’assistant",
+    "tryPosts": "Ouvrir Posts",
+    "tryAds": "Ouvrir Pubs",
+    "tryAnalytics": "Ouvrir Analytics",
+    "tryInbox": "Ouvrir Messages",
+    "tryLeads": "Ouvrir Leads"
   },
   "About": {
     "title": "À propos",
