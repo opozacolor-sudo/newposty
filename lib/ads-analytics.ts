@@ -6,7 +6,7 @@ import {
   type AnalyticsCard,
   type AnalyticsKpi,
 } from "@/lib/analytics-shared";
-import { adsListPlatform } from "@/lib/platforms";
+import { adsListPlatform, adsQueryAccountIds } from "@/lib/platforms";
 import { getCampaignAnalytics, listAdCampaigns } from "@/lib/zernio";
 
 export type { AdsAccountAnalytics } from "@/lib/analytics-shared";
@@ -95,17 +95,33 @@ async function campaignsForRange(input: {
   platform: string;
   from: string;
   to: string;
+  connected?: Array<{ platform: string; accountId: string }>;
 }) {
-  const body = await swallow(() =>
-    listAdCampaigns({
-      accountId: input.accountId,
-      platform: adsListPlatform(input.platform),
-      fromDate: input.from,
-      toDate: input.to,
-      limit: 50,
-    }),
+  const accountIds = adsQueryAccountIds(input.accountId, input.platform, input.connected ?? []);
+  const bodies = await Promise.all(
+    accountIds.map((accountId) =>
+      swallow(() =>
+        listAdCampaigns({
+          accountId,
+          platform: adsListPlatform(input.platform),
+          fromDate: input.from,
+          toDate: input.to,
+          limit: 50,
+        }),
+      ),
+    ),
   );
-  return asCampaigns(body);
+  const seen = new Set<string>();
+  const merged: Record<string, unknown>[] = [];
+  for (const body of bodies) {
+    for (const campaign of asCampaigns(body)) {
+      const id = campaignId(campaign);
+      if (id && seen.has(id)) continue;
+      if (id) seen.add(id);
+      merged.push(campaign);
+    }
+  }
+  return merged;
 }
 
 export async function loadAdsOverviewCards(
@@ -116,6 +132,7 @@ export async function loadAdsOverviewCards(
     display_name: string | null;
     zernio_account_id: string;
   }>,
+  connected: Array<{ platform: string; accountId: string }> = [],
 ): Promise<AnalyticsCard[]> {
   const range = rangeFromPreset(30);
   const lists = await Promise.all(
@@ -125,6 +142,7 @@ export async function loadAdsOverviewCards(
         platform: account.platform,
         from: range.from,
         to: range.to,
+        connected,
       }),
     ),
   );
@@ -153,6 +171,7 @@ export async function loadAdsAccountAnalytics(input: {
   platform: string;
   from: string;
   to: string;
+  connected?: Array<{ platform: string; accountId: string }>;
 }): Promise<AdsAccountAnalytics> {
   const previous = previousEquivalentRange(input.from, input.to);
   const [currentCampaigns, previousCampaigns] = await Promise.all([

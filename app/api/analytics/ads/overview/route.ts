@@ -55,7 +55,15 @@ export async function GET() {
   }
 
   try {
-    const cards = await loadAdsOverviewCards(adsAccounts);
+    const cards = await loadAdsOverviewCards(
+      adsAccounts,
+      accounts
+        .filter((account) => typeof account.zernio_account_id === "string" && account.zernio_account_id)
+        .map((account) => ({
+          platform: String(account.platform),
+          accountId: account.zernio_account_id as string,
+        })),
+    );
     return NextResponse.json({ cards }, noStore);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Analytics failed";

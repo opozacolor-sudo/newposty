@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOwnedSocialAccount, getZernioProfileId } from "@/lib/account-server";
+import { getOwnedSocialAccount, getZernioProfileId, listActiveSocialAccounts } from "@/lib/account-server";
 import { loadAdsAccountAnalytics } from "@/lib/ads-analytics";
 import { isValidYmd, rangeFromPreset } from "@/lib/analytics-shared";
 import { isAdsPlatformId } from "@/lib/platforms";
@@ -44,11 +44,18 @@ export async function GET(request: Request) {
   }
 
   try {
+    const connected = (await listActiveSocialAccounts(user.id))
+      .filter((row) => typeof row.zernio_account_id === "string" && row.zernio_account_id)
+      .map((row) => ({
+        platform: String(row.platform),
+        accountId: row.zernio_account_id as string,
+      }));
     const analytics = await loadAdsAccountAnalytics({
       accountId: account.zernio_account_id,
       platform: String(account.platform),
       from,
       to,
+      connected,
     });
     return NextResponse.json(
       { from, to, ...analytics },

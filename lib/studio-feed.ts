@@ -8,7 +8,7 @@ import {
   sumDailyMetrics,
 } from "@/lib/analytics-parse";
 import { previousEquivalentRange } from "@/lib/analytics-shared";
-import { adsListPlatform, isAdsPlatformId, isPlatformId } from "@/lib/platforms";
+import { adsListPlatform, adsQueryAccountIds, isAdsPlatformId, isPlatformId } from "@/lib/platforms";
 import { ownsAccount, platformAccountId, scopeByAccountId, scopePosts } from "@/lib/studio-scope";
 import {
   ZernioError,
@@ -360,27 +360,47 @@ export async function loadScopedCampaigns(
   );
   if (targets.length === 0) return { rows: [] as CampaignRow[], error: null };
 
+  const connected = scope.accounts.map((account) => ({
+    platform: account.platform,
+    accountId: account.zernioAccountId,
+  }));
   const settled = await Promise.allSettled(
     targets.map(async (account) => {
-      const body = await listAdCampaigns({
-        accountId: account.zernioAccountId,
-        platform: adsListPlatform(account.platform),
-        fromDate: filters.fromDate || undefined,
-        toDate: filters.toDate || undefined,
-        limit: 50,
-      });
-      return { account, body };
+      const accountIds = adsQueryAccountIds(account.zernioAccountId, account.platform, connected);
+      const listed = await Promise.allSettled(
+        accountIds.map((accountId) =>
+          listAdCampaigns({
+            accountId,
+            platform: adsListPlatform(account.platform),
+            fromDate: filters.fromDate || undefined,
+            toDate: filters.toDate || undefined,
+            limit: 50,
+          }),
+        ),
+      );
+      const items: unknown[] = [];
+      let queryError: unknown = null;
+      for (const result of listed) {
+        if (result.status === "rejected") {
+          queryError ??= result.reason;
+          continue;
+        }
+        items.push(...campaignList(result.value));
+      }
+      if (items.length === 0 && queryError) throw queryError;
+      return { account, items };
     }),
   );
 
   const rows: CampaignRow[] = [];
+  const seen = new Set<string>();
   let error: "failed" | "unavailable" | null = null;
   for (const result of settled) {
     if (result.status === "rejected") {
       error ??= feedErrorKind(result.reason);
       continue;
     }
-    for (const item of campaignList(result.value.body)) {
+    for (const item of result.value.items) {
       const campaign = asRecord(item);
       if (!campaign) continue;
       const foreign = platformAccountId(campaign.accountId);
@@ -393,11 +413,16 @@ export async function loadScopedCampaigns(
       }
       const metrics = asRecord(campaign.metrics) ?? campaign;
       const status = String(campaign.status ?? "");
-      const active = /active|enabled|running|live/i.test(status);
+      const active = /active|enabled|running|live|pending|review/i.test(status);
       if (filters.status === "active" && !active) continue;
       if (filters.status === "past" && active) continue;
+      const id = String(
+        campaign.id ?? campaign.campaignId ?? campaign.platformCampaignId ?? campaign._id ?? "",
+      );
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
       rows.push({
-        id: String(campaign.id ?? campaign.campaignId ?? campaign._id ?? ""),
+        id,
         name: String(campaign.name ?? campaign.campaignName ?? "—"),
         status,
         platform: result.value.account.platform,

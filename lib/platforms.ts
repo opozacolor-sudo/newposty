@@ -281,6 +281,20 @@ export function adsListPlatform(platform: string) {
   return platform;
 }
 
+/** Spark / boost campaigns live on the posting account, not the ads-only connection. */
+export function adsQueryAccountIds(
+  adsAccountId: string,
+  adsPlatform: string,
+  connected: Array<{ platform: string; accountId: string }>,
+) {
+  const parent = adsListPlatform(adsPlatform);
+  const ids = new Set<string>([adsAccountId]);
+  for (const account of connected) {
+    if (account.platform === parent && account.accountId) ids.add(account.accountId);
+  }
+  return [...ids];
+}
+
 export function platformHasLimitedStats(id: string) {
   return PLATFORMS.find((platform) => platform.id === id)?.stats === "limited";
 }
