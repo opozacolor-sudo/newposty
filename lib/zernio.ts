@@ -109,6 +109,14 @@ export type ZernioPost = {
     platform: string;
     status?: string;
     platformPostUrl?: string;
+    platformPostId?: string;
+    publishedUrl?: string;
+    url?: string;
+    permalink?: string;
+    shareUrl?: string;
+    postUrl?: string;
+    platformId?: string;
+    tiktokItemId?: string;
     error?: string | null;
     errorMessage?: string | null;
     errorCategory?: string | null;

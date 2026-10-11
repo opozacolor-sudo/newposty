@@ -12,7 +12,7 @@ import {
   type ZernioAccount,
   type ZernioPost,
 } from "@/lib/zernio";
-import { foldChatText, geoKey } from "@/lib/chat-post/ad-confirm";
+import { foldChatText, geoKey, tiktokItemIdFromPost } from "@/lib/chat-post/ad-confirm";
 import { humanZernioError } from "@/lib/zernio-error-messages";
 import { classifyPublishOutcome, platformErrorText, platformPublicUrl } from "@/lib/chat-post/publish-status";
 import type { ChatMedia, ConnectedAccount, PlatformExecResult, ResolvedAction, ResolvedAd } from "@/lib/chat-post/types";
@@ -175,6 +175,17 @@ async function waitUntilPublished(post: ZernioPost, locale: string): Promise<Zer
         }) || adCopy(locale).noPost,
       );
     }
+    await sleep(3000);
+    current = await getPost(current._id);
+  }
+  throw new Error(adCopy(locale).wait);
+}
+
+async function waitUntilTikTokItemId(post: ZernioPost, locale: string): Promise<{ post: ZernioPost; itemId: string }> {
+  let current = await waitUntilPublished(post, locale);
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const itemId = tiktokItemIdFromPost(current);
+    if (itemId) return { post: current, itemId };
     await sleep(3000);
     current = await getPost(current._id);
   }
@@ -356,9 +367,9 @@ export async function executeTikTokAd(input: {
       if (!created?._id) {
         throw new Error(copy.noPost);
       }
-      const published = await waitUntilPublished(created, input.locale);
+      const ready = await waitUntilTikTokItemId(created, input.locale);
       const boostBody: Record<string, unknown> = {
-        postId: published._id,
+        platformPostId: ready.itemId,
         accountId: ad.tiktok_account_id,
         adAccountId: advertiser,
         name: "Spark views",
@@ -385,8 +396,8 @@ export async function executeTikTokAd(input: {
           platform: "tiktokads",
           handle: ad.tiktok_handle,
           status: "success",
-          post_url: platformPublicUrl(published.platforms?.[0] ?? null),
-          zernio_post_id: published._id,
+          post_url: platformPublicUrl(ready.post.platforms?.[0] ?? null),
+          zernio_post_id: ready.post._id,
           error_message_human: null,
         },
       ];

@@ -84,6 +84,7 @@ function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
   if (lower.includes("permission")) return "permissions_missing";
   if (lower.includes("not found")) return "post_not_found";
   if (lower.includes("not been published") || lower.includes("not published")) return "unpublished_post";
+  if (lower.includes("tiktok_item_id") || lower.includes("not a valid integer")) return "platform_api_error";
   return null;
 }
 

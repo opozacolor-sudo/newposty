@@ -15,3 +15,42 @@ export function isAdConfirmReply(text: string) {
 export function geoKey(hit: { id: string; name: string }) {
   return { key: hit.id, name: hit.name };
 }
+
+export function numericTikTokItemId(value: unknown): string | null {
+  if (typeof value !== "string" && typeof value !== "number") return null;
+  const text = String(value);
+  const fromUrl = text.match(/\/video\/(\d{10,})/i);
+  if (fromUrl) return fromUrl[1];
+  const fromIdentity = text.match(/(?:v_pub_url~v2\.|item[_-]?id[=:]?)(\d{10,})/i);
+  if (fromIdentity) return fromIdentity[1];
+  const digits = text.match(/(\d{15,})/);
+  if (digits) return digits[1];
+  if (/^\d{10,}$/.test(text.trim())) return text.trim();
+  return null;
+}
+
+export function tiktokItemIdFromPost(post: {
+  platforms?: Array<Record<string, unknown> | undefined> | null;
+}): string | null {
+  const entry =
+    post.platforms?.find((item) => item && item.platform === "tiktok") ?? post.platforms?.[0] ?? null;
+  if (!entry) return null;
+  const candidates = [
+    entry.platformPostId,
+    entry.tiktokItemId,
+    entry.platformId,
+    entry.publishedUrl,
+    entry.platformPostUrl,
+    entry.url,
+    entry.permalink,
+    entry.shareUrl,
+    entry.postUrl,
+    entry.identity,
+    entry.publishId,
+  ];
+  for (const value of candidates) {
+    const id = numericTikTokItemId(value);
+    if (id) return id;
+  }
+  return null;
+}
