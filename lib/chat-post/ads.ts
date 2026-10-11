@@ -1,14 +1,171 @@
-import { boostAd, createPost, createStandaloneAd, getZernioAccount, searchAdTargeting } from "@/lib/zernio";
+import {
+  boostAd,
+  createPost,
+  createStandaloneAd,
+  getPost,
+  getTikTokCreatorInfo,
+  getZernioAccount,
+  searchAdTargeting,
+  ZernioError,
+  type TikTokSettings,
+  type ZernioAccount,
+  type ZernioPost,
+} from "@/lib/zernio";
+import { foldChatText, geoKey } from "@/lib/chat-post/ad-confirm";
 import { humanZernioError } from "@/lib/zernio-error-messages";
-import { ZernioError } from "@/lib/zernio";
+import { classifyPublishOutcome, platformErrorText, platformPublicUrl } from "@/lib/chat-post/publish-status";
 import type { ChatMedia, ConnectedAccount, PlatformExecResult, ResolvedAction, ResolvedAd } from "@/lib/chat-post/types";
 
-async function firstTarget(dimension: string, queries: string[]) {
-  for (const q of queries) {
-    const hits = await searchAdTargeting({ dimension, q, platform: "tiktok" }).catch(() => []);
+const DEFAULT_TIKTOK_SETTINGS: TikTokSettings = {
+  privacy_level: "PUBLIC_TO_EVERYONE",
+  allow_comment: true,
+  allow_duet: true,
+  allow_stitch: true,
+  content_preview_confirmed: true,
+  express_consent_given: true,
+};
+
+function isZernioObjectId(value: string) {
+  return /^[a-f0-9]{24}$/i.test(value);
+}
+
+function advertiserIdFromAccount(account: (ZernioAccount & Record<string, unknown>) | null) {
+  if (!account) return null;
+  const nested =
+    account.metadata && typeof account.metadata === "object"
+      ? (account.metadata as Record<string, unknown>)
+      : {};
+  const candidates = [
+    account.platformAdAccountId,
+    account.advertiserId,
+    account.adAccountId,
+    nested.advertiserId,
+    nested.advertiser_id,
+    nested.platformAdAccountId,
+    account.platformUserId,
+  ];
+  for (const value of candidates) {
+    if (typeof value === "string" && value && !isZernioObjectId(value)) return value;
+  }
+  return null;
+}
+
+function adCopy(locale: string) {
+  const table: Record<string, Record<string, string>> = {
+    en: {
+      missing: "The ad brief is missing.",
+      failed: "The ad did not start.",
+      wait: "TikTok is still publishing the video. Wait a minute, then start the ad again.",
+      noPost: "TikTok did not accept the video.",
+    },
+    ro: {
+      missing: "Lipsește brief-ul de reclamă.",
+      failed: "Reclama nu a pornit.",
+      wait: "TikTok încă publică videoul. Așteaptă un minut, apoi pornește reclama din nou.",
+      noPost: "TikTok nu a acceptat videoul.",
+    },
+    de: {
+      missing: "Das Anzeigenbriefing fehlt.",
+      failed: "Die Anzeige ist nicht gestartet.",
+      wait: "TikTok veröffentlicht das Video noch. Warte eine Minute und starte die Anzeige erneut.",
+      noPost: "TikTok hat das Video nicht angenommen.",
+    },
+    it: {
+      missing: "Manca il brief dell’ads.",
+      failed: "L’ads non è partita.",
+      wait: "TikTok sta ancora pubblicando il video. Aspetta un minuto e poi avvia di nuovo l’ads.",
+      noPost: "TikTok non ha accettato il video.",
+    },
+    fr: {
+      missing: "Le brief de la pub manque.",
+      failed: "La pub n’a pas démarré.",
+      wait: "TikTok publie encore la vidéo. Attends une minute, puis relance la pub.",
+      noPost: "TikTok n’a pas accepté la vidéo.",
+    },
+    es: {
+      missing: "Falta el brief del anuncio.",
+      failed: "El anuncio no arrancó.",
+      wait: "TikTok sigue publicando el vídeo. Espera un minuto y vuelve a lanzar el anuncio.",
+      noPost: "TikTok no aceptó el vídeo.",
+    },
+  };
+  return table[locale] ?? table.en;
+}
+
+async function firstTarget(input: {
+  dimension: "geo" | "interest";
+  queries: string[];
+  geoType?: "city" | "region";
+  accountId: string;
+  adAccountId?: string;
+}) {
+  for (const q of input.queries) {
+    const hits = await searchAdTargeting({
+      dimension: input.dimension,
+      q,
+      platform: "tiktok",
+      accountId: input.accountId,
+      adAccountId: input.adAccountId,
+      geoType: input.geoType,
+      countryCode: "RO",
+    }).catch(() => []);
     if (hits[0]) return hits[0];
   }
   return null;
+}
+
+async function tiktokSettingsFor(accountId: string): Promise<TikTokSettings> {
+  try {
+    const info = await getTikTokCreatorInfo(accountId, "video");
+    const levels = (info.privacyLevels ?? [])
+      .map((level) => (typeof level === "string" ? level : level.value))
+      .filter((value): value is string => Boolean(value));
+    const interactions = info.postingLimits?.interactionSettings;
+    return {
+      ...DEFAULT_TIKTOK_SETTINGS,
+      privacy_level:
+        levels.find((level) => level === "PUBLIC_TO_EVERYONE") ??
+        levels[0] ??
+        DEFAULT_TIKTOK_SETTINGS.privacy_level,
+      allow_comment: interactions?.comment ?? !info.postingLimits?.commentDisabled,
+      allow_duet: interactions?.duet ?? !info.postingLimits?.duetDisabled,
+      allow_stitch: interactions?.stitch ?? !info.postingLimits?.stitchDisabled,
+    };
+  } catch {
+    return DEFAULT_TIKTOK_SETTINGS;
+  }
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitUntilPublished(post: ZernioPost, locale: string): Promise<ZernioPost> {
+  let current = post;
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const outcome = classifyPublishOutcome({
+      post: current,
+      platform: "tiktok",
+      mode: "publish_now",
+    });
+    if (outcome === "success") return current;
+    if (outcome === "error") {
+      throw new Error(
+        humanZernioError({
+          message: platformErrorText(current, "tiktok"),
+          locale,
+        }) || adCopy(locale).noPost,
+      );
+    }
+    await sleep(3000);
+    current = await getPost(current._id);
+  }
+  throw new Error(adCopy(locale).wait);
+}
+
+function isUnpublishedBoost(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  return /not been published|not published/i.test(message);
 }
 
 export async function resolveTikTokAd(input: {
@@ -74,9 +231,9 @@ export async function resolveTikTokAd(input: {
   const locations = (input.brief.locations ?? []).map((item) => item.trim()).filter(Boolean);
   const interests = (input.brief.interests ?? []).map((item) => item.trim()).filter(Boolean);
   const caption = (input.brief.caption ?? "").trim();
-  const adsRemote = await getZernioAccount(ads.zernio_account_id).catch(() => null);
-  const platformAdAccountId =
-    adsRemote?.platformAdAccountId || adsRemote?.platformUserId || ads.zernio_account_id;
+  const adsRemote = (await getZernioAccount(ads.zernio_account_id).catch(() => null)) as
+    | (ZernioAccount & Record<string, unknown>)
+    | null;
   const ad: ResolvedAd = {
     platform: "tiktokads",
     format: spark ? "spark" : "standalone",
@@ -92,7 +249,7 @@ export async function resolveTikTokAd(input: {
     tiktok_account_id: tiktok?.zernio_account_id ?? null,
     tiktok_handle: tiktok?.username ?? tiktok?.display_name ?? "TikTok",
     ads_account_id: ads.zernio_account_id,
-    platform_ad_account_id: platformAdAccountId,
+    platform_ad_account_id: advertiserIdFromAccount(adsRemote) ?? "",
   };
   return {
     ok: true,
@@ -114,28 +271,48 @@ export async function executeTikTokAd(input: {
   locale: string;
 }): Promise<PlatformExecResult[]> {
   const ad = input.resolved.ad;
-  const ro = input.locale === "ro";
+  const copy = adCopy(input.locale);
   if (!ad) {
     return [
       {
         platform: "tiktokads",
         handle: "TikTok Ads",
         status: "error",
-        error_message_human: ro ? "Lipsește brief-ul de reclamă." : "The ad brief is missing.",
+        error_message_human: copy.missing,
       },
     ];
   }
   try {
-    const cities: Array<{ id: string; name: string }> = [];
+    const advertiser = ad.platform_ad_account_id || undefined;
+    const cities: Array<{ key: string; name: string }> = [];
     for (const location of ad.locations) {
-      const hit = await firstTarget("city", [location, location.replace("ș", "s").replace("ă", "a")]);
-      if (hit) cities.push(hit);
+      if (/ilfov/i.test(location)) continue;
+      const hit = await firstTarget({
+        dimension: "geo",
+        geoType: "city",
+        queries: [location, foldChatText(location)],
+        accountId: ad.ads_account_id,
+        adAccountId: advertiser,
+      });
+      if (hit) cities.push(geoKey(hit));
     }
-    const region =
-      ad.locations.some((item) => /ilfov/i.test(item)) && (await firstTarget("region", ["Ilfov", "RO-IF"]));
+    const regionHit = ad.locations.some((item) => /ilfov/i.test(item))
+      ? await firstTarget({
+          dimension: "geo",
+          geoType: "region",
+          queries: ["Ilfov", "RO-IF"],
+          accountId: ad.ads_account_id,
+          adAccountId: advertiser,
+        })
+      : null;
     const interestHits: Array<{ id: string; name: string }> = [];
     for (const interest of ad.interests) {
-      const hit = await firstTarget("interest", [interest]);
+      const hit = await firstTarget({
+        dimension: "interest",
+        queries: [interest],
+        accountId: ad.ads_account_id,
+        adAccountId: advertiser,
+      });
       if (hit) interestHits.push(hit);
     }
     const start = new Date();
@@ -143,54 +320,82 @@ export async function executeTikTokAd(input: {
     const targeting = {
       countries: ["RO"],
       ...(cities.length ? { cities } : {}),
-      ...(region ? { regions: [region] } : {}),
+      ...(regionHit ? { regions: [geoKey(regionHit)] } : {}),
       ...(interestHits.length ? { interests: interestHits } : {}),
     };
-    let postId: string | null = null;
-    if (ad.format === "spark" && ad.tiktok_account_id) {
-      const post = await createPost({
+
+    if (ad.format === "spark") {
+      if (!ad.tiktok_account_id) {
+        throw new Error(copy.failed);
+      }
+      const created = await createPost({
         content: ad.caption || " ",
         publishNow: true,
         timezone: input.resolved.timezone,
         platforms: [{ platform: "tiktok", accountId: ad.tiktok_account_id }],
-        mediaItems: ad.media.map((item) => ({ url: item.url, type: item.type, title: item.name ?? undefined })),
+        mediaItems: ad.media.map((item) => ({ url: item.url, type: item.type })),
+        tiktokSettings: await tiktokSettingsFor(ad.tiktok_account_id),
       });
-      postId = post._id;
-    }
-    if (ad.format === "spark" && postId) {
-      await boostAd({
-        postId,
+      if (!created?._id) {
+        throw new Error(copy.noPost);
+      }
+      const published = await waitUntilPublished(created, input.locale);
+      const boostBody: Record<string, unknown> = {
+        postId: published._id,
         accountId: ad.tiktok_account_id,
-        adAccountId: ad.platform_ad_account_id,
         name: "Spark views",
         goal: ad.goal,
-        budget: { amount: ad.budget_amount, type: "daily" },
+        budget: { amount: ad.budget_amount, type: "daily", currency: ad.budget_currency },
         schedule: { startDate: start.toISOString(), endDate: end.toISOString() },
         targeting,
-      });
-    } else {
-      await createStandaloneAd({
-        accountId: ad.ads_account_id,
-        adAccountId: ad.platform_ad_account_id,
-        name: "Video views",
-        goal: ad.goal,
-        budgetAmount: ad.budget_amount,
-        budgetType: "daily",
-        body: ad.caption || " ",
-        imageUrl: ad.media[0]?.url,
-        countries: ["RO"],
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
-        targeting,
-      });
+      };
+      if (advertiser) boostBody.adAccountId = advertiser;
+      let lastError: unknown = null;
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        try {
+          await boostAd(boostBody);
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          if (!isUnpublishedBoost(error) || attempt === 4) throw error;
+          await sleep(8000);
+        }
+      }
+      if (lastError) throw lastError;
+      return [
+        {
+          platform: "tiktokads",
+          handle: ad.tiktok_handle,
+          status: "success",
+          post_url: platformPublicUrl(published.platforms?.[0] ?? null),
+          zernio_post_id: published._id,
+          error_message_human: null,
+        },
+      ];
     }
+
+    await createStandaloneAd({
+      accountId: ad.ads_account_id,
+      ...(advertiser ? { adAccountId: advertiser } : {}),
+      name: "Video views",
+      goal: ad.goal,
+      budgetAmount: ad.budget_amount,
+      budgetType: "daily",
+      body: ad.caption || " ",
+      imageUrl: ad.media[0]?.url,
+      countries: ["RO"],
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+      targeting,
+    });
     return [
       {
         platform: "tiktokads",
         handle: ad.tiktok_handle,
         status: "success",
         post_url: null,
-        zernio_post_id: postId,
+        zernio_post_id: null,
         error_message_human: null,
       },
     ];
@@ -200,9 +405,7 @@ export async function executeTikTokAd(input: {
         ? humanZernioError({ code: error.code, message: error.message, locale: input.locale })
         : error instanceof Error
           ? error.message
-          : ro
-            ? "Reclama nu a pornit."
-            : "The ad did not start.";
+          : copy.failed;
     return [
       {
         platform: "tiktokads",

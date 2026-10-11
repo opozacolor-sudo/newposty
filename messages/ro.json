@@ -964,6 +964,7 @@
     "videoWantAd": "Vreau reclamă plătită cu clipul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă.",
     "adConfirmTitle": "Campanie plătită TikTok",
     "adConfirmSpend": "Asta cheltuie bugetul pe care l-ai spus. Confirmă doar dacă asta vrei.",
+    "adConfirmHint": "Apasă butonul negru de mai jos. Nu scrie confirm în chat.",
     "adConfirmButton": "Pornește reclama",
     "adWorking": "Pornește…",
     "adFailed": "Reclama nu a pornit."

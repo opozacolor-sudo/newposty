@@ -24,6 +24,7 @@ import type {
   ResultsPayload,
   UserMediaPayload,
 } from "@/lib/chat-post/types";
+import { isAdConfirmReply } from "@/lib/chat-post/ad-confirm";
 import { localizeCancelledContent, resultsReply } from "@/lib/chat-post/copy";
 import { MAX_CHAT_ATTACHMENTS } from "@/lib/chat-post/series";
 import { composeSpeechTranscript, isAndroidSpeech } from "@/lib/chat-post/speech";
@@ -299,7 +300,43 @@ export default function ChatStudio() {
         payload: media.length > 0 ? { type: "user_media", media } : null,
       },
     ]);
+    const pendingAd = [...messages]
+      .reverse()
+      .find((item) => item.payload?.type === "ad_confirmation")?.payload;
     try {
+      if (pendingAd?.type === "ad_confirmation" && isAdConfirmReply(text) && media.length === 0) {
+        const response = await fetch("/api/posts/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action_id: pendingAd.action_id, locale }),
+          signal: AbortSignal.timeout(280_000),
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setError((body as { error?: string }).error ?? t("adFailed"));
+          return;
+        }
+        const results = (body as { results?: ResultsPayload["results"] }).results ?? [];
+        setMessages((current) =>
+          current.map((item) =>
+            item.payload?.type === "ad_confirmation" &&
+            item.payload.action_id === pendingAd.action_id
+              ? {
+                  ...item,
+                  kind: "results",
+                  payload: {
+                    type: "results",
+                    action_id: pendingAd.action_id,
+                    results,
+                    allFailed: Boolean((body as { allFailed?: boolean }).allFailed),
+                  },
+                  content: resultsReply(locale, results),
+                }
+              : item,
+          ),
+        );
+        return;
+      }
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

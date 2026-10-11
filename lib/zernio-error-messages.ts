@@ -1,4 +1,4 @@
-const ERROR_MESSAGES: Record<string, { en: string; ro: string }> = {
+const ERROR_MESSAGES: Record<string, { en: string; ro: string } & Record<string, string | undefined>> = {
   ACCOUNT_DISCONNECTED: {
     en: "This account is disconnected. Reconnect it from Accounts, then try again.",
     ro: "Contul e deconectat. Reconectează-l din Conturi, apoi încearcă din nou.",
@@ -59,6 +59,14 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string }> = {
     en: "This account is missing the permissions needed to post. Reconnect it from Accounts.",
     ro: "Contului îi lipsesc permisiunile de postare. Reconectează-l din Conturi.",
   },
+  unpublished_post: {
+    en: "TikTok is still publishing the video. Wait a minute, then start the ad again.",
+    ro: "TikTok încă publică videoul. Așteaptă un minut, apoi pornește reclama din nou.",
+    de: "TikTok veröffentlicht das Video noch. Warte eine Minute und starte die Anzeige erneut.",
+    it: "TikTok sta ancora pubblicando il video. Aspetta un minuto e poi avvia di nuovo l’ads.",
+    fr: "TikTok publie encore la vidéo. Attends une minute, puis relance la pub.",
+    es: "TikTok sigue publicando el vídeo. Espera un minuto y vuelve a lanzar el anuncio.",
+  },
 };
 
 function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
@@ -75,6 +83,7 @@ function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
   }
   if (lower.includes("permission")) return "permissions_missing";
   if (lower.includes("not found")) return "post_not_found";
+  if (lower.includes("not been published") || lower.includes("not published")) return "unpublished_post";
   return null;
 }
 
@@ -83,14 +92,18 @@ export function humanZernioError(input: {
   message?: string | null;
   locale?: string;
 }): string {
-  const locale = input.locale === "ro" ? "ro" : "en";
+  const locale = input.locale ?? "en";
   const code = input.code?.trim();
-  if (code && ERROR_MESSAGES[code]) return ERROR_MESSAGES[code][locale];
+  if (code && ERROR_MESSAGES[code]) return pickError(ERROR_MESSAGES[code], locale);
   const compact = code?.replace(/[_-]/g, "").toLowerCase();
-  if (compact && ERROR_MESSAGES[compact]) return ERROR_MESSAGES[compact][locale];
+  if (compact && ERROR_MESSAGES[compact]) return pickError(ERROR_MESSAGES[compact], locale);
   const mapped = fromText(input.message ?? "");
-  if (mapped) return ERROR_MESSAGES[mapped][locale];
+  if (mapped) return pickError(ERROR_MESSAGES[mapped], locale);
   return locale === "ro"
     ? "Postarea nu a putut fi trimisă pe această platformă."
     : "The post could not be sent to this platform.";
+}
+
+function pickError(messages: { en: string; ro: string } & Record<string, string | undefined>, locale: string) {
+  return messages[locale] ?? (locale === "ro" ? messages.ro : messages.en);
 }

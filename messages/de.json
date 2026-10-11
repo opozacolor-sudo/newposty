@@ -964,6 +964,7 @@
     "videoWantAd": "Ich will eine bezahlte Anzeige mit diesem Clip. Frag mich nach Netzwerk und Budget — noch nicht posten.",
     "adConfirmTitle": "Bezahlte TikTok-Kampagne",
     "adConfirmSpend": "Das gibt das genannte Budget aus. Bestätige nur, wenn du das willst.",
+    "adConfirmHint": "Drücke den schwarzen Button unten. Schreib nicht „confirm“ in den Chat.",
     "adConfirmButton": "Anzeige starten",
     "adWorking": "Startet…",
     "adFailed": "Die Anzeige ist nicht gestartet."

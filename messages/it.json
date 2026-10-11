@@ -964,6 +964,7 @@
     "videoWantAd": "Voglio un ads a pagamento con questo clip. Chiedimi rete e budget — non pubblicare ancora.",
     "adConfirmTitle": "Campagna TikTok a pagamento",
     "adConfirmSpend": "Questo spende il budget che hai detto. Conferma solo se è quello che vuoi.",
+    "adConfirmHint": "Premi il pulsante nero qui sotto. Non scrivere confirm in chat.",
     "adConfirmButton": "Avvia l’ads",
     "adWorking": "Avvio…",
     "adFailed": "L’ads non è partita."

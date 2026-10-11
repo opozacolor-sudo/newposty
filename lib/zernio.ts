@@ -639,12 +639,24 @@ export async function getZernioAccount(accountId: string) {
   return account;
 }
 
-export async function searchAdTargeting(input: { dimension: string; q: string; platform?: string }) {
+export async function searchAdTargeting(input: {
+  dimension: string;
+  q: string;
+  platform?: string;
+  accountId?: string;
+  adAccountId?: string;
+  geoType?: string;
+  countryCode?: string;
+}) {
   const data = await zernioFetch<unknown>(
     withQuery("/ads/targeting/search", {
       dimension: input.dimension,
       q: input.q,
       platform: input.platform ?? "tiktok",
+      accountId: input.accountId,
+      adAccountId: input.adAccountId,
+      geoType: input.geoType,
+      countryCode: input.countryCode,
     }),
   );
   const record = data && typeof data === "object" ? (data as Record<string, unknown>) : null;
@@ -661,7 +673,7 @@ export async function searchAdTargeting(input: { dimension: string; q: string; p
     .map((item) => {
       if (!item || typeof item !== "object") return null;
       const row = item as Record<string, unknown>;
-      const id = String(row.id ?? row.targetingId ?? row.locationId ?? "");
+      const id = String(row.id ?? row.key ?? row.targetingId ?? row.locationId ?? "");
       const name = String(row.name ?? row.label ?? row.title ?? "");
       if (!id || !name) return null;
       return { id, name };
