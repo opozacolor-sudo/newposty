@@ -183,18 +183,31 @@ async function waitUntilPublished(post: ZernioPost, locale: string): Promise<Zer
 
 async function waitUntilTikTokItemId(post: ZernioPost, locale: string): Promise<{ post: ZernioPost; itemId: string }> {
   let current = await waitUntilPublished(post, locale);
+  let itemId: string | null = null;
   for (let attempt = 0; attempt < 20; attempt += 1) {
-    const itemId = tiktokItemIdFromPost(current);
-    if (itemId) return { post: current, itemId };
-    await sleep(3000);
+    itemId = tiktokItemIdFromPost(current);
+    const url = platformPublicUrl(current.platforms?.find((row) => row.platform === "tiktok") ?? current.platforms?.[0] ?? null);
+    if (itemId && (url || attempt >= 8)) return { post: current, itemId };
+    await sleep(4000);
     current = await getPost(current._id);
   }
+  if (itemId) return { post: current, itemId };
   throw new Error(adCopy(locale).wait);
 }
 
-function isUnpublishedBoost(error: unknown) {
-  const message = error instanceof Error ? error.message : "";
-  return /not been published|not published/i.test(message);
+function boostMessage(error: unknown) {
+  return error instanceof Error ? error.message : "";
+}
+
+function isRetryableBoost(error: unknown) {
+  const message = boostMessage(error);
+  return /not been published|not published|unable to get spark|spark ad post|not a valid integer|tiktok_item_id/i.test(
+    message,
+  );
+}
+
+function isWrongBoostAccount(error: unknown) {
+  return /not been published to this account/i.test(boostMessage(error));
 }
 
 export async function resolveTikTokAd(input: {
@@ -369,8 +382,9 @@ export async function executeTikTokAd(input: {
       }
       const ready = await waitUntilTikTokItemId(created, input.locale);
       const boostBody: Record<string, unknown> = {
+        postId: ready.post._id,
         platformPostId: ready.itemId,
-        accountId: ad.tiktok_account_id,
+        accountId: ad.ads_account_id,
         adAccountId: advertiser,
         name: "Spark views",
         goal: ad.goal,
@@ -379,15 +393,18 @@ export async function executeTikTokAd(input: {
         targeting,
       };
       let lastError: unknown = null;
-      for (let attempt = 0; attempt < 5; attempt += 1) {
+      for (let attempt = 0; attempt < 8; attempt += 1) {
         try {
           await boostAd(boostBody);
           lastError = null;
           break;
         } catch (error) {
           lastError = error;
-          if (!isUnpublishedBoost(error) || attempt === 4) throw error;
-          await sleep(8000);
+          if (isWrongBoostAccount(error) && ad.tiktok_account_id) {
+            boostBody.accountId = ad.tiktok_account_id;
+          }
+          if (!isRetryableBoost(error) || attempt === 7) throw error;
+          await sleep(10_000);
         }
       }
       if (lastError) throw lastError;

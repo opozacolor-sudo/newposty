@@ -966,7 +966,7 @@
     "adConfirmSpend": "Ça dépense le budget que tu as dit. Confirme seulement si c’est ce que tu veux.",
     "adConfirmHint": "Appuie sur le bouton noir ci-dessous. N’écris pas confirm dans le chat.",
     "adConfirmButton": "Lancer la pub",
-    "adWorking": "Lancement…",
+    "adWorking": "Publication sur TikTok, puis lancement de la pub. Laisse le chat ouvert, 1–2 minutes.",
     "adFailed": "La pub n’a pas démarré."
   }
 }

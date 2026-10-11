@@ -67,6 +67,14 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string } & Record<string,
     fr: "TikTok publie encore la vidéo. Attends une minute, puis relance la pub.",
     es: "TikTok sigue publicando el vídeo. Espera un minuto y vuelve a lanzar el anuncio.",
   },
+  spark_not_ready: {
+    en: "TikTok published the video but it is not ready as a Spark ad yet. Wait a minute, then start the ad again. Do not send a new clip.",
+    ro: "TikTok a publicat videoul, dar încă nu-l poate folosi ca Spark. Așteaptă un minut, apoi pornește reclama din nou. Nu trimite un clip nou.",
+    de: "TikTok hat das Video veröffentlicht, aber Spark ist noch nicht bereit. Warte eine Minute und starte die Anzeige erneut. Sende kein neues Video.",
+    it: "TikTok ha pubblicato il video, ma Spark non è ancora pronto. Aspetta un minuto e avvia di nuovo l’ads. Non inviare un nuovo clip.",
+    fr: "TikTok a publié la vidéo, mais la Spark n’est pas encore prête. Attends une minute, puis relance la pub. N’envoie pas un nouveau clip.",
+    es: "TikTok publicó el vídeo, pero Spark aún no está listo. Espera un minuto y lanza el anuncio otra vez. No envíes un clip nuevo.",
+  },
 };
 
 function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
@@ -84,7 +92,8 @@ function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
   if (lower.includes("permission")) return "permissions_missing";
   if (lower.includes("not found")) return "post_not_found";
   if (lower.includes("not been published") || lower.includes("not published")) return "unpublished_post";
-  if (lower.includes("tiktok_item_id") || lower.includes("not a valid integer")) return "platform_api_error";
+  if (lower.includes("unable to get spark") || lower.includes("spark ad post")) return "spark_not_ready";
+  if (lower.includes("tiktok_item_id") || lower.includes("not a valid integer")) return "spark_not_ready";
   return null;
 }
 
