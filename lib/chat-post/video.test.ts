@@ -7,7 +7,7 @@ import {
   VIDEO_DURATION_SEC,
   VIDEO_RESOLUTION,
 } from "../fal-video";
-import { buildVideoPrompt } from "./video";
+import { buildVideoPrompt, expandVideoBrief } from "./video";
 
 test("H3 Max Turbo is always text-to-video, 480p and 5 seconds", () => {
   assert.equal(pickFalVideoModel(false), FAL_TEXT_VIDEO_MODEL);
@@ -29,5 +29,17 @@ test("video prompt stays vertical and does not ask to animate an attached still"
   assert.match(prompt, /9:16/);
   assert.match(prompt, /https:\/\/posty\.now/);
   assert.doesNotMatch(prompt, /Animate the attached still/);
+  assert.match(prompt, /Romanian/);
+});
+
+test("short café brief becomes a craving-coffee shot, not a one-liner", () => {
+  const prompt = expandVideoBrief(
+    "creeaza un reel pentru tiktok, am o cafenea, Brasil. ceva sa te duca cu gandul ca vreau o cafea proaspata",
+    "ro",
+  );
+  assert.match(prompt, /espresso/i);
+  assert.match(prompt, /steam/i);
+  assert.match(prompt, /9:16/);
+  assert.match(prompt, /Brasil/i);
   assert.match(prompt, /Romanian/);
 });

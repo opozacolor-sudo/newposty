@@ -8,7 +8,7 @@ export const FAL_TEXT_VIDEO_MODEL = "minimax/h3-max-turbo/text-to-video";
 export const FAL_IMAGE_VIDEO_MODEL = "minimax/h3-max-turbo/image-to-video";
 
 const POLL_MS = 2_000;
-const MAX_WAIT_MS = 95_000;
+const MAX_WAIT_MS = 150_000;
 
 function firstVideoUrl(body: unknown) {
   if (!body || typeof body !== "object") return null;
@@ -80,7 +80,7 @@ export async function generateFalVideo(input: {
     resolution: VIDEO_RESOLUTION,
     aspect_ratio: "9:16",
     enable_safety_checker: true,
-    prompt_expansion_mode: "disabled",
+    prompt_expansion_mode: "balanced",
   };
 
   const { response, payload } = await falJson(`https://queue.fal.run/${model}`, {

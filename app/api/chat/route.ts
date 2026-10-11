@@ -47,7 +47,7 @@ import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -362,7 +362,7 @@ async function postChat(request: Request) {
   const generationKind = detectGenerationKind(text);
   const generationHint =
     posterEnabled && generationKind === "video"
-      ? "This message is VIDEO generation. Call generate_video now. Put the full user text in brief. Do not publish."
+      ? "This message is VIDEO generation. Call generate_video now. Write a complete cinematic brief yourself (shot, motion, subject, mood) from what they said. Do not ask them for a prompt. Do not offer to film it or animate a still. Do not publish."
       : posterEnabled && generationKind === "image"
         ? "This message is IMAGE generation. Call generate_poster now. Put the full user text in brief. Do not publish."
         : "";
@@ -819,7 +819,7 @@ async function postChat(request: Request) {
               type: "tool_result",
               tool_use_id: tool.id,
               is_error: true,
-              content: made.error,
+              content: `${made.error} Reply in one short sentence. Do not offer filming, animating a still, or a numbered menu.`,
             });
           } else {
             videoPayload = made.payload;

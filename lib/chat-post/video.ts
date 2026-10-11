@@ -4,6 +4,34 @@ import { loadSiteBrief } from "@/lib/site-brief";
 import type { ChatMedia, GeneratedVideoPayload } from "@/lib/chat-post/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+function alreadyFullVideoPrompt(brief: string) {
+  const lower = brief.toLowerCase();
+  return (
+    brief.trim().length >= 240 ||
+    (brief.trim().length >= 120 &&
+      /9:16|cinematic|photoreal|slow (?:push|pan|dolly)|close-?up|steam rising|espresso/.test(lower))
+  );
+}
+
+/** Short chat lines become a shot the model can film. Long pasted prompts stay as-is. */
+export function expandVideoBrief(brief: string, locale: string) {
+  const trimmed = brief.trim();
+  if (!trimmed) return "";
+  if (alreadyFullVideoPrompt(trimmed)) return trimmed;
+  const ro = locale === "ro";
+  return [
+    "Vertical 9:16 TikTok and Reels clip, 5 seconds, photoreal, commercial, no watermark, no phone UI.",
+    "One subject. Slow camera. Sharp detail. Warm natural light.",
+    `Scene to film: ${trimmed}`,
+    /cafenea|cafea|coffee|espresso|brasil|brazil/i.test(trimmed)
+      ? "Close-up of a fresh espresso pouring into a ceramic cup, thick crema blooming, steam rising toward the lens, slow push-in, wood café counter, morning window light. Must make the viewer crave a hot fresh coffee."
+      : "",
+    ro ? "Any on-screen text stays Romanian. No English captions unless the brief asked." : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
 export function buildVideoPrompt(input: {
   locale: string;
   brief: string;
@@ -21,7 +49,7 @@ export function buildVideoPrompt(input: {
     input.siteTitle ? `Title: ${input.siteTitle}.` : "",
     input.siteUrl ? `Product or site page: ${input.siteUrl}.` : "",
     input.siteDescription ? `About: ${input.siteDescription}` : "",
-    input.brief ? `User brief: ${input.brief}` : "",
+    input.brief ? `User brief: ${expandVideoBrief(input.brief, input.locale)}` : "",
     input.hasImage
       ? "Animate the attached still. Keep the product, layout, and text that are already in the photo."
       : "",

@@ -191,14 +191,14 @@ export const chatPostTools: Anthropic.Tool[] = [
   {
     name: "generate_video",
     description:
-      "Generate one vertical clip, always 480p and 5 seconds (text-to-video or image-to-video). Triggers: fă-mi / generează / creează / make + video / reel / clip / text to video, or animate a poster/photo. Site, product URL, or attached/model photos are enough. Do NOT publish. After this tool, ask organic post vs paid ad.",
+      "Generate one vertical clip, always 480p and 5 seconds, text-to-video. YOU write the cinematic prompt in brief. Triggers: fă-mi / generează / creează / make + video / reel / clip / text to video. A short line like “reel cafenea Brasil, cafea proaspătă” is enough — expand it yourself. Do not ask them to film or to write a prompt. Do NOT publish. After this tool, ask organic post vs paid ad.",
     input_schema: {
       type: "object",
       properties: {
         brief: {
           type: "string",
           description:
-            "The user's full generation prompt, unchanged — including long pasted ChatGPT/Gemini/Claude prompts.",
+            "A complete cinematic prompt you write: shot, motion, subject, lighting, mood, 9:16. If they pasted a long ChatGPT/Gemini/Claude prompt, keep that text unchanged. Otherwise expand their short request — do not pass a one-line chat message as-is.",
         },
         site_url: {
           type: "string",
@@ -280,10 +280,12 @@ export function chatPostSystemPrompt(input: {
       : [
           "Generation verbs (even without spaces / from dictation): fă-mi, fa-mi, generează, genereaza, creează, creaza, make, create, generate, draw, desenează, text to photo, text to image, text to video.",
           "Image nouns: poză, poza, poze, poster, imagine, foto, graphic, banner, reclamă, reclama. Video nouns: video, reel, clip. “Reclamă” without video = generate_poster first, then ask network + budget — do not invent spend.",
-          "A pasted ChatGPT / Gemini / Claude prompt is a generation brief. Put the FULL user text in brief, unchanged. Do not summarize it.",
+          "A pasted ChatGPT / Gemini / Claude prompt is a generation brief. Put the FULL pasted prompt in brief, unchanged. Do not summarize it.",
+          "If they only named the job (reel / video / clip + a place or product), YOU write the cinematic brief: shot, camera move, subject, light, mood. Example: café Brasil + craving fresh coffee → close-up espresso pour, crema, steam to camera, slow push-in, warm wood counter. Call generate_video. Never ask them to write a prompt or to film.",
           "Read any public https site or product link (uite site-ul, uite produsul, link). Put a product page in product_url, a homepage in site_url. A URL alone is enough.",
           "Attached model / reference / product photos go in media_refs. Keep the real product. Do not invent a different one.",
-          "If they want a photo/poster/ad still, call generate_poster. If they want a video/reel/clip or to animate a still, call generate_video (always 480p, 5 seconds). Do NOT call create_social_post in the same turn. After the file exists, ask organic post vs paid ad.",
+          "If they want a photo/poster/ad still, call generate_poster. If they want a video/reel/clip, call generate_video (always 480p, 5 seconds, text-to-video). Do NOT call create_social_post in the same turn. After the file exists, ask organic post vs paid ad.",
+          "If generate_video fails, one short sentence. Do not offer to animate a previous still, do not ask them to film, do not list numbered alternatives.",
         ].join(" "),
     input.generationHint ?? "",
     input.posterEnabled === false
