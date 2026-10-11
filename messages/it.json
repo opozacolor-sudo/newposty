@@ -961,6 +961,11 @@
     "videoRendering": "Il clip di 5 secondi è in rendering. Un solo job, già pagato. Lascia questa chat aperta.",
     "videoFailed": "Il job di 5 secondi è fallito. Ripeti cosa filmare — solo se vuoi un nuovo clip.",
     "videoWantPost": "Pubblica questo clip su tutte le reti collegate all’orario migliore.",
-    "videoWantAd": "Voglio un ads a pagamento con questo clip. Chiedimi rete e budget — non pubblicare ancora."
+    "videoWantAd": "Voglio un ads a pagamento con questo clip. Chiedimi rete e budget — non pubblicare ancora.",
+    "adConfirmTitle": "Campagna TikTok a pagamento",
+    "adConfirmSpend": "Questo spende il budget che hai detto. Conferma solo se è quello che vuoi.",
+    "adConfirmButton": "Avvia l’ads",
+    "adWorking": "Avvio…",
+    "adFailed": "L’ads non è partita."
   }
 }

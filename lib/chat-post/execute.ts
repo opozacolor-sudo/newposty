@@ -29,6 +29,7 @@ import type {
   ResolvedAction,
   ResolvedPlatform,
 } from "@/lib/chat-post/types";
+import { executeTikTokAd } from "@/lib/chat-post/ads";
 
 function resultMeta(input: {
   platform: string;
@@ -393,6 +394,9 @@ export async function executeResolvedAction(input: {
 }): Promise<PlatformExecResult[]> {
   if (input.resolved.kind === "manage" && input.resolved.manage) {
     return [await executeManage(input.resolved, input.locale)];
+  }
+  if (input.resolved.kind === "ad") {
+    return executeTikTokAd({ resolved: input.resolved, locale: input.locale });
   }
 
   const jobs: Array<{

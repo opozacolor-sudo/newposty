@@ -63,6 +63,8 @@ export type ZernioAccount = {
   profilePicture?: string;
   isActive?: boolean;
   profileId?: string;
+  platformUserId?: string;
+  platformAdAccountId?: string;
 };
 export type ZernioMediaItem = { url: string; type: "image" | "video"; title?: string };
 export type ZernioPlatformTarget = {
@@ -627,6 +629,58 @@ export async function listAdCampaigns(query: {
   limit?: number;
 }) {
   return zernioFetch<unknown>(withQuery("/ads/campaigns", query));
+}
+
+export async function getZernioAccount(accountId: string) {
+  const data = await zernioFetch<unknown>(`/accounts/${encodeURIComponent(accountId)}`);
+  const record = data && typeof data === "object" ? (data as Record<string, unknown>) : null;
+  const nested = record?.account;
+  const account = (nested && typeof nested === "object" ? nested : data) as ZernioAccount;
+  return account;
+}
+
+export async function searchAdTargeting(input: { dimension: string; q: string; platform?: string }) {
+  const data = await zernioFetch<unknown>(
+    withQuery("/ads/targeting/search", {
+      dimension: input.dimension,
+      q: input.q,
+      platform: input.platform ?? "tiktok",
+    }),
+  );
+  const record = data && typeof data === "object" ? (data as Record<string, unknown>) : null;
+  const list = Array.isArray(data)
+    ? data
+    : Array.isArray(record?.results)
+      ? record.results
+      : Array.isArray(record?.data)
+        ? record.data
+        : Array.isArray(record?.items)
+          ? record.items
+          : [];
+  return list
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const row = item as Record<string, unknown>;
+      const id = String(row.id ?? row.targetingId ?? row.locationId ?? "");
+      const name = String(row.name ?? row.label ?? row.title ?? "");
+      if (!id || !name) return null;
+      return { id, name };
+    })
+    .filter((item): item is { id: string; name: string } => Boolean(item));
+}
+
+export async function boostAd(body: Record<string, unknown>) {
+  return zernioFetch<unknown>("/ads/boost", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function createStandaloneAd(body: Record<string, unknown>) {
+  return zernioFetch<unknown>("/ads/create", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export async function getCampaignAnalytics(

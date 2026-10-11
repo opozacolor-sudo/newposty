@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
 import { createGeneratedVideo, latestReadyVideo } from "@/lib/chat-post/video";
+import { resolveTikTokAd } from "@/lib/chat-post/ads";
 import { parseVideoJob } from "@/lib/fal-video";
 import { discoverCatalogProducts, parseCatalogRequest } from "@/lib/chat-post/catalog";
 import { firstPublicUrlInText } from "@/lib/site-brief";
@@ -34,6 +35,7 @@ import { userTimezone } from "@/lib/chat-post/timezone";
 import type {
   ChatMedia,
   CatalogPlanPayload,
+  AdConfirmationPayload,
   ConfirmationPayload,
   GeneratedPosterPayload,
   GeneratedVideoPayload,
@@ -254,6 +256,21 @@ async function postChat(request: Request) {
     display_name: string | null;
     zernio_account_id: string;
   }>;
+  const adsAccounts = asRows<{
+    id: string;
+    platform: string;
+    username: string | null;
+    display_name: string | null;
+    zernio_account_id: string | null;
+  }>(accountRows).filter(
+    (account) => isAdsPlatformId(String(account.platform)) && typeof account.zernio_account_id === "string",
+  ) as Array<{
+    id: string;
+    platform: string;
+    username: string | null;
+    display_name: string | null;
+    zernio_account_id: string;
+  }>;
 
   let conversationId = body.conversationId ?? null;
   if (!conversationId) {
@@ -434,7 +451,7 @@ async function postChat(request: Request) {
   }
 
   let finalText = "";
-  let confirmation: ConfirmationPayload | null = null;
+  let confirmation: ConfirmationPayload | AdConfirmationPayload | null = null;
   let resultsPayload: ResultsPayload | null = null;
   let posterPayload: GeneratedPosterPayload | null = null;
   let videoPayload: GeneratedVideoPayload | null = null;
@@ -871,6 +888,63 @@ async function postChat(request: Request) {
               }),
             });
           }
+        } else if (tool.name === "create_paid_ad") {
+          const input = asRecord(tool.input) ?? {};
+          const refs = Array.isArray(input.media_refs)
+            ? (input.media_refs as unknown[]).filter((id): id is string => typeof id === "string")
+            : [];
+          const fromRefs = refs
+            .map((id) => media.find((item) => item.id === id))
+            .filter((item): item is ChatMedia => Boolean(item));
+          const made = await resolveTikTokAd({
+            locale,
+            timezone: timeZone,
+            accounts: posting,
+            adsAccounts,
+            media: fromRefs.length > 0 ? fromRefs : thisTurnMedia.length > 0 ? thisTurnMedia : media,
+            brief: {
+              goal: typeof input.goal === "string" ? input.goal : undefined,
+              spark: input.spark !== false,
+              budget_amount: typeof input.budget_amount === "number" ? input.budget_amount : Number(input.budget_amount),
+              budget_currency: typeof input.budget_currency === "string" ? input.budget_currency : "RON",
+              days: typeof input.days === "number" ? input.days : Number(input.days),
+              start_now: input.start_now !== false,
+              locations: Array.isArray(input.locations)
+                ? (input.locations as unknown[]).filter((item): item is string => typeof item === "string")
+                : [],
+              interests: Array.isArray(input.interests)
+                ? (input.interests as unknown[]).filter((item): item is string => typeof item === "string")
+                : [],
+              caption: typeof input.caption === "string" ? input.caption : undefined,
+              media_refs: refs,
+            },
+          });
+          if (!made.ok) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              is_error: true,
+              content: made.error,
+            });
+          } else {
+            const saved = await savePendingAction({
+              supabase,
+              userId: user.id,
+              conversationId,
+              resolved: made.resolved,
+            });
+            confirmation = { type: "ad_confirmation", action_id: saved.action_id, resolved: saved };
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              content: JSON.stringify({
+                pending_confirmation: true,
+                spend: true,
+                action_id: saved.action_id,
+                next: "Tell them to confirm the spend card. Do not say the campaign is live.",
+              }),
+            });
+          }
         } else {
           toolResults.push({
             type: "tool_result",
@@ -894,9 +968,13 @@ async function postChat(request: Request) {
 
   if (!finalText) {
     finalText = confirmation
-      ? locale === "ro"
-        ? "Verifică detaliile și confirmă ca să trimit postarea."
-        : "Check the details and confirm to send the post."
+      ? confirmation.type === "ad_confirmation"
+        ? locale === "ro"
+          ? "Verifică cheltuiala și confirmă ca să pornească reclama."
+          : "Check the spend and confirm to start the ad."
+        : locale === "ro"
+          ? "Verifică detaliile și confirmă ca să trimit postarea."
+          : "Check the details and confirm to send the post."
       : resultsPayload
         ? locale === "ro"
           ? "Gata."
@@ -927,7 +1005,9 @@ async function postChat(request: Request) {
   }
 
   const kind = confirmation
-    ? "confirmation"
+    ? confirmation.type === "ad_confirmation"
+      ? "ad_confirmation"
+      : "confirmation"
     : resultsPayload
       ? "results"
       : catalogPlan

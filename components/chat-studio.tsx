@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { AdConfirmationCard } from "@/components/chat/ad-confirmation-card";
 import { CatalogPlanCard } from "@/components/chat/catalog-plan-card";
 import { PostConfirmationCard } from "@/components/chat/post-confirmation-card";
 import { PostResultsMessage } from "@/components/chat/post-results-message";
@@ -16,6 +17,7 @@ import { Link } from "@/i18n/navigation";
 import type {
   CatalogPlanPayload,
   ChatMedia,
+  AdConfirmationPayload,
   ConfirmationPayload,
   GeneratedPosterPayload,
   GeneratedVideoPayload,
@@ -32,6 +34,7 @@ type ChatMessage = {
   kind?: string | null;
   payload?:
     | ConfirmationPayload
+    | AdConfirmationPayload
     | CatalogPlanPayload
     | ResultsPayload
     | UserMediaPayload
@@ -530,6 +533,7 @@ export default function ChatStudio() {
           const wide =
             message.payload?.type === "catalog_plan" ||
             message.payload?.type === "confirmation" ||
+            message.payload?.type === "ad_confirmation" ||
             message.payload?.type === "results" ||
             message.payload?.type === "generated_poster" ||
             message.payload?.type === "generated_video";
@@ -569,6 +573,31 @@ export default function ChatStudio() {
                             payload: next,
                             content: t("catalogReady"),
                           }
+                        : item,
+                    ),
+                  );
+                }}
+              />
+            ) : null}
+            {message.role === "assistant" &&
+            message.payload?.type === "ad_confirmation" ? (
+              <AdConfirmationCard
+                payload={message.payload}
+                onDone={(next) => {
+                  setMessages((current) =>
+                    current.map((item, itemIndex) =>
+                      itemIndex === index
+                        ? next.kind === "cancelled"
+                          ? { ...item, kind: "text", payload: null, content: t("postCancelled") }
+                          : {
+                              ...item,
+                              kind: "results",
+                              payload: next.payload as ResultsPayload,
+                              content: resultsReply(
+                                locale,
+                                (next.payload as ResultsPayload).results,
+                              ),
+                            }
                         : item,
                     ),
                   );

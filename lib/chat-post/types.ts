@@ -1,6 +1,6 @@
 export type PostMode = "publish_now" | "schedule";
 export type CaptionSource = "user_provided" | "ai_generated";
-export type ChatActionKind = "create" | "manage";
+export type ChatActionKind = "create" | "manage" | "ad";
 export type ChatActionStatus = "pending" | "executing" | "executed" | "cancelled";
 export type ManageAction = "reschedule" | "cancel" | "edit_caption";
 
@@ -101,6 +101,30 @@ export type ChatSeries = {
   pack?: "fill_day" | "daily";
 };
 
+export type ResolvedAd = {
+  platform: "tiktokads";
+  format: "spark" | "standalone";
+  goal: "video_views" | "engagement";
+  budget_amount: number;
+  budget_currency: string;
+  days: number;
+  start_now: boolean;
+  locations: string[];
+  interests: string[];
+  caption: string;
+  media: ChatMedia[];
+  tiktok_account_id: string | null;
+  tiktok_handle: string;
+  ads_account_id: string;
+  platform_ad_account_id: string;
+};
+
+export type AdConfirmationPayload = {
+  type: "ad_confirmation";
+  action_id: string;
+  resolved: ResolvedAction;
+};
+
 export type ResolvedAction = {
   action_id: string;
   kind: ChatActionKind;
@@ -110,6 +134,7 @@ export type ResolvedAction = {
   excluded_by_validation: ExcludedPlatform[];
   excluded_platforms: string[];
   warnings: string[];
+  ad?: ResolvedAd;
   series?: ChatSeries;
   manage?: {
     action: ManageAction;

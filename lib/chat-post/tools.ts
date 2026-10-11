@@ -151,6 +151,28 @@ export const chatPostTools: Anthropic.Tool[] = [
     },
   },
   {
+    name: "create_paid_ad",
+    description:
+      "Prepare a paid ad that the user must confirm before any spend. Use when they name a network, budget, duration, and audience. TikTok Spark: publish the attached video on TikTok then boost it. Do NOT invent a budget. Do NOT claim the campaign is live.",
+    input_schema: {
+      type: "object",
+      properties: {
+        network: { type: "string", description: "Ads network, e.g. tiktok / tiktokads." },
+        spark: { type: "boolean", description: "True to Spark (also appears on the TikTok profile)." },
+        goal: { type: "string", enum: ["video_views", "engagement"] },
+        budget_amount: { type: "number" },
+        budget_currency: { type: "string", description: "RON, EUR, USD. Default RON if they said lei." },
+        days: { type: "number" },
+        start_now: { type: "boolean" },
+        locations: { type: "array", items: { type: "string" }, description: "Cities or regions, e.g. București, Ilfov." },
+        interests: { type: "array", items: { type: "string" }, description: "Audience phrases: business owners, creators, influencers." },
+        caption: { type: "string" },
+        media_refs: { type: "array", items: { type: "string" } },
+      },
+      required: ["network", "budget_amount", "days"],
+    },
+  },
+  {
     name: "generate_poster",
     description:
       "Generate one poster-style image (text-to-image). Triggers: fă-mi / fa-mi / generează / creează / creaza / make / create / generate + poză / poza / poster / imagine / reclamă / reclama / graphic / text to photo / text to image. Also a pasted ChatGPT/Gemini/Claude image prompt. Site or product URL and attached model/reference photos are enough. Do NOT publish. After this tool, ask organic post vs paid ad.",
@@ -293,7 +315,7 @@ export function chatPostSystemPrompt(input: {
       : "If they later say post / programează / postează for that poster or clip, call create_social_post with media_refs set to the generated media_id — not the reference photos.",
     input.posterEnabled === false
       ? ""
-      : "If they later say reclamă / ads / boost / paid about an existing creative, do not invent a spend. Reply that it is ready and ask network + budget + days + audience. TikTok standalone ads are VIDEO only — a photo carousel is not an ad; offer generate_video from those stills first. Gender, city/region (e.g. București + Ilfov), and interests are valid targeting to collect. Do not claim the campaign is live. Only call create_social_post if they also want the organic post.",
+      : "If they later say reclamă / ads / boost / paid / Spark about a video, and they named budget + days + audience, call create_paid_ad. Spark = spark true (post on TikTok then boost). Goal video_views for 6-second views, engagement if they want comments. Lei → budget_currency RON. Do not invent a spend. Do not claim it is live — they confirm the spend card. TikTok ads are VIDEO only. A photo carousel is not an ad.",
     "If the user only wants a caption or content idea, without intent to post now, do NOT call create_social_post. Reply in text.",
     "Content-idea calendars (idei de conținut / plan de marketing for N days, a month, no files yet): do NOT invent the calendar in the first reply. Ask short questions first: business or niche, networks, tone or goal, start date (today / tomorrow / a calendar date), any fixed dates or offers. Day 1 of the plan MUST be that start date. If they already answered the rest but not the start date, ask only when to start. After they answer, write EVERY day of the plan in THIS one reply — never stop mid-plan, never ask them to type „continuă”. Compact: one short block per day (date, networks, one-line photo prompt, one-line video prompt). No long intro, no --- fences. Still do not call create_social_post or generate_* unless they then ask to make that day’s photo/video or to publish/schedule.",
     input.planAccessLine ?? "",
