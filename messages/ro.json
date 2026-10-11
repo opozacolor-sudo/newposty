@@ -237,40 +237,18 @@
     "ctaTitle": "Lansare 15 octombrie"
   },
   "Demo": {
-    "metaTitle": "Cum programezi postări Instagram, TikTok și Facebook | posty.now",
-    "metaDescription": "Vezi fiecare pas din posty.now — conectează conturi, scrie cu AI, programează, publică și urmărește performanța.",
+    "metaTitle": "Cum funcționează posty.now — demo-uri video | posty.now",
+    "metaDescription": "Nouă demo-uri scurte: conectare, plan pe 30 de zile, creare conținut, programare, calendar, reclame, statistici, inbox și lead-uri.",
     "title": "Cum funcționează posty.now",
-    "subtitle": "Vezi fiecare pas în acțiune.",
+    "subtitle": "Nouă video-uri scurte. Un studio.",
     "videoSoon": "Video în curând",
     "ctaTitle": "Lansare 15 octombrie",
     "ctaButton": "Preînregistrează-te",
     "readGuide": "Citește manualul complet",
-    "steps": {
-      "connect": {
-        "title": "Conectează-ți conturile",
-        "body": "Leagă Instagram, TikTok, Facebook, LinkedIn și restul printr-un singur flux de autorizare."
-      },
-      "chat": {
-        "title": "Scrie-i lui Posty ce vrei să postezi",
-        "body": "Descrii în chat ce vrei (text, poză, video), pe limba ta."
-      },
-      "caption": {
-        "title": "AI-ul generează caption și hashtag-uri",
-        "body": "Posty analizează conținutul și scrie textul potrivit pentru fiecare platformă."
-      },
-      "timing": {
-        "title": "Alege momentul optim",
-        "body": "Posty folosește orele de vârf din research pe fiecare platformă. Poți alege oricând ora ta."
-      },
-      "publish": {
-        "title": "O singură comandă pentru până la 50 de zile",
-        "body": "Programează sau publică instant, pe toate platformele conectate."
-      },
-      "analytics": {
-        "title": "Analize și rapoarte",
-        "body": "Vezi performanța postărilor direct din dashboard."
-      }
-    }
+    "back": "Toate demo-urile",
+    "sayTitle": "Spui asta",
+    "videoPhoto": "Poză",
+    "videoVideo": "Video"
   },
   "About": {
     "title": "Despre noi",
@@ -564,6 +542,8 @@
     "leadAgentTrain": "Antrenează agentul",
     "leadAgentTraining": "Antrenez…",
     "leadAgentAlready": "Deja antrenat",
+    "leadAgentReset": "Resetează antrenarea",
+    "leadAgentResetting": "Resetez…",
     "leadAgentTrained": "Agent antrenat",
     "leadAgentEnable": "Generare lead-uri AI",
     "leadAgentDisable": "Oprește generarea AI",

@@ -237,40 +237,18 @@
     "ctaTitle": "Start 15. Oktober"
   },
   "Demo": {
-    "metaTitle": "Instagram-, TikTok- und Facebook-Beiträge planen | posty.now",
-    "metaDescription": "Sieh jeden Schritt in posty.now — Konten verbinden, mit KI schreiben, planen, veröffentlichen und die Leistung prüfen.",
+    "metaTitle": "So funktioniert posty.now — Video-Demos | posty.now",
+    "metaDescription": "Neun kurze Demos: Konten, 30-Tage-Plan, Inhalte, Planung, Kalender, Ads, Statistiken, Posteingang und Leads.",
     "title": "So funktioniert posty.now",
-    "subtitle": "See each step in action.",
-    "videoSoon": "Video coming soon",
-    "ctaTitle": "Launch 15 October",
-    "ctaButton": "Pre-register",
-    "readGuide": "Read the full guide",
-    "steps": {
-      "connect": {
-        "title": "Connect your accounts",
-        "body": "Link Instagram, TikTok, Facebook, LinkedIn and the rest through a single authorization flow."
-      },
-      "chat": {
-        "title": "Tell Posty what you want to post",
-        "body": "Describe it in chat — text, photo, or video — in your own words."
-      },
-      "caption": {
-        "title": "AI writes captions and hashtags",
-        "body": "Posty reads the content and writes the right text for each platform."
-      },
-      "timing": {
-        "title": "Pick the best time",
-        "body": "Posty uses researched peak hours for each platform. You can still pick your own time."
-      },
-      "publish": {
-        "title": "One command for up to 50 days",
-        "body": "Schedule or publish instantly, across every connected platform."
-      },
-      "analytics": {
-        "title": "Analytics and reports",
-        "body": "See how your posts perform, right from the dashboard."
-      }
-    }
+    "subtitle": "Neun kurze Videos. Ein Studio.",
+    "videoSoon": "Video folgt",
+    "ctaTitle": "Start 15. Oktober",
+    "ctaButton": "Vormerken",
+    "readGuide": "Das ganze Handbuch lesen",
+    "back": "Alle Demos",
+    "sayTitle": "Sag das",
+    "videoPhoto": "Foto",
+    "videoVideo": "Video"
   },
   "About": {
     "title": "Über uns",
@@ -564,6 +542,8 @@
     "leadAgentTrain": "Train the agent",
     "leadAgentTraining": "Training…",
     "leadAgentAlready": "Bereits trainiert",
+    "leadAgentReset": "Training zurücksetzen",
+    "leadAgentResetting": "Setze zurück…",
     "leadAgentTrained": "Agent trained",
     "leadAgentEnable": "AI lead generation",
     "leadAgentDisable": "Turn off AI generation",

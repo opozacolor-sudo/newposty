@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { DemoReveal, DemoYouTube } from "@/components/marketing/demo-media";
 import { MarketingPageFrame } from "@/components/marketing/page-frame";
-import { btnClay, clayLink, pageLead, pageTitle } from "@/components/marketing/styles";
+import { btnClay, clayLink, clayTile, pageLead, pageTitle } from "@/components/marketing/styles";
 import { SIGNUPS_OPEN } from "@/lib/flags";
+import { DEMO_PAGES, demoCopy } from "@/lib/demo";
 import { Link } from "@/i18n/navigation";
-
-const STEPS = [
-  { id: "connect", videoId: "9iuqHmI04ck" },
-  { id: "chat", videoId: "fWTkhJS3I4U" },
-  { id: "caption", videoId: "ly0-BHfZil0" },
-  { id: "timing", videoId: "ly0-BHfZil0" },
-  { id: "publish", videoId: "TSpik-u6rcg" },
-  { id: "analytics", videoId: "AW24I0apIYk" },
-] as const;
 
 export async function generateMetadata({
   params,
@@ -28,7 +19,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function DemoPage() {
+export default async function DemoPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const t = await getTranslations("Demo");
 
   return (
@@ -38,31 +30,20 @@ export default async function DemoPage() {
         <p className={pageLead}>{t("subtitle")}</p>
       </header>
 
-      <div className="mt-14 flex flex-col gap-16 sm:mt-20 sm:gap-24">
-        {STEPS.map((step, index) => {
-          const reverse = index % 2 === 1;
+      <ol className="mt-14 grid gap-3 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3">
+        {DEMO_PAGES.map((page, index) => {
+          const copy = demoCopy(page, locale);
           return (
-            <DemoReveal key={step.id}>
-              <section className="grid items-center gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
-                <div className={reverse ? "md:order-2" : undefined}>
-                  <p className="text-sm font-medium text-[#6b5348]">
-                    {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1d1f] sm:text-3xl">
-                    {t(`steps.${step.id}.title`)}
-                  </h2>
-                  <p className="mt-3 max-w-md text-base leading-7 text-[#55514e]">
-                    {t(`steps.${step.id}.body`)}
-                  </p>
-                </div>
-                <div className={reverse ? "md:order-1" : undefined}>
-                  <DemoYouTube videoId={step.videoId} title={t(`steps.${step.id}.title`)} />
-                </div>
-              </section>
-            </DemoReveal>
+            <li key={page.slug}>
+              <Link href={`/demo/${page.slug}`} className={`block h-full ${clayTile}`}>
+                <p className="text-sm font-medium text-[#6b5348]">{String(index + 1).padStart(2, "0")}</p>
+                <span className="mt-2 block text-base font-semibold text-[#1d1d1f]">{copy.navTitle}</span>
+                <span className="mt-1 block text-sm leading-5 text-[#55514e]">{copy.navBody}</span>
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ol>
 
       <div className="mt-20 border-t border-white/20 py-16 text-center sm:mt-24">
         <p className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("ctaTitle")}</p>

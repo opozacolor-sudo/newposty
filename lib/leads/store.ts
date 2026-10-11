@@ -389,6 +389,28 @@ export async function setLeadAgentEnabled(input: {
   return { ...existing, enabled: input.enabled, knowledge };
 }
 
+export async function resetLeadAgent(input: {
+  supabase: SupabaseClient;
+  userId: string;
+  clientId: string | null;
+}) {
+  const existing = await loadLeadAgent(input.supabase, input.userId, input.clientId);
+  if (!existing) return null;
+  const { error } = await input.supabase
+    .from("lead_agents")
+    .update({
+      trained_at: null,
+      enabled: false,
+      site_url: null,
+      knowledge: {},
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", existing.id)
+    .eq("user_id", input.userId);
+  if (error) throw error;
+  return loadLeadAgent(input.supabase, input.userId, input.clientId);
+}
+
 export async function saveAgentKnowledge(input: {
   supabase: SupabaseClient;
   userId: string;

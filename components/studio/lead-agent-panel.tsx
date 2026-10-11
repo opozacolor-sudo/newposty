@@ -38,10 +38,12 @@ export function LeadAgentPanel({
     chatPlaceholder: string;
     chatSend: string;
     sending: string;
+    reset: string;
+    resetting: string;
   };
 }) {
   const router = useRouter();
-  const [busy, setBusy] = useState<"train" | "enable" | "chat" | null>(null);
+  const [busy, setBusy] = useState<"train" | "enable" | "chat" | "reset" | null>(null);
   const [error, setError] = useState("");
   const [turns, setTurns] = useState(coach);
   const [isTrained, setIsTrained] = useState(trained);
@@ -174,6 +176,28 @@ export function LeadAgentPanel({
       ) : (
         <p className="mt-2 text-sm text-neutral-500">{labels.locked}</p>
       )}
+      {isTrained ? (
+        <button
+          type="button"
+          disabled={busy !== null}
+          className="posty-clay-tile mt-3 mr-2 rounded-full px-3 py-1.5 text-sm text-[#1d1d1f] disabled:opacity-50"
+          onClick={async () => {
+            setBusy("reset");
+            setError("");
+            const response = await fetch("/api/leads/reset", { method: "POST" });
+            setBusy(null);
+            if (!response.ok) {
+              setError(labels.failed);
+              return;
+            }
+            setIsTrained(false);
+            setTurns([]);
+            router.refresh();
+          }}
+        >
+          {busy === "reset" ? labels.resetting : labels.reset}
+        </button>
+      ) : null}
       <button
         type="button"
         disabled={!isTrained || busy !== null}

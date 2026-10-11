@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { DEMO_SLUGS } from "@/lib/demo";
 import { FEATURES } from "@/lib/features";
 import { HOW_TO_SLUGS } from "@/lib/how-to";
 import { MADE_FOR } from "@/lib/made-for";
@@ -23,6 +24,11 @@ const MARKETING_PATHS: { path: string; priority: number; changeFrequency: Metada
       changeFrequency: "monthly" as const,
     })),
     { path: "/demo", priority: 0.8, changeFrequency: "monthly" },
+    ...DEMO_SLUGS.map((slug) => ({
+      path: `/demo/${slug}`,
+      priority: 0.7,
+      changeFrequency: "monthly" as const,
+    })),
     { path: "/about", priority: 0.6, changeFrequency: "monthly" },
     { path: "/contact", priority: 0.5, changeFrequency: "monthly" },
     { path: "/specialist", priority: 0.6, changeFrequency: "monthly" },

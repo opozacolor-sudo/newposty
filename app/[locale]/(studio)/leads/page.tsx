@@ -85,6 +85,8 @@ export default async function LeadsPage({
           chatPlaceholder: t("leadAgentChatPlaceholder"),
           chatSend: t("leadAgentChatSend"),
           sending: t("sending"),
+          reset: t("leadAgentReset"),
+          resetting: t("leadAgentResetting"),
         }}
       />
       <FilterForm submit={t("apply")}>

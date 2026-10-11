@@ -18,6 +18,16 @@ export function DemoReveal({ children }: { children: ReactNode }) {
   );
 }
 
+export function DemoVideoFrame({ label }: { label: string }) {
+  return (
+    <div className="posty-clay-tile relative aspect-video w-full overflow-hidden rounded-[1.4rem] p-1.5">
+      <div className="flex h-full w-full items-center justify-center rounded-[1.15rem] bg-[#1d1d1f]/10 px-6 text-center text-sm font-medium text-[#5c5652]">
+        {label}
+      </div>
+    </div>
+  );
+}
+
 export function DemoYouTube({ videoId, title }: { videoId: string; title: string }) {
   return (
     <div className="posty-clay-tile relative aspect-video w-full overflow-hidden rounded-[1.4rem] p-1.5">
