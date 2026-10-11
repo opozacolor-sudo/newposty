@@ -47,7 +47,7 @@ import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
 import { purgeUnusedMediaForUser } from "@/lib/media-cleanup";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export const maxDuration = 180;
+export const maxDuration = 300;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 

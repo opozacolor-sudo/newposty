@@ -2,12 +2,21 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   pickFalVideoModel,
+  firstVideoUrl,
+  falRequestId,
   FAL_IMAGE_VIDEO_MODEL,
   FAL_TEXT_VIDEO_MODEL,
   VIDEO_DURATION_SEC,
   VIDEO_RESOLUTION,
 } from "../fal-video";
 import { buildVideoPrompt, expandVideoBrief } from "./video";
+
+test("reads fal video urls and request ids from both queue shapes", () => {
+  assert.equal(firstVideoUrl({ video: { url: "https://v.fal.media/a.mp4" } }), "https://v.fal.media/a.mp4");
+  assert.equal(firstVideoUrl({ data: { video: { url: "https://v.fal.media/b.mp4" } } }), "https://v.fal.media/b.mp4");
+  assert.equal(falRequestId({ requestId: "abc" }), "abc");
+  assert.equal(falRequestId({ request_id: "def" }), "def");
+});
 
 test("H3 Max Turbo is always text-to-video, 480p and 5 seconds", () => {
   assert.equal(pickFalVideoModel(false), FAL_TEXT_VIDEO_MODEL);

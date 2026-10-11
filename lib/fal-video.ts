@@ -7,14 +7,34 @@ export const VIDEO_DURATION_SEC = 5;
 export const FAL_TEXT_VIDEO_MODEL = "minimax/h3-max-turbo/text-to-video";
 export const FAL_IMAGE_VIDEO_MODEL = "minimax/h3-max-turbo/image-to-video";
 
-const POLL_MS = 2_000;
-const MAX_WAIT_MS = 150_000;
+const POLL_MS = 2_500;
+const MAX_WAIT_MS = 270_000;
 
-function firstVideoUrl(body: unknown) {
-  if (!body || typeof body !== "object") return null;
-  const video = (body as { video?: { url?: string } }).video;
-  const url = video?.url;
-  return typeof url === "string" && url.startsWith("http") ? url : null;
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+}
+
+export function firstVideoUrl(body: unknown): string | null {
+  const record = asRecord(body);
+  if (!record) return null;
+  const nested = [record.video, asRecord(record.data)?.video, asRecord(record.output)?.video];
+  for (const video of nested) {
+    if (typeof video === "string" && video.startsWith("http")) return video;
+    const url = asRecord(video)?.url;
+    if (typeof url === "string" && url.startsWith("http")) return url;
+  }
+  if (typeof record.video_url === "string" && record.video_url.startsWith("http")) return record.video_url;
+  return null;
+}
+
+export function falRequestId(body: unknown): string {
+  const record = asRecord(body);
+  if (!record) return "";
+  for (const key of ["request_id", "requestId", "id"] as const) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
 }
 
 export function pickFalVideoModel(_hasImage?: boolean) {
@@ -28,19 +48,28 @@ function falHeaders(key: string) {
   };
 }
 
+function videoBody(prompt: string) {
+  return {
+    prompt,
+    duration: VIDEO_DURATION_SEC,
+    resolution: VIDEO_RESOLUTION,
+    aspect_ratio: "9:16",
+    enable_safety_checker: true,
+    prompt_expansion_mode: "disabled",
+  };
+}
+
 async function falJson(url: string, init: RequestInit) {
   const response = await fetch(url, { ...init, signal: init.signal ?? AbortSignal.timeout(30_000) });
   const payload = (await response.json().catch(() => null)) as unknown;
   return { response, payload };
 }
 
-async function waitForFalVideo(model: string, requestId: string, key: string) {
+async function waitForFalVideo(input: { statusUrl: string; resultUrl: string; key: string }) {
   const started = Date.now();
   while (Date.now() - started < MAX_WAIT_MS) {
     await new Promise((resolve) => setTimeout(resolve, POLL_MS));
-    const { response, payload } = await falJson(`https://queue.fal.run/${model}/requests/${requestId}/status`, {
-      headers: falHeaders(key),
-    });
+    const { response, payload } = await falJson(input.statusUrl, { headers: falHeaders(input.key) });
     const status =
       payload && typeof payload === "object" && "status" in payload
         ? String((payload as { status: unknown }).status)
@@ -53,15 +82,16 @@ async function waitForFalVideo(model: string, requestId: string, key: string) {
       throw new FalImageError("failed", falDetail(payload) || "Video generation failed.");
     }
     if (status === "COMPLETED") {
-      const result = await falJson(`https://queue.fal.run/${model}/requests/${requestId}`, {
-        headers: falHeaders(key),
-      });
+      const result = await falJson(input.resultUrl, { headers: falHeaders(input.key) });
       if (!result.response.ok) {
         const detail = falDetail(result.payload);
         throw new FalImageError(classifyFalError(result.response.status, detail), detail || "Video result failed.");
       }
       const url = firstVideoUrl(result.payload);
-      if (!url) throw new FalImageError("failed", "Video generation returned no file.");
+      if (!url) {
+        console.error("[video] completed but no url", Object.keys(asRecord(result.payload) ?? {}));
+        throw new FalImageError("failed", "Video generation returned no file.");
+      }
       return url;
     }
   }
@@ -74,35 +104,36 @@ export async function generateFalVideo(input: {
 }) {
   const key = getFalKey();
   const model = pickFalVideoModel();
-  const body: Record<string, unknown> = {
-    prompt: input.prompt,
-    duration: VIDEO_DURATION_SEC,
-    resolution: VIDEO_RESOLUTION,
-    aspect_ratio: "9:16",
-    enable_safety_checker: true,
-    prompt_expansion_mode: "balanced",
-  };
-
-  const { response, payload } = await falJson(`https://queue.fal.run/${model}`, {
+  const queued = await falJson(`https://queue.fal.run/${model}`, {
     method: "POST",
     headers: falHeaders(key),
-    body: JSON.stringify(body),
+    body: JSON.stringify(videoBody(input.prompt)),
     signal: AbortSignal.timeout(20_000),
   });
-  const detail = falDetail(payload);
-  if (!response.ok) {
-    console.error(`[video] fal ${model} ${response.status}${detail ? `: ${detail}` : ""}`);
-    throw new FalImageError(classifyFalError(response.status, detail), detail || `Video generation failed (${response.status})`);
+
+  const detail = falDetail(queued.payload);
+  if (!queued.response.ok) {
+    console.error(`[video] fal ${model} ${queued.response.status}${detail ? `: ${detail}` : ""}`);
+    throw new FalImageError(
+      classifyFalError(queued.response.status, detail),
+      detail || `Video generation failed (${queued.response.status})`,
+    );
   }
-  const immediate = firstVideoUrl(payload);
+
+  const immediate = firstVideoUrl(queued.payload);
   if (immediate) return immediate;
-  const requestId =
-    payload && typeof payload === "object" && "request_id" in payload
-      ? String((payload as { request_id: unknown }).request_id)
-      : "";
-  if (!requestId) {
-    console.error("[video] fal returned no request_id");
+
+  const record = asRecord(queued.payload);
+  const requestId = falRequestId(queued.payload);
+  const statusUrl =
+    (typeof record?.status_url === "string" && record.status_url) ||
+    (requestId ? `https://queue.fal.run/${model}/requests/${requestId}/status` : "");
+  const resultUrl =
+    (typeof record?.response_url === "string" && record.response_url) ||
+    (requestId ? `https://queue.fal.run/${model}/requests/${requestId}` : "");
+  if (!statusUrl || !resultUrl) {
+    console.error("[video] fal returned no request id", Object.keys(record ?? {}));
     throw new FalImageError("failed", "Video generation returned no file.");
   }
-  return waitForFalVideo(model, requestId, key);
+  return waitForFalVideo({ statusUrl, resultUrl, key });
 }
