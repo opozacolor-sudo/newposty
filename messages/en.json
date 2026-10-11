@@ -506,7 +506,9 @@
     "analytics": "Analytics",
     "messages": "Messages",
     "commentsNav": "Comments",
-    "leads": "Leads"
+    "leads": "Leads",
+    "profile": "Profile",
+    "demo": "Demo"
   },
   "Studio": {
     "postsTitle": "Posts",
@@ -668,6 +670,27 @@
     "upgradeBody": "Your current networks become the first client. You can add more clients after that.",
     "upgradeConfirm": "Switch to Team",
     "upgradeName": "Name for your current work",
+    "error": "Could not save. Try again."
+  },
+  "Profile": {
+    "title": "Profile",
+    "lead": "Company website, your name, contact details, and the billing details we need for invoices.",
+    "companyTitle": "Company",
+    "companySite": "Company website",
+    "name": "Name",
+    "contactTitle": "Contact details",
+    "contactEmail": "Email",
+    "contactPhone": "Phone",
+    "billingTitle": "Billing details",
+    "billingName": "Legal name",
+    "billingTaxId": "Tax ID / VAT",
+    "billingAddress": "Address",
+    "billingCity": "City",
+    "billingPostal": "Postal code",
+    "billingCountry": "Country",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
     "error": "Could not save. Try again."
   },
   "Billing": {
@@ -921,7 +944,7 @@
     "manageReschedule": "Reschedule",
     "manageEdit": "Edit caption",
     "cleanChat": "Clean chat",
-    "guideLink": "User guide",
+    "guideLink": "Demo",
     "posterAlt": "Generated poster",
     "posterAsPost": "Organic post",
     "posterAsAd": "Paid ad",

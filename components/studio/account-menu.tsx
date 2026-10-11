@@ -106,6 +106,13 @@ export function AccountMenu({
           }`}
         >
           <p className="truncate px-3 py-2 text-xs text-[#6B7280]">{email}</p>
+          <Link
+            href="/profile"
+            className="block w-full rounded-xl px-3 py-2 text-left text-sm text-[#1A1A1A] hover:bg-[#F5F5F5]"
+            onClick={() => setOpen(false)}
+          >
+            {tNav("profile")}
+          </Link>
           {accountKind === "team" ? (
             <div className="mb-1 px-1 py-1">
               <ClientSwitcher clients={clients} selectedId={selectedClientId} />
@@ -228,9 +235,11 @@ export function AccountMenu({
               : "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-[#F5F5F5]"
         }
         aria-expanded={open}
-        aria-label={email}
+        aria-label={tNav("profile")}
       >
-        {variant === "header" || variant === "dock" ? (
+        {variant === "header" ? (
+          tNav("profile")
+        ) : variant === "dock" ? (
           initial
         ) : (
           <>

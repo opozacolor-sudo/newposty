@@ -506,7 +506,9 @@
     "analytics": "Statistici",
     "messages": "Mesaje",
     "commentsNav": "Comentarii",
-    "leads": "Lead-uri"
+    "leads": "Lead-uri",
+    "profile": "Profil",
+    "demo": "Demo"
   },
   "Studio": {
     "postsTitle": "Postări",
@@ -668,6 +670,27 @@
     "upgradeBody": "Rețelele actuale devin primul client. După aceea poți adăuga alți clienți.",
     "upgradeConfirm": "Trece pe Team",
     "upgradeName": "Nume pentru lucrul actual",
+    "error": "Nu am putut salva. Încearcă din nou."
+  },
+  "Profile": {
+    "title": "Profil",
+    "lead": "Site-ul companiei, numele, datele de contact și datele de facturare pentru facturi.",
+    "companyTitle": "Companie",
+    "companySite": "Site companie",
+    "name": "Nume",
+    "contactTitle": "Date de contact",
+    "contactEmail": "Email",
+    "contactPhone": "Telefon",
+    "billingTitle": "Date de facturare",
+    "billingName": "Denumire legală",
+    "billingTaxId": "CUI / TVA",
+    "billingAddress": "Adresă",
+    "billingCity": "Oraș",
+    "billingPostal": "Cod poștal",
+    "billingCountry": "Țară",
+    "save": "Salvează",
+    "saving": "Se salvează…",
+    "saved": "Salvat",
     "error": "Nu am putut salva. Încearcă din nou."
   },
   "Billing": {
@@ -921,7 +944,7 @@
     "manageReschedule": "Reprogramează",
     "manageEdit": "Editează textul",
     "cleanChat": "Curăță chat-ul",
-    "guideLink": "Manual de utilizare",
+    "guideLink": "Demo",
     "posterAlt": "Poster generat",
     "posterAsPost": "Postare",
     "posterAsAd": "Reclamă",

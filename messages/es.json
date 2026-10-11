@@ -506,7 +506,9 @@
     "analytics": "Analítica",
     "messages": "Mensajes",
     "commentsNav": "Comentarios",
-    "leads": "Leads"
+    "leads": "Leads",
+    "profile": "Perfil",
+    "demo": "Demo"
   },
   "Studio": {
     "postsTitle": "Posts",
@@ -669,6 +671,27 @@
     "upgradeConfirm": "Switch to Team",
     "upgradeName": "Name for your current work",
     "error": "Could not save. Try again."
+  },
+  "Profile": {
+    "title": "Perfil",
+    "lead": "Sitio de la empresa, nombre, datos de contacto y datos de facturación.",
+    "companyTitle": "Empresa",
+    "companySite": "Sitio de la empresa",
+    "name": "Nombre",
+    "contactTitle": "Datos de contacto",
+    "contactEmail": "Correo",
+    "contactPhone": "Teléfono",
+    "billingTitle": "Datos de facturación",
+    "billingName": "Razón social",
+    "billingTaxId": "NIF / IVA",
+    "billingAddress": "Dirección",
+    "billingCity": "Ciudad",
+    "billingPostal": "Código postal",
+    "billingCountry": "País",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "error": "No se pudo guardar. Inténtalo de nuevo."
   },
   "Billing": {
     "deleteTitle": "Delete this account?",
@@ -921,7 +944,7 @@
     "manageReschedule": "Reprogramar",
     "manageEdit": "Editar texto",
     "cleanChat": "Limpiar chat",
-    "guideLink": "Guía",
+    "guideLink": "Demo",
     "posterAlt": "Póster generado",
     "posterAsPost": "Publicación orgánica",
     "posterAsAd": "Anuncio de pago",

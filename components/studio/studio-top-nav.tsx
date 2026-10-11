@@ -66,7 +66,7 @@ export function StudioTopNav({
       label: t("ads"),
       active: pathname === "/ads" || pathname.startsWith("/ads/") || pathname.startsWith("/dashboard/ads"),
     },
-    { href: "/help", label: t("guide"), active: pathname === "/help" || pathname.startsWith("/help/") },
+    { href: "/demo", label: t("demo"), active: pathname === "/demo" || pathname.startsWith("/demo/") },
   ] as const;
 
   function itemClass(active: boolean) {

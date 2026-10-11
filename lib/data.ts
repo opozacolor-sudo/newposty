@@ -14,6 +14,15 @@ export type Profile = {
   zernio_profile_id: string | null;
   lifetime_access: boolean;
   account_kind?: "individual" | "team";
+  company_site?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  billing_name?: string | null;
+  billing_tax_id?: string | null;
+  billing_address?: string | null;
+  billing_city?: string | null;
+  billing_postal_code?: string | null;
+  billing_country?: string | null;
 };
 
 export async function requireUser() {

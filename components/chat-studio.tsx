@@ -610,7 +610,7 @@ export default function ChatStudio() {
           <div className="max-w-[min(82%,26rem)] space-y-2 pt-1">
             <p className="text-sm text-[#5c5652]">{t("empty")}</p>
             <p className="text-xs leading-5 text-[#5c5652]">{t("campaignTip")}</p>
-            <Link href="/help" className="inline-block text-xs font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
+            <Link href="/demo" className="inline-block text-xs font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
               {t("guideLink")}
             </Link>
           </div>
