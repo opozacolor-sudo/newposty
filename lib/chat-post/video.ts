@@ -238,6 +238,31 @@ export async function storeRemoteClip(input: {
   };
 }
 
+export async function latestReadyVideo(
+  supabase: SupabaseClient,
+  conversationId: string,
+): Promise<{ id: string; content: string; createdAt: string; payload: GeneratedVideoPayload } | null> {
+  const { data } = await supabase
+    .from("messages")
+    .select("id, content, created_at, payload")
+    .eq("conversation_id", conversationId)
+    .eq("kind", "generated_video")
+    .order("created_at", { ascending: false })
+    .limit(8);
+  for (const row of data ?? []) {
+    const payload = row.payload as GeneratedVideoPayload | null;
+    if (payload?.type === "generated_video" && payload.media?.url && payload.status !== "pending") {
+      return {
+        id: String(row.id),
+        content: String(row.content ?? ""),
+        createdAt: String(row.created_at ?? ""),
+        payload,
+      };
+    }
+  }
+  return null;
+}
+
 export async function finalizePendingVideo(input: {
   supabase: SupabaseClient;
   conversationId: string;

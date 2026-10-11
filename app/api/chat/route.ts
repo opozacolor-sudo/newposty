@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
-import { createGeneratedVideo } from "@/lib/chat-post/video";
+import { createGeneratedVideo, latestReadyVideo } from "@/lib/chat-post/video";
 import { parseVideoJob } from "@/lib/fal-video";
 import { discoverCatalogProducts, parseCatalogRequest } from "@/lib/chat-post/catalog";
 import { firstPublicUrlInText } from "@/lib/site-brief";
@@ -920,16 +920,29 @@ async function postChat(request: Request) {
         : videoPayload
           ? "generated_video"
           : "text";
-  const payload = confirmation ?? resultsPayload ?? catalogPlan ?? posterPayload ?? videoPayload ?? null;
+  let payload = confirmation ?? resultsPayload ?? catalogPlan ?? posterPayload ?? videoPayload ?? null;
+  let skipInsert = false;
+  if (videoPayload?.status === "pending") {
+    const ready = await latestReadyVideo(supabase, conversationId);
+    const readyAgeMs = ready ? Date.now() - new Date(ready.createdAt).getTime() : Number.POSITIVE_INFINITY;
+    if (ready && readyAgeMs >= 0 && readyAgeMs < 60_000) {
+      videoPayload = ready.payload;
+      payload = ready.payload;
+      finalText = ready.content;
+      skipInsert = true;
+    }
+  }
 
-  await supabase.from("messages").insert({
-    conversation_id: conversationId,
-    user_id: user.id,
-    role: "assistant",
-    content: finalText,
-    kind,
-    payload,
-  });
+  if (!skipInsert) {
+    await supabase.from("messages").insert({
+      conversation_id: conversationId,
+      user_id: user.id,
+      role: "assistant",
+      content: finalText,
+      kind: payload?.type === "generated_video" ? "generated_video" : kind,
+      payload,
+    });
+  }
 
   await supabase
     .from("conversations")

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { finalizePendingVideo } from "@/lib/chat-post/video";
+import { finalizePendingVideo, latestReadyVideo } from "@/lib/chat-post/video";
 import { FalImageError } from "@/lib/fal-image";
 import { parseVideoJob } from "@/lib/fal-video";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -25,8 +25,10 @@ export async function GET(request: Request) {
     .maybeSingle();
   if (!conversation) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  const ready = await latestReadyVideo(supabase, conversationId);
   const job = parseVideoJob(conversation.video_job);
   if (!job) {
+    if (ready) return NextResponse.json({ payload: ready.payload, content: ready.content });
     const { data: message } = await supabase
       .from("messages")
       .select("payload")
