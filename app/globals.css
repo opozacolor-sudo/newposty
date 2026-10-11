@@ -9,6 +9,9 @@
   --accent: #ff4713;
   --accent-dark: #e03d0f;
   --good: #3f6b4a;
+  --desk: #eeebe4;
+  --desk-hi: #f6f3ed;
+  --desk-lo: #e2ddd4;
 }
 
 @theme inline {
@@ -90,12 +93,12 @@ body {
       #0c2a2c 82%,
       #070b0d 100%
     );
-  background-color: #b7b6b3;
+  background-color: var(--desk);
   background-image: radial-gradient(
     circle at 0% 0%,
-    #d4d2ce 0%,
-    #b7b6b3 52%,
-    #9b948f 100%
+    var(--desk-hi) 0%,
+    var(--desk) 52%,
+    var(--desk-lo) 100%
   );
   color: #1d1d1f;
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -103,7 +106,7 @@ body {
 
 html:has(.marketing),
 body:has(.marketing) {
-  background: #b7b6b3;
+  background: var(--desk);
 }
 
 html:has(.marketing):not(.home-no-scroll):not(:has(.studio)) {
@@ -123,11 +126,11 @@ html:has(.studio),
 html:has(.studio) body {
   height: 100% !important;
   overflow: hidden !important;
-  background: #b7b6b3;
+  background: var(--desk);
 }
 
 .marketing > header {
-  background: rgba(183, 182, 179, 0.86);
+  background: color-mix(in srgb, var(--desk) 86%, transparent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -894,7 +897,7 @@ html.home-no-scroll,
 html.home-no-scroll body {
   height: 100%;
   overflow: hidden;
-  background: #e8e6e1;
+  background: var(--desk);
 }
 
 html.home-no-scroll .marketing {
