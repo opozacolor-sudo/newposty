@@ -444,7 +444,7 @@ export const DEMO_PAGES: DemoPage[] = [
   },
   {
     slug: "ads",
-    videos: [{ videoId: "4wncfgRaxOU" }],
+    videos: [{ videoId: "R5U3McrKHjk" }],
     copy: {
       en: {
         navTitle: "Create ads",
