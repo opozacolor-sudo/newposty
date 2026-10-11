@@ -188,7 +188,7 @@ export const IT: GuideDoc = {
       id: "ideas",
       title: "Testi, idee, voce del brand",
       body: [
-        "Se vuoi solo ispirazione, dillo. Posty offre 1–3 opzioni e non pubblica. Se chiedi idee per 30 giorni, prima fa domande — attività, network, tono — e poi dà il piano giorno per giorno. Un piano più lungo dell’abbonamento non parte: serve un abbonamento che copra quella durata.",
+        "Se vuoi solo ispirazione, dillo. Posty offre 1–3 opzioni e non pubblica. Se chiedi idee per 30 giorni, prima fa domande — attività, network, tono, da quando parte — e poi dà il piano giorno per giorno. Un piano più lungo dell’abbonamento non parte: serve un abbonamento che copra quella durata.",
         "Un testo si scrive solo se lo chiedi («scrivi una descrizione», «caption»). Se mandi una foto e dici solo «pubblica su Instagram ora», esce senza testo — non ricicla un vecchio caption del thread.",
         "Quando fornisci tu il testo, viene usato esatto. Se è troppo lungo per un network (280 caratteri su X), viene tagliato al limite e te lo dice.",
         "Puoi descrivere la voce del brand: «siamo un panificio caldo, niente emoji, niente slang». Posty la tiene nella conversazione così le bozze successive restano nel tono.",

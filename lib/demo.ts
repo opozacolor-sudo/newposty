@@ -132,7 +132,7 @@ export const DEMO_PAGES: DemoPage[] = [
         metaDescription:
           "Ask for a month of content for your café. Each day gets a theme, a photo prompt, and a video prompt.",
         title: "A 30-day plan, from chat",
-        body: "You say the business. It asks a few short questions, then writes a day-by-day plan: how to post that day, a photo prompt, and a video prompt — or “make a clip like this”. It does not invent 30 files in the first reply. When you want day 3 as a real image or clip, you ask.",
+        body: "You say the business. It asks a few short questions — including when the plan should start — then writes a day-by-day plan: how to post that day, a photo prompt, and a video prompt — or “make a clip like this”. It does not invent 30 files in the first reply. When you want day 3 as a real image or clip, you ask.",
         say: [
           "I want a 30-day marketing plan for my café. For each day: how to post, a photo prompt, and a video prompt.",
           "Make the photo for 1 November from that plan.",
@@ -146,7 +146,7 @@ export const DEMO_PAGES: DemoPage[] = [
         metaDescription:
           "Ceri o lună de conținut pentru cafenea. Fiecare zi are temă, prompt de poză și prompt de video.",
         title: "Un plan pe 30 de zile, din chat",
-        body: "Spui business-ul. Întreabă câteva lucruri scurte, apoi scrie planul pe zile: cum postezi în ziua aia, un prompt de poză și un prompt de video — sau „fă un clip așa”. Nu inventează 30 de fișiere din prima. Când vrei ziua de 3 ca poză sau clip real, ceri.",
+        body: "Spui business-ul. Întreabă câteva lucruri scurte — inclusiv de când să înceapă planul — apoi scrie planul pe zile: cum postezi în ziua aia, un prompt de poză și un prompt de video — sau „fă un clip așa”. Nu inventează 30 de fișiere din prima. Când vrei ziua de 3 ca poză sau clip real, ceri.",
         say: [
           "Vreau un plan de marketing 30 de zile pentru cafeneaua mea. Pe fiecare zi: cum postez, prompt de poză, prompt de video.",
           "Fă poza pentru 1 noiembrie din plan.",
@@ -160,7 +160,7 @@ export const DEMO_PAGES: DemoPage[] = [
         metaDescription:
           "Bitte um einen Monat Inhalt für dein Café. Jeder Tag bekommt Thema, Foto- und Videoprompt.",
         title: "Ein 30-Tage-Plan, aus dem Chat",
-        body: "Du nennst das Geschäft. Es stellt ein paar kurze Fragen und schreibt dann Tag für Tag: wie du postest, ein Fotoprompt und ein Videoprompt — oder „mach einen Clip so“. Es erzeugt nicht 30 Dateien in der ersten Antwort. Wenn du Tag 3 als echtes Bild oder Clip willst, fragst du.",
+        body: "Du nennst das Geschäft. Es stellt ein paar kurze Fragen — auch ab wann der Plan starten soll — und schreibt dann Tag für Tag: wie du postest, ein Fotoprompt und ein Videoprompt — oder „mach einen Clip so“. Es erzeugt nicht 30 Dateien in der ersten Antwort. Wenn du Tag 3 als echtes Bild oder Clip willst, fragst du.",
         say: [
           "Ich will einen 30-Tage-Marketingplan für mein Café. Pro Tag: wie posten, Fotoprompt, Videoprompt.",
           "Mach das Foto für den 1. November aus dem Plan.",
@@ -174,7 +174,7 @@ export const DEMO_PAGES: DemoPage[] = [
         metaDescription:
           "Chiedi un mese di contenuti per il caffè. Ogni giorno ha tema, prompt foto e prompt video.",
         title: "Un piano di 30 giorni, dalla chat",
-        body: "Dici il business. Fa poche domande, poi scrive il piano giorno per giorno: come postare, un prompt foto e un prompt video — o «fai un clip così». Non inventa 30 file alla prima risposta. Quando vuoi il giorno 3 come foto o clip vera, lo chiedi.",
+        body: "Dici il business. Fa poche domande — anche da quando deve partire il piano — poi scrive il piano giorno per giorno: come postare, un prompt foto e un prompt video — o «fai un clip così». Non inventa 30 file alla prima risposta. Quando vuoi il giorno 3 come foto o clip vera, lo chiedi.",
         say: [
           "Voglio un piano marketing di 30 giorni per il mio caffè. Ogni giorno: come posto, prompt foto, prompt video.",
           "Fai la foto del 1° novembre dal piano.",
@@ -188,7 +188,7 @@ export const DEMO_PAGES: DemoPage[] = [
         metaDescription:
           "Demande un mois de contenu pour ton café. Chaque jour a un thème, un prompt photo et un prompt vidéo.",
         title: "Un plan sur 30 jours, depuis le chat",
-        body: "Tu dis le business. Il pose quelques questions courtes, puis écrit le plan jour par jour : comment poster, un prompt photo et un prompt vidéo — ou « fais un clip comme ça ». Il n’invente pas 30 fichiers dès la première réponse. Quand tu veux le jour 3 en image ou clip réel, tu le demandes.",
+        body: "Tu dis le business. Il pose quelques questions courtes — y compris à partir de quand le plan commence — puis écrit le plan jour par jour : comment poster, un prompt photo et un prompt vidéo — ou « fais un clip comme ça ». Il n’invente pas 30 fichiers dès la première réponse. Quand tu veux le jour 3 en image ou clip réel, tu le demandes.",
         say: [
           "Je veux un plan marketing 30 jours pour mon café. Chaque jour : comment poster, prompt photo, prompt vidéo.",
           "Fais la photo du 1er novembre d’après le plan.",
@@ -202,7 +202,7 @@ export const DEMO_PAGES: DemoPage[] = [
         metaDescription:
           "Pide un mes de contenido para tu café. Cada día tiene tema, prompt de foto y prompt de vídeo.",
         title: "Un plan de 30 días, desde el chat",
-        body: "Dices el negocio. Pregunta unas pocas cosas y escribe el plan día a día: cómo publicar, un prompt de foto y un prompt de vídeo — o «haz un clip así». No inventa 30 archivos en la primera respuesta. Cuando quieras el día 3 como foto o clip real, lo pides.",
+        body: "Dices el negocio. Pregunta unas pocas cosas — también desde cuándo debe empezar el plan — y escribe el plan día a día: cómo publicar, un prompt de foto y un prompt de vídeo — o «haz un clip así». No inventa 30 archivos en la primera respuesta. Cuando quieras el día 3 como foto o clip real, lo pides.",
         say: [
           "Quiero un plan de marketing de 30 días para mi café. Cada día: cómo publico, prompt de foto, prompt de vídeo.",
           "Haz la foto del 1 de noviembre del plan.",

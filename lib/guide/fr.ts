@@ -188,7 +188,7 @@ export const FR: GuideDoc = {
       id: "ideas",
       title: "Textes, idées, voix de marque",
       body: [
-        "Si tu veux seulement de l’inspiration, dis-le. Posty propose 1–3 options et ne publie rien. Pour 30 jours d’idées, il pose d’abord des questions — activité, réseaux, ton — puis donne le plan jour par jour. Un plan plus long que l’abonnement ne part pas : il faut un abonnement qui couvre cette durée.",
+        "Si tu veux seulement de l’inspiration, dis-le. Posty propose 1–3 options et ne publie rien. Pour 30 jours d’idées, il pose d’abord des questions — activité, réseaux, ton, date de début — puis donne le plan jour par jour. Un plan plus long que l’abonnement ne part pas : il faut un abonnement qui couvre cette durée.",
         "Un texte n’est écrit que si tu le demandes (« fais une description », « caption »). Si tu envoies une photo et dis seulement « publie sur Instagram maintenant », ça part sans texte — pas de recyclage d’un vieux caption du fil.",
         "Quand tu fournis le texte, il est utilisé tel quel. S’il est trop long pour un réseau (280 caractères sur X), il est coupé à la limite et on te le dit.",
         "Tu peux décrire la voix de marque : « on est une boulangerie chaleureuse, pas d’emoji, pas de slang. » Posty la garde dans la conversation pour que les brouillons suivants restent dans le ton.",

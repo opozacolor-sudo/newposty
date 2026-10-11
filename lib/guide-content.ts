@@ -200,7 +200,7 @@ const RO: GuideDoc = {
       id: "ideas",
       title: "Texte, idei, voce de brand",
       body: [
-        "Dacă vrei doar inspirație, spune-o. Posty îți dă 1–3 variante și nu publică nimic. Dacă ceri idei pentru 30 de zile, te întreabă întâi — business, rețele, ton — și apoi îți dă planul pe zile. Un plan mai lung decât abonamentul nu merge: ai nevoie de un abonament care să acopere durata.",
+        "Dacă vrei doar inspirație, spune-o. Posty îți dă 1–3 variante și nu publică nimic. Dacă ceri idei pentru 30 de zile, te întreabă întâi — business, rețele, ton, de când să înceapă — și apoi îți dă planul pe zile. Un plan mai lung decât abonamentul nu merge: ai nevoie de un abonament care să acopere durata.",
         "Descrierea se scrie doar dacă o ceri („fă-i o descriere”, „scrie un text”, „caption”). Dacă trimiți o poză și spui doar „publică pe Instagram acum”, iese fără text — nu reciclează un caption vechi din chat.",
         "Când dai tu textul, îl folosește exact. Dacă e prea lung pentru o rețea (de exemplu 280 de caractere pe X), îl taie la limită și îți spune.",
         "Poți spune cum vrei să sune brandul: „suntem o brutărie caldă, fără emoji, fără slang”. Posty ține minte vocea în conversație ca textele următoare să rămână pe ton.",
@@ -628,7 +628,7 @@ const EN: GuideDoc = {
       id: "ideas",
       title: "Captions, ideas, brand voice",
       body: [
-        "If you only want inspiration, say so. Posty offers 1–3 options and does not publish. Ask for 30 days of content ideas and it questions first — business, networks, tone — then gives a day-by-day plan. A plan longer than the subscription does not run: you need a subscription that covers that span.",
+        "If you only want inspiration, say so. Posty offers 1–3 options and does not publish. Ask for 30 days of content ideas and it questions first — business, networks, tone, start date — then gives a day-by-day plan. A plan longer than the subscription does not run: you need a subscription that covers that span.",
         "A caption is written only if you ask (“write a caption”, “give it a description”). If you send a photo and say “publish on Instagram now”, it goes out with no text — it will not reuse an old caption from the thread.",
         "When you supply the copy, it is used exactly. If it is too long for a network (280 characters on X), it is trimmed to the limit and you are told.",
         "You can describe the brand voice: “we are a warm bakery, no emoji, no slang.” Posty keeps that in the conversation so later drafts stay on tone.",
