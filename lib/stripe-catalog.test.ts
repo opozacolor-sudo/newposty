@@ -6,6 +6,7 @@ import {
   catalogByLookupKey,
   effectivePlan,
   highestPlan,
+  planCta,
   STRIPE_CATALOG,
 } from "./stripe-catalog";
 
@@ -35,4 +36,13 @@ test("lifetime and growth can use ads and leads; studio cannot", () => {
 test("highest active plan wins", () => {
   assert.equal(highestPlan(["studio", "growth", "promote"]), "growth");
   assert.equal(highestPlan([]), null);
+});
+
+test("plan cards offer upgrade, downgrade, or switch interval", () => {
+  assert.equal(planCta("none", null, "studio", false), "choose");
+  assert.equal(planCta("studio", "month", "studio", false), "current");
+  assert.equal(planCta("studio", "month", "studio", true), "switchInterval");
+  assert.equal(planCta("studio", "month", "growth", false), "upgrade");
+  assert.equal(planCta("growth", "year", "studio", true), "downgrade");
+  assert.equal(planCta("lifetime", "month", "promote", false), "current");
 });

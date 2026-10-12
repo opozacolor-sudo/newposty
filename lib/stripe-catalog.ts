@@ -83,6 +83,23 @@ export function adsAccountsMax(plan: EffectivePlan) {
   return canUseAds(plan) ? ADS_ACCOUNTS_MAX : 0;
 }
 
+export type PlanCta = "current" | "upgrade" | "downgrade" | "switchInterval" | "choose";
+
+export function planCta(
+  current: EffectivePlan,
+  currentInterval: "month" | "year" | null,
+  target: PlanId,
+  yearly: boolean,
+): PlanCta {
+  if (current === "lifetime") return "current";
+  if (current === "none") return "choose";
+  const targetInterval = yearly ? "year" : "month";
+  if (current === target) {
+    return currentInterval && currentInterval !== targetInterval ? "switchInterval" : "current";
+  }
+  return PLAN_RANK[target] > PLAN_RANK[current] ? "upgrade" : "downgrade";
+}
+
 export function formatEurFromCents(cents: number, locale: string) {
   const tag = isAppLocale(locale)
     ? { en: "en-GB", ro: "ro-RO", de: "de-DE", it: "it-IT", fr: "fr-FR", es: "es-ES" }[locale]

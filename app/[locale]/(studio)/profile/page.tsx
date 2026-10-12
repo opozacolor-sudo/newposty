@@ -30,8 +30,8 @@ export default async function ProfilePage({
     <StudioPage>
       <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("title")}</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5c5652]">{t("lead")}</p>
-      <ProfileForm initial={profileDetailsFromRow(data, user.email)} />
       <PlanBilling notice={params.billing ?? null} />
+      <ProfileForm initial={profileDetailsFromRow(data, user.email)} />
     </StudioPage>
   );
 }

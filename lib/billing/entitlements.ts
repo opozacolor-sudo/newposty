@@ -4,6 +4,7 @@ import {
   adsAccountsMax,
   canUseAds,
   canUseLeads,
+  catalogByLookupKey,
   effectivePlan,
   type EffectivePlan,
 } from "@/lib/stripe-catalog";
@@ -66,16 +67,41 @@ export async function assertAdsConnectAllowed(input: {
   return "ok";
 }
 
+export async function loadActiveSubscription(userId: string) {
+  const admin = createAdminSupabase();
+  const { data } = await admin
+    .from("billing_subscriptions")
+    .select("lookup_key, plan, status, cancel_at_period_end, current_period_end")
+    .eq("user_id", userId)
+    .in("status", ["active", "trialing"])
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const lookupKey = typeof data?.lookup_key === "string" ? data.lookup_key : null;
+  const entry = lookupKey ? catalogByLookupKey(lookupKey) : undefined;
+  return {
+    lookupKey,
+    interval: entry?.interval ?? null,
+    cancelAtPeriodEnd: Boolean(data?.cancel_at_period_end),
+    currentPeriodEnd: typeof data?.current_period_end === "string" ? data.current_period_end : null,
+  };
+}
+
 export async function loadBillingSnapshot(userId: string) {
   const billing = await loadProfileBilling(userId);
-  const [photos, videos] = await Promise.all([
+  const [photos, videos, subscription] = await Promise.all([
     remainingCredits(userId, "image"),
     remainingCredits(userId, "video"),
+    loadActiveSubscription(userId),
   ]);
   return {
     ...billing,
     canAds: canUseAds(billing.plan),
     canLeads: canUseLeads(billing.plan),
     credits: { photos, videos },
+    interval: subscription.interval,
+    lookupKey: subscription.lookupKey,
+    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+    currentPeriodEnd: subscription.currentPeriodEnd,
   };
 }
