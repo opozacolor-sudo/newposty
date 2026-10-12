@@ -4,7 +4,6 @@ export const STRIPE_CURRENCY = "eur" as const;
 export const PACK_UNITS = 30;
 export const PACK_EXPIRES_DAYS = 30;
 export const ADS_ACCOUNTS_MAX = 3;
-export const LEADS_INCLUDED = 30;
 
 export type PlanId = "studio" | "promote" | "growth";
 export type PackKind = "image" | "video" | "leads";
@@ -18,8 +17,7 @@ export type CatalogLookupKey =
   | "growth_monthly"
   | "growth_annual"
   | "pack_photos_30"
-  | "pack_videos_30"
-  | "pack_leads_30";
+  | "pack_videos_30";
 
 export type CatalogEntry = {
   lookupKey: CatalogLookupKey;
@@ -47,7 +45,6 @@ export const STRIPE_CATALOG: CatalogEntry[] = [
   { lookupKey: "growth_annual", kind: "plan", plan: "growth", interval: "year", amountCents: 43000, productName: "Creștere" },
   { lookupKey: "pack_photos_30", kind: "pack", pack: "image", amountCents: 250, productName: "30 poze" },
   { lookupKey: "pack_videos_30", kind: "pack", pack: "video", amountCents: 500, productName: "30 video" },
-  { lookupKey: "pack_leads_30", kind: "pack", pack: "leads", amountCents: 1000, productName: "30 lead-uri" },
 ];
 
 const BY_KEY = new Map(STRIPE_CATALOG.map((entry) => [entry.lookupKey, entry]));
@@ -84,10 +81,6 @@ export function canUseLeads(plan: EffectivePlan) {
 
 export function adsAccountsMax(plan: EffectivePlan) {
   return canUseAds(plan) ? ADS_ACCOUNTS_MAX : 0;
-}
-
-export function leadsIncludedFor(plan: EffectivePlan) {
-  return canUseLeads(plan) ? LEADS_INCLUDED : 0;
 }
 
 export function formatEurFromCents(cents: number, locale: string) {

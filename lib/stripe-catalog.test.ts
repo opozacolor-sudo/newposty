@@ -9,8 +9,8 @@ import {
   STRIPE_CATALOG,
 } from "./stripe-catalog";
 
-test("catalog has three plans with monthly and annual, plus three packs", () => {
-  assert.equal(STRIPE_CATALOG.length, 9);
+test("catalog has three plans with monthly and annual, plus photo and video packs", () => {
+  assert.equal(STRIPE_CATALOG.length, 8);
   assert.equal(catalogByLookupKey("studio_monthly")?.amountCents, 1500);
   assert.equal(catalogByLookupKey("studio_annual")?.amountCents, 15000);
   assert.equal(catalogByLookupKey("promote_monthly")?.amountCents, 2100);
@@ -19,7 +19,7 @@ test("catalog has three plans with monthly and annual, plus three packs", () => 
   assert.equal(catalogByLookupKey("growth_annual")?.amountCents, 43000);
   assert.equal(catalogByLookupKey("pack_photos_30")?.amountCents, 250);
   assert.equal(catalogByLookupKey("pack_videos_30")?.amountCents, 500);
-  assert.equal(catalogByLookupKey("pack_leads_30")?.amountCents, 1000);
+  assert.equal(catalogByLookupKey("pack_leads_30"), undefined);
 });
 
 test("lifetime and growth can use ads and leads; studio cannot", () => {

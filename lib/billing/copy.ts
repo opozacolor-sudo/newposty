@@ -33,14 +33,6 @@ const COPY = {
     fr: "Les leads sont sur Creștere. Ouvre Profil pour t’abonner.",
     es: "Los leads están en Creștere. Abre Perfil para suscribirte.",
   },
-  leadsPackNeedsGrowth: {
-    en: "Lead packs are only for Creștere.",
-    ro: "Pachetele de lead-uri sunt doar pe Creștere.",
-    de: "Lead-Pakete gibt es nur bei Creștere.",
-    it: "I pacchetti lead sono solo su Creștere.",
-    fr: "Les packs leads sont réservés à Creștere.",
-    es: "Los packs de leads son solo para Creștere.",
-  },
   adsLimit: {
     en: "This plan includes up to 3 ads accounts.",
     ro: "Planul include maxim 3 conturi ads.",

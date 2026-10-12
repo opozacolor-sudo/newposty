@@ -1,10 +1,5 @@
 import { createAdminSupabase } from "@/lib/supabase/admin";
-import {
-  canUseLeads,
-  type PackKind,
-  type EffectivePlan,
-  leadsIncludedFor,
-} from "@/lib/stripe-catalog";
+import { canUseLeads, type PackKind, type EffectivePlan } from "@/lib/stripe-catalog";
 
 export type ConsumedCredit = { packId: string; remaining: number };
 
@@ -48,47 +43,6 @@ export async function refundCredit(packId: string) {
   if (error) throw error;
 }
 
-export function calendarMonthStartUtc(now = new Date()) {
-  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-01`;
-}
-
-export async function loadLeadPeriodStart(userId: string) {
-  const admin = createAdminSupabase();
-  const { data } = await admin
-    .from("billing_subscriptions")
-    .select("current_period_start")
-    .eq("user_id", userId)
-    .in("status", ["active", "trialing"])
-    .order("current_period_end", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  const raw = data?.current_period_start;
-  if (typeof raw === "string" && raw.length >= 10) return raw.slice(0, 10);
-  return calendarMonthStartUtc();
-}
-
-export async function leadsIncludedRemaining(userId: string, plan: EffectivePlan) {
-  const included = leadsIncludedFor(plan);
-  if (included <= 0) return 0;
-  const periodStart = await loadLeadPeriodStart(userId);
-  const admin = createAdminSupabase();
-  const { data } = await admin
-    .from("plan_usage")
-    .select("leads_used")
-    .eq("user_id", userId)
-    .eq("period_start", periodStart)
-    .maybeSingle();
-  return Math.max(0, included - Number(data?.leads_used ?? 0));
-}
-
-export async function takeLeadSlot(userId: string, plan: EffectivePlan) {
-  if (!canUseLeads(plan)) return false;
-  const admin = createAdminSupabase();
-  const { data, error } = await admin.rpc("take_lead_slot", {
-    p_user_id: userId,
-    p_included: leadsIncludedFor(plan),
-    p_period_start: await loadLeadPeriodStart(userId),
-  });
-  if (error) throw error;
-  return data === "included" || data === "pack";
+export async function takeLeadSlot(_userId: string, plan: EffectivePlan) {
+  return canUseLeads(plan);
 }

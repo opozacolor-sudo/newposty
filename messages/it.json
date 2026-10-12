@@ -262,7 +262,7 @@
   },
   "Pricing": {
     "metaTitle": "Prezzi Studio, Promovare e Creștere | posty.now",
-    "metaDescription": "Studio da 15€ al mese, Promovare da 21€, Creștere da 40€. Pacchetti foto, video e lead. IVA esclusa. Primo mese gratis se ti pre-iscrivi.",
+    "metaDescription": "Studio da 15€ al mese, Promovare da 21€, Creștere da 40€ con lead illimitati. Pacchetti foto e video. IVA esclusa. Primo mese gratis se ti pre-iscrivi.",
     "faqTitle": "Domande"
   },
   "About": {
@@ -723,13 +723,12 @@
     "planLifetime": "A vita",
     "planNone": "Nessun piano ancora",
     "currentPlan": "Piano attuale: {plan}",
-    "creditsLine": "{photos} foto · {videos} video · {leads} lead",
+    "creditsLine": "{photos} foto · {videos} video",
     "monthly": "mensile",
     "annual": "annuale",
     "buy": "Acquista",
     "buying": "Apertura…",
     "manage": "Gestisci la fatturazione",
-    "leadsNeedGrowth": "Solo Creștere",
     "checkoutError": "Impossibile aprire il checkout. Riprova.",
     "portalError": "Impossibile aprire il portale di fatturazione.",
     "checkoutSuccess": "Pagamento ricevuto. Crediti e piano si aggiornano tra un attimo.",

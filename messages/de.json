@@ -262,7 +262,7 @@
   },
   "Pricing": {
     "metaTitle": "Preise für Studio, Promovare und Creștere | posty.now",
-    "metaDescription": "Studio ab 15€ im Monat, Promovare ab 21€, Creștere ab 40€. Foto-, Video- und Lead-Pakete. Ohne MwSt. Erster Monat frei bei Vormerkung.",
+    "metaDescription": "Studio ab 15€ im Monat, Promovare ab 21€, Creștere ab 40€ mit unbegrenzten Leads. Foto- und Video-Pakete. Ohne MwSt. Erster Monat frei bei Vormerkung.",
     "faqTitle": "Fragen"
   },
   "About": {
@@ -723,13 +723,12 @@
     "planLifetime": "Lebenslang",
     "planNone": "Noch kein Plan",
     "currentPlan": "Aktueller Plan: {plan}",
-    "creditsLine": "{photos} Fotos · {videos} Videos · {leads} Leads",
+    "creditsLine": "{photos} Fotos · {videos} Videos",
     "monthly": "monatlich",
     "annual": "jährlich",
     "buy": "Kaufen",
     "buying": "Wird geöffnet…",
     "manage": "Abrechnung verwalten",
-    "leadsNeedGrowth": "Nur Creștere",
     "checkoutError": "Checkout konnte nicht geöffnet werden. Bitte erneut versuchen.",
     "portalError": "Das Abrechnungsportal konnte nicht geöffnet werden.",
     "checkoutSuccess": "Zahlung eingegangen. Guthaben und Plan aktualisieren sich gleich.",

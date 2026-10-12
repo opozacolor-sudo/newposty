@@ -7,7 +7,7 @@ import {
   effectivePlan,
   type EffectivePlan,
 } from "@/lib/stripe-catalog";
-import { leadsIncludedRemaining, remainingCredits } from "@/lib/billing/credits";
+import { remainingCredits } from "@/lib/billing/credits";
 
 export type ProfileBilling = {
   lifetime: boolean;
@@ -68,22 +68,14 @@ export async function assertAdsConnectAllowed(input: {
 
 export async function loadBillingSnapshot(userId: string) {
   const billing = await loadProfileBilling(userId);
-  const [photos, videos, extraLeads, includedLeads] = await Promise.all([
+  const [photos, videos] = await Promise.all([
     remainingCredits(userId, "image"),
     remainingCredits(userId, "video"),
-    remainingCredits(userId, "leads"),
-    leadsIncludedRemaining(userId, billing.plan),
   ]);
   return {
     ...billing,
     canAds: canUseAds(billing.plan),
     canLeads: canUseLeads(billing.plan),
-    credits: {
-      photos,
-      videos,
-      leads: extraLeads + includedLeads,
-      extraLeads,
-      includedLeads,
-    },
+    credits: { photos, videos },
   };
 }

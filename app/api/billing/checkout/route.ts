@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     if (error instanceof BillingCheckoutError) {
-      const status = error.code === "LEADS_PACK_NEEDS_GROWTH" ? 409 : error.code === "STRIPE" ? 502 : 400;
+      const status = error.code === "STRIPE" ? 502 : 400;
       return NextResponse.json({ error: error.code, message: error.message }, { status });
     }
     return NextResponse.json({ error: "CHECKOUT_FAILED" }, { status: 502 });

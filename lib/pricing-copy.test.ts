@@ -9,12 +9,14 @@ test("yearly plans save against 12 months", () => {
   assert.equal(growth && annualSaveCents(growth), 5000);
 });
 
-test("all six locales have three plans and three packs", () => {
+test("all six locales have three plans and two packs, unlimited leads on growth", () => {
   for (const locale of ["en", "ro", "de", "it", "fr", "es"] as const) {
     const copy = pricingCopy(locale);
     assert.equal(copy.plans.length, 3);
-    assert.equal(copy.packs.length, 3);
+    assert.equal(copy.packs.length, 2);
+    assert.equal(copy.packs.every((pack) => pack.id !== "leads"), true);
     assert.equal(copy.plans[2]?.featured, true);
+    assert.equal(copy.plans[2]?.features.some((feature) => /30/.test(feature)), false);
     assert.equal(copy.faqs.length, 5);
     assert.equal(copy.faqs[0]?.a.toLowerCase().includes("tax is on"), false);
   }

@@ -15,7 +15,7 @@ export type PricingPlanCopy = {
 };
 
 export type PricingPackCopy = {
-  id: "photos" | "videos" | "leads";
+  id: "photos" | "videos";
   name: string;
   priceCents: number;
   body: string;
@@ -94,10 +94,10 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
         id: "growth",
         name: "Creștere",
         tag: "Posts that bring customers.",
-        gain: "The inbox qualifies. You close. Thirty leads a month are included.",
+        gain: "The inbox qualifies. You close. Qualified leads are unlimited.",
         features: [
           "A lead agent trained on your public site",
-          "30 qualified leads per month, then packs of 30",
+          "Unlimited qualified leads — no extra pack",
           "Replies to new messages and comments after you turn it on",
         ],
         monthlyCents: 4000,
@@ -110,7 +110,6 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     packs: [
       { id: "photos", name: "30 photos", priceCents: 250, body: "Posters and product stills from chat. Use them on Studio, Promovare, or Creștere." },
       { id: "videos", name: "30 videos", priceCents: 500, body: "5-second clips, ready for Reels and TikTok. Same packs on every plan." },
-      { id: "leads", name: "30 leads", priceCents: 1000, body: "Extra qualified contacts when the 30 included on Creștere are gone.", note: "Creștere only" },
     ],
     gainsTitle: "What you actually get",
     gains: [
@@ -129,7 +128,7 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
       { q: "Is VAT included?", a: "No. Prices exclude 21% Romanian VAT. VAT is added at checkout." },
       { q: "Can I start on Studio and upgrade?", a: "Yes. Promovare includes Studio. Creștere includes Promovare. Packs stay with you." },
       { q: "Do I need a pack to post?", a: "No. Studio posts files you already have. Packs are only for AI photos and videos you generate in chat." },
-      { q: "Can I buy leads without Creștere?", a: "No. Leads are part of Creștere. The extra pack is only for that plan." },
+      { q: "Can I use leads without Creștere?", a: "No. The lead agent is on Creștere. There is no separate lead pack." },
       { q: "What happens after 15 October?", a: "Pre-register now and the first month is free. Then the plan you pick renews monthly or yearly." },
     ],
   },
@@ -179,10 +178,10 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
         id: "growth",
         name: "Creștere",
         tag: "Postări care aduc clienți.",
-        gain: "Inbox-ul califică. Tu închizi. 30 de lead-uri pe lună sunt incluse.",
+        gain: "Inbox-ul califică. Tu închizi. Lead-urile calificate sunt nelimitate.",
         features: [
           "Agent de lead-uri antrenat pe site-ul tău public",
-          "30 de lead-uri calificate pe lună, apoi pachete de 30",
+          "Lead-uri calificate nelimitate — fără pachet extra",
           "Răspunde la mesaje și comentarii noi, după ce îl pornești",
         ],
         monthlyCents: 4000,
@@ -195,7 +194,6 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     packs: [
       { id: "photos", name: "30 de poze", priceCents: 250, body: "Postere și poze de produs din chat. Le folosești pe Studio, Promovare sau Creștere." },
       { id: "videos", name: "30 de video", priceCents: 500, body: "Clipuri de 5 secunde, gata pentru Reels și TikTok. Aceleași pachete pe orice plan." },
-      { id: "leads", name: "30 de lead-uri", priceCents: 1000, body: "Contacte extra, calificate, când s-au terminat cele 30 incluse pe Creștere.", note: "Doar pe Creștere" },
     ],
     gainsTitle: "Ce câștigi, concret",
     gains: [
@@ -214,7 +212,7 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
       { q: "Prețurile includ TVA?", a: "Nu. Sunt fără TVA 21%. Taxa se adaugă la plată." },
       { q: "Pot începe pe Studio și să urc?", a: "Da. Promovare include Studio. Creștere include Promovare. Pachetele rămân ale tale." },
       { q: "Am nevoie de pachet ca să postez?", a: "Nu. Studio postează fișierele pe care le ai. Pachetele sunt doar pentru pozele și video-urile generate în chat." },
-      { q: "Pot cumpăra lead-uri fără Creștere?", a: "Nu. Lead-urile sunt pe Creștere. Pachetul extra e doar pe acel plan." },
+      { q: "Pot folosi lead-uri fără Creștere?", a: "Nu. Agentul e pe Creștere. Nu există pachet separat de lead-uri." },
       { q: "Ce se întâmplă după 15 octombrie?", a: "Te preînregistrezi acum și prima lună e gratuită. Apoi planul ales se reînnoiește lunar sau anual." },
     ],
   },
@@ -264,10 +262,10 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
         id: "growth",
         name: "Creștere",
         tag: "Posts, die Kunden bringen.",
-        gain: "Der Posteingang qualifiziert. Du schließt ab. 30 Leads im Monat sind drin.",
+        gain: "Der Posteingang qualifiziert. Du schließt ab. Qualifizierte Leads sind unbegrenzt.",
         features: [
           "Lead-Agent, trainiert auf deiner öffentlichen Website",
-          "30 qualifizierte Leads pro Monat, danach 30er-Pakete",
+          "Unbegrenzt qualifizierte Leads — kein Extra-Paket",
           "Antwortet auf neue Nachrichten und Kommentare, sobald er an ist",
         ],
         monthlyCents: 4000,
@@ -280,7 +278,6 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     packs: [
       { id: "photos", name: "30 Fotos", priceCents: 250, body: "Poster und Produktfotos aus dem Chat. Auf Studio, Promovare oder Creștere." },
       { id: "videos", name: "30 Videos", priceCents: 500, body: "5-Sekunden-Clips für Reels und TikTok. Dieselben Pakete auf jedem Plan." },
-      { id: "leads", name: "30 Leads", priceCents: 1000, body: "Zusätzliche qualifizierte Kontakte, wenn die 30 auf Creștere verbraucht sind.", note: "Nur Creștere" },
     ],
     gainsTitle: "Was du wirklich bekommst",
     gains: [
@@ -299,7 +296,7 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
       { q: "Ist MwSt. drin?", a: "Nein. Preise ohne 21 % rumänische MwSt. Die Steuer kommt an der Kasse dazu." },
       { q: "Kann ich mit Studio starten und upgraden?", a: "Ja. Promovare enthält Studio. Creștere enthält Promovare. Pakete bleiben bei dir." },
       { q: "Brauche ich ein Paket zum Posten?", a: "Nein. Studio postet Dateien, die du schon hast. Pakete sind nur für KI-Fotos und -Videos im Chat." },
-      { q: "Kann ich Leads ohne Creștere kaufen?", a: "Nein. Leads gehören zu Creștere. Das Extra-Paket nur auf diesem Plan." },
+      { q: "Kann ich Leads ohne Creștere nutzen?", a: "Nein. Der Lead-Agent gehört zu Creștere. Es gibt kein separates Lead-Paket." },
       { q: "Was passiert nach dem 15. Oktober?", a: "Jetzt vormerken, erster Monat frei. Danach läuft der gewählte Plan monatlich oder jährlich." },
     ],
   },
@@ -349,10 +346,10 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
         id: "growth",
         name: "Creștere",
         tag: "Post che portano clienti.",
-        gain: "La inbox qualifica. Tu chiudi. Trenta lead al mese sono inclusi.",
+        gain: "La inbox qualifica. Tu chiudi. I lead qualificati sono illimitati.",
         features: [
           "Agente lead addestrato sul tuo sito pubblico",
-          "30 lead qualificati al mese, poi pacchetti da 30",
+          "Lead qualificati illimitati — nessun pacchetto extra",
           "Risponde a messaggi e commenti nuovi dopo che lo accendi",
         ],
         monthlyCents: 4000,
@@ -365,7 +362,6 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     packs: [
       { id: "photos", name: "30 foto", priceCents: 250, body: "Poster e still di prodotto dalla chat. Su Studio, Promovare o Creștere." },
       { id: "videos", name: "30 video", priceCents: 500, body: "Clip da 5 secondi, pronte per Reels e TikTok. Stessi pacchetti su ogni piano." },
-      { id: "leads", name: "30 lead", priceCents: 1000, body: "Contatti extra qualificati quando finiscono i 30 inclusi su Creștere.", note: "Solo Creștere" },
     ],
     gainsTitle: "Cosa ottieni davvero",
     gains: [
@@ -384,7 +380,7 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
       { q: "L’IVA è inclusa?", a: "No. Prezzi IVA rumena 21% esclusa. L’imposta si aggiunge al pagamento." },
       { q: "Posso partire da Studio e salire?", a: "Sì. Promovare include Studio. Creștere include Promovare. I pacchetti restano tuoi." },
       { q: "Mi serve un pacchetto per postare?", a: "No. Studio pubblica i file che hai già. I pacchetti sono solo per foto e video generati in chat." },
-      { q: "Posso comprare lead senza Creștere?", a: "No. I lead sono di Creștere. Il pacchetto extra solo su quel piano." },
+      { q: "Posso usare i lead senza Creștere?", a: "No. L’agente lead è su Creștere. Non c’è un pacchetto lead separato." },
       { q: "Cosa succede dopo il 15 ottobre?", a: "Pre-iscriviti ora e il primo mese è gratis. Poi il piano scelto si rinnova mensile o annuale." },
     ],
   },
@@ -434,10 +430,10 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
         id: "growth",
         name: "Creștere",
         tag: "Des posts qui amènent des clients.",
-        gain: "La boîte qualifie. Tu closes. Trente leads par mois sont inclus.",
+        gain: "La boîte qualifie. Tu closes. Les leads qualifiés sont illimités.",
         features: [
           "Agent leads formé sur ton site public",
-          "30 leads qualifiés par mois, puis packs de 30",
+          "Leads qualifiés illimités — pas de pack extra",
           "Répond aux nouveaux messages et commentaires une fois allumé",
         ],
         monthlyCents: 4000,
@@ -450,7 +446,6 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     packs: [
       { id: "photos", name: "30 photos", priceCents: 250, body: "Affiches et visuels produit depuis le chat. Sur Studio, Promovare ou Creștere." },
       { id: "videos", name: "30 vidéos", priceCents: 500, body: "Clips de 5 secondes, prêts pour Reels et TikTok. Les mêmes packs sur chaque offre." },
-      { id: "leads", name: "30 leads", priceCents: 1000, body: "Contacts extra qualifiés quand les 30 inclus sur Creștere sont finis.", note: "Réservé à Creștere" },
     ],
     gainsTitle: "Ce que tu gagnes vraiment",
     gains: [
@@ -469,7 +464,7 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
       { q: "La TVA est incluse ?", a: "Non. Prix hors TVA roumaine 21 %. La taxe s’ajoute au paiement." },
       { q: "Je peux commencer sur Studio et monter ?", a: "Oui. Promovare inclut Studio. Creștere inclut Promovare. Les packs restent à toi." },
       { q: "Il me faut un pack pour poster ?", a: "Non. Studio publie les fichiers que tu as déjà. Les packs sont pour les photos et vidéos générées dans le chat." },
-      { q: "Je peux acheter des leads sans Creștere ?", a: "Non. Les leads sont sur Creștere. Le pack extra uniquement sur cette offre." },
+      { q: "Je peux utiliser les leads sans Creștere ?", a: "Non. L’agent leads est sur Creștere. Il n’y a pas de pack leads à part." },
       { q: "Et après le 15 octobre ?", a: "Pré-inscris-toi maintenant, le premier mois est offert. Ensuite l’offre choisie se renouvelle au mois ou à l’année." },
     ],
   },
@@ -519,10 +514,10 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
         id: "growth",
         name: "Creștere",
         tag: "Posts que traen clientes.",
-        gain: "La bandeja cualifica. Tú cierras. Treinta leads al mes van incluidos.",
+        gain: "La bandeja cualifica. Tú cierras. Los leads cualificados son ilimitados.",
         features: [
           "Agente de leads entrenado en tu sitio público",
-          "30 leads cualificados al mes, luego packs de 30",
+          "Leads cualificados ilimitados — sin pack extra",
           "Responde a mensajes y comentarios nuevos cuando lo enciendes",
         ],
         monthlyCents: 4000,
@@ -535,7 +530,6 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     packs: [
       { id: "photos", name: "30 fotos", priceCents: 250, body: "Pósters y fotos de producto desde el chat. En Studio, Promovare o Creștere." },
       { id: "videos", name: "30 vídeos", priceCents: 500, body: "Clips de 5 segundos, listos para Reels y TikTok. Los mismos packs en cada plan." },
-      { id: "leads", name: "30 leads", priceCents: 1000, body: "Contactos extra cualificados cuando se acaban los 30 incluidos en Creștere.", note: "Solo Creștere" },
     ],
     gainsTitle: "Lo que ganas de verdad",
     gains: [
@@ -554,7 +548,7 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
       { q: "¿El IVA está incluido?", a: "No. Precios sin IVA rumano del 21%. El impuesto se añade al pagar." },
       { q: "¿Puedo empezar en Studio y subir?", a: "Sí. Promovare incluye Studio. Creștere incluye Promovare. Los packs se quedan contigo." },
       { q: "¿Necesito un pack para publicar?", a: "No. Studio publica los archivos que ya tienes. Los packs son solo para fotos y vídeos generados en el chat." },
-      { q: "¿Puedo comprar leads sin Creștere?", a: "No. Los leads van con Creștere. El pack extra solo en ese plan." },
+      { q: "¿Puedo usar leads sin Creștere?", a: "No. El agente de leads va con Creștere. No hay un pack de leads aparte." },
       { q: "¿Qué pasa después del 15 de octubre?", a: "Preinscríbete ahora y el primer mes es gratis. Luego el plan elegido se renueva al mes o al año." },
     ],
   },

@@ -8,7 +8,7 @@ type BillingPayload = {
   plan?: string;
   hasCustomer?: boolean;
   canLeads?: boolean;
-  credits?: { photos: number; videos: number; leads: number; includedLeads: number; extraLeads: number };
+  credits?: { photos: number; videos: number };
   catalog?: CatalogEntry[];
   subscription?: { id: string; cancelAtPeriodEnd: boolean } | null;
 };
@@ -101,7 +101,6 @@ export function PlanBilling({ notice }: { notice?: string | null }) {
           ? ` · ${t("creditsLine", {
               photos: data.credits.photos,
               videos: data.credits.videos,
-              leads: data.credits.leads,
             })}`
           : ""}
       </p>
@@ -124,25 +123,21 @@ export function PlanBilling({ notice }: { notice?: string | null }) {
         ))}
       </ul>
       <ul className="space-y-2">
-        {packs.map((entry) => {
-          const blocked = entry.pack === "leads" && data?.canLeads === false;
-          return (
-            <li key={entry.lookupKey} className="flex items-center justify-between gap-3 text-sm">
-              <span>
-                {entry.productName} · {formatEurFromCents(entry.amountCents, locale)}
-                {blocked ? ` · ${t("leadsNeedGrowth")}` : ""}
-              </span>
-              <button
-                type="button"
-                disabled={Boolean(working) || blocked}
-                onClick={() => void checkout(entry.lookupKey)}
-                className="posty-site-btn h-8 shrink-0 px-3 text-xs disabled:opacity-60"
-              >
-                {working === entry.lookupKey ? t("buying") : t("buy")}
-              </button>
-            </li>
-          );
-        })}
+        {packs.map((entry) => (
+          <li key={entry.lookupKey} className="flex items-center justify-between gap-3 text-sm">
+            <span>
+              {entry.productName} · {formatEurFromCents(entry.amountCents, locale)}
+            </span>
+            <button
+              type="button"
+              disabled={Boolean(working)}
+              onClick={() => void checkout(entry.lookupKey)}
+              className="posty-site-btn h-8 shrink-0 px-3 text-xs disabled:opacity-60"
+            >
+              {working === entry.lookupKey ? t("buying") : t("buy")}
+            </button>
+          </li>
+        ))}
       </ul>
       {data?.hasCustomer || data?.subscription ? (
         <button

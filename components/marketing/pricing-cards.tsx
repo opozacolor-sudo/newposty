@@ -103,7 +103,7 @@ export function PricingCards({ copy, locale }: { copy: PricingPageCopy; locale: 
 
 export function PricingPacks({ copy, locale }: { copy: PricingPageCopy; locale: string }) {
   return (
-    <div className="mt-6 grid gap-4 sm:grid-cols-3">
+    <div className="mt-6 grid gap-4 sm:max-w-3xl sm:grid-cols-2">
       {copy.packs.map((pack) => (
         <article key={pack.id} className={clayTile}>
           <h3 className="text-base font-semibold text-[#1d1d1f]">{pack.name}</h3>

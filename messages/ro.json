@@ -262,7 +262,7 @@
   },
   "Pricing": {
     "metaTitle": "Prețuri Studio, Promovare și Creștere | posty.now",
-    "metaDescription": "Studio de la 15€/lună, Promovare de la 21€, Creștere de la 40€. Pachete de poze, video și lead-uri. Fără TVA. Prima lună gratuită dacă te preînregistrezi.",
+    "metaDescription": "Studio de la 15€/lună, Promovare de la 21€, Creștere de la 40€ cu lead-uri nelimitate. Pachete de poze și video. Fără TVA. Prima lună gratuită dacă te preînregistrezi.",
     "faqTitle": "Întrebări"
   },
   "About": {
@@ -723,13 +723,12 @@
     "planLifetime": "Pe viață",
     "planNone": "Fără plan încă",
     "currentPlan": "Plan curent: {plan}",
-    "creditsLine": "{photos} poze · {videos} video · {leads} lead-uri",
+    "creditsLine": "{photos} poze · {videos} video",
     "monthly": "lunar",
     "annual": "anual",
     "buy": "Cumpără",
     "buying": "Se deschide…",
     "manage": "Gestionează facturarea",
-    "leadsNeedGrowth": "Doar pe Creștere",
     "checkoutError": "Nu am putut deschide checkout-ul. Încearcă din nou.",
     "portalError": "Nu am putut deschide portalul de facturare.",
     "checkoutSuccess": "Plata a reușit. Creditul și planul se actualizează imediat.",
