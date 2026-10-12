@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { hasLocale } from "next-intl";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Fraunces, Geist, Poppins } from "next/font/google";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { localeAlternates, SITE_ORIGIN } from "@/lib/locale-seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,10 +41,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
+  const pathname = (await headers()).get("x-pathname") ?? `/${locale}`;
   return {
-    metadataBase: new URL("https://posty.now"),
+    metadataBase: new URL(SITE_ORIGIN),
     title: t("title"),
     description: t("description"),
+    alternates: localeAlternates(locale, pathname),
     icons: {
       icon: [
         { url: "/posty-icon.png", sizes: "96x96", type: "image/png" },
