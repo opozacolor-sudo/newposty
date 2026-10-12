@@ -2,6 +2,7 @@ import { getTrustedRequestOrigin } from "@/lib/env";
 import { getStripe } from "@/lib/presale-server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { catalogByLookupKey, isCatalogLookupKey, type CatalogLookupKey } from "@/lib/stripe-catalog";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
 import { isAppLocale } from "@/lib/locales";
 import { syncStripeCustomer } from "@/lib/billing/sync";
 

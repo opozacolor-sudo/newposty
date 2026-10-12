@@ -14,7 +14,10 @@ test("all six locales have three plans and two packs, unlimited leads on growth"
     const copy = pricingCopy(locale);
     assert.equal(copy.plans.length, 3);
     assert.equal(copy.packs.length, 2);
-    assert.equal(copy.packs.every((pack) => pack.id !== "leads"), true);
+    assert.deepEqual(
+      copy.packs.map((pack) => pack.id),
+      ["photos", "videos"],
+    );
     assert.equal(copy.plans[2]?.featured, true);
     assert.equal(copy.plans[2]?.features.some((feature) => /30/.test(feature)), false);
     assert.equal(copy.faqs.length, 5);
