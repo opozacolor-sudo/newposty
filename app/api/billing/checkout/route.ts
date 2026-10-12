@@ -32,6 +32,9 @@ export async function POST(request: Request) {
       const status = error.code === "STRIPE" ? 502 : 400;
       return NextResponse.json({ error: error.code, message: error.message }, { status });
     }
-    return NextResponse.json({ error: "CHECKOUT_FAILED" }, { status: 502 });
+    return NextResponse.json(
+      { error: "CHECKOUT_FAILED", message: error instanceof Error ? error.message : "Checkout failed." },
+      { status: 502 },
+    );
   }
 }

@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/presale-server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { catalogByLookupKey, isCatalogLookupKey, type CatalogLookupKey } from "@/lib/stripe-catalog";
 import { loadProfileBilling } from "@/lib/billing/entitlements";
+import { isMissingStripeResource, publicStripeMessage } from "@/lib/billing/stripe-errors";
 import { isAppLocale } from "@/lib/locales";
 import { syncStripeCustomer } from "@/lib/billing/sync";
 
@@ -23,11 +24,21 @@ export async function getOrCreateStripeCustomer(user: { id: string; email?: stri
     .select("stripe_customer_id, email, billing_name")
     .eq("id", user.id)
     .maybeSingle();
-  if (typeof profile?.stripe_customer_id === "string" && profile.stripe_customer_id) {
-    return profile.stripe_customer_id;
+  const stripe = getStripe();
+  const storedId =
+    typeof profile?.stripe_customer_id === "string" && profile.stripe_customer_id
+      ? profile.stripe_customer_id
+      : null;
+  if (storedId) {
+    try {
+      const existing = await stripe.customers.retrieve(storedId);
+      if (!("deleted" in existing && existing.deleted)) return storedId;
+    } catch (error) {
+      if (!isMissingStripeResource(error, "customer")) throw error;
+    }
+    await admin.from("profiles").update({ stripe_customer_id: null }).eq("id", user.id).eq("stripe_customer_id", storedId);
   }
 
-  const stripe = getStripe();
   const customer = await stripe.customers.create({
     email: user.email || (typeof profile?.email === "string" ? profile.email : undefined) || undefined,
     name: typeof profile?.billing_name === "string" ? profile.billing_name : undefined,
@@ -76,38 +87,38 @@ export async function startBillingCheckout(input: {
   if (!entry) throw new BillingCheckoutError("UNKNOWN_LOOKUP", "Unknown price.");
 
   const locale = isAppLocale(input.locale) ? input.locale : "en";
-  const customerId = await getOrCreateStripeCustomer(input.user);
-  const priceId = await priceIdForLookupKey(input.lookupKey);
-  const stripe = getStripe();
-
-  if (entry.kind === "plan") {
-    const existing = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "active",
-      limit: 10,
-    });
-    const current = existing.data[0];
-    const itemId = current?.items.data[0]?.id;
-    if (current && itemId) {
-      await stripe.subscriptions.update(current.id, {
-        items: [{ id: itemId, price: priceId }],
-        proration_behavior: "create_prorations",
-        metadata: { user_id: input.user.id, lookup_key: input.lookupKey, purpose: "billing" },
-      });
-      await syncStripeCustomer(customerId);
-      return { updated: true };
-    }
-  }
-
-  const origin = getTrustedRequestOrigin(input.request);
-  const metadata = {
-    purpose: "billing",
-    user_id: input.user.id,
-    lookup_key: input.lookupKey,
-    locale,
-  };
-
   try {
+    const customerId = await getOrCreateStripeCustomer(input.user);
+    const priceId = await priceIdForLookupKey(input.lookupKey);
+    const stripe = getStripe();
+
+    if (entry.kind === "plan") {
+      const existing = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "active",
+        limit: 10,
+      });
+      const current = existing.data[0];
+      const itemId = current?.items.data[0]?.id;
+      if (current && itemId) {
+        await stripe.subscriptions.update(current.id, {
+          items: [{ id: itemId, price: priceId }],
+          proration_behavior: "create_prorations",
+          metadata: { user_id: input.user.id, lookup_key: input.lookupKey, purpose: "billing" },
+        });
+        await syncStripeCustomer(customerId);
+        return { updated: true };
+      }
+    }
+
+    const origin = getTrustedRequestOrigin(input.request);
+    const metadata = {
+      purpose: "billing",
+      user_id: input.user.id,
+      lookup_key: input.lookupKey,
+      locale,
+    };
+
     const session = await stripe.checkout.sessions.create({
       mode: entry.kind === "plan" ? "subscription" : "payment",
       customer: customerId,
@@ -126,7 +137,7 @@ export async function startBillingCheckout(input: {
     return { url: session.url };
   } catch (error) {
     if (error instanceof BillingCheckoutError) throw error;
-    throw new BillingCheckoutError("STRIPE", error instanceof Error ? error.message : "Checkout failed.");
+    throw new BillingCheckoutError("STRIPE", publicStripeMessage(error));
   }
 }
 
