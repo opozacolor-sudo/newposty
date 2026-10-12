@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
 import { loadWorkspace } from "@/lib/clients";
+import { canUseLeads } from "@/lib/stripe-catalog";
 import { canEnableLeadAgent } from "@/lib/leads/knowledge";
 import { scanLeadsInbox } from "@/lib/leads/scan";
 import { loadLeadAgent, setLeadAgentEnabled } from "@/lib/leads/store";
@@ -20,6 +22,10 @@ export async function POST(request: Request) {
 
   const supabase = await createServerSupabase();
   const workspace = await loadWorkspace(supabase, user.id);
+  const billing = await loadProfileBilling(user.id);
+  if (payload.enabled === true && !canUseLeads(billing.plan)) {
+    return NextResponse.json({ error: "PLAN_LEADS" }, { status: 403 });
+  }
   const agent = await loadLeadAgent(supabase, user.id, workspace.clientId);
   if (!canEnableLeadAgent(agent)) {
     return NextResponse.json({ error: "not_trained" }, { status: 409 });

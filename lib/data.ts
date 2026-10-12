@@ -13,6 +13,8 @@ export type Profile = {
   timezone: string;
   zernio_profile_id: string | null;
   lifetime_access: boolean;
+  stripe_customer_id?: string | null;
+  plan?: "none" | "studio" | "promote" | "growth";
   account_kind?: "individual" | "team";
   company_site?: string | null;
   contact_email?: string | null;

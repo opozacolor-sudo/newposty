@@ -40,7 +40,11 @@ export default async function ConnectionsPage({
   const errorMessage =
     params.error === "need_x"
       ? t("adsNeedXFirst")
-      : params.error === "openai_key"
+      : params.error === "plan_ads"
+        ? t("adsNeedPlan")
+        : params.error === "ads_limit"
+          ? t("adsLimit")
+          : params.error === "openai_key"
         ? t("openaiIntro")
         : params.error === "coming_soon"
           ? t("comingSoon")

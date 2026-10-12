@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { countActiveSocialAccounts, loadLifetimePurchase, refundPreview, requireAccountUser } from "@/lib/account-server";
+import { loadBillingSnapshot } from "@/lib/billing/entitlements";
 import { getStripe } from "@/lib/presale-server";
+import { STRIPE_CATALOG } from "@/lib/stripe-catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -11,13 +13,15 @@ export async function GET() {
   const connectedAccounts = await countActiveSocialAccounts(user.id);
   const purchase = await loadLifetimePurchase(user.id, user.email);
   const refund = purchase ? refundPreview(purchase) : null;
+  const snapshot = await loadBillingSnapshot(user.id);
 
+  const customerId = snapshot.stripeCustomerId || purchase?.stripe_customer_id || null;
   let subscription: { id: string; cancelAtPeriodEnd: boolean } | null = null;
-  if (purchase?.stripe_customer_id) {
+  if (customerId) {
     try {
       const stripe = getStripe();
       const list = await stripe.subscriptions.list({
-        customer: purchase.stripe_customer_id,
+        customer: customerId,
         status: "active",
         limit: 1,
       });
@@ -33,7 +37,7 @@ export async function GET() {
   return NextResponse.json({
     connectedAccounts,
     canDelete: connectedAccounts === 0,
-    lifetime: Boolean(purchase),
+    lifetime: Boolean(purchase) || snapshot.lifetime,
     refund: refund
       ? {
           amountEur: refund.amountEur,
@@ -43,5 +47,12 @@ export async function GET() {
         }
       : null,
     subscription,
+    plan: snapshot.plan,
+    storedPlan: snapshot.storedPlan,
+    hasCustomer: Boolean(snapshot.stripeCustomerId),
+    canAds: snapshot.canAds,
+    canLeads: snapshot.canLeads,
+    credits: snapshot.credits,
+    catalog: STRIPE_CATALOG,
   });
 }

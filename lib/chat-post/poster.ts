@@ -1,3 +1,5 @@
+import { billingCopy } from "@/lib/billing/copy";
+import { consumeCredit, refundCredit } from "@/lib/billing/credits";
 import { FalImageError, generateFalImage, type FalImageSize } from "@/lib/fal-image";
 import { loadSiteBrief } from "@/lib/site-brief";
 import type { ChatMedia, GeneratedPosterPayload } from "@/lib/chat-post/types";
@@ -60,6 +62,11 @@ export async function createGeneratedPoster(input: {
     }
   }
 
+  const credit = await consumeCredit(input.userId, "image");
+  if (!credit) {
+    return { ok: false, error: billingCopy(input.locale, "noImageCredits") };
+  }
+
   const imageSize: FalImageSize = input.aspect === "square" ? "square_hd" : "portrait_4_3";
   const prompt = buildPosterPrompt({
     locale: input.locale,
@@ -77,6 +84,7 @@ export async function createGeneratedPoster(input: {
   try {
     remoteUrl = await generateFalImage({ prompt, imageSize });
   } catch (error) {
+    await refundCredit(credit.packId).catch(() => undefined);
     const missing = error instanceof Error && error.message === "MISSING_FAL_KEY";
     const code = error instanceof FalImageError ? error.code : null;
     const ro = input.locale === "ro";

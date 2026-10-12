@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadLifetimePurchase, logBillingEvent, requireAccountUser } from "@/lib/account-server";
 import { getStripe } from "@/lib/presale-server";
+import { createAdminSupabase } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -9,14 +10,23 @@ export async function POST() {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const purchase = await loadLifetimePurchase(user.id, user.email);
-  if (!purchase?.stripe_customer_id) {
+  const { data: profile } = await createAdminSupabase()
+    .from("profiles")
+    .select("stripe_customer_id")
+    .eq("id", user.id)
+    .maybeSingle();
+  const customerId =
+    (typeof profile?.stripe_customer_id === "string" && profile.stripe_customer_id) ||
+    purchase?.stripe_customer_id ||
+    null;
+  if (!customerId) {
     return NextResponse.json({ error: "NO_SUBSCRIPTION" }, { status: 409 });
   }
 
   try {
     const stripe = getStripe();
     const list = await stripe.subscriptions.list({
-      customer: purchase.stripe_customer_id,
+      customer: customerId,
       status: "active",
       limit: 1,
     });

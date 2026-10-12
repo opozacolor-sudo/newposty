@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { handleBillingEvent } from "@/lib/billing/sync";
 import { eurosFromStripeAmount } from "@/lib/presale";
 import {
   getStripe,
   issueRegistrationToken,
   sendPresaleRegisterEmail,
 } from "@/lib/presale-server";
-import { getStripeWebhookSecret } from "@/lib/env";
+import { constructStripeWebhookEvent } from "@/lib/billing/webhook";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -100,7 +101,6 @@ async function fulfillCheckout(session: Stripe.Checkout.Session) {
 }
 
 export async function POST(request: Request) {
-  const stripe = getStripe();
   const signature = request.headers.get("stripe-signature");
   if (!signature) {
     return NextResponse.json({ error: "Missing stripe-signature" }, { status: 400 });
@@ -109,13 +109,20 @@ export async function POST(request: Request) {
   const raw = await request.text();
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(raw, signature, getStripeWebhookSecret());
+    event = constructStripeWebhookEvent(raw, signature);
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   if (event.type === "checkout.session.completed") {
-    await fulfillCheckout(event.data.object as Stripe.Checkout.Session);
+    const session = event.data.object as Stripe.Checkout.Session;
+    if (session.metadata?.purpose === "billing") {
+      await handleBillingEvent(event);
+    } else {
+      await fulfillCheckout(session);
+    }
+  } else {
+    await handleBillingEvent(event);
   }
 
   return NextResponse.json({ received: true });

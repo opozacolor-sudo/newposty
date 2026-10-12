@@ -44,7 +44,11 @@ import type {
   ResultsPayload,
   ToolPostAction,
 } from "@/lib/chat-post/types";
+import { billingCopy } from "@/lib/billing/copy";
+import { remainingCredits } from "@/lib/billing/credits";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
 import { getAnthropicApiKey, hasFalKey } from "@/lib/env";
+import { canUseAds } from "@/lib/stripe-catalog";
 import { clockSnapshot, localeFromRequest } from "@/lib/locale-time";
 import { applyClientScope, asRows, loadWorkspace } from "@/lib/clients";
 import { isAdsPlatformId, isConnectDisabled } from "@/lib/platforms";
@@ -378,6 +382,8 @@ async function postChat(request: Request) {
   const timeZone = userTimezone(profile?.timezone as string | undefined);
 
   const posterEnabled = hasFalKey();
+  const imageCredits = posterEnabled ? await remainingCredits(user.id, "image") : 0;
+  const billing = await loadProfileBilling(user.id);
   const resumeVideo = Boolean(parseVideoJob((conversation as { video_job?: unknown }).video_job));
   const generationKind = resumeVideo ? "video" : detectGenerationKind(text);
   const generationHint =
@@ -567,7 +573,7 @@ async function postChat(request: Request) {
                 site_url: found.home,
                 count: found.products.length,
                 products: found.products,
-                generation_ready: posterEnabled,
+                generation_ready: posterEnabled && imageCredits >= found.products.length,
                 include_link: catalogSpec?.includeLink ?? true,
               };
               toolResults.push({
@@ -577,10 +583,11 @@ async function postChat(request: Request) {
                   catalog: true,
                   found: found.products.length,
                   site_url: found.home,
-                  generation_ready: posterEnabled,
-                  next: posterEnabled
-                    ? "Show the product list. The user confirms to generate photos and schedule one a day."
-                    : "Image credit is off. Show the product list. Do not claim photos were generated.",
+                  generation_ready: posterEnabled && imageCredits >= found.products.length,
+                  next:
+                    posterEnabled && imageCredits >= found.products.length
+                      ? "Show the product list. The user confirms to generate photos and schedule one a day."
+                      : "Photo pack credits are not enough. Show the product list. Do not claim photos were generated. Point them to Profile to buy a 30-photo pack.",
                 }),
               });
             } catch {
@@ -889,6 +896,15 @@ async function postChat(request: Request) {
             });
           }
         } else if (tool.name === "create_paid_ad") {
+          if (!canUseAds(billing.plan)) {
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tool.id,
+              is_error: true,
+              content: billingCopy(locale, "needPromote"),
+            });
+            continue;
+          }
           const input = asRecord(tool.input) ?? {};
           const refs = Array.isArray(input.media_refs)
             ? (input.media_refs as unknown[]).filter((id): id is string => typeof id === "string")

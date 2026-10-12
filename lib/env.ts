@@ -58,6 +58,11 @@ export function getStripeWebhookSecret() {
   return required("STRIPE_WEBHOOK_SECRET");
 }
 
+export function stripeWebhookSecrets() {
+  const secrets = [process.env.STRIPE_WEBHOOK_SECRET?.trim(), process.env.STRIPE_WEBHOOK_SECRET_TEST?.trim()];
+  return [...new Set(secrets.filter((value): value is string => Boolean(value)))];
+}
+
 export function getResendApiKey() {
   return process.env.RESEND_API_KEY?.trim() ?? "";
 }

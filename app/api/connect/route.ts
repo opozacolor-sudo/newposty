@@ -8,6 +8,7 @@ import {
   isConnectDisabled,
   isConnectPlatformId,
 } from "@/lib/platforms";
+import { assertAdsConnectAllowed } from "@/lib/billing/entitlements";
 import { loadWorkspace } from "@/lib/clients";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { connectAdsAccount, getConnectUrl } from "@/lib/zernio";
@@ -114,6 +115,17 @@ export async function GET(request: Request) {
       : `${origin}/accounts/connected?platform=${encodeURIComponent(platform)}&state=${encodeURIComponent(state)}`;
 
     if (ads) {
+      const adsGate = await assertAdsConnectAllowed({
+        userId: user.id,
+        clientId: workspace.clientId,
+        isTeam: workspace.isTeam,
+      });
+      if (adsGate !== "ok") {
+        if (json) return NextResponse.json({ error: adsGate }, { status: 403 });
+        const target = accountsHome(true, origin);
+        target.searchParams.set("error", adsGate);
+        return NextResponse.redirect(target);
+      }
       const adsPlatform = getAdsPlatform(platform);
       if (!adsPlatform) {
         return NextResponse.json({ error: "Unknown platform" }, { status: 400 });

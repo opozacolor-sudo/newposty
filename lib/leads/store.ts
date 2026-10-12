@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { takeLeadSlot } from "@/lib/billing/credits";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
 import { DEFAULT_LEAD_PHRASES } from "@/lib/leads/triggers";
 import type { LeadPlaybook } from "@/lib/leads/playbook";
 import { publicAgentBrand, type AgentKnowledge, type LeadAgent } from "@/lib/leads/knowledge";
@@ -179,6 +181,8 @@ export async function insertQualifiedLead(input: {
     .eq("thread_id", input.thread.id)
     .maybeSingle();
   if (existing) return existing.id as string;
+  const billing = await loadProfileBilling(input.thread.user_id);
+  if (!(await takeLeadSlot(input.thread.user_id, billing.plan))) return null;
   const { data, error } = await input.supabase
     .from("leads")
     .insert({
@@ -275,6 +279,8 @@ export async function insertAdLead(input: {
   triggerText?: string | null;
   qualification?: LeadAnswers;
 }) {
+  const billing = await loadProfileBilling(input.userId);
+  if (!(await takeLeadSlot(input.userId, billing.plan))) return;
   const { error } = await input.supabase.from("leads").insert({
     user_id: input.userId,
     client_id: input.clientId,

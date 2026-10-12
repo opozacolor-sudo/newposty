@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/presale-server";
 import { MONTHLY_ACCESS_DAYS, type PlanAccess } from "@/lib/chat-post/plan-horizon";
 import { calendarDaysBetween } from "@/lib/chat-post/series";
 import { addCalendarDays, ymdInZone } from "@/lib/chat-post/timezone";
+import { createAdminSupabase } from "@/lib/supabase/admin";
 
 function monthlyPeriod(now: Date, timeZone: string): Extract<PlanAccess, { kind: "period" }> {
   const today = ymdInZone(now, timeZone);
@@ -64,10 +65,24 @@ export async function planAccessForUser(input: {
   if (input.lifetime) return { kind: "lifetime" };
   let stripeCustomerId: string | null = null;
   try {
-    const purchase = await loadLifetimePurchase(input.userId, input.email);
-    stripeCustomerId = purchase?.stripe_customer_id ?? null;
+    const { data: profile } = await createAdminSupabase()
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", input.userId)
+      .maybeSingle();
+    if (typeof profile?.stripe_customer_id === "string") {
+      stripeCustomerId = profile.stripe_customer_id;
+    }
   } catch {
     stripeCustomerId = null;
+  }
+  if (!stripeCustomerId) {
+    try {
+      const purchase = await loadLifetimePurchase(input.userId, input.email);
+      stripeCustomerId = purchase?.stripe_customer_id ?? null;
+    } catch {
+      stripeCustomerId = null;
+    }
   }
   return loadPlanAccess({
     lifetime: input.lifetime,

@@ -1,3 +1,5 @@
+import { billingCopy } from "@/lib/billing/copy";
+import { consumeCredit, refundCredit } from "@/lib/billing/credits";
 import { FalImageError } from "@/lib/fal-image";
 import {
   harvestFalVideo,
@@ -130,8 +132,19 @@ export async function createGeneratedVideo(input: {
       }
     }
 
+    const credit = await consumeCredit(input.userId, "video");
+    if (!credit) {
+      return { ok: false, error: billingCopy(input.locale, "noVideoCredits") };
+    }
+
     const webhook = falVideoWebhookUrl();
-    const started = await submitFalVideo(prompt, webhook);
+    let started: Awaited<ReturnType<typeof submitFalVideo>>;
+    try {
+      started = await submitFalVideo(prompt, webhook);
+    } catch (error) {
+      await refundCredit(credit.packId).catch(() => undefined);
+      throw error;
+    }
     if ("url" in started) {
       const stored = await storeRemoteClip({
         supabase: input.supabase,
