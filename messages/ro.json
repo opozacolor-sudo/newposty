@@ -17,6 +17,7 @@
     "contact": "Contact",
     "demo": "Demo",
     "guide": "Manual",
+    "prices": "Prețuri",
     "signIn": "Autentificare",
     "signUp": "Înregistrare",
     "notifyMe": "Preînregistrare",
@@ -39,6 +40,7 @@
     "subtitle": "Postări, promovări, analize și programări — totul într-un minut, cu asistentul AI posty.now.",
     "heroLine": "Spațiu de lucru pentru marketing și social media.",
     "learnMore": "Află mai multe",
+    "prices": "Prețuri",
     "screenOpen": "Află mai multe",
     "screenClose": "Închide",
     "screenPrev": "Anterior",
@@ -257,6 +259,11 @@
     "tryAnalytics": "Deschide Statistici",
     "tryInbox": "Deschide Mesaje",
     "tryLeads": "Deschide Lead-uri"
+  },
+  "Pricing": {
+    "metaTitle": "Prețuri Studio, Promovare și Creștere | posty.now",
+    "metaDescription": "Studio de la 15€/lună, Promovare de la 21€, Creștere de la 40€. Pachete de poze, video și lead-uri. Fără TVA. Prima lună gratuită dacă te preînregistrezi.",
+    "faqTitle": "Întrebări"
   },
   "About": {
     "title": "Despre noi",
@@ -709,7 +716,7 @@
     "cancelAction": "Renunță",
     "error": "Ceva nu a mers. Încearcă din nou.",
     "planTitle": "Plan și pachete",
-    "planLead": "Prețurile sunt fără TVA 21%. Checkout-ul se deschide în Stripe. Pagina publică de prețuri vine mai târziu.",
+    "planLead": "Prețurile sunt fără TVA 21%. Checkout-ul se deschide în Stripe.",
     "planStudio": "Studio",
     "planPromote": "Promovare",
     "planGrowth": "Creștere",

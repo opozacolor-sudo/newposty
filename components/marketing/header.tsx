@@ -79,6 +79,7 @@ function DesktopMenu({
 function MoreLinks({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations("Header");
   const items = [
+    { href: "/pricing", label: t("prices") },
     { href: "/specialist", label: t("specialist") },
     { href: "/about", label: t("about") },
     { href: "/contact", label: t("contact") },

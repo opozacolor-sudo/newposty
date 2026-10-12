@@ -26,10 +26,10 @@ export default async function HomePage() {
             {t("heroLine")}
           </p>
           <Link
-            href="/guide"
+            href="/pricing"
             className="posty-glow-btn posty-site-btn mt-1 inline-flex h-7 items-center rounded-full px-3.5 text-[12px] font-normal text-white transition hover:brightness-110 lg:mt-2 lg:h-8 lg:px-4 lg:text-[14px]"
           >
-            {t("learnMore")}
+            {t("prices")}
           </Link>
         </div>
         <HeroPhones />

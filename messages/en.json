@@ -17,6 +17,7 @@
     "contact": "Contact",
     "demo": "Demo",
     "guide": "Guide",
+    "prices": "Prices",
     "signIn": "Sign in",
     "signUp": "Sign up",
     "notifyMe": "Pre-register",
@@ -39,6 +40,7 @@
     "subtitle": "Posts, promotions, analytics and scheduling — all in a minute, with the posty.now AI assistant.",
     "heroLine": "Marketing & social media workspace.",
     "learnMore": "Learn more",
+    "prices": "Prices",
     "screenOpen": "Learn more",
     "screenClose": "Close",
     "screenPrev": "Previous",
@@ -257,6 +259,11 @@
     "tryAnalytics": "Open Analytics",
     "tryInbox": "Open Messages",
     "tryLeads": "Open Leads"
+  },
+  "Pricing": {
+    "metaTitle": "Prices for Studio, Promovare and Creștere | posty.now",
+    "metaDescription": "Studio from 15€ a month, Promovare from 21€, Creștere from 40€. Photo, video and lead packs. VAT exclusive. First month free if you pre-register.",
+    "faqTitle": "Questions"
   },
   "About": {
     "title": "About us",
@@ -709,7 +716,7 @@
     "cancelAction": "Cancel",
     "error": "Something went wrong. Try again.",
     "planTitle": "Plan and packs",
-    "planLead": "Prices exclude 21% VAT. Checkout opens Stripe. Public pricing page comes later.",
+    "planLead": "Prices exclude 21% VAT. Checkout opens Stripe.",
     "planStudio": "Studio",
     "planPromote": "Promovare",
     "planGrowth": "Creștere",

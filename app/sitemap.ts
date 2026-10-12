@@ -12,6 +12,7 @@ const MARKETING_PATHS: { path: string; priority: number; changeFrequency: Metada
   [
     { path: "", priority: 1, changeFrequency: "weekly" },
     { path: "/guide", priority: 0.9, changeFrequency: "weekly" },
+    { path: "/pricing", priority: 0.9, changeFrequency: "weekly" },
     ...HOW_TO_SLUGS.map((slug) => ({
       path: `/guide/${slug}`,
       priority: 0.9,
