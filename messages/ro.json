@@ -523,6 +523,7 @@
     "commentsNav": "Comentarii",
     "leads": "Lead-uri",
     "profile": "Profil",
+    "plan": "Planul actual",
     "demo": "Demo"
   },
   "Studio": {
@@ -689,7 +690,7 @@
   },
   "Profile": {
     "title": "Profil",
-    "lead": "Planul actual și pachetele, apoi site-ul firmei, contactul și datele de factură.",
+    "lead": "Site-ul companiei, numele, datele de contact și datele de facturare pentru facturi.",
     "companyTitle": "Companie",
     "companySite": "Site companie",
     "name": "Nume",

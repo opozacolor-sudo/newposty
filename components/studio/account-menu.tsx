@@ -113,6 +113,13 @@ export function AccountMenu({
           >
             {tNav("profile")}
           </Link>
+          <Link
+            href="/plan"
+            className="block w-full rounded-xl px-3 py-2 text-left text-sm text-[#1A1A1A] hover:bg-[#F5F5F5]"
+            onClick={() => setOpen(false)}
+          >
+            {tNav("plan")}
+          </Link>
           {accountKind === "team" ? (
             <div className="mb-1 px-1 py-1">
               <ClientSwitcher clients={clients} selectedId={selectedClientId} />

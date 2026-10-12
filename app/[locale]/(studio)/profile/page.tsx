@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { PlanBilling } from "@/components/studio/plan-billing";
 import { ProfileForm } from "@/components/studio/profile-form";
 import { StudioPage } from "@/components/studio/studio-surface";
 import { requireUser } from "@/lib/data";
@@ -10,13 +9,8 @@ export async function generateMetadata() {
   return { title: t("title") };
 }
 
-export default async function ProfilePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ billing?: string }>;
-}) {
+export default async function ProfilePage() {
   const t = await getTranslations("Profile");
-  const params = await searchParams;
   const { supabase, user } = await requireUser();
   const { data } = await supabase
     .from("profiles")
@@ -30,7 +24,6 @@ export default async function ProfilePage({
     <StudioPage>
       <h1 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("title")}</h1>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5c5652]">{t("lead")}</p>
-      <PlanBilling notice={params.billing ?? null} />
       <ProfileForm initial={profileDetailsFromRow(data, user.email)} />
     </StudioPage>
   );

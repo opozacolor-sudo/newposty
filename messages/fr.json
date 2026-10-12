@@ -523,6 +523,7 @@
     "commentsNav": "Commentaires",
     "leads": "Leads",
     "profile": "Profil",
+    "plan": "Offre actuelle",
     "demo": "Démo"
   },
   "Studio": {
@@ -689,7 +690,7 @@
   },
   "Profile": {
     "title": "Profil",
-    "lead": "Ton offre et tes packs, puis le site, les contacts et les infos de facture.",
+    "lead": "Site de l’entreprise, nom, coordonnées et informations de facturation.",
     "companyTitle": "Entreprise",
     "companySite": "Site de l’entreprise",
     "name": "Nom",

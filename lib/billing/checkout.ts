@@ -127,7 +127,7 @@ export async function startBillingCheckout(input: {
       billing_address_collection: "required",
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/api/billing/return?session_id={CHECKOUT_SESSION_ID}&locale=${locale}`,
-      cancel_url: `${origin}/${locale}/profile?billing=cancel`,
+      cancel_url: `${origin}/${locale}/plan?billing=cancel`,
       metadata,
       ...(entry.kind === "plan"
         ? { subscription_data: { metadata } }
@@ -148,7 +148,7 @@ export async function startBillingPortal(input: { userId: string; request: Reque
   const locale = isAppLocale(input.locale) ? input.locale : "en";
   const session = await getStripe().billingPortal.sessions.create({
     customer: billing.stripeCustomerId,
-    return_url: `${origin}/${locale}/profile`,
+    return_url: `${origin}/${locale}/plan`,
   });
   return session.url;
 }

@@ -523,6 +523,7 @@
     "commentsNav": "Comments",
     "leads": "Leads",
     "profile": "Profile",
+    "plan": "Current plan",
     "demo": "Demo"
   },
   "Studio": {
@@ -689,7 +690,7 @@
   },
   "Profile": {
     "title": "Profile",
-    "lead": "Your plan and packs, then the company website, contact, and invoice details.",
+    "lead": "Company website, your name, contact details, and the billing details we need for invoices.",
     "companyTitle": "Company",
     "companySite": "Company website",
     "name": "Name",
