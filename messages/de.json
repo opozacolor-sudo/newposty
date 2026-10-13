@@ -1006,11 +1006,11 @@
     "videoFailed": "Der 5-Sekunden-Job ist fehlgeschlagen. Sag nochmal, was gefilmt werden soll — nur wenn du einen neuen Clip willst.",
     "videoWantPost": "Diesen Clip auf allen verbundenen Netzwerken zur besten Zeit posten.",
     "videoWantAd": "Ich will eine bezahlte Anzeige mit diesem Clip. Frag mich nach Netzwerk und Budget — noch nicht posten.",
-    "adConfirmTitle": "Bezahlte TikTok-Kampagne",
+    "adConfirmTitle": "Bezahlte Kampagne",
     "adConfirmSpend": "Das gibt das genannte Budget aus. Bestätige nur, wenn du das willst.",
     "adConfirmHint": "Drücke den schwarzen Button unten. Schreib nicht „confirm“ in den Chat.",
     "adConfirmButton": "Anzeige starten",
-    "adWorking": "TikTok veröffentlicht, dann startet die Anzeige. Chat offen lassen, 1–2 Minuten.",
+    "adWorking": "Die Anzeige startet. Chat offen lassen.",
     "adFailed": "Die Anzeige ist nicht gestartet."
   }
 }

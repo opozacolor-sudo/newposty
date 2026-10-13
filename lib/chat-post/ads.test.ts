@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { foldChatText, geoKey, isAdConfirmReply, numericTikTokItemId, tiktokItemIdFromPost } from "./ad-confirm";
+import {
+  foldChatText,
+  geoKey,
+  isAdConfirmReply,
+  isMetaAdNetwork,
+  isTikTokAdNetwork,
+  numericTikTokItemId,
+  pickLatestInstagramInboxPost,
+  tiktokItemIdFromPost,
+} from "./ad-confirm";
 
 test("confirm replies start the spend without needing the button", () => {
   for (const text of ["confirm", "Confirmă", "da", "pornește reclama", "start the ad", "ok"]) {
@@ -17,6 +26,24 @@ test("targeting cities use the search id as key", () => {
     name: "Bucharest",
   });
   assert.equal(foldChatText("București"), "bucuresti");
+});
+
+test("Meta vs TikTok ads networks", () => {
+  assert.equal(isMetaAdNetwork("Instagram"), true);
+  assert.equal(isMetaAdNetwork("doar instagram"), true);
+  assert.equal(isMetaAdNetwork("meta ads"), true);
+  assert.equal(isMetaAdNetwork("tiktok"), false);
+  assert.equal(isTikTokAdNetwork("tiktokads"), true);
+  assert.equal(isTikTokAdNetwork("instagram"), false);
+});
+
+test("latest Instagram inbox post is the newest organic row", () => {
+  const latest = pickLatestInstagramInboxPost([
+    { id: "old", platform: "instagram", createdTime: "2026-10-12T08:00:00.000Z" },
+    { id: "18098554325084197", platform: "instagram", createdTime: "2026-10-13T08:52:57.000Z" },
+    { id: "fb", platform: "facebook", createdTime: "2026-10-13T09:00:00.000Z" },
+  ]);
+  assert.equal(latest?.id, "18098554325084197");
 });
 
 test("Spark boost needs the numeric TikTok item id, not the v_pub_url prefix", () => {

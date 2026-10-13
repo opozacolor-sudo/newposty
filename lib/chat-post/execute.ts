@@ -29,7 +29,7 @@ import type {
   ResolvedAction,
   ResolvedPlatform,
 } from "@/lib/chat-post/types";
-import { executeTikTokAd } from "@/lib/chat-post/ads";
+import { executeMetaAd, executeTikTokAd } from "@/lib/chat-post/ads";
 
 function resultMeta(input: {
   platform: string;
@@ -396,6 +396,9 @@ export async function executeResolvedAction(input: {
     return [await executeManage(input.resolved, input.locale)];
   }
   if (input.resolved.kind === "ad") {
+    if (input.resolved.ad?.platform === "metaads") {
+      return executeMetaAd({ resolved: input.resolved, locale: input.locale });
+    }
     return executeTikTokAd({ resolved: input.resolved, locale: input.locale });
   }
 

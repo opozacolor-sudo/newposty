@@ -6,6 +6,37 @@ export function foldChatText(value: string) {
     .toLowerCase();
 }
 
+function compactNetwork(network: string) {
+  return foldChatText(network).replace(/[^a-z0-9]/g, "");
+}
+
+export function isMetaAdNetwork(network: string) {
+  const n = compactNetwork(network);
+  return (
+    n === "ig" ||
+    n === "fb" ||
+    n.includes("instagram") ||
+    n.includes("facebook") ||
+    n.includes("metaads") ||
+    n === "meta"
+  );
+}
+
+export function isTikTokAdNetwork(network: string) {
+  const n = compactNetwork(network);
+  return n.includes("tiktok") || n === "spark";
+}
+
+export function pickLatestInstagramInboxPost<
+  T extends { id?: string; platform?: string; createdTime?: string },
+>(posts: T[]) {
+  const ranked = posts
+    .filter((post) => post.id && (post.platform ?? "instagram") === "instagram")
+    .slice()
+    .sort((a, b) => Date.parse(b.createdTime ?? "") - Date.parse(a.createdTime ?? ""));
+  return ranked[0] ?? null;
+}
+
 export function isAdConfirmReply(text: string) {
   return /^(confirm|confirma|ok|da|yes|oui|si|ja|porneste|porneste reclama|start( the ad)?|lancer( la pub)?|lanzar( el anuncio)?|avvia( l.ads)?|anzeige starten)$/i.test(
     foldChatText(text),

@@ -102,11 +102,12 @@ export type ChatSeries = {
 };
 
 export type ResolvedAd = {
-  platform: "tiktokads";
-  format: "spark" | "standalone";
+  platform: "tiktokads" | "metaads";
+  format: "spark" | "standalone" | "boost";
   goal: "video_views" | "engagement";
   budget_amount: number;
   budget_currency: string;
+  budget_type?: "daily" | "lifetime";
   days: number;
   start_now: boolean;
   locations: string[];
@@ -115,6 +116,11 @@ export type ResolvedAd = {
   media: ChatMedia[];
   tiktok_account_id: string | null;
   tiktok_handle: string;
+  instagram_account_id?: string | null;
+  instagram_handle?: string;
+  platform_post_id?: string | null;
+  post_url?: string | null;
+  instagram_only?: boolean;
   ads_account_id: string;
   platform_ad_account_id: string;
 };

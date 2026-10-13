@@ -6,13 +6,21 @@ import {
   getTikTokCreatorInfo,
   getZernioAccount,
   listAdAccounts,
+  listInboxComments,
   searchAdTargeting,
   ZernioError,
   type TikTokSettings,
   type ZernioAccount,
   type ZernioPost,
 } from "@/lib/zernio";
-import { foldChatText, geoKey, tiktokItemIdFromPost } from "@/lib/chat-post/ad-confirm";
+import {
+  foldChatText,
+  geoKey,
+  isMetaAdNetwork,
+  isTikTokAdNetwork,
+  pickLatestInstagramInboxPost,
+  tiktokItemIdFromPost,
+} from "@/lib/chat-post/ad-confirm";
 import { humanZernioError } from "@/lib/zernio-error-messages";
 import { classifyPublishOutcome, platformErrorText, platformPublicUrl } from "@/lib/chat-post/publish-status";
 import type { ChatMedia, ConnectedAccount, PlatformExecResult, ResolvedAction, ResolvedAd } from "@/lib/chat-post/types";
@@ -75,36 +83,54 @@ function adCopy(locale: string) {
       failed: "The ad did not start.",
       wait: "TikTok is still publishing the video. Wait a minute, then start the ad again.",
       noPost: "TikTok did not accept the video.",
+      needMetaAds: "Connect Meta Ads under Connections → Ads, then ask again.",
+      needInstagram: "Connect Instagram under Connections → Social, then ask again.",
+      noIgPost: "I cannot see a recent Instagram post to boost. Publish it first, then ask again.",
     },
     ro: {
       missing: "Lipsește brief-ul de reclamă.",
       failed: "Reclama nu a pornit.",
       wait: "TikTok încă publică videoul. Așteaptă un minut, apoi pornește reclama din nou.",
       noPost: "TikTok nu a acceptat videoul.",
+      needMetaAds: "Conectează Meta Ads la Conexiuni → Reclame, apoi cere din nou.",
+      needInstagram: "Conectează Instagram la Conexiuni → Social, apoi cere din nou.",
+      noIgPost: "Nu văd o postare recentă de Instagram de promovat. Public-o întâi, apoi cere din nou.",
     },
     de: {
       missing: "Das Anzeigenbriefing fehlt.",
       failed: "Die Anzeige ist nicht gestartet.",
       wait: "TikTok veröffentlicht das Video noch. Warte eine Minute und starte die Anzeige erneut.",
       noPost: "TikTok hat das Video nicht angenommen.",
+      needMetaAds: "Verbinde Meta Ads unter Verbindungen → Anzeigen und frage dann erneut.",
+      needInstagram: "Verbinde Instagram unter Verbindungen → Social und frage dann erneut.",
+      noIgPost: "Ich sehe keinen aktuellen Instagram-Beitrag zum Boosten. Veröffentliche ihn zuerst, dann frage erneut.",
     },
     it: {
       missing: "Manca il brief dell’ads.",
       failed: "L’ads non è partita.",
       wait: "TikTok sta ancora pubblicando il video. Aspetta un minuto e poi avvia di nuovo l’ads.",
       noPost: "TikTok non ha accettato il video.",
+      needMetaAds: "Collega Meta Ads in Connessioni → Ads, poi chiedi di nuovo.",
+      needInstagram: "Collega Instagram in Connessioni → Social, poi chiedi di nuovo.",
+      noIgPost: "Non vedo un post Instagram recente da promuovere. Pubblicalo prima, poi chiedi di nuovo.",
     },
     fr: {
       missing: "Le brief de la pub manque.",
       failed: "La pub n’a pas démarré.",
       wait: "TikTok publie encore la vidéo. Attends une minute, puis relance la pub.",
       noPost: "TikTok n’a pas accepté la vidéo.",
+      needMetaAds: "Connecte Meta Ads dans Connexions → Pubs, puis redemande.",
+      needInstagram: "Connecte Instagram dans Connexions → Social, puis redemande.",
+      noIgPost: "Je ne vois pas de post Instagram récent à booster. Publie-le d’abord, puis redemande.",
     },
     es: {
       missing: "Falta el brief del anuncio.",
       failed: "El anuncio no arrancó.",
       wait: "TikTok sigue publicando el vídeo. Espera un minuto y vuelve a lanzar el anuncio.",
       noPost: "TikTok no aceptó el vídeo.",
+      needMetaAds: "Conecta Meta Ads en Conexiones → Anuncios y vuelve a pedirlo.",
+      needInstagram: "Conecta Instagram en Conexiones → Social y vuelve a pedirlo.",
+      noIgPost: "No veo una publicación reciente de Instagram para impulsar. Publícala primero y vuelve a pedirlo.",
     },
   };
   return table[locale] ?? table.en;
@@ -116,12 +142,13 @@ async function firstTarget(input: {
   geoType?: "city" | "region";
   accountId: string;
   adAccountId?: string;
+  platform?: "tiktok" | "facebook";
 }) {
   for (const q of input.queries) {
     const hits = await searchAdTargeting({
       dimension: input.dimension,
       q,
-      platform: "tiktok",
+      platform: input.platform ?? "tiktok",
       accountId: input.accountId,
       adAccountId: input.adAccountId,
       geoType: input.geoType,
@@ -212,25 +239,40 @@ function isWrongBoostAccount(error: unknown) {
   );
 }
 
-export async function resolveTikTokAd(input: {
+type PaidAdBrief = {
+  network?: string;
+  goal?: string;
+  spark?: boolean;
+  budget_amount?: number;
+  budget_currency?: string;
+  budget_type?: "daily" | "lifetime";
+  days?: number;
+  start_now?: boolean;
+  locations?: string[];
+  interests?: string[];
+  caption?: string;
+  media_refs?: string[];
+  instagram_only?: boolean;
+};
+
+type PaidAdInput = {
   locale: string;
   timezone: string;
   accounts: ConnectedAccount[];
   adsAccounts: ConnectedAccount[];
   media: ChatMedia[];
-  brief: {
-    goal?: string;
-    spark?: boolean;
-    budget_amount?: number;
-    budget_currency?: string;
-    days?: number;
-    start_now?: boolean;
-    locations?: string[];
-    interests?: string[];
-    caption?: string;
-    media_refs?: string[];
-  };
-}): Promise<{ ok: true; resolved: Omit<ResolvedAction, "action_id"> } | { ok: false; error: string }> {
+  brief: PaidAdBrief;
+};
+
+export async function resolvePaidAd(input: PaidAdInput) {
+  const network = input.brief.network ?? "";
+  if (isMetaAdNetwork(network) && !isTikTokAdNetwork(network)) {
+    return resolveMetaAd(input);
+  }
+  return resolveTikTokAd(input);
+}
+
+export async function resolveTikTokAd(input: PaidAdInput): Promise<{ ok: true; resolved: Omit<ResolvedAction, "action_id"> } | { ok: false; error: string }> {
   const ro = input.locale === "ro";
   const tiktok = input.accounts.find((account) => account.platform === "tiktok");
   const ads = input.adsAccounts.find((account) => account.platform === "tiktokads");
@@ -282,6 +324,7 @@ export async function resolveTikTokAd(input: {
     goal: input.brief.goal === "engagement" ? "engagement" : "video_views",
     budget_amount: amount,
     budget_currency: (input.brief.budget_currency || "RON").toUpperCase(),
+    budget_type: input.brief.budget_type === "lifetime" ? "lifetime" : "daily",
     days,
     start_now: input.brief.start_now !== false,
     locations,
@@ -290,6 +333,81 @@ export async function resolveTikTokAd(input: {
     media: [video],
     tiktok_account_id: tiktok?.zernio_account_id ?? null,
     tiktok_handle: tiktok?.username ?? tiktok?.display_name ?? "TikTok",
+    ads_account_id: ads.zernio_account_id,
+    platform_ad_account_id: advertiserId,
+  };
+  return {
+    ok: true,
+    resolved: {
+      kind: "ad",
+      timezone: input.timezone,
+      locale: input.locale,
+      actions: [],
+      excluded_by_validation: [],
+      excluded_platforms: [],
+      warnings: [],
+      ad,
+    },
+  };
+}
+
+async function resolveMetaAd(input: PaidAdInput): Promise<{ ok: true; resolved: Omit<ResolvedAction, "action_id"> } | { ok: false; error: string }> {
+  const copy = adCopy(input.locale);
+  const instagram = input.accounts.find((account) => account.platform === "instagram");
+  const ads = input.adsAccounts.find((account) => account.platform === "metaads");
+  if (!ads) {
+    return { ok: false, error: copy.needMetaAds };
+  }
+  if (!instagram) {
+    return { ok: false, error: copy.needInstagram };
+  }
+  const amount = Number(input.brief.budget_amount);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return {
+      ok: false,
+      error: input.locale === "ro" ? "Spune bugetul (ex. 100 lei)." : "Name the budget (e.g. 100 lei).",
+    };
+  }
+  const listed = await listInboxComments({
+    accountId: instagram.zernio_account_id,
+    platform: "instagram",
+    limit: 12,
+    sortBy: "date",
+    sortOrder: "desc",
+  }).catch(() => ({ data: [] as Array<{ id?: string; platform?: string; createdTime?: string; content?: string; permalink?: string }> }));
+  const latest = pickLatestInstagramInboxPost(listed.data ?? []);
+  if (!latest?.id) {
+    return { ok: false, error: copy.noIgPost };
+  }
+  const days = Math.max(1, Math.round(Number(input.brief.days) || 1));
+  const locations = (input.brief.locations ?? []).map((item) => item.trim()).filter(Boolean);
+  const interests = (input.brief.interests ?? []).map((item) => item.trim()).filter(Boolean);
+  const advertiserId = await resolveAdvertiserId(ads.zernio_account_id);
+  const network = foldChatText(input.brief.network ?? "");
+  const instagramOnly =
+    input.brief.instagram_only === true ||
+    /doar instagram|only instagram|instagram only|nur instagram|solo instagram|seulement instagram/.test(network) ||
+    (isMetaAdNetwork(input.brief.network ?? "") && /instagram/.test(network) && !/facebook/.test(network));
+  const ad: ResolvedAd = {
+    platform: "metaads",
+    format: "boost",
+    goal: input.brief.goal === "video_views" ? "video_views" : "engagement",
+    budget_amount: amount,
+    budget_currency: (input.brief.budget_currency || "RON").toUpperCase(),
+    budget_type: input.brief.budget_type === "daily" ? "daily" : "lifetime",
+    days,
+    start_now: input.brief.start_now !== false,
+    locations,
+    interests,
+    caption: (input.brief.caption ?? latest.content ?? "").trim(),
+    media: [],
+    tiktok_account_id: null,
+    tiktok_handle: "",
+    instagram_account_id: instagram.zernio_account_id,
+    instagram_handle: instagram.username ?? instagram.display_name ?? "Instagram",
+    platform_post_id: latest.id,
+    post_url: latest.permalink ?? null,
+    instagram_only: instagramOnly,
     ads_account_id: ads.zernio_account_id,
     platform_ad_account_id: advertiserId,
   };
@@ -464,31 +582,237 @@ export async function executeTikTokAd(input: {
   }
 }
 
+export async function executeMetaAd(input: {
+  resolved: ResolvedAction;
+  locale: string;
+}): Promise<PlatformExecResult[]> {
+  const ad = input.resolved.ad;
+  const copy = adCopy(input.locale);
+  if (!ad || ad.platform !== "metaads") {
+    return [
+      {
+        platform: "metaads",
+        handle: "Meta Ads",
+        status: "error",
+        error_message_human: copy.missing,
+      },
+    ];
+  }
+  const handle = ad.instagram_handle || "Instagram";
+  try {
+    if (!ad.platform_post_id || !ad.instagram_account_id) {
+      throw new Error(copy.noIgPost);
+    }
+    const advertiser = ad.platform_ad_account_id;
+    const targetingAdvertiser = advertiser && !isZernioObjectId(advertiser) ? advertiser : undefined;
+    const geoAccount = ad.ads_account_id;
+    const cities: Array<{ key: string; name: string; radius: number; distance_unit: "kilometer" }> = [];
+    const regions: Array<{ key: string; name: string }> = [];
+    for (const location of ad.locations) {
+      const asRegion = /ilfov|judet|județ|region/i.test(location);
+      const hit = await firstTarget({
+        dimension: "geo",
+        geoType: asRegion ? "region" : "city",
+        queries: [location, foldChatText(location), location === "București" ? "Bucharest" : location],
+        accountId: geoAccount,
+        adAccountId: targetingAdvertiser,
+        platform: "facebook",
+      });
+      if (!hit) continue;
+      if (asRegion) regions.push(geoKey(hit));
+      else cities.push({ ...geoKey(hit), radius: 25, distance_unit: "kilometer" });
+    }
+    const interestHits: Array<{ id: string; name: string }> = [];
+    for (const interest of ad.interests) {
+      const hit = await firstTarget({
+        dimension: "interest",
+        queries: [interest],
+        accountId: geoAccount,
+        adAccountId: targetingAdvertiser,
+        platform: "facebook",
+      });
+      if (hit) interestHits.push(hit);
+    }
+    const start = new Date();
+    const end = new Date(start.getTime() + ad.days * 24 * 60 * 60 * 1000);
+    const lifetime = ad.budget_type !== "daily";
+    const targeting: Record<string, unknown> = {
+      ...(cities.length || regions.length ? {} : { countries: ["RO"] }),
+      ...(cities.length ? { cities } : {}),
+      ...(regions.length ? { regions } : {}),
+      ...(interestHits.length ? { interests: interestHits } : {}),
+      ...(ad.instagram_only
+        ? {
+            placements: {
+              publisherPlatforms: ["instagram"],
+              instagramPositions: ["stream", "explore", "explore_home", "reels", "profile_feed"],
+            },
+          }
+        : {}),
+    };
+    await boostAd({
+      platformPostId: ad.platform_post_id,
+      accountId: ad.instagram_account_id,
+      adAccountId: advertiser,
+      name: ad.goal === "engagement" ? "Instagram comments" : "Instagram boost",
+      goal: ad.goal,
+      budget: {
+        amount: ad.budget_amount,
+        type: lifetime ? "lifetime" : "daily",
+        currency: ad.budget_currency,
+      },
+      schedule: { startDate: start.toISOString(), endDate: end.toISOString() },
+      targeting,
+    });
+    return [
+      {
+        platform: "metaads",
+        handle,
+        status: "success",
+        post_url: ad.post_url ?? null,
+        zernio_post_id: null,
+        error_message_human: null,
+      },
+    ];
+  } catch (error) {
+    const message =
+      error instanceof ZernioError
+        ? humanZernioError({ code: error.code, message: error.message, locale: input.locale })
+        : error instanceof Error
+          ? error.message
+          : copy.failed;
+    return [
+      {
+        platform: "metaads",
+        handle,
+        status: "error",
+        error_message_human: message,
+      },
+    ];
+  }
+}
+
 export function adSummaryLines(ad: ResolvedAd, locale: string) {
-  const ro = locale === "ro";
+  const copy = {
+    en: {
+      spark: "Spark — it also lands on the TikTok profile.",
+      standalone: "Standalone ad (not a profile post).",
+      boost: "Boost the latest Instagram post.",
+      igOnly: "Instagram only — not Facebook.",
+      views: "Goal: 6-second views.",
+      engagement: "Goal: comments / engagement.",
+      day: "day",
+      days: "days",
+      perDay: "per day",
+      total: "total",
+      location: "Location",
+      interests: "Interests",
+      budget: "Budget",
+    },
+    ro: {
+      spark: "Spark — apare și pe profilul TikTok.",
+      standalone: "Reclamă standalone (nu e postare de profil).",
+      boost: "Boost pe ultima postare de Instagram.",
+      igOnly: "Doar Instagram — fără Facebook.",
+      views: "Obiectiv: vizualizări (6s).",
+      engagement: "Obiectiv: comentarii.",
+      day: "zi",
+      days: "zile",
+      perDay: "pe zi",
+      total: "total",
+      location: "Locație",
+      interests: "Interese",
+      budget: "Buget",
+    },
+    de: {
+      spark: "Spark — erscheint auch auf dem TikTok-Profil.",
+      standalone: "Standalone-Anzeige (kein Profilbeitrag).",
+      boost: "Boost des neuesten Instagram-Beitrags.",
+      igOnly: "Nur Instagram — nicht Facebook.",
+      views: "Ziel: 6-Sekunden-Views.",
+      engagement: "Ziel: Kommentare.",
+      day: "Tag",
+      days: "Tage",
+      perDay: "pro Tag",
+      total: "gesamt",
+      location: "Ort",
+      interests: "Interessen",
+      budget: "Budget",
+    },
+    it: {
+      spark: "Spark — compare anche sul profilo TikTok.",
+      standalone: "Ads standalone (non è un post del profilo).",
+      boost: "Boost dell’ultimo post Instagram.",
+      igOnly: "Solo Instagram — senza Facebook.",
+      views: "Obiettivo: visualizzazioni (6s).",
+      engagement: "Obiettivo: commenti.",
+      day: "giorno",
+      days: "giorni",
+      perDay: "al giorno",
+      total: "totale",
+      location: "Luogo",
+      interests: "Interessi",
+      budget: "Budget",
+    },
+    fr: {
+      spark: "Spark — ça apparaît aussi sur le profil TikTok.",
+      standalone: "Pub autonome (pas un post de profil).",
+      boost: "Boost du dernier post Instagram.",
+      igOnly: "Instagram seulement — pas Facebook.",
+      views: "Objectif : vues (6s).",
+      engagement: "Objectif : commentaires.",
+      day: "jour",
+      days: "jours",
+      perDay: "par jour",
+      total: "total",
+      location: "Lieu",
+      interests: "Intérêts",
+      budget: "Budget",
+    },
+    es: {
+      spark: "Spark — también aparece en el perfil de TikTok.",
+      standalone: "Anuncio independiente (no es un post del perfil).",
+      boost: "Impulso de la última publicación de Instagram.",
+      igOnly: "Solo Instagram — sin Facebook.",
+      views: "Objetivo: visualizaciones (6s).",
+      engagement: "Objetivo: comentarios.",
+      day: "día",
+      days: "días",
+      perDay: "al día",
+      total: "total",
+      location: "Ubicación",
+      interests: "Intereses",
+      budget: "Presupuesto",
+    },
+  }[locale] ?? {
+    spark: "Spark — it also lands on the TikTok profile.",
+    standalone: "Standalone ad (not a profile post).",
+    boost: "Boost the latest Instagram post.",
+    igOnly: "Instagram only — not Facebook.",
+    views: "Goal: 6-second views.",
+    engagement: "Goal: comments / engagement.",
+    day: "day",
+    days: "days",
+    perDay: "per day",
+    total: "total",
+    location: "Location",
+    interests: "Interests",
+    budget: "Budget",
+  };
+  const period = ad.days === 1 ? copy.day : copy.days;
+  const spend =
+    ad.budget_type === "lifetime"
+      ? `${copy.budget}: ${ad.budget_amount} ${ad.budget_currency} ${copy.total}, ${ad.days} ${period}.`
+      : `${copy.budget}: ${ad.budget_amount} ${ad.budget_currency} ${copy.perDay}, ${ad.days} ${period}.`;
+  const formatLine =
+    ad.format === "boost" ? copy.boost : ad.format === "spark" ? copy.spark : copy.standalone;
   return [
-    ad.format === "spark"
-      ? ro
-        ? "Spark — apare și pe profilul TikTok."
-        : "Spark — it also lands on the TikTok profile."
-      : ro
-        ? "Reclamă standalone (nu e postare de profil)."
-        : "Standalone ad (not a profile post).",
-    ro
-      ? `Obiectiv: ${ad.goal === "video_views" ? "vizualizări (6s)" : "engagement"}.`
-      : `Goal: ${ad.goal === "video_views" ? "6-second views" : "engagement"}.`,
-    ro
-      ? `Buget: ${ad.budget_amount} ${ad.budget_currency} / zi, ${ad.days} ${ad.days === 1 ? "zi" : "zile"}.`
-      : `Budget: ${ad.budget_amount} ${ad.budget_currency} / day, ${ad.days} day(s).`,
-    ad.locations.length
-      ? ro
-        ? `Locație: ${ad.locations.join(", ")}.`
-        : `Location: ${ad.locations.join(", ")}.`
-      : "",
-    ad.interests.length
-      ? ro
-        ? `Interese: ${ad.interests.join(", ")}.`
-        : `Interests: ${ad.interests.join(", ")}.`
-      : "",
+    formatLine,
+    ad.instagram_only ? copy.igOnly : "",
+    ad.post_url ?? "",
+    ad.goal === "video_views" ? copy.views : copy.engagement,
+    spend,
+    ad.locations.length ? `${copy.location}: ${ad.locations.join(", ")}.` : "",
+    ad.interests.length ? `${copy.interests}: ${ad.interests.join(", ")}.` : "",
   ].filter(Boolean);
 }

@@ -1006,11 +1006,11 @@
     "videoFailed": "That 5-second job failed. Say again what to film — only if you want a new clip.",
     "videoWantPost": "Post this clip on every connected network at the best time.",
     "videoWantAd": "I want a paid ad with this clip. Ask me the network and budget — do not post yet.",
-    "adConfirmTitle": "Paid TikTok campaign",
+    "adConfirmTitle": "Paid campaign",
     "adConfirmSpend": "This spends the budget you named. Confirm only if that is what you want.",
     "adConfirmHint": "Press the black button below. Don’t type confirm in the chat.",
     "adConfirmButton": "Start the ad",
-    "adWorking": "Publishing on TikTok, then starting the ad. Leave the chat open, 1–2 minutes.",
+    "adWorking": "Starting the ad. Leave the chat open.",
     "adFailed": "The ad did not start."
   }
 }

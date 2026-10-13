@@ -719,6 +719,7 @@ export async function searchAdTargeting(input: {
 export async function boostAd(body: Record<string, unknown>) {
   return zernioFetch<unknown>("/ads/boost", {
     method: "POST",
+    headers: { "Idempotency-Key": crypto.randomUUID() },
     body: JSON.stringify(body),
   });
 }

@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createGeneratedPoster } from "@/lib/chat-post/poster";
 import { createGeneratedVideo, latestReadyVideo } from "@/lib/chat-post/video";
-import { resolveTikTokAd } from "@/lib/chat-post/ads";
+import { resolvePaidAd } from "@/lib/chat-post/ads";
 import { parseVideoJob } from "@/lib/fal-video";
 import { discoverCatalogProducts, parseCatalogRequest } from "@/lib/chat-post/catalog";
 import { firstPublicUrlInText } from "@/lib/site-brief";
@@ -912,17 +912,21 @@ async function postChat(request: Request) {
           const fromRefs = refs
             .map((id) => media.find((item) => item.id === id))
             .filter((item): item is ChatMedia => Boolean(item));
-          const made = await resolveTikTokAd({
+          const made = await resolvePaidAd({
             locale,
             timezone: timeZone,
             accounts: posting,
             adsAccounts,
             media: fromRefs.length > 0 ? fromRefs : thisTurnMedia.length > 0 ? thisTurnMedia : media,
             brief: {
+              network: typeof input.network === "string" ? input.network : undefined,
               goal: typeof input.goal === "string" ? input.goal : undefined,
               spark: input.spark !== false,
               budget_amount: typeof input.budget_amount === "number" ? input.budget_amount : Number(input.budget_amount),
               budget_currency: typeof input.budget_currency === "string" ? input.budget_currency : "RON",
+              budget_type:
+                input.budget_type === "lifetime" || input.budget_type === "daily" ? input.budget_type : undefined,
+              instagram_only: input.instagram_only === true,
               days: typeof input.days === "number" ? input.days : Number(input.days),
               start_now: input.start_now !== false,
               locations: Array.isArray(input.locations)

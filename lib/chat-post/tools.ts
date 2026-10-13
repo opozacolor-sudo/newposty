@@ -153,15 +153,24 @@ export const chatPostTools: Anthropic.Tool[] = [
   {
     name: "create_paid_ad",
     description:
-      "Prepare a paid ad that the user must confirm before any spend. Use when they name a network, budget, duration, and audience. TikTok Spark: publish the attached video on TikTok then boost it. Do NOT invent a budget. Do NOT claim the campaign is live.",
+      "Prepare a paid ad that the user must confirm before any spend. Use when they name a network, budget, duration, and audience. TikTok Spark: publish the attached video then boost it. Meta / Instagram: boost the latest Instagram post (comments = goal engagement). Do NOT invent a budget. Do NOT claim the campaign is live.",
     input_schema: {
       type: "object",
       properties: {
-        network: { type: "string", description: "Ads network, e.g. tiktok / tiktokads." },
+        network: { type: "string", description: "Ads network, e.g. instagram / metaads / tiktok / tiktokads." },
         spark: { type: "boolean", description: "True to Spark (also appears on the TikTok profile)." },
         goal: { type: "string", enum: ["video_views", "engagement"] },
         budget_amount: { type: "number" },
         budget_currency: { type: "string", description: "RON, EUR, USD. Default RON if they said lei." },
+        budget_type: {
+          type: "string",
+          enum: ["daily", "lifetime"],
+          description: "lifetime if they said total / în total; daily if they said per day / pe zi.",
+        },
+        instagram_only: {
+          type: "boolean",
+          description: "True when the Meta boost must stay on Instagram and not Facebook.",
+        },
         days: { type: "number" },
         start_now: { type: "boolean" },
         locations: { type: "array", items: { type: "string" }, description: "Cities or regions, e.g. București, Ilfov." },
@@ -315,7 +324,7 @@ export function chatPostSystemPrompt(input: {
       : "If they later say post / programează / postează for that poster or clip, call create_social_post with media_refs set to the generated media_id — not the reference photos.",
     input.posterEnabled === false
       ? ""
-      : "If they later say reclamă / ads / boost / paid / Spark about a video, and they named budget + days + audience, call create_paid_ad. Spark = spark true (post on TikTok then boost). Goal video_views for 6-second views, engagement if they want comments. Lei → budget_currency RON. Do not invent a spend. Do not claim it is live or processing. Point only at the black button on the spend card. TikTok ads are VIDEO only. A photo carousel is not an ad.",
+      : "If they later say reclamă / ads / boost / paid / Spark / promovează postul, and they named budget + days + audience, call create_paid_ad. Instagram / Meta / Facebook → network instagram or metaads, goal engagement for comments, budget_type lifetime if they said total, instagram_only true if they said doar Instagram. Boost the latest Instagram post — no video attach needed. TikTok / Spark → network tiktok, spark true (post then boost). Goal video_views for 6-second views, engagement if they want comments. Lei → budget_currency RON. Do not invent a spend. Do not claim it is live or processing. Point only at the black button on the spend card. TikTok ads are VIDEO only.",
     "If the user only wants a caption or content idea, without intent to post now, do NOT call create_social_post. Reply in text.",
     "Content-idea calendars (idei de conținut / plan de marketing for N days, a month, no files yet): do NOT invent the calendar in the first reply. Ask short questions first: business or niche, networks, tone or goal, start date (today / tomorrow / a calendar date), any fixed dates or offers. Day 1 of the plan MUST be that start date. If they already answered the rest but not the start date, ask only when to start. After they answer, write EVERY day of the plan in THIS one reply — never stop mid-plan, never ask them to type „continuă”. Compact: one short block per day (date, networks, one-line photo prompt, one-line video prompt). No long intro, no --- fences. Still do not call create_social_post or generate_* unless they then ask to make that day’s photo/video or to publish/schedule.",
     input.planAccessLine ?? "",

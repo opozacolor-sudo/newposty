@@ -1006,11 +1006,11 @@
     "videoFailed": "Il job di 5 secondi è fallito. Ripeti cosa filmare — solo se vuoi un nuovo clip.",
     "videoWantPost": "Pubblica questo clip su tutte le reti collegate all’orario migliore.",
     "videoWantAd": "Voglio un ads a pagamento con questo clip. Chiedimi rete e budget — non pubblicare ancora.",
-    "adConfirmTitle": "Campagna TikTok a pagamento",
+    "adConfirmTitle": "Campagna a pagamento",
     "adConfirmSpend": "Questo spende il budget che hai detto. Conferma solo se è quello che vuoi.",
     "adConfirmHint": "Premi il pulsante nero qui sotto. Non scrivere confirm in chat.",
     "adConfirmButton": "Avvia l’ads",
-    "adWorking": "Pubblica su TikTok, poi avvia l’ads. Lascia la chat aperta, 1–2 minuti.",
+    "adWorking": "Avvio dell’ads. Lascia la chat aperta.",
     "adFailed": "L’ads non è partita."
   }
 }

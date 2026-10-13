@@ -1006,11 +1006,11 @@
     "videoFailed": "Jobul de 5 secunde a eșuat. Spune din nou ce vrei filmat — doar dacă vrei un clip nou.",
     "videoWantPost": "Postează clipul ăsta pe toate rețelele conectate, la cea mai bună oră.",
     "videoWantAd": "Vreau reclamă plătită cu clipul ăsta. Întreabă-mă rețeaua și bugetul — nu posta încă.",
-    "adConfirmTitle": "Campanie plătită TikTok",
+    "adConfirmTitle": "Campanie plătită",
     "adConfirmSpend": "Asta cheltuie bugetul pe care l-ai spus. Confirmă doar dacă asta vrei.",
     "adConfirmHint": "Apasă butonul negru de mai jos. Nu scrie confirm în chat.",
     "adConfirmButton": "Pornește reclama",
-    "adWorking": "Publică pe TikTok, apoi pornește reclama. Lasă chatul deschis, 1–2 minute.",
+    "adWorking": "Pornește reclama. Lasă chatul deschis.",
     "adFailed": "Reclama nu a pornit."
   }
 }
