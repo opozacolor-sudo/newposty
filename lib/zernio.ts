@@ -669,9 +669,21 @@ export async function listAdAccounts(accountId: string) {
         id,
         name: String(row.name ?? row.advertiserName ?? ""),
         selectable: row.selectable !== false,
+        accountStatus: (row.accountStatus ?? row.status ?? null) as number | string | null,
+        billingStatus: row.billingStatus == null ? null : String(row.billingStatus),
       };
     })
-    .filter((item): item is { id: string; name: string; selectable: boolean } => Boolean(item));
+    .filter(
+      (
+        item,
+      ): item is {
+        id: string;
+        name: string;
+        selectable: boolean;
+        accountStatus: number | string | null;
+        billingStatus: string | null;
+      } => Boolean(item),
+    );
 }
 
 export async function searchAdTargeting(input: {

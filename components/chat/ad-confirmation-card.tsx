@@ -72,6 +72,13 @@ export function AdConfirmationCard({
           <li key={line}>{line}</li>
         ))}
       </ul>
+      {payload.resolved.warnings.length > 0 ? (
+        <ul className="space-y-1 text-xs text-[#B45309]">
+          {payload.resolved.warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      ) : null}
       {ad.caption ? <p className="whitespace-pre-wrap text-sm text-[#1A1A1A]">{ad.caption}</p> : null}
       {error ? <p className="text-sm text-[#9A3412]">{error}</p> : null}
       <div className="flex flex-col gap-2">

@@ -24,9 +24,28 @@ export function contentTypeLabel(type?: string | null) {
   return "";
 }
 
-export function resultsReply(locale: string | undefined, results: Array<{ status: string }>) {
+function adsFailedReply(locale: string | undefined) {
+  const copy: Record<string, string> = {
+    en: "The ad did not start. See the error below.",
+    ro: "Reclama nu a pornit. Vezi eroarea mai jos.",
+    de: "Die Anzeige ist nicht gestartet. Siehe den Fehler unten.",
+    it: "L’ads non è partita. Vedi l’errore qui sotto.",
+    fr: "La pub n’a pas démarré. Vois l’erreur ci-dessous.",
+    es: "El anuncio no arrancó. Mira el error abajo.",
+  };
+  return copy[locale ?? "en"] ?? copy.en;
+}
+
+export function resultsReply(
+  locale: string | undefined,
+  results: Array<{ status: string; platform?: string }>,
+) {
   const failed = results.filter((item) => item.status === "error").length;
   const ok = results.length - failed;
+  const adsOnly =
+    results.length > 0 &&
+    results.every((item) => item.platform === "metaads" || item.platform === "tiktokads");
+  if (adsOnly && ok === 0) return adsFailedReply(locale);
   if (locale === "ro") {
     if (results.length === 0 || ok === 0) return "Nu s-a postat nimic. Vezi erorile mai jos.";
     if (results.length > 8) {

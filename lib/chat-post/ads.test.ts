@@ -8,6 +8,7 @@ import {
   isTikTokAdNetwork,
   numericTikTokItemId,
   pickLatestInstagramInboxPost,
+  pickMetaAdAccount,
   tiktokItemIdFromPost,
 } from "./ad-confirm";
 
@@ -44,6 +45,26 @@ test("latest Instagram inbox post is the newest organic row", () => {
     { id: "fb", platform: "facebook", createdTime: "2026-10-13T09:00:00.000Z" },
   ]);
   assert.equal(latest?.id, "18098554325084197");
+});
+
+test("Meta boost prefers the posty.now ad account over an ineligible personal one", () => {
+  const picked = pickMetaAdAccount([
+    {
+      id: "act_1191586852290195",
+      name: "Paul D Smeianu",
+      selectable: true,
+      accountStatus: 3,
+      billingStatus: "missing",
+    },
+    {
+      id: "act_1794507248368170",
+      name: "posty.now",
+      selectable: true,
+      accountStatus: 1,
+      billingStatus: "missing",
+    },
+  ]);
+  assert.equal(picked?.id, "act_1794507248368170");
 });
 
 test("Spark boost needs the numeric TikTok item id, not the v_pub_url prefix", () => {

@@ -22,4 +22,12 @@ test("results reply does not ask to confirm after posting", () => {
     resultsReply("ro", [{ status: "success" }]),
     /confirm/i,
   );
+  assert.match(
+    resultsReply("ro", [{ status: "error", platform: "metaads" }]),
+    /reclama nu a pornit/i,
+  );
+  assert.doesNotMatch(
+    resultsReply("ro", [{ status: "error", platform: "metaads" }]),
+    /nu s-a postat/i,
+  );
 });

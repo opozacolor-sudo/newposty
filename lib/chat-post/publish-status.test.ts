@@ -92,6 +92,18 @@ test("TikTok profile fallback url is the public profile", () => {
   assert.equal(platformProfileUrl("tiktok", "@aipixxel"), "https://www.tiktok.com/@aipixxel");
 });
 
+test("Meta ineligible ad account is not hidden behind a generic post failure", () => {
+  const message = "Meta ad account act_1191586852290195 is not writable: its status is ineligible to manage ads";
+  assert.match(
+    humanZernioError({ code: "platform_api_error", message, locale: "ro" }),
+    /posty\.now/,
+  );
+  assert.doesNotMatch(
+    humanZernioError({ code: "platform_api_error", message, locale: "ro" }),
+    /nu a putut fi trimisă/i,
+  );
+});
+
 test("TikTok daily active-user cap is not blamed on posting too many clips", () => {
   const ro = humanZernioError({
     code: "quota_exhausted",

@@ -37,6 +37,30 @@ export function pickLatestInstagramInboxPost<
   return ranked[0] ?? null;
 }
 
+export type MetaAdAccountChoice = {
+  id: string;
+  name: string;
+  selectable?: boolean;
+  accountStatus?: number | string | null;
+  billingStatus?: string | null;
+};
+
+export function pickMetaAdAccount(accounts: MetaAdAccountChoice[], preferredName = "posty.now") {
+  const wanted = foldChatText(preferredName);
+  const active = accounts.filter((account) => {
+    if (account.selectable === false) return false;
+    const status = Number(account.accountStatus ?? 1);
+    return !Number.isFinite(status) || status === 1;
+  });
+  const pool = active.length > 0 ? active : accounts.filter((account) => account.selectable !== false);
+  const named = pool.find((account) => {
+    const name = foldChatText(account.name);
+    return name === wanted || name.includes("posty");
+  });
+  if (named) return named;
+  return pool.find((account) => account.billingStatus === "ok") ?? pool[0] ?? null;
+}
+
 export function isAdConfirmReply(text: string) {
   return /^(confirm|confirma|ok|da|yes|oui|si|ja|porneste|porneste reclama|start( the ad)?|lancer( la pub)?|lanzar( el anuncio)?|avvia( l.ads)?|anzeige starten)$/i.test(
     foldChatText(text),

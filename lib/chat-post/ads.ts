@@ -19,6 +19,7 @@ import {
   isMetaAdNetwork,
   isTikTokAdNetwork,
   pickLatestInstagramInboxPost,
+  pickMetaAdAccount,
   tiktokItemIdFromPost,
 } from "@/lib/chat-post/ad-confirm";
 import { humanZernioError } from "@/lib/zernio-error-messages";
@@ -66,14 +67,25 @@ function advertiserIdFromAccount(account: (ZernioAccount & Record<string, unknow
   return firstString(...candidates);
 }
 
-async function resolveAdvertiserId(adsAccountId: string) {
+async function resolveAdvertiser(
+  adsAccountId: string,
+  options?: { preferName?: string },
+): Promise<{ id: string; billingStatus: string | null }> {
   const listed = await listAdAccounts(adsAccountId).catch(() => []);
-  const selectable = listed.find((item) => item.selectable) ?? listed[0];
-  if (selectable?.id) return selectable.id;
+  const preferred = options?.preferName
+    ? pickMetaAdAccount(listed, options.preferName)
+    : listed.find((item) => item.selectable) ?? listed[0];
+  if (preferred?.id) {
+    return { id: preferred.id, billingStatus: preferred.billingStatus ?? null };
+  }
   const adsRemote = (await getZernioAccount(adsAccountId).catch(() => null)) as
     | (ZernioAccount & Record<string, unknown>)
     | null;
-  return advertiserIdFromAccount(adsRemote) || adsAccountId;
+  return { id: advertiserIdFromAccount(adsRemote) || adsAccountId, billingStatus: null };
+}
+
+async function resolveAdvertiserId(adsAccountId: string, options?: { preferName?: string }) {
+  return (await resolveAdvertiser(adsAccountId, options)).id;
 }
 
 function adCopy(locale: string) {
@@ -86,6 +98,7 @@ function adCopy(locale: string) {
       needMetaAds: "Connect Meta Ads under Connections → Ads, then ask again.",
       needInstagram: "Connect Instagram under Connections → Social, then ask again.",
       noIgPost: "I cannot see a recent Instagram post to boost. Publish it first, then ask again.",
+      needBilling: "Add a payment method on the posty.now ad account in Do It Media before starting the campaign.",
     },
     ro: {
       missing: "Lipsește brief-ul de reclamă.",
@@ -95,6 +108,7 @@ function adCopy(locale: string) {
       needMetaAds: "Conectează Meta Ads la Conexiuni → Reclame, apoi cere din nou.",
       needInstagram: "Conectează Instagram la Conexiuni → Social, apoi cere din nou.",
       noIgPost: "Nu văd o postare recentă de Instagram de promovat. Public-o întâi, apoi cere din nou.",
+      needBilling: "Pune un card pe ad account-ul posty.now din Do It Media înainte să pornești campania.",
     },
     de: {
       missing: "Das Anzeigenbriefing fehlt.",
@@ -104,6 +118,7 @@ function adCopy(locale: string) {
       needMetaAds: "Verbinde Meta Ads unter Verbindungen → Anzeigen und frage dann erneut.",
       needInstagram: "Verbinde Instagram unter Verbindungen → Social und frage dann erneut.",
       noIgPost: "Ich sehe keinen aktuellen Instagram-Beitrag zum Boosten. Veröffentliche ihn zuerst, dann frage erneut.",
+      needBilling: "Hinterlege eine Zahlungsmethode auf dem posty.now-Werbekonto in Do It Media, bevor du die Kampagne startest.",
     },
     it: {
       missing: "Manca il brief dell’ads.",
@@ -113,6 +128,7 @@ function adCopy(locale: string) {
       needMetaAds: "Collega Meta Ads in Connessioni → Ads, poi chiedi di nuovo.",
       needInstagram: "Collega Instagram in Connessioni → Social, poi chiedi di nuovo.",
       noIgPost: "Non vedo un post Instagram recente da promuovere. Pubblicalo prima, poi chiedi di nuovo.",
+      needBilling: "Aggiungi un pagamento sul conto ads posty.now in Do It Media prima di avviare la campagna.",
     },
     fr: {
       missing: "Le brief de la pub manque.",
@@ -122,6 +138,7 @@ function adCopy(locale: string) {
       needMetaAds: "Connecte Meta Ads dans Connexions → Pubs, puis redemande.",
       needInstagram: "Connecte Instagram dans Connexions → Social, puis redemande.",
       noIgPost: "Je ne vois pas de post Instagram récent à booster. Publie-le d’abord, puis redemande.",
+      needBilling: "Ajoute un moyen de paiement sur le compte ads posty.now dans Do It Media avant de lancer la campagne.",
     },
     es: {
       missing: "Falta el brief del anuncio.",
@@ -131,6 +148,7 @@ function adCopy(locale: string) {
       needMetaAds: "Conecta Meta Ads en Conexiones → Anuncios y vuelve a pedirlo.",
       needInstagram: "Conecta Instagram en Conexiones → Social y vuelve a pedirlo.",
       noIgPost: "No veo una publicación reciente de Instagram para impulsar. Publícala primero y vuelve a pedirlo.",
+      needBilling: "Añade un método de pago en la cuenta de anuncios posty.now de Do It Media antes de lanzar la campaña.",
     },
   };
   return table[locale] ?? table.en;
@@ -382,7 +400,9 @@ async function resolveMetaAd(input: PaidAdInput): Promise<{ ok: true; resolved: 
   const days = Math.max(1, Math.round(Number(input.brief.days) || 1));
   const locations = (input.brief.locations ?? []).map((item) => item.trim()).filter(Boolean);
   const interests = (input.brief.interests ?? []).map((item) => item.trim()).filter(Boolean);
-  const advertiserId = await resolveAdvertiserId(ads.zernio_account_id);
+  const advertiser = await resolveAdvertiser(ads.zernio_account_id, { preferName: "posty.now" });
+  const advertiserId = advertiser.id;
+  const billingWarning = advertiser.billingStatus === "missing" ? copy.needBilling : null;
   const network = foldChatText(input.brief.network ?? "");
   const instagramOnly =
     input.brief.instagram_only === true ||
@@ -420,7 +440,7 @@ async function resolveMetaAd(input: PaidAdInput): Promise<{ ok: true; resolved: 
       actions: [],
       excluded_by_validation: [],
       excluded_platforms: [],
-      warnings: [],
+      warnings: billingWarning ? [billingWarning] : [],
       ad,
     },
   };
@@ -603,7 +623,8 @@ export async function executeMetaAd(input: {
     if (!ad.platform_post_id || !ad.instagram_account_id) {
       throw new Error(copy.noIgPost);
     }
-    const advertiser = ad.platform_ad_account_id;
+    const advertiser =
+      (await resolveAdvertiserId(ad.ads_account_id, { preferName: "posty.now" })) || ad.platform_ad_account_id;
     const targetingAdvertiser = advertiser && !isZernioObjectId(advertiser) ? advertiser : undefined;
     const geoAccount = ad.ads_account_id;
     const cities: Array<{ key: string; name: string; radius: number; distance_unit: "kilometer" }> = [];
@@ -675,12 +696,12 @@ export async function executeMetaAd(input: {
       },
     ];
   } catch (error) {
-    const message =
-      error instanceof ZernioError
-        ? humanZernioError({ code: error.code, message: error.message, locale: input.locale })
-        : error instanceof Error
-          ? error.message
-          : copy.failed;
+    const message = humanZernioError({
+      code: error instanceof ZernioError ? error.code : null,
+      message: error instanceof Error ? error.message : "",
+      locale: input.locale,
+      fallback: copy.failed,
+    });
     return [
       {
         platform: "metaads",

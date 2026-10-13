@@ -75,6 +75,14 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string } & Record<string,
     fr: "TikTok a publié la vidéo, mais la Spark n’est pas encore prête. Attends une minute, puis relance la pub. N’envoie pas un nouveau clip.",
     es: "TikTok publicó el vídeo, pero Spark aún no está listo. Espera un minuto y lanza el anuncio otra vez. No envíes un clip nuevo.",
   },
+  ads_account_ineligible: {
+    en: "Meta blocked that ad account (ineligible to run ads). Use the posty.now ad account in Do It Media, add a payment method there, then start the campaign again.",
+    ro: "Meta a blocat acel cont de ads (nu e eligibil). Folosește ad account-ul posty.now din Do It Media, pune cardul acolo, apoi pornește campania din nou.",
+    de: "Meta hat dieses Werbekonto gesperrt (nicht berechtigt). Nutze das posty.now-Konto in Do It Media, hinterlege dort eine Zahlungsmethode und starte die Kampagne erneut.",
+    it: "Meta ha bloccato quel conto ads (non è idoneo). Usa il conto posty.now in Do It Media, aggiungi il pagamento lì, poi riavvia la campagna.",
+    fr: "Meta a bloqué ce compte ads (non éligible). Utilise le compte posty.now dans Do It Media, ajoute un moyen de paiement, puis relance la campagne.",
+    es: "Meta bloqueó esa cuenta de anuncios (no es elegible). Usa la cuenta posty.now en Do It Media, añade el pago ahí y vuelve a lanzar la campaña.",
+  },
 };
 
 function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
@@ -97,6 +105,13 @@ function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
   if (lower.includes("not been published") || lower.includes("not published")) return "unpublished_post";
   if (lower.includes("unable to get spark") || lower.includes("spark ad post")) return "spark_not_ready";
   if (lower.includes("tiktok_item_id") || lower.includes("not a valid integer")) return "spark_not_ready";
+  if (
+    lower.includes("ineligible to manage ads") ||
+    lower.includes("ad account status is ineligible") ||
+    lower.includes("2490592")
+  ) {
+    return "ads_account_ineligible";
+  }
   return null;
 }
 
@@ -104,14 +119,16 @@ export function humanZernioError(input: {
   code?: string | null;
   message?: string | null;
   locale?: string;
+  fallback?: string | null;
 }): string {
   const locale = input.locale ?? "en";
+  const mapped = fromText(input.message ?? "");
+  if (mapped) return pickError(ERROR_MESSAGES[mapped], locale);
   const code = input.code?.trim();
   if (code && ERROR_MESSAGES[code]) return pickError(ERROR_MESSAGES[code], locale);
   const compact = code?.replace(/[_-]/g, "").toLowerCase();
   if (compact && ERROR_MESSAGES[compact]) return pickError(ERROR_MESSAGES[compact], locale);
-  const mapped = fromText(input.message ?? "");
-  if (mapped) return pickError(ERROR_MESSAGES[mapped], locale);
+  if (input.fallback) return input.fallback;
   return locale === "ro"
     ? "Postarea nu a putut fi trimisă pe această platformă."
     : "The post could not be sent to this platform.";

@@ -97,6 +97,7 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
 
   const anySuccess = results.some((result) => result.status === "success");
   const allFailed = results.length > 0 && results.every((result) => result.status === "error");
+  const adsOnly = results.every((result) => result.platform === "metaads" || result.platform === "tiktokads");
 
   const failed = results.filter((result) => result.status === "error");
   const compact = results.length > 8;
@@ -105,7 +106,7 @@ export function PostResultsMessage({ payload }: { payload: ResultsPayload }) {
   return (
     <section className="mt-3 space-y-2">
       {allFailed ? (
-        <p className="text-sm font-medium text-[#FF4713]">{t("allFailed")}</p>
+        <p className="text-sm font-medium text-[#FF4713]">{adsOnly ? t("adFailed") : t("allFailed")}</p>
       ) : payload.skippedConfirmation && anySuccess ? (
         <p className="text-xs text-[#6B7280]">{t("postedWithoutAsking")}</p>
       ) : null}
