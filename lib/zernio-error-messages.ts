@@ -83,6 +83,14 @@ const ERROR_MESSAGES: Record<string, { en: string; ro: string } & Record<string,
     fr: "Meta a bloqué ce compte ads (non éligible). Utilise le compte posty.now dans Do It Media, ajoute un moyen de paiement, puis relance la campagne.",
     es: "Meta bloqueó esa cuenta de anuncios (no es elegible). Usa la cuenta posty.now en Do It Media, añade el pago ahí y vuelve a lanzar la campaña.",
   },
+  ads_dsa_required: {
+    en: "Meta needs the advertised business name for EU ads. Start the campaign again — we send the ad account name automatically.",
+    ro: "Meta cere numele firmei pentru reclame în UE. Pornește campania din nou — trimitem automat numele ad account-ului.",
+    de: "Meta braucht den Firmennamen für EU-Anzeigen. Starte die Kampagne erneut — wir senden den Werbekonto-Namen automatisch.",
+    it: "Meta richiede il nome dell’azienda per le ads in UE. Riavvia la campagna — inviamo automaticamente il nome del conto ads.",
+    fr: "Meta demande le nom de l’entreprise pour les pubs en UE. Relance la campagne — on envoie automatiquement le nom du compte ads.",
+    es: "Meta pide el nombre de la empresa para anuncios en la UE. Lanza la campaña otra vez: enviamos el nombre de la cuenta de anuncios automáticamente.",
+  },
 };
 
 function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
@@ -111,6 +119,14 @@ function fromText(text: string): keyof typeof ERROR_MESSAGES | null {
     lower.includes("2490592")
   ) {
     return "ads_account_ineligible";
+  }
+  if (
+    lower.includes("dsabeneficiary") ||
+    lower.includes("dsapayor") ||
+    lower.includes("dsa article 26") ||
+    lower.includes("eu targeting requires")
+  ) {
+    return "ads_dsa_required";
   }
   return null;
 }

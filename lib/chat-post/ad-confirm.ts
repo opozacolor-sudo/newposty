@@ -61,6 +61,14 @@ export function pickMetaAdAccount(accounts: MetaAdAccountChoice[], preferredName
   return pool.find((account) => account.billingStatus === "ok") ?? pool[0] ?? null;
 }
 
+export function metaDsaPartyName(...values: Array<string | null | undefined>) {
+  for (const value of values) {
+    const text = (value ?? "").replace(/^@/, "").trim();
+    if (text) return text;
+  }
+  return null;
+}
+
 export function isAdConfirmReply(text: string) {
   return /^(confirm|confirma|ok|da|yes|oui|si|ja|porneste|porneste reclama|start( the ad)?|lancer( la pub)?|lanzar( el anuncio)?|avvia( l.ads)?|anzeige starten)$/i.test(
     foldChatText(text),

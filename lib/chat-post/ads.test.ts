@@ -7,6 +7,7 @@ import {
   isMetaAdNetwork,
   isTikTokAdNetwork,
   numericTikTokItemId,
+  metaDsaPartyName,
   pickLatestInstagramInboxPost,
   pickMetaAdAccount,
   tiktokItemIdFromPost,
@@ -65,6 +66,11 @@ test("Meta boost prefers the posty.now ad account over an ineligible personal on
     },
   ]);
   assert.equal(picked?.id, "act_1794507248368170");
+});
+
+test("EU Meta boost uses the ad account name as DSA beneficiary and payor", () => {
+  assert.equal(metaDsaPartyName("posty.now", "@posty.now"), "posty.now");
+  assert.equal(metaDsaPartyName("", "@studio"), "studio");
 });
 
 test("Spark boost needs the numeric TikTok item id, not the v_pub_url prefix", () => {

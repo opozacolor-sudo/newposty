@@ -18,6 +18,7 @@ import {
   geoKey,
   isMetaAdNetwork,
   isTikTokAdNetwork,
+  metaDsaPartyName,
   pickLatestInstagramInboxPost,
   pickMetaAdAccount,
   tiktokItemIdFromPost,
@@ -70,18 +71,26 @@ function advertiserIdFromAccount(account: (ZernioAccount & Record<string, unknow
 async function resolveAdvertiser(
   adsAccountId: string,
   options?: { preferName?: string },
-): Promise<{ id: string; billingStatus: string | null }> {
+): Promise<{ id: string; name: string; billingStatus: string | null }> {
   const listed = await listAdAccounts(adsAccountId).catch(() => []);
   const preferred = options?.preferName
     ? pickMetaAdAccount(listed, options.preferName)
     : listed.find((item) => item.selectable) ?? listed[0];
   if (preferred?.id) {
-    return { id: preferred.id, billingStatus: preferred.billingStatus ?? null };
+    return {
+      id: preferred.id,
+      name: preferred.name ?? "",
+      billingStatus: preferred.billingStatus ?? null,
+    };
   }
   const adsRemote = (await getZernioAccount(adsAccountId).catch(() => null)) as
     | (ZernioAccount & Record<string, unknown>)
     | null;
-  return { id: advertiserIdFromAccount(adsRemote) || adsAccountId, billingStatus: null };
+  return {
+    id: advertiserIdFromAccount(adsRemote) || adsAccountId,
+    name: firstString(adsRemote?.displayName, adsRemote?.username) ?? "",
+    billingStatus: null,
+  };
 }
 
 async function resolveAdvertiserId(adsAccountId: string, options?: { preferName?: string }) {
@@ -623,8 +632,9 @@ export async function executeMetaAd(input: {
     if (!ad.platform_post_id || !ad.instagram_account_id) {
       throw new Error(copy.noIgPost);
     }
-    const advertiser =
-      (await resolveAdvertiserId(ad.ads_account_id, { preferName: "posty.now" })) || ad.platform_ad_account_id;
+    const picked = await resolveAdvertiser(ad.ads_account_id, { preferName: "posty.now" });
+    const advertiser = picked.id || ad.platform_ad_account_id;
+    const dsaParty = metaDsaPartyName(picked.name, ad.instagram_handle);
     const targetingAdvertiser = advertiser && !isZernioObjectId(advertiser) ? advertiser : undefined;
     const geoAccount = ad.ads_account_id;
     const cities: Array<{ key: string; name: string; radius: number; distance_unit: "kilometer" }> = [];
@@ -684,6 +694,7 @@ export async function executeMetaAd(input: {
       },
       schedule: { startDate: start.toISOString(), endDate: end.toISOString() },
       targeting,
+      ...(dsaParty ? { dsaBeneficiary: dsaParty, dsaPayor: dsaParty } : {}),
     });
     return [
       {

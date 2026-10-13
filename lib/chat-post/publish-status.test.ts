@@ -104,6 +104,19 @@ test("Meta ineligible ad account is not hidden behind a generic post failure", (
   );
 });
 
+test("EU DSA missing fields are not blamed on caption or media", () => {
+  const message =
+    "EU targeting requires dsaBeneficiary and dsaPayor (Meta DSA Article 26). Missing: dsaBeneficiary, dsaPayor.";
+  assert.match(
+    humanZernioError({ code: "missing_required_field", message, locale: "ro" }),
+    /numele firmei/i,
+  );
+  assert.doesNotMatch(
+    humanZernioError({ code: "missing_required_field", message, locale: "ro" }),
+    /materialul/i,
+  );
+});
+
 test("TikTok daily active-user cap is not blamed on posting too many clips", () => {
   const ro = humanZernioError({
     code: "quota_exhausted",
