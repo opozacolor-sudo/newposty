@@ -144,13 +144,13 @@ export function HelpWidget() {
   }
 
   const studio = isStudioPath(path);
-  const anchor = studio ? "bottom-36 sm:bottom-40" : "bottom-4";
+  const anchor = studio ? "bottom-36 sm:bottom-40" : "bottom-24 sm:bottom-28";
 
   return (
-    <div className={`fixed z-[80] right-3 sm:right-4 ${anchor}`}>
+    <div className={`fixed z-[80] right-3 flex flex-col items-end sm:right-4 ${anchor}`}>
       {open ? (
         <section
-          className="mb-3 flex h-[min(32rem,calc(100dvh-8rem))] w-[min(22rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-[#E5E5E5] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.16)]"
+          className="mb-3 flex h-[min(26rem,calc(100dvh-9rem))] w-[min(22rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl border border-[#E5E5E5] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.16)]"
           role="dialog"
           aria-label={t("title")}
         >
