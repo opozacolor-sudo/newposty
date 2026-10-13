@@ -288,6 +288,28 @@
     "error": "Qualcosa è andato storto. Riprova.",
     "invalid": "Compila tutti i campi con un’email valida."
   },
+  "Help": {
+    "title": "Aiuto",
+    "open": "Apri aiuto",
+    "close": "Chiudi",
+    "placeholder": "Come possiamo aiutarti?",
+    "send": "Invia",
+    "thinking": "Cerco…",
+    "empty": "Chiedi di post, ads, connessioni o del piano. Questa finestra non pubblica nulla.",
+    "leaveMessage": "Scrivici",
+    "backToChat": "Torna all’aiuto",
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefono (facoltativo)",
+    "message": "Messaggio",
+    "submit": "Invia",
+    "sending": "Invio…",
+    "success": "Messaggio ricevuto. Rispondiamo via email.",
+    "error": "Invio non riuscito. Riprova.",
+    "invalid": "Compila nome, un’email valida e il messaggio.",
+    "tooMany": "Troppe domande. Riprova tra un minuto.",
+    "failed": "Nessuna risposta. Riprova."
+  },
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, for the posty.now service.",

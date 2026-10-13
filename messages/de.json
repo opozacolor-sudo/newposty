@@ -288,6 +288,28 @@
     "error": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
     "invalid": "Bitte alle Felder mit einer gültigen E-Mail ausfüllen."
   },
+  "Help": {
+    "title": "Hilfe",
+    "open": "Hilfe öffnen",
+    "close": "Schließen",
+    "placeholder": "Womit können wir helfen?",
+    "send": "Senden",
+    "thinking": "Suche…",
+    "empty": "Frag zu Posts, Anzeigen, Verbindungen oder deinem Plan. Dieses Fenster veröffentlicht nichts.",
+    "leaveMessage": "Schreib uns",
+    "backToChat": "Zurück zur Hilfe",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon (optional)",
+    "message": "Nachricht",
+    "submit": "Senden",
+    "sending": "Senden…",
+    "success": "Nachricht erhalten. Wir antworten per E-Mail.",
+    "error": "Senden fehlgeschlagen. Bitte erneut versuchen.",
+    "invalid": "Name, gültige E-Mail und Nachricht ausfüllen.",
+    "tooMany": "Zu viele Fragen. In einer Minute erneut versuchen.",
+    "failed": "Keine Antwort. Bitte erneut versuchen."
+  },
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, for the posty.now service.",

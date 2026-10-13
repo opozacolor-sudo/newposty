@@ -288,6 +288,28 @@
     "error": "Ceva nu a mers. Te rugăm să încerci din nou.",
     "invalid": "Completează toate câmpurile cu un email valid."
   },
+  "Help": {
+    "title": "Ajutor",
+    "open": "Deschide ajutorul",
+    "close": "Închide",
+    "placeholder": "Cu ce te ajutăm?",
+    "send": "Trimite",
+    "thinking": "Caut…",
+    "empty": "Întreabă despre postări, reclame, conexiuni sau plan. Fereastra asta nu publică nimic.",
+    "leaveMessage": "Scrie-ne",
+    "backToChat": "Înapoi la ajutor",
+    "name": "Nume",
+    "email": "Email",
+    "phone": "Telefon (opțional)",
+    "message": "Mesaj",
+    "submit": "Trimite",
+    "sending": "Se trimite…",
+    "success": "Mesaj primit. Răspundem pe email.",
+    "error": "Nu s-a trimis. Încearcă din nou.",
+    "invalid": "Completează numele, un email valid și mesajul.",
+    "tooMany": "Prea multe întrebări. Încearcă peste un minut.",
+    "failed": "Nu am putut răspunde. Încearcă din nou."
+  },
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, pentru serviciul posty.now.",

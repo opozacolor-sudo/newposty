@@ -288,6 +288,28 @@
     "error": "Something went wrong. Please try again.",
     "invalid": "Please fill in every field with a valid email."
   },
+  "Help": {
+    "title": "Help",
+    "open": "Open help",
+    "close": "Close",
+    "placeholder": "How can we help?",
+    "send": "Send",
+    "thinking": "Looking…",
+    "empty": "Ask about posting, ads, connections, or your plan. This window does not publish anything.",
+    "leaveMessage": "Write to us",
+    "backToChat": "Back to help",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone (optional)",
+    "message": "Message",
+    "submit": "Send",
+    "sending": "Sending…",
+    "success": "Message received. We’ll reply by email.",
+    "error": "Couldn’t send. Try again.",
+    "invalid": "Fill in name, a valid email, and a message.",
+    "tooMany": "Too many questions. Try again in a minute.",
+    "failed": "Couldn’t answer. Try again."
+  },
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, for the posty.now service.",

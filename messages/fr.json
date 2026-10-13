@@ -288,6 +288,28 @@
     "error": "Un problème est survenu. Réessayez.",
     "invalid": "Remplissez tous les champs avec un e-mail valide."
   },
+  "Help": {
+    "title": "Aide",
+    "open": "Ouvrir l’aide",
+    "close": "Fermer",
+    "placeholder": "Comment peut-on t’aider ?",
+    "send": "Envoyer",
+    "thinking": "Je cherche…",
+    "empty": "Demande pour les posts, les pubs, les connexions ou ton plan. Cette fenêtre ne publie rien.",
+    "leaveMessage": "Écris-nous",
+    "backToChat": "Retour à l’aide",
+    "name": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone (facultatif)",
+    "message": "Message",
+    "submit": "Envoyer",
+    "sending": "Envoi…",
+    "success": "Message reçu. On répond par e-mail.",
+    "error": "Envoi impossible. Réessaie.",
+    "invalid": "Indique le nom, un e-mail valide et le message.",
+    "tooMany": "Trop de questions. Réessaie dans une minute.",
+    "failed": "Pas de réponse. Réessaie."
+  },
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, for the posty.now service.",

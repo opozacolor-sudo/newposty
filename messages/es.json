@@ -288,6 +288,28 @@
     "error": "Algo salió mal. Inténtalo de nuevo.",
     "invalid": "Rellena todos los campos con un email válido."
   },
+  "Help": {
+    "title": "Ayuda",
+    "open": "Abrir ayuda",
+    "close": "Cerrar",
+    "placeholder": "¿En qué te ayudamos?",
+    "send": "Enviar",
+    "thinking": "Busco…",
+    "empty": "Pregunta por publicaciones, anuncios, conexiones o tu plan. Esta ventana no publica nada.",
+    "leaveMessage": "Escríbenos",
+    "backToChat": "Volver a la ayuda",
+    "name": "Nombre",
+    "email": "Email",
+    "phone": "Teléfono (opcional)",
+    "message": "Mensaje",
+    "submit": "Enviar",
+    "sending": "Enviando…",
+    "success": "Mensaje recibido. Respondemos por email.",
+    "error": "No se pudo enviar. Inténtalo de nuevo.",
+    "invalid": "Rellena el nombre, un email válido y el mensaje.",
+    "tooMany": "Demasiadas preguntas. Prueba en un minuto.",
+    "failed": "No pude responder. Inténtalo de nuevo."
+  },
   "Privacy": {
     "title": "Privacy",
     "operator": "Operator: AIPixxel SRL, for the posty.now service.",

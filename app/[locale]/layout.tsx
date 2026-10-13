@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Fraunces, Geist, Poppins } from "next/font/google";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { HelpWidget } from "@/components/help/help-widget";
 import { localeAlternates, SITE_ORIGIN } from "@/lib/locale-seo";
 
 const geistSans = Geist({
@@ -78,7 +79,10 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${fraunces.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-paper text-ink">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+          <HelpWidget />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
