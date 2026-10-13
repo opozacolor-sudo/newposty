@@ -44,9 +44,11 @@ async function viewerContext() {
         .eq("is_active", true),
       workspace,
     );
-    const accounts = (data ?? []).map((row) => {
+    const accounts = (
+      (data ?? []) as Array<{ platform?: string | null; username?: string | null; display_name?: string | null }>
+    ).map((row) => {
       const handle = String(row.username ?? row.display_name ?? "").trim();
-      return handle ? `${platformLabel(String(row.platform))} ${handle}` : platformLabel(String(row.platform));
+      return handle ? `${platformLabel(String(row.platform))} ${handle}` : platformLabel(String(row.platform ?? ""));
     });
     return {
       signedIn: true as const,
