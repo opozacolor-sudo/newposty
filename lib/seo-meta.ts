@@ -111,7 +111,7 @@ const FEATURE_META: Record<FeatureSlug, LocaleMeta> = {
     ro: {
       title: "Analize Instagram, TikTok și Facebook | posty.now",
       description:
-        "Vezi ce a prins după ce ai publicat. Reach, engagement și reclame, în același studio lângă chat-ul care le-a scos.",
+        "Vezi ce a prins după ce ai publicat. Acoperire, interacțiuni și reclame, în același studio lângă chat-ul care le-a scos.",
     },
     de: {
       title: "Instagram-, TikTok- und Facebook-Analysen | posty.now",

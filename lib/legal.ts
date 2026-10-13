@@ -79,7 +79,7 @@ const ro: LegalPage[] = [
         heading: "4. Conținutul tău și textele AI",
         body: [
           "Conținutul pe care îl încarci rămâne al tău. Ne dai o licență limitată să îl stocăm, să îl procesăm și să îl trimitem către rețele doar ca să funcționeze serviciul.",
-          "Textele generate pot fi greșite. Tu verifici caption-ul, hashtag-urile și ora înainte de confirmare. Nu promitem reach, engagement sau că o rețea va accepta postarea.",
+          "Textele generate pot fi greșite. Tu verifici caption-ul, hashtag-urile și ora înainte de confirmare. Nu promitem acoperire, interacțiuni sau că o rețea va accepta postarea.",
           "Dictarea vocală folosește recunoașterea vocală a browserului. Noi primim textul care ajunge în casetă, nu păstrăm înregistrarea audio.",
         ],
       },

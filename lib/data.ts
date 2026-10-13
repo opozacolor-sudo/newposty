@@ -2,6 +2,7 @@ import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { reattachCommentAutomations } from "@/lib/campaign/reattach-automations";
 import { createZernioProfile, listAccounts } from "@/lib/zernio";
 
 export type Profile = {
@@ -127,6 +128,27 @@ export async function syncSocialAccounts(
     );
     if (error) throw error;
   }
+
+  const { data: mapped } = await supabase
+    .from("social_accounts")
+    .select("zernio_account_id, platform, username, is_active")
+    .eq("user_id", userId);
+  await reattachCommentAutomations(
+    zernioProfileId,
+    ((mapped ?? []) as Array<{
+      zernio_account_id: string | null;
+      platform: string;
+      username: string | null;
+      is_active: boolean | null;
+    }>)
+      .filter((row) => row.zernio_account_id)
+      .map((row) => ({
+        id: row.zernio_account_id as string,
+        platform: row.platform,
+        username: row.username,
+        isActive: row.is_active !== false,
+      })),
+  ).catch(() => []);
 
   const { data } = await supabase
     .from("social_accounts")

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { FilterField, FilterForm, StudioNotice, filterControl } from "@/components/studio/studio-filters";
 import { StudioPage } from "@/components/studio/studio-surface";
 import { Link } from "@/i18n/navigation";
+import { campaignStatusLabel } from "@/lib/ads-status";
 import { getZernioProfileId } from "@/lib/account-server";
 import { requireUser } from "@/lib/data";
 import { isAdsPlatformId, platformLabel } from "@/lib/platforms";
@@ -93,7 +94,7 @@ export default async function AdsCampaignsPage({
                 </p>
               </div>
               <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-                {row.status || "—"}
+                {campaignStatusLabel(row.status, t)}
               </span>
             </div>
             <dl className="mt-4 grid grid-cols-3 gap-2 text-sm">

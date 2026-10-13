@@ -199,12 +199,12 @@ const COPY: Record<AppLocale, PricingPageCopy> = {
     gains: [
       { title: "Timpul înapoi", body: "Un chat în loc de șase aplicații. Dictezi brieful. Confirmi. Calendarul se umple." },
       { title: "Conținut care pleacă", body: "Poze, clipuri, descrieri și o lună de postări din site-ul sau produsul pe care îl ai deja." },
-      { title: "Bugetul rămâne al tău", body: "Reclama pornește doar când apeși butonul negru. Spend-ul e al tău. Nu punem comision de media." },
+      { title: "Bugetul rămâne al tău", body: "Reclama pornește doar când apeși butonul negru. Cheltuiala e a ta. Nu punem comision de media." },
       { title: "Oameni, nu vanitate", body: "Pe Creștere, agentul răspunde cui ți-a scris. Primești nume, telefon și un fir — nu doar vizualizări." },
     ],
     compareTitle: "Față de cum se făcea",
     compare: [
-      { title: "Față de o agenție", body: "Tu ții conturile, vocea și spend-ul. Studio-ul e operatorul — nu aștepți o săptămână un carusel." },
+      { title: "Față de o agenție", body: "Tu ții conturile, vocea și cheltuiala. Studio-ul e operatorul — nu aștepți o săptămână un carusel." },
       { title: "Față de angajat intern", body: "Specialistul de setup e opțional. Zi de zi vorbești cu Posty, nu cu un salariu nou." },
       { title: "Față de postat de mână", body: "Ora bună pe fiecare rețea, o descriere adaptată, 30 de zile puse. Nu copiezi până la miezul nopții." },
     ],

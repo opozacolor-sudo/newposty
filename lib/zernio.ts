@@ -755,3 +755,121 @@ export async function getCampaignAnalytics(
     withQuery(`/ads/campaigns/${encodeURIComponent(campaignId)}/analytics`, query),
   );
 }
+
+export type ZernioCommentAutomation = {
+  id: string;
+  name?: string;
+  platform?: string;
+  accountId?: string;
+  trigger?: string;
+  keywords?: string[];
+  matchMode?: string;
+  typoTolerance?: boolean;
+  excludeKeywords?: string[];
+  commentReply?: string;
+  commentReplyVariations?: string[];
+  dmMessage?: string;
+  dmMessageVariations?: string[];
+  buttons?: unknown[];
+  publicReplyPolicy?: string;
+  audience?: Record<string, unknown>;
+  followGate?: Record<string, unknown>;
+  alsoMatchInDms?: boolean;
+  repeatPolicy?: Record<string, unknown>;
+  isActive?: boolean;
+};
+
+function stringList(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const items = value.filter((item): item is string => typeof item === "string");
+  return items;
+}
+
+function asCommentAutomations(body: unknown): ZernioCommentAutomation[] {
+  const record = body && typeof body === "object" ? (body as Record<string, unknown>) : null;
+  const list = Array.isArray(record?.automations)
+    ? record.automations
+    : Array.isArray(record?.data)
+      ? record.data
+      : Array.isArray(body)
+        ? body
+        : [];
+  return list.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const row = item as Record<string, unknown>;
+    const id = String(row.id ?? row._id ?? "");
+    if (!id) return [];
+    return [
+      {
+        id,
+        name: typeof row.name === "string" ? row.name : undefined,
+        platform: typeof row.platform === "string" ? row.platform : undefined,
+        accountId: typeof (row.accountId ?? row.account_id) === "string" ? String(row.accountId ?? row.account_id) : undefined,
+        trigger: typeof row.trigger === "string" ? row.trigger : undefined,
+        keywords: stringList(row.keywords),
+        matchMode: typeof (row.matchMode ?? row.match_mode) === "string" ? String(row.matchMode ?? row.match_mode) : undefined,
+        typoTolerance: typeof (row.typoTolerance ?? row.typo_tolerance) === "boolean" ? Boolean(row.typoTolerance ?? row.typo_tolerance) : undefined,
+        excludeKeywords: stringList(row.excludeKeywords ?? row.exclude_keywords),
+        commentReply: typeof (row.commentReply ?? row.comment_reply) === "string" ? String(row.commentReply ?? row.comment_reply) : undefined,
+        commentReplyVariations: stringList(row.commentReplyVariations ?? row.comment_reply_variations),
+        dmMessage: typeof (row.dmMessage ?? row.dm_message) === "string" ? String(row.dmMessage ?? row.dm_message) : undefined,
+        dmMessageVariations: stringList(row.dmMessageVariations ?? row.dm_message_variations),
+        buttons: Array.isArray(row.buttons) ? row.buttons : undefined,
+        publicReplyPolicy: typeof (row.publicReplyPolicy ?? row.public_reply_policy) === "string" ? String(row.publicReplyPolicy ?? row.public_reply_policy) : undefined,
+        audience: row.audience && typeof row.audience === "object" ? (row.audience as Record<string, unknown>) : undefined,
+        followGate: (row.followGate ?? row.follow_gate) && typeof (row.followGate ?? row.follow_gate) === "object"
+          ? ((row.followGate ?? row.follow_gate) as Record<string, unknown>)
+          : undefined,
+        alsoMatchInDms: typeof (row.alsoMatchInDms ?? row.also_match_in_dms) === "boolean" ? Boolean(row.alsoMatchInDms ?? row.also_match_in_dms) : undefined,
+        repeatPolicy: (row.repeatPolicy ?? row.repeat_policy) && typeof (row.repeatPolicy ?? row.repeat_policy) === "object"
+          ? ((row.repeatPolicy ?? row.repeat_policy) as Record<string, unknown>)
+          : undefined,
+        isActive: typeof (row.isActive ?? row.is_active) === "boolean" ? Boolean(row.isActive ?? row.is_active) : undefined,
+      },
+    ];
+  });
+}
+
+export async function listCommentAutomations(profileId?: string) {
+  const data = await zernioFetch<unknown>(withQuery("/comment-automations", { profileId }));
+  return asCommentAutomations(data);
+}
+
+export async function createCommentAutomation(input: {
+  profileId: string;
+  accountId: string;
+  name: string;
+  trigger?: string;
+  keywords?: string[];
+  matchMode?: string;
+  typoTolerance?: boolean;
+  excludeKeywords?: string[];
+  commentReply?: string;
+  commentReplyVariations?: string[];
+  dmMessage?: string;
+  dmMessageVariations?: string[];
+  buttons?: unknown[];
+  publicReplyPolicy?: string;
+  audience?: Record<string, unknown>;
+  followGate?: Record<string, unknown>;
+  alsoMatchInDms?: boolean;
+  repeatPolicy?: Record<string, unknown>;
+  isActive?: boolean;
+}) {
+  const data = await zernioFetch<unknown>("/comment-automations", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+  return asCommentAutomations(
+    data && typeof data === "object" && "automation" in data
+      ? { automations: [(data as { automation: unknown }).automation] }
+      : data,
+  )[0] ?? null;
+}
+
+export async function updateCommentAutomation(automationId: string, patch: { isActive?: boolean }) {
+  return zernioFetch<unknown>(`/comment-automations/${encodeURIComponent(automationId)}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+  });
+}

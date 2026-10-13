@@ -442,11 +442,11 @@ export const FEATURES: FeaturePage[] = [
       navBody: "Vezi ce au făcut postările, separat de ce au cheltuit reclamele.",
       metaTitle: "Analize — posty.now",
       metaDescription:
-        "Statisticile de postări și cele de reclame stau separat în posty.now: reach și engagement într-o parte, cheltuieli și clickuri în cealaltă.",
+        "Statisticile de postări și cele de reclame stau separat în posty.now: acoperire și interacțiuni într-o parte, cheltuieli și clickuri în cealaltă.",
       kicker: "Funcții",
       title: "Organicul într-o parte. Banii în cealaltă.",
       subtitle:
-        "Statistică → Postări e fiecare rețea ca un card: postări pe 30 de zile, engagement, urmăritori. Deschizi cardul pentru grafice, interval, top postări și comentarii unde rețeaua le dă. Cheltuiala de ads nu e acolo.",
+        "Statistică → Postări e fiecare rețea ca un card: postări pe 30 de zile, interacțiuni, urmăritori. Deschizi cardul pentru grafice, interval, top postări și comentarii unde rețeaua le dă. Cheltuiala de reclame nu e acolo.",
       features: [
         {
           title: "Card complet, cât permite rețeaua",
@@ -454,7 +454,7 @@ export const FEATURES: FeaturePage[] = [
         },
         {
           title: "Reclamele au pagina lor",
-          body: "Statistică → Promovări: campanii, cheltuieli, impresii, clickuri, CTR, conversii, top campanii, 7 sau 30 de zile sau un interval ales. Un card gol înseamnă că nu e conectat un cont de ads.",
+          body: "Statistică → Promovări: campanii, cheltuieli, impresii, clickuri, CTR, conversii, top campanii, 7 sau 30 de zile sau un interval ales. Un card gol înseamnă că nu e conectat un cont de reclame.",
         },
         {
           title: "O rutină de o dată pe săptămână",
@@ -466,12 +466,12 @@ export const FEATURES: FeaturePage[] = [
         "Tabloul de postări e zilnic, nu din oră în oră. Ajunge ca să vezi ce a prins. Dacă știi că oamenii tăi sunt treji noaptea, spui ora aia la programare — ceasul pe care îl pui tot câștigă în fața orei sugerate.",
       examplesTitle: "Ce deschizi",
       examples: [
-        "Postări: carduri pe 30 de zile, engagement, urmăritori, top postări.",
+        "Postări: carduri pe 30 de zile, interacțiuni, urmăritori, top postări.",
         "Promovări: cheltuieli, impresii, clickuri, CTR, conversii.",
         "Un interval ales când vrei luna asta față de luna trecută.",
       ],
       steps: [
-        { title: "Conectezi contul", body: "Fără rețea, fără card. Fără cont de ads, cardul de promovări e gol — nu e bug." },
+        { title: "Conectezi contul", body: "Fără rețea, fără card. Fără cont de reclame, cardul de promovări e gol — nu e o eroare." },
         { title: "Citești întâi postările", body: "Cu ce au interacționat oamenii de fapt." },
         { title: "Apoi reclamele", body: "Ce ai plătit, separat de un Reel care pur și simplu a mers bine." },
         { title: "Ajustezi în chat", body: "Schimbi seria sau pregătești un creativ nou de reclamă, pe data lui." },
@@ -578,7 +578,7 @@ export const FEATURES: FeaturePage[] = [
       ],
       batchTitle: "La ce e fiecare rețea, de fapt",
       batchBody:
-        "Meta face campanii complete și poate da boost unei postări existente, cu audiențe custom și lookalike. Google e Search și Display, nu un boost de postare socială. LinkedIn acoperă imagine, video, carusel și altele, și poate da boost. TikTok e campanii video și Spark Ads. Pinterest promovează Pinuri. X Ads face awareness și traffic. Reclamele OpenAI sunt carduri statice în ChatGPT, doar imagine, pentru business-uri eligibile din SUA, Canada, Australia și Noua Zeelandă.",
+        "Meta face campanii complete și poate da boost unei postări existente, cu audiențe personalizate și lookalike. Google e Search și Display, nu un boost de postare socială. LinkedIn acoperă imagine, video, carusel și altele, și poate da boost. TikTok e campanii video și Spark Ads. Pinterest promovează Pinuri. X Ads face notorietate și trafic. Reclamele OpenAI sunt carduri statice în ChatGPT, doar imagine, pentru business-uri eligibile din SUA, Canada, Australia și Noua Zeelandă.",
       examplesTitle: "Poți spune",
       examples: [
         "Promovează postarea asta de Instagram pentru weekend, oameni din zonă, buget mic.",
