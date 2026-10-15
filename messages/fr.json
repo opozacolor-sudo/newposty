@@ -521,7 +521,9 @@
     "alreadyHave": "Déjà un compte ?",
     "confirmEmail": "Confirmez l’e-mail, puis connectez-vous.",
     "emailConfirmed": "E-mail confirmé. Connectez-vous pour continuer.",
-    "unexpected": "Un problème est survenu. Réessayez."
+    "unexpected": "Un problème est survenu. Réessayez.",
+    "accountExists": "Cet e-mail a déjà un compte. Connectez-vous.",
+    "passwordShort": "Utilisez au moins 8 caractères."
   },
   "Nav": {
     "assistant": "Assistant",

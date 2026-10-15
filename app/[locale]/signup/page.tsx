@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function SignupPage() {
   if (!SIGNUPS_OPEN) {
     const locale = await getLocale();
-    redirect({ href: "/waitlist", locale });
+    redirect({ href: "/join", locale });
   }
 
   return <SignupForm />;

@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { DemoReveal, DemoVideoFrame, DemoYouTube } from "@/components/marketing/demo-media";
 import { btnClay, clayLink, clayTile, pageLead, pageTitle } from "@/components/marketing/styles";
-import { SIGNUPS_OPEN } from "@/lib/flags";
 import {
   DEMO_PAGES,
   DEMO_STUDIO_TRY,
@@ -170,7 +169,7 @@ async function DemoFooter({ variant }: { variant: DemoVariant }) {
     <div className="mt-20 border-t border-white/20 py-16 text-center sm:mt-24">
       <p className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">{t("ctaTitle")}</p>
       <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Link href={SIGNUPS_OPEN ? "/signup" : "/waitlist"} className={`${btnClay} px-6 py-3`}>
+        <Link href="/join" className={`${btnClay} px-6 py-3`}>
           {t("ctaButton")}
         </Link>
         <Link href="/guide" className={clayLink}>

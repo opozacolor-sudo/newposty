@@ -521,7 +521,9 @@
     "alreadyHave": "¿Ya tienes una?",
     "confirmEmail": "Confirma el email y luego entra.",
     "emailConfirmed": "Email confirmado. Entra para continuar.",
-    "unexpected": "Algo salió mal. Inténtalo de nuevo."
+    "unexpected": "Algo salió mal. Inténtalo de nuevo.",
+    "accountExists": "Este email ya tiene una cuenta. Entra.",
+    "passwordShort": "Usa al menos 8 caracteres."
   },
   "Nav": {
     "assistant": "Asistente",

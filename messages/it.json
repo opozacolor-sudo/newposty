@@ -521,7 +521,9 @@
     "alreadyHave": "Ne hai già uno?",
     "confirmEmail": "Controlla l’email per confermare, poi accedi.",
     "emailConfirmed": "Email confermata. Accedi per continuare.",
-    "unexpected": "Qualcosa è andato storto. Riprova."
+    "unexpected": "Qualcosa è andato storto. Riprova.",
+    "accountExists": "Questa email ha già un account. Accedi.",
+    "passwordShort": "Usa almeno 8 caratteri."
   },
   "Nav": {
     "assistant": "Assistente",

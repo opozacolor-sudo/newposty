@@ -521,7 +521,9 @@
     "alreadyHave": "Ai deja unul?",
     "confirmEmail": "Verifică emailul ca să confirmi contul, apoi autentifică-te.",
     "emailConfirmed": "Email confirmat. Autentifică-te ca să continui.",
-    "unexpected": "Ceva nu a mers. Te rugăm să încerci din nou."
+    "unexpected": "Ceva nu a mers. Te rugăm să încerci din nou.",
+    "accountExists": "Emailul ăsta are deja un cont. Autentifică-te.",
+    "passwordShort": "Folosește cel puțin 8 caractere."
   },
   "Nav": {
     "assistant": "Asistent",

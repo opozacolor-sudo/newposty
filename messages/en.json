@@ -521,7 +521,9 @@
     "alreadyHave": "Already have one?",
     "confirmEmail": "Check your email to confirm the account, then sign in.",
     "emailConfirmed": "Email confirmed. Sign in to continue.",
-    "unexpected": "Something went wrong. Please try again."
+    "unexpected": "Something went wrong. Please try again.",
+    "accountExists": "That email already has an account. Sign in.",
+    "passwordShort": "Use at least 8 characters."
   },
   "Nav": {
     "assistant": "Assistant",

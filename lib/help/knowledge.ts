@@ -1,4 +1,3 @@
-import { SIGNUPS_OPEN } from "@/lib/flags";
 import { getGuide } from "@/lib/guide-content";
 import { pricingCopy } from "@/lib/pricing-copy";
 
@@ -24,9 +23,7 @@ export function helpKnowledge(locale: string) {
   const pricing = pricingCopy(locale);
   const plans = pricing.plans.map((plan) => `${plan.name}: ${plan.tag}. ${plan.gain}`).join("\n");
   const faqs = pricing.faqs.map((item) => `Q: ${item.q}\nA: ${item.a}`).join("\n");
-  const signups = SIGNUPS_OPEN
-    ? "Public signup is open."
-    : "The footer Register button opens signup. Free until 15 November 2026, with 15 photos and 15 videos. Paid plans are listed from 1 November.";
+  const signups = "Public signup is open at /join. Free until 15 November 2026, with 15 photos and 15 videos. Paid plans are listed from 1 November.";
   return [
     ...sections,
     "## Pricing",

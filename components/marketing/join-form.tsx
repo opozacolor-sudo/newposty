@@ -5,7 +5,6 @@ import { FormEvent, useState } from "react";
 import { authField, authLabel } from "@/components/auth/auth-shell";
 import { btnSolid } from "@/components/marketing/styles";
 import { Link, useRouter } from "@/i18n/navigation";
-import { getPublicSiteUrl } from "@/lib/env";
 import { INVITE_SIGNUP } from "@/lib/flags";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
@@ -15,7 +14,6 @@ export function JoinForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function onSubmit(event: FormEvent) {
@@ -26,28 +24,34 @@ export function JoinForm() {
     }
     setPending(true);
     setError(null);
-    setInfo(null);
     try {
-      const supabase = createBrowserSupabase();
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${getPublicSiteUrl()}/auth/callback`,
-          data: { account_kind: "individual", invite: true },
-        },
+      const created = await fetch("/api/account/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      if (signUpError) {
-        setError(signUpError.message);
+      const payload = (await created.json().catch(() => ({}))) as { error?: string };
+      if (!created.ok) {
+        if (payload.error === "ACCOUNT_EXISTS") {
+          setError(t("accountExists"));
+          return;
+        }
+        if (payload.error === "PASSWORD_SHORT") {
+          setError(t("passwordShort"));
+          return;
+        }
+        setError(t("unexpected"));
         return;
       }
-      if (data.session) {
-        await fetch("/api/account/promo", { method: "POST" }).catch(() => undefined);
-        router.push("/chat");
-        router.refresh();
+      const supabase = createBrowserSupabase();
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        setError(signInError.message);
         return;
       }
-      setInfo(t("confirmEmail"));
+      await fetch("/api/account/promo", { method: "POST" }).catch(() => undefined);
+      router.push("/chat");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("unexpected"));
     } finally {
@@ -83,7 +87,6 @@ export function JoinForm() {
         />
       </label>
       {error ? <p className="text-sm text-[#8b3a2a]">{error}</p> : null}
-      {info ? <p className="text-sm text-[#3f6b4a]">{info}</p> : null}
       <button
         type="submit"
         disabled={pending}

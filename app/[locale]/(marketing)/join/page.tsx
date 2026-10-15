@@ -19,8 +19,7 @@ export async function generateMetadata({
   return {
     title: copy.metaTitle,
     description: copy.metaDescription,
-    robots: { index: false, follow: false },
-    alternates: { canonical: undefined },
+    alternates: { canonical: `https://posty.now/${locale}/join` },
   };
 }
 

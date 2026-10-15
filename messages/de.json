@@ -521,7 +521,9 @@
     "alreadyHave": "Schon ein Konto?",
     "confirmEmail": "Bitte E-Mail bestätigen, dann anmelden.",
     "emailConfirmed": "E-Mail bestätigt. Jetzt anmelden.",
-    "unexpected": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+    "unexpected": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+    "accountExists": "Diese E-Mail hat schon ein Konto. Bitte anmelden.",
+    "passwordShort": "Mindestens 8 Zeichen."
   },
   "Nav": {
     "assistant": "Assistent",
