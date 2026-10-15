@@ -56,6 +56,8 @@ export async function GET() {
     canAds: snapshot.canAds,
     canLeads: snapshot.canLeads,
     credits: snapshot.credits,
+    promoUntil: snapshot.promoUntil,
+    promo: snapshot.promo,
     catalog: STRIPE_CATALOG,
   });
 }

@@ -6,8 +6,10 @@ import { planExceedsAccess, planTooLongMessage } from "@/lib/chat-post/plan-hori
 import { resolveCreateActions } from "@/lib/chat-post/resolve";
 import { savePendingAction } from "@/lib/chat-post/store";
 import type { CatalogPlanPayload, ChatMedia } from "@/lib/chat-post/types";
-import { billingCopy } from "@/lib/billing/copy";
+import { generationCreditMessage } from "@/lib/billing/copy";
 import { remainingCredits } from "@/lib/billing/credits";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
+import { promoActive } from "@/lib/promo";
 import { getAnthropicApiKey, hasFalKey } from "@/lib/env";
 import { userTimezone } from "@/lib/chat-post/timezone";
 import { localeFromRequest } from "@/lib/locale-time";
@@ -47,7 +49,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "plan is required" }, { status: 400 });
   }
   if ((await remainingCredits(user.id, "image")) < plan.products.length) {
-    return NextResponse.json({ error: billingCopy(locale, "noImageCredits") }, { status: 409 });
+    const billing = await loadProfileBilling(user.id);
+    return NextResponse.json(
+      { error: generationCreditMessage(locale, "image", promoActive(billing.promoUntil)) },
+      { status: 409 },
+    );
   }
 
   const workspace = await loadWorkspace(supabase, user.id);

@@ -766,6 +766,7 @@
     "planGrowth": "Creștere",
     "planLifetime": "Lifetime",
     "planNone": "No plan yet",
+    "planPromo": "Free until 15 November",
     "currentPlan": "Current plan: {plan}",
     "creditsLine": "{photos} photos · {videos} videos",
     "monthly": "monthly",
@@ -777,7 +778,9 @@
     "portalError": "Could not open the billing portal.",
     "checkoutSuccess": "Payment received. Credits and plan update in a moment.",
     "checkoutPending": "Payment is still confirming. Refresh in a moment.",
-    "checkoutCancel": "Checkout cancelled."
+    "checkoutCancel": "Checkout cancelled.",
+    "promoNote": "Free until 15 November. 15 photos and 15 videos. Company details go in Profile.",
+    "promoPacksLater": "30-photo and 30-video packs start after 15 November."
   },
   "ComingSoon": {
     "badge": "Coming soon",

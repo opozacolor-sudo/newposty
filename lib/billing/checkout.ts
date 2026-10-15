@@ -4,12 +4,14 @@ import { createAdminSupabase } from "@/lib/supabase/admin";
 import { catalogByLookupKey, isCatalogLookupKey, type CatalogLookupKey } from "@/lib/stripe-catalog";
 import { loadProfileBilling } from "@/lib/billing/entitlements";
 import { isMissingStripeResource, publicStripeMessage } from "@/lib/billing/stripe-errors";
+import { billingCopy } from "@/lib/billing/copy";
 import { isAppLocale } from "@/lib/locales";
+import { promoActive } from "@/lib/promo";
 import { syncStripeCustomer } from "@/lib/billing/sync";
 
 export class BillingCheckoutError extends Error {
   constructor(
-    public readonly code: "UNKNOWN_LOOKUP" | "PRICE_MISSING" | "STRIPE",
+    public readonly code: "UNKNOWN_LOOKUP" | "PRICE_MISSING" | "STRIPE" | "PACK_LOCKED",
     message: string,
   ) {
     super(message);
@@ -87,6 +89,10 @@ export async function startBillingCheckout(input: {
   if (!entry) throw new BillingCheckoutError("UNKNOWN_LOOKUP", "Unknown price.");
 
   const locale = isAppLocale(input.locale) ? input.locale : "en";
+  const billing = await loadProfileBilling(input.user.id);
+  if (entry.kind === "pack" && promoActive(billing.promoUntil)) {
+    throw new BillingCheckoutError("PACK_LOCKED", billingCopy(locale, "promoPacksLater"));
+  }
   try {
     const customerId = await getOrCreateStripeCustomer(input.user);
     const priceId = await priceIdForLookupKey(input.lookupKey);

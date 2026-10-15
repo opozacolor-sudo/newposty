@@ -26,6 +26,7 @@ export type Profile = {
   billing_city?: string | null;
   billing_postal_code?: string | null;
   billing_country?: string | null;
+  promo_until?: string | null;
 };
 
 export async function requireUser() {

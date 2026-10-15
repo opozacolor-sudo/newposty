@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabasePublicEnv } from "@/lib/env";
-import { SIGNUPS_OPEN } from "@/lib/flags";
+import { INVITE_SIGNUP, SIGNUPS_OPEN } from "@/lib/flags";
 import { routing } from "@/i18n/routing";
 
 function splitLocale(pathname: string) {
@@ -51,7 +51,14 @@ export async function updateSession(request: NextRequest, response: NextResponse
     return copyCookies(response, NextResponse.redirect(redirectUrl));
   }
 
-  const isAuthPage = path === "/login" || path === "/signup";
+  if (!INVITE_SIGNUP && path === "/join") {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = `/${locale}/waitlist`;
+    redirectUrl.search = "";
+    return copyCookies(response, NextResponse.redirect(redirectUrl));
+  }
+
+  const isAuthPage = path === "/login" || path === "/signup" || path === "/join";
   const isProtected =
     path === "/chat" ||
     path.startsWith("/chat/") ||

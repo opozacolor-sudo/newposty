@@ -20,6 +20,8 @@ type BillingPayload = {
   lookupKey?: string | null;
   currentPeriodEnd?: string | null;
   credits?: { photos: number; videos: number };
+  promoUntil?: string | null;
+  promo?: boolean;
   subscription?: { id: string; cancelAtPeriodEnd: boolean } | null;
 };
 
@@ -65,13 +67,15 @@ export function PlanBilling({ notice }: { notice?: string | null }) {
   const currentName =
     currentPlan === "lifetime"
       ? t("planLifetime")
-      : currentPlan === "studio"
-        ? t("planStudio")
-        : currentPlan === "promote"
-          ? t("planPromote")
-          : currentPlan === "growth"
-            ? t("planGrowth")
-            : t("planNone");
+      : data?.promo
+        ? t("planPromo")
+        : currentPlan === "studio"
+          ? t("planStudio")
+          : currentPlan === "promote"
+            ? t("planPromote")
+            : currentPlan === "growth"
+              ? t("planGrowth")
+              : t("planNone");
 
   async function checkout(lookupKey: CatalogLookupKey) {
     setWorking(lookupKey);
@@ -164,6 +168,7 @@ export function PlanBilling({ notice }: { notice?: string | null }) {
           {renews ? (
             <p className="mt-1 text-xs text-[#6b5348]">{t("renews", { date: renews })}</p>
           ) : null}
+          {data?.promo ? <p className="mt-2 text-sm leading-6 text-[#55514e]">{t("promoNote")}</p> : null}
           {currentPlan === "lifetime" ? (
             <p className="mt-2 text-sm leading-6 text-[#55514e]">{t("lifetimeNote")}</p>
           ) : null}
@@ -286,15 +291,17 @@ export function PlanBilling({ notice }: { notice?: string | null }) {
                 <p className="mt-3 flex-1 text-sm leading-6 text-[#55514e]">{pack.body}</p>
                 <button
                   type="button"
-                  disabled={!lookup || Boolean(working)}
+                  disabled={!lookup || Boolean(working) || Boolean(data?.promo)}
                   onClick={() => lookup && void checkout(lookup)}
                   className={`mt-6 ${btnClay} disabled:opacity-60`}
                 >
                   {working === lookup
                     ? t("buying")
-                    : pack.id === "photos"
-                      ? t("buyPhotos")
-                      : t("buyVideos")}
+                    : data?.promo
+                      ? t("promoPacksLater")
+                      : pack.id === "photos"
+                        ? t("buyPhotos")
+                        : t("buyVideos")}
                 </button>
               </article>
             );

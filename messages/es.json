@@ -766,6 +766,7 @@
     "planGrowth": "Creștere",
     "planLifetime": "De por vida",
     "planNone": "Sin plan todavía",
+    "planPromo": "Gratis hasta el 15 de noviembre",
     "currentPlan": "Plan actual: {plan}",
     "creditsLine": "{photos} fotos · {videos} vídeos",
     "monthly": "mensual",
@@ -777,7 +778,9 @@
     "portalError": "No se pudo abrir el portal de facturación.",
     "checkoutSuccess": "Pago recibido. Los créditos y el plan se actualizan en un momento.",
     "checkoutPending": "El pago se está confirmando. Recarga en un momento.",
-    "checkoutCancel": "Checkout cancelado."
+    "checkoutCancel": "Checkout cancelado.",
+    "promoNote": "Gratis hasta el 15 de noviembre. 15 fotos y 15 vídeos. Los datos de empresa van en Perfil.",
+    "promoPacksLater": "Los packs de 30 fotos y 30 vídeos empiezan después del 15 de noviembre."
   },
   "ComingSoon": {
     "badge": "Coming soon",

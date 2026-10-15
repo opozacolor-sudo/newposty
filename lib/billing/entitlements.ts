@@ -9,27 +9,36 @@ import {
   type EffectivePlan,
 } from "@/lib/stripe-catalog";
 import { remainingCredits } from "@/lib/billing/credits";
+import { promoActive } from "@/lib/promo";
 
 export type ProfileBilling = {
   lifetime: boolean;
   plan: EffectivePlan;
   storedPlan: string;
   stripeCustomerId: string | null;
+  promoUntil: string | null;
 };
 
 export async function loadProfileBilling(userId: string): Promise<ProfileBilling> {
   const admin = createAdminSupabase();
   const { data } = await admin
     .from("profiles")
-    .select("lifetime_access, plan, stripe_customer_id")
+    .select("lifetime_access, plan, stripe_customer_id, promo_until")
     .eq("id", userId)
     .maybeSingle();
   const storedPlan = typeof data?.plan === "string" ? data.plan : "none";
+  const lifetime = Boolean(data?.lifetime_access);
+  const promoUntil = typeof data?.promo_until === "string" ? data.promo_until : null;
   return {
-    lifetime: Boolean(data?.lifetime_access),
-    plan: effectivePlan(Boolean(data?.lifetime_access), storedPlan),
+    lifetime,
+    plan: lifetime
+      ? effectivePlan(true, storedPlan)
+      : promoActive(promoUntil)
+        ? "growth"
+        : effectivePlan(false, storedPlan),
     storedPlan,
     stripeCustomerId: typeof data?.stripe_customer_id === "string" ? data.stripe_customer_id : null,
+    promoUntil,
   };
 }
 
@@ -99,6 +108,8 @@ export async function loadBillingSnapshot(userId: string) {
     canAds: canUseAds(billing.plan),
     canLeads: canUseLeads(billing.plan),
     credits: { photos, videos },
+    promoUntil: billing.promoUntil,
+    promo: promoActive(billing.promoUntil),
     interval: subscription.interval,
     lookupKey: subscription.lookupKey,
     cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,

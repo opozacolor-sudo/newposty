@@ -26,7 +26,7 @@ export function helpKnowledge(locale: string) {
   const faqs = pricing.faqs.map((item) => `Q: ${item.q}\nA: ${item.a}`).join("\n");
   const signups = SIGNUPS_OPEN
     ? "Public signup is open."
-    : "Public signup is closed until 15 October 2026. Pre-register on the waitlist for the first month free.";
+    : "Public signup stays on the waitlist. An unpublished invite page can open a free studio until 15 November 2026, with 15 photos and 15 videos. Paid plans are shown from 1 November.";
   return [
     ...sections,
     "## Pricing",

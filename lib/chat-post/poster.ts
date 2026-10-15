@@ -1,5 +1,7 @@
-import { billingCopy } from "@/lib/billing/copy";
+import { generationCreditMessage } from "@/lib/billing/copy";
 import { consumeCredit, refundCredit } from "@/lib/billing/credits";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
+import { promoActive } from "@/lib/promo";
 import { FalImageError, generateFalImage, type FalImageSize } from "@/lib/fal-image";
 import { loadSiteBrief } from "@/lib/site-brief";
 import type { ChatMedia, GeneratedPosterPayload } from "@/lib/chat-post/types";
@@ -64,7 +66,11 @@ export async function createGeneratedPoster(input: {
 
   const credit = await consumeCredit(input.userId, "image");
   if (!credit) {
-    return { ok: false, error: billingCopy(input.locale, "noImageCredits") };
+    const billing = await loadProfileBilling(input.userId);
+    return {
+      ok: false,
+      error: generationCreditMessage(input.locale, "image", promoActive(billing.promoUntil)),
+    };
   }
 
   const imageSize: FalImageSize = input.aspect === "square" ? "square_hd" : "portrait_4_3";

@@ -766,6 +766,7 @@
     "planGrowth": "Creștere",
     "planLifetime": "Pe viață",
     "planNone": "Fără plan încă",
+    "planPromo": "Gratuit până pe 15 noiembrie",
     "currentPlan": "Plan curent: {plan}",
     "creditsLine": "{photos} poze · {videos} video",
     "monthly": "lunar",
@@ -777,7 +778,9 @@
     "portalError": "Nu am putut deschide portalul de facturare.",
     "checkoutSuccess": "Plata a reușit. Creditul și planul se actualizează imediat.",
     "checkoutPending": "Plata încă se confirmă. Reîncarcă peste un moment.",
-    "checkoutCancel": "Plata a fost anulată."
+    "checkoutCancel": "Plata a fost anulată.",
+    "promoNote": "Gratuit până pe 15 noiembrie. 15 poze și 15 video. Datele firmei le pui în Profil.",
+    "promoPacksLater": "Pachetele de 30 de poze și 30 de video încep după 15 noiembrie."
   },
   "ComingSoon": {
     "badge": "În curând",

@@ -12,7 +12,15 @@ function saveLabel(template: string, amount: string) {
   return template.replace("{amount}", amount);
 }
 
-export function PricingCards({ copy, locale }: { copy: PricingPageCopy; locale: string }) {
+export function PricingCards({
+  copy,
+  locale,
+  cta,
+}: {
+  copy: PricingPageCopy;
+  locale: string;
+  cta?: { href: string; label: string } | null;
+}) {
   const [yearly, setYearly] = useState(false);
   const plans = copy.plans;
 
@@ -90,9 +98,11 @@ export function PricingCards({ copy, locale }: { copy: PricingPageCopy; locale: 
                   <li key={feature}>{feature}</li>
                 ))}
               </ul>
-              <a href="#waitlist" className={`mt-6 text-center ${btnClay}`}>
-                {copy.waitlist}
-              </a>
+              {cta === null ? null : (
+                <a href={cta?.href ?? "#waitlist"} className={`mt-6 text-center ${btnClay}`}>
+                  {cta?.label ?? copy.waitlist}
+                </a>
+              )}
             </article>
           );
         })}

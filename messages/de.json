@@ -766,6 +766,7 @@
     "planGrowth": "Creștere",
     "planLifetime": "Lebenslang",
     "planNone": "Noch kein Plan",
+    "planPromo": "Frei bis 15. November",
     "currentPlan": "Aktueller Plan: {plan}",
     "creditsLine": "{photos} Fotos · {videos} Videos",
     "monthly": "monatlich",
@@ -777,7 +778,9 @@
     "portalError": "Das Abrechnungsportal konnte nicht geöffnet werden.",
     "checkoutSuccess": "Zahlung eingegangen. Guthaben und Plan aktualisieren sich gleich.",
     "checkoutPending": "Die Zahlung wird noch bestätigt. Bitte gleich neu laden.",
-    "checkoutCancel": "Checkout abgebrochen."
+    "checkoutCancel": "Checkout abgebrochen.",
+    "promoNote": "Frei bis 15. November. 15 Fotos und 15 Videos. Firmendaten kommen unter Profil.",
+    "promoPacksLater": "30er Foto- und Videopakete starten nach dem 15. November."
   },
   "ComingSoon": {
     "badge": "Coming soon",

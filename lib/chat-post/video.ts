@@ -1,5 +1,7 @@
-import { billingCopy } from "@/lib/billing/copy";
+import { generationCreditMessage } from "@/lib/billing/copy";
 import { consumeCredit, refundCredit } from "@/lib/billing/credits";
+import { loadProfileBilling } from "@/lib/billing/entitlements";
+import { promoActive } from "@/lib/promo";
 import { FalImageError } from "@/lib/fal-image";
 import {
   harvestFalVideo,
@@ -134,7 +136,11 @@ export async function createGeneratedVideo(input: {
 
     const credit = await consumeCredit(input.userId, "video");
     if (!credit) {
-      return { ok: false, error: billingCopy(input.locale, "noVideoCredits") };
+      const billing = await loadProfileBilling(input.userId);
+      return {
+        ok: false,
+        error: generationCreditMessage(input.locale, "video", promoActive(billing.promoUntil)),
+      };
     }
 
     const webhook = falVideoWebhookUrl();
