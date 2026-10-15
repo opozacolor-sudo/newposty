@@ -6,7 +6,6 @@ import { FormEvent, useState } from "react";
 import { AuthShell, authField, authLabel } from "@/components/auth/auth-shell";
 import { btnSolid } from "@/components/marketing/styles";
 import { Link, useRouter } from "@/i18n/navigation";
-import { SIGNUPS_OPEN } from "@/lib/flags";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 import { safeInternalPath } from "@/lib/safe-path";
 
@@ -84,21 +83,10 @@ export default function LoginPage() {
         </button>
       </form>
       <p className="mt-7 text-center text-[13px] leading-6 text-[#5c5652]">
-        {SIGNUPS_OPEN ? (
-          <>
-            {t("newHere")}{" "}
-            <Link href="/signup" className="font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
-              {t("createAccount")}
-            </Link>
-          </>
-        ) : (
-          <>
-            {t("waitlistHint")}{" "}
-            <Link href="/waitlist" className="font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
-              {t("waitlistLink")}
-            </Link>
-          </>
-        )}
+        {t("newHere")}{" "}
+        <Link href="/join" className="font-medium text-[#1d1d1f] underline-offset-4 hover:underline">
+          {t("createAccount")}
+        </Link>
       </p>
     </AuthShell>
   );
